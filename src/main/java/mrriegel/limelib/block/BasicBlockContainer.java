@@ -17,19 +17,18 @@ public abstract class BasicBlockContainer extends BasicBlock implements
 		ITileEntityProvider {
 
 	public BasicBlockContainer(Material material, String name, String modid) {
-		super(material, name,modid);
+		super(material, name, modid);
 		this.isBlockContainer = true;
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-			GameRegistry.registerTileEntity(
-					createNewTileEntity(Minecraft.getMinecraft().theWorld, 0)
-							.getClass(), "tile" + WordUtils.capitalize(name));
-		else
-			GameRegistry.registerTileEntity(
-					createNewTileEntity(
-							FMLCommonHandler.instance()
-									.getMinecraftServerInstance()
-									.getEntityWorld(), 0).getClass(), "tile"
-							+ WordUtils.capitalize(name));
+		GameRegistry
+				.registerTileEntity(
+						createNewTileEntity(
+								FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? Minecraft
+										.getMinecraft().theWorld
+										: FMLCommonHandler.instance()
+												.getMinecraftServerInstance()
+												.getEntityWorld(), 0)
+								.getClass(),
+						"tile" + WordUtils.capitalize(name));
 	}
 
 	@Override

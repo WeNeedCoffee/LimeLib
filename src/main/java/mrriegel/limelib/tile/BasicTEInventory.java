@@ -87,6 +87,7 @@ public abstract class BasicTEInventory extends BasicTE implements IInventory {
 		if (stack != null && stack.stackSize > this.getInventoryStackLimit()) {
 			stack.stackSize = this.getInventoryStackLimit();
 		}
+		markDirty();
 	}
 
 	@Override

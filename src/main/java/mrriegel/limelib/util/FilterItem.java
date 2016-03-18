@@ -1,5 +1,6 @@
 package mrriegel.limelib.util;
 
+import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -46,7 +47,7 @@ public class FilterItem {
 	}
 
 	public void setStack(ItemStack stack) {
-		if(stack==null)
+		if (stack == null)
 			throw new NullPointerException();
 		this.stack = stack;
 	}
@@ -80,5 +81,17 @@ public class FilterItem {
 		fil.readFromNBT(nbt);
 		return fil.getStack() != null && fil.getStack().getItem() != null ? fil
 				: null;
+	}
+
+	public boolean match(ItemStack s) {
+		if (s == null)
+			return false;
+		if (nbt && !ItemStack.areItemStackTagsEqual(stack, s))
+			return false;
+		if (meta && s.getItemDamage() != stack.getItemDamage())
+			return false;
+		if (ore && StackHelper.equalOreDict(s, stack))
+			return true;
+		return s.getItem() == stack.getItem();
 	}
 }

@@ -19,24 +19,6 @@ public class Utils {
 		return false;
 	}
 
-	public static void spawnItemStack(World worldIn, BlockPos pos,
-			ItemStack stack) {
-		if (!worldIn.isRemote
-				&& worldIn.getGameRules().getBoolean("doTileDrops")
-				&& !worldIn.restoringBlockSnapshots) {
-			float f = 0.5F;
-			double d0 = (double) (worldIn.rand.nextFloat() * f)
-					+ (double) (1.0F - f) * 0.5D;
-			double d1 = (double) (worldIn.rand.nextFloat() * f)
-					+ (double) (1.0F - f) * 0.5D;
-			double d2 = (double) (worldIn.rand.nextFloat() * f)
-					+ (double) (1.0F - f) * 0.5D;
-			EntityItem entityitem = new EntityItem(worldIn, (double) pos.getX()
-					+ d0, (double) pos.getY() + d1, (double) pos.getZ() + d2,
-					stack);
-			entityitem.setDefaultPickupDelay();
-			worldIn.spawnEntityInWorld(entityitem);
-		}
-	}
+	
 
 }

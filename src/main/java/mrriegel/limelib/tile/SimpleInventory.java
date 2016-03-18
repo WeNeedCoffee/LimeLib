@@ -7,7 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.IChatComponent;
 
-public class SimpleInventory implements IInventory{
+public class SimpleInventory implements IInventory {
 	protected ItemStack[] stacks;
 	protected int stackLimit;
 
@@ -130,6 +130,14 @@ public class SimpleInventory implements IInventory{
 
 	@Override
 	public void markDirty() {
+	}
+
+	public void copy() {
+		SimpleInventory x = new SimpleInventory(getSizeInventory(),
+				getInventoryStackLimit());
+		for (int i = 0; i < getSizeInventory(); i++)
+			x.setInventorySlotContents(i, getStackInSlot(i) == null ? null
+					: getStackInSlot(i).copy());
 	}
 
 }
