@@ -3,7 +3,7 @@ package mrriegel.limelib.gui;
 import java.io.IOException;
 import java.util.List;
 
-import mrriegel.limelib.gui.element.IGuiElement;
+import mrriegel.limelib.gui.element.GuiElement;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -16,7 +16,7 @@ public class GuiScreenBase extends GuiScreen implements IGuiBase {
 	public int guiLeft;
 	public int guiTop;
 
-	protected List<IGuiElement> elementList = Lists.<IGuiElement> newArrayList();
+	protected List<GuiElement> elementList = Lists.<GuiElement> newArrayList();
 
 	public GuiScreenBase(int xSize, int ySize) {
 		super();
@@ -28,7 +28,7 @@ public class GuiScreenBase extends GuiScreen implements IGuiBase {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawGuiBackgroundLayer(partialTicks, mouseX, mouseY);
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		for (IGuiElement e : elementList) {
+		for (GuiElement e : elementList) {
 			e.drawBackground(mc, mouseX, mouseY);
 		}
 		GlStateManager.disableRescaleNormal();
@@ -41,7 +41,7 @@ public class GuiScreenBase extends GuiScreen implements IGuiBase {
 		GlStateManager.enableRescaleNormal();
 		drawGuiForegroundLayer(mouseX, mouseY);
 		GlStateManager.popMatrix();
-		for (IGuiElement e : elementList) {
+		for (GuiElement e : elementList) {
 			e.drawForeground(mc, mouseX, mouseY);
 		}
 
@@ -102,16 +102,43 @@ public class GuiScreenBase extends GuiScreen implements IGuiBase {
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton)
 			throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		for (IGuiElement e : elementList) {
+		for (GuiElement e : elementList) {
 			if (e.mousePressed(mc, mouseX, mouseY)) {
 				elementClicked(e, mouseButton);
 			}
 		}
 	}
 
-	protected void elementClicked(IGuiElement element, int mouseButton)
+	@Override
+	protected void mouseReleased(int mouseX, int mouseY, int state) {
+		super.mouseReleased(mouseX, mouseY, state);
+		for (GuiElement e : elementList) {
+			if (e.mouseReleased(mc, mouseX, mouseY)) {
+				elementReleased(e, state);
+			}
+		}
+	}
+
+	@Override
+	public void handleMouseInput() throws IOException {
+		super.handleMouseInput();
+		for (GuiElement e : elementList) {
+			e.handleMouseInput();
+		}
+	}
+
+	protected void elementReleased(GuiElement e, int state) {
+		
+	}
+
+	protected void elementClicked(GuiElement element, int mouseButton)
 			throws IOException {
 	}
+	
+	protected void elementMouseInput(GuiElement element, int mouseButton)
+			throws IOException {
+	}
+	
 
 
 	@Override

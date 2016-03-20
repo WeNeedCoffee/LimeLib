@@ -9,28 +9,19 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 
-public class GuiToolTip extends Gui implements IGuiElement {
+public class GuiToolTip extends GuiElement {
+
 	public List<String> text;
 	public ItemStack stack;
-	public int x, y, id, width, height;
-	public boolean visible;
+	public int width, height;
 
-	public GuiToolTip(int id, int x, int y, int width, int height,
-			List<String> text, ItemStack stack) {
-		super();
+	public GuiToolTip(int id, int x, int y, int width, int height,List<String> text, ItemStack stack
+			) {
+		super(id, x, y);
 		this.text = text;
-		this.x = x;
-		this.y = y;
-		this.id = id;
+		this.stack = stack;
 		this.width = width;
 		this.height = height;
-		this.stack = stack;
-		this.visible = true;
-	}
-
-	@Override
-	public void drawBackground(Minecraft mc, int mouseX, int mouseY) {
-
 	}
 
 	@Override
@@ -49,11 +40,6 @@ public class GuiToolTip extends Gui implements IGuiElement {
 		GlStateManager.popMatrix();
 		GlStateManager.enableLighting();
 
-	}
-
-	@Override
-	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-		return false;
 	}
 
 }

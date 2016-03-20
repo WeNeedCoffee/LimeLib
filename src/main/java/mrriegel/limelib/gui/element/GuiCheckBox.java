@@ -5,18 +5,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-public class GuiCheckBox extends Gui implements IGuiElement{
+public class GuiCheckBox extends GuiElement {
+
 	public boolean check;
-	public int x, y, id;
-	public boolean visible;
-	protected boolean hovered;
 
 	public GuiCheckBox(int id, int x, int y, boolean check) {
-		super();
-		this.id = id;
-		this.x = x;
-		this.y = y;
-		this.visible = true;
+		super(id, x, y);
 		this.check = check;
 	}
 
@@ -26,15 +20,9 @@ public class GuiCheckBox extends Gui implements IGuiElement{
 		mc.getTextureManager().bindTexture(GuiHelper.icons);
 		this.hovered = mouseX >= this.x && mouseY >= this.y
 				&& mouseX < this.x + 13 && mouseY < this.y + 13;
-		this.drawTexturedModalRect(this.x, this.y, 0,
-				42, 13, 13);
-		if(check)
-			this.drawTexturedModalRect(this.x, this.y, 13,
-					42, 13, 13);
-	}
-
-	public boolean isMouseOver() {
-		return this.hovered;
+		this.drawTexturedModalRect(this.x, this.y, 0, 42, 13, 13);
+		if (check)
+			this.drawTexturedModalRect(this.x, this.y, 13, 42, 13, 13);
 	}
 
 	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
@@ -44,6 +32,7 @@ public class GuiCheckBox extends Gui implements IGuiElement{
 	}
 
 	@Override
-	public void drawForeground(Minecraft mc, int mouseX, int mouseY) {
+	public boolean mouseReleased(Minecraft mc, int mouseX, int mouseY) {
+		return mousePressed(mc, mouseX, mouseY);
 	}
 }

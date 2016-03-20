@@ -11,24 +11,18 @@ import net.minecraft.client.renderer.RenderHelper;
 
 import org.lwjgl.input.Keyboard;
 
-public class GuiSlot extends Gui implements IGuiElement {
+public class GuiSlot extends GuiElement {
+
 	public StackWrapper stack;
-	public int x, y, id;
 	private boolean smallFont, toolTip;
-	public boolean visible;
 	public boolean square;
 	public boolean number;
-	protected boolean hovered;
 
 	public GuiSlot(int id, int x, int y, StackWrapper stack, boolean smallFont,
-			boolean toolTip, boolean number, boolean square) {
-		super();
-		this.id = id;
-		this.x = x;
-		this.y = y;
-		this.smallFont = smallFont;
+			boolean toolTip, boolean square, boolean number) {
+		super(id, x, y);
 		this.stack = stack;
-		this.visible = true;
+		this.smallFont = smallFont;
 		this.toolTip = toolTip;
 		this.square = square;
 		this.number = number;
@@ -69,10 +63,6 @@ public class GuiSlot extends Gui implements IGuiElement {
 		}
 	}
 
-	public boolean isMouseOver() {
-		return this.hovered;
-	}
-
 	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
 		return this.visible && this.hovered;
 	}
@@ -89,12 +79,13 @@ public class GuiSlot extends Gui implements IGuiElement {
 						Arrays.asList(new String[] { "Amount: "
 								+ String.valueOf(stack.getSize()) }), mouseX,
 						mouseY, mc.fontRendererObj);
-			GlStateManager.enableLighting();
-			RenderHelper.disableStandardItemLighting();
-			GlStateManager.disableLighting();
-			GlStateManager.disableDepth();
 			GlStateManager.popMatrix();
 
 		}
+	}
+
+	@Override
+	public boolean mouseReleased(Minecraft mc, int mouseX, int mouseY) {
+		return this.visible && this.hovered;
 	}
 }

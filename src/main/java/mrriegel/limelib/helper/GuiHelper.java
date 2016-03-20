@@ -203,6 +203,7 @@ public class GuiHelper {
 			GlStateManager.enableDepth();
 			RenderHelper.enableStandardItemLighting();
 			GlStateManager.enableRescaleNormal();
+			RenderHelper.disableStandardItemLighting();
 		}
 	}
 
