@@ -1,8 +1,10 @@
-package mrriegel.limelib.gui;
+package mrriegel.limelib.gui.element;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 
-public class GuiLabel {
+public class GuiLabel extends Gui implements IGuiElement{
 	public String string;
 	public int x, y, id, color;
 	public boolean visible;
@@ -21,7 +23,7 @@ public class GuiLabel {
 		this.shadow = shadow;
 	}
 
-	public void drawString(Minecraft mc, int mouseX, int mouseY) {
+	public void drawBackground(Minecraft mc, int mouseX, int mouseY) {
 		if (!visible)
 			return;
 		string = string.trim();
@@ -30,6 +32,7 @@ public class GuiLabel {
 				&& mouseY < this.y + mc.fontRendererObj.FONT_HEIGHT;
 		mc.fontRendererObj.drawString(string, x, y, color
 				+ (hovered ? 0x222200 : 0), shadow);
+		GlStateManager.color(1f, 1f, 1f, 1f);
 	}
 
 	public boolean isMouseOver() {
@@ -38,5 +41,10 @@ public class GuiLabel {
 
 	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
 		return this.visible && this.hovered;
+	}
+
+	@Override
+	public void drawForeground(Minecraft mc, int mouseX, int mouseY) {
+		
 	}
 }

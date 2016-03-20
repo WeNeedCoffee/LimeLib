@@ -32,7 +32,8 @@ public class BlockHelper {
 	}
 
 	public static boolean isGeneralValuableBlock(Block block) {
-		Block[] blocks = new Block[] { Blocks.dirt, Blocks.stone, Blocks.grass,
+		Block[] blocks = new Block[] { Blocks.leaves, Blocks.leaves2,
+				Blocks.air, Blocks.dirt, Blocks.stone, Blocks.grass,
 				Blocks.sand, Blocks.sandstone, Blocks.cobblestone,
 				Blocks.mycelium, Blocks.gravel, Blocks.planks,
 				Blocks.netherrack, Blocks.soul_sand, Blocks.end_stone,

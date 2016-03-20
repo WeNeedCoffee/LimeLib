@@ -1,4 +1,4 @@
-package mrriegel.limelib.gui;
+package mrriegel.limelib.gui.element;
 
 import java.util.Arrays;
 
@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.RenderHelper;
 
 import org.lwjgl.input.Keyboard;
 
-public class GuiSlot extends Gui {
+public class GuiSlot extends Gui implements IGuiElement {
 	public StackWrapper stack;
 	public int x, y, id;
 	private boolean smallFont, toolTip;
@@ -34,7 +34,7 @@ public class GuiSlot extends Gui {
 		this.number = number;
 	}
 
-	public void drawSlot(Minecraft mc, int mouseX, int mouseY) {
+	public void drawBackground(Minecraft mc, int mouseX, int mouseY) {
 		if (!visible)
 			return;
 		RenderHelper.enableGUIStandardItemLighting();
@@ -73,7 +73,12 @@ public class GuiSlot extends Gui {
 		return this.hovered;
 	}
 
-	public void drawTooltip(Minecraft mc, int mouseX, int mouseY) {
+	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
+		return this.visible && this.hovered;
+	}
+
+	@Override
+	public void drawForeground(Minecraft mc, int mouseX, int mouseY) {
 		if (this.hovered && this.toolTip) {
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
@@ -84,12 +89,12 @@ public class GuiSlot extends Gui {
 						Arrays.asList(new String[] { "Amount: "
 								+ String.valueOf(stack.getSize()) }), mouseX,
 						mouseY, mc.fontRendererObj);
-			GlStateManager.popMatrix();
 			GlStateManager.enableLighting();
-		}
-	}
+			RenderHelper.disableStandardItemLighting();
+			GlStateManager.disableLighting();
+			GlStateManager.disableDepth();
+			GlStateManager.popMatrix();
 
-	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-		return this.visible && this.hovered;
+		}
 	}
 }

@@ -15,10 +15,16 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
 
 public class GuiHelper {
+	public enum Direction{
+		up,right,down,left
+	}
+	public static ResourceLocation icons = new ResourceLocation(
+			"limelib:textures/gui/icons.png");
 	private static final Minecraft mc = Minecraft.getMinecraft();
 
 	public static void drawItemStack(ItemStack stack, int x, int y,
@@ -103,14 +109,12 @@ public class GuiHelper {
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 		worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-		worldrenderer.pos(right, top, zLevel)
-				.color(f1, f2, f3, f).endVertex();
-		worldrenderer.pos(left, top, zLevel)
-				.color(f1, f2, f3, f).endVertex();
-		worldrenderer.pos(left, bottom, zLevel)
-				.color(f5, f6, f7, f4).endVertex();
-		worldrenderer.pos(right, bottom, zLevel)
-				.color(f5, f6, f7, f4).endVertex();
+		worldrenderer.pos(right, top, zLevel).color(f1, f2, f3, f).endVertex();
+		worldrenderer.pos(left, top, zLevel).color(f1, f2, f3, f).endVertex();
+		worldrenderer.pos(left, bottom, zLevel).color(f5, f6, f7, f4)
+				.endVertex();
+		worldrenderer.pos(right, bottom, zLevel).color(f5, f6, f7, f4)
+				.endVertex();
 		tessellator.draw();
 		GlStateManager.shadeModel(7424);
 		GlStateManager.disableBlend();
@@ -208,8 +212,7 @@ public class GuiHelper {
 
 		for (int i = 0; i < list.size(); ++i) {
 			if (i == 0) {
-				list.set(i,
-						stack.getRarity().rarityColor + list.get(i));
+				list.set(i, stack.getRarity().rarityColor + list.get(i));
 			} else {
 				list.set(i, EnumChatFormatting.GRAY + list.get(i));
 			}
@@ -217,5 +220,13 @@ public class GuiHelper {
 
 		FontRenderer font = stack.getItem().getFontRenderer(stack);
 		drawHoveringText(list, x, y, (font == null ? mc.fontRendererObj : font));
+	}
+
+	public static void color(int color) {
+		if (((color >> 24) & 0xFF) == 0) 
+			color |= 0xFF << 24;
+		GlStateManager.color((color >> 16 & 255) / 255.0F,
+				(color >> 8 & 255) / 255.0F, (color & 255) / 255.0F,
+				(color >> 24 & 255) / 255.0F);
 	}
 }

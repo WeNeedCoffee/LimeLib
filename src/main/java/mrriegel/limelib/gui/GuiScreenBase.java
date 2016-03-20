@@ -3,6 +3,7 @@ package mrriegel.limelib.gui;
 import java.io.IOException;
 import java.util.List;
 
+import mrriegel.limelib.gui.element.IGuiElement;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -15,8 +16,7 @@ public class GuiScreenBase extends GuiScreen implements IGuiBase {
 	public int guiLeft;
 	public int guiTop;
 
-	protected List<GuiSlot> slotList = Lists.<GuiSlot> newArrayList();
-	protected List<GuiLabel> labelList = Lists.<GuiLabel> newArrayList();
+	protected List<IGuiElement> elementList = Lists.<IGuiElement> newArrayList();
 
 	public GuiScreenBase(int xSize, int ySize) {
 		super();
@@ -28,11 +28,8 @@ public class GuiScreenBase extends GuiScreen implements IGuiBase {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawGuiBackgroundLayer(partialTicks, mouseX, mouseY);
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		for (GuiLabel l : labelList) {
-			l.drawString(mc, mouseX, mouseY);
-		}
-		for (GuiSlot s : slotList) {
-			s.drawSlot(mc, mouseX, mouseY);
+		for (IGuiElement e : elementList) {
+			e.drawBackground(mc, mouseX, mouseY);
 		}
 		GlStateManager.disableRescaleNormal();
 		RenderHelper.disableStandardItemLighting();
@@ -44,8 +41,8 @@ public class GuiScreenBase extends GuiScreen implements IGuiBase {
 		GlStateManager.enableRescaleNormal();
 		drawGuiForegroundLayer(mouseX, mouseY);
 		GlStateManager.popMatrix();
-		for (GuiSlot s : slotList) {
-			s.drawTooltip(mc, mouseX, mouseY);
+		for (IGuiElement e : elementList) {
+			e.drawForeground(mc, mouseX, mouseY);
 		}
 
 	}
@@ -66,8 +63,7 @@ public class GuiScreenBase extends GuiScreen implements IGuiBase {
 	@Override
 	public void initGui() {
 		super.initGui();
-		slotList = Lists.<GuiSlot> newArrayList();
-		labelList = Lists.<GuiLabel> newArrayList();
+		elementList=Lists.newArrayList();
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
 	}
@@ -106,25 +102,17 @@ public class GuiScreenBase extends GuiScreen implements IGuiBase {
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton)
 			throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		for (GuiSlot s : slotList) {
-			if (s.mousePressed(mc, mouseX, mouseY)) {
-				slotClicked(s, mouseButton);
-			}
-		}
-		for (GuiLabel s : labelList) {
-			if (s.mousePressed(mc, mouseX, mouseY)) {
-				labelClicked(s, mouseButton);
+		for (IGuiElement e : elementList) {
+			if (e.mousePressed(mc, mouseX, mouseY)) {
+				elementClicked(e, mouseButton);
 			}
 		}
 	}
 
-	protected void slotClicked(GuiSlot slot, int mouseButton)
+	protected void elementClicked(IGuiElement element, int mouseButton)
 			throws IOException {
 	}
 
-	protected void labelClicked(GuiLabel label, int mouseButton)
-			throws IOException {
-	}
 
 	@Override
 	public boolean doesGuiPauseGame() {

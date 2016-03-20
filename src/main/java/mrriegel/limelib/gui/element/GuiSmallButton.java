@@ -1,5 +1,6 @@
-package mrriegel.limelib.gui;
+package mrriegel.limelib.gui.element;
 
+import mrriegel.limelib.helper.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -12,9 +13,6 @@ public class GuiSmallButton extends GuiButton {
 
 	int color = 0xFFFFFF;
 
-	private ResourceLocation texture = new ResourceLocation(
-			"limelib:textures/gui/icons.png");
-
 	public GuiSmallButton(int buttonId, int x, int y, int widthIn,
 			String buttonText, int color) {
 		super(buttonId, x, y, widthIn, 14, buttonText);
@@ -25,9 +23,8 @@ public class GuiSmallButton extends GuiButton {
 	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
 		if (this.visible) {
 			FontRenderer fontrenderer = mc.fontRendererObj;
-			mc.getTextureManager().bindTexture(texture);
-			GlStateManager.color((color >> 16 & 255) / 255.0F,
-					(color >> 8 & 255) / 255.0F, (color & 255) / 255.0F, 1.0F);
+			mc.getTextureManager().bindTexture(GuiHelper.icons);
+			GuiHelper.color(color);
 			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition
 					&& mouseX < this.xPosition + this.width
 					&& mouseY < this.yPosition + this.height;
@@ -38,16 +35,13 @@ public class GuiSmallButton extends GuiButton {
 			this.drawTexturedModalRect(this.xPosition, this.yPosition, 0,
 					0 + i * 14, this.width, this.height);
 			this.mouseDragged(mc, mouseX, mouseY);
-			int j = 14737632;
+			int j = 0xC2C2c2;
 
-			if (packedFGColour != 0) {
-				j = packedFGColour;
-			} else if (!this.enabled) {
-				j = 10526880;
+			if (!this.enabled) {
+				j = 0x575757;
 			} else if (this.hovered) {
 				j -= 0x222200;
 			}
-
 			this.drawCenteredString(fontrenderer, this.displayString,
 					this.xPosition + this.width / 2, this.yPosition
 							+ (this.height - 9) / 2, j);

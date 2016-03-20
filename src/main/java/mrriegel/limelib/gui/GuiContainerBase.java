@@ -3,6 +3,8 @@ package mrriegel.limelib.gui;
 import java.io.IOException;
 import java.util.List;
 
+import mrriegel.limelib.gui.element.GuiLabel;
+import mrriegel.limelib.gui.element.GuiSlot;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
