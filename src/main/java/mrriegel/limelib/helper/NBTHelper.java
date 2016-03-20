@@ -27,9 +27,12 @@ public class NBTHelper {
 	}
 
 	// list
-	public static NBTTagList getList(ItemStack stack, String tag, int objtype, boolean nullifyOnFail) {
+	public static NBTTagList getList(ItemStack stack, String tag, int objtype,
+			boolean nullifyOnFail) {
 		initNBTTagCompound(stack);
-		return hasTag(stack.getTagCompound(), tag) ? stack.getTagCompound().getTagList(tag, objtype) : nullifyOnFail ? null : new NBTTagList();
+		return hasTag(stack.getTagCompound(), tag) ? stack.getTagCompound()
+				.getTagList(tag, objtype) : nullifyOnFail ? null
+				: new NBTTagList();
 	}
 
 	public static void setList(ItemStack stack, String tag, NBTTagList list) {
@@ -62,7 +65,8 @@ public class NBTHelper {
 		return stack.getTagCompound().getString(keyName);
 	}
 
-	public static void setString(ItemStack stack, String keyName, String keyValue) {
+	public static void setString(ItemStack stack, String keyName,
+			String keyValue) {
 		initNBTTagCompound(stack);
 		if (keyValue != null)
 			stack.getTagCompound().setString(keyName, keyValue);
@@ -79,7 +83,8 @@ public class NBTHelper {
 		return stack.getTagCompound().getBoolean(keyName);
 	}
 
-	public static void setBoolean(ItemStack stack, String keyName, boolean keyValue) {
+	public static void setBoolean(ItemStack stack, String keyName,
+			boolean keyValue) {
 		initNBTTagCompound(stack);
 
 		stack.getTagCompound().setBoolean(keyName, keyValue);
@@ -181,7 +186,8 @@ public class NBTHelper {
 		return stack.getTagCompound().getDouble(keyName);
 	}
 
-	public static void setDouble(ItemStack stack, String keyName, double keyValue) {
+	public static void setDouble(ItemStack stack, String keyName,
+			double keyValue) {
 		initNBTTagCompound(stack);
 
 		stack.getTagCompound().setDouble(keyName, keyValue);
@@ -194,12 +200,14 @@ public class NBTHelper {
 		if (!stack.getTagCompound().hasKey(keyName)) {
 			setItemStack(stack, keyName, null);
 		}
-		NBTTagCompound res = (NBTTagCompound) stack.getTagCompound().getTag(keyName);
+		NBTTagCompound res = (NBTTagCompound) stack.getTagCompound().getTag(
+				keyName);
 		return ItemStack.loadItemStackFromNBT(res);
 
 	}
 
-	public static void setItemStack(ItemStack stack, String keyName, ItemStack keyValue) {
+	public static void setItemStack(ItemStack stack, String keyName,
+			ItemStack keyValue) {
 		initNBTTagCompound(stack);
 		NBTTagCompound res = new NBTTagCompound();
 		if (keyValue != null) {
@@ -210,7 +218,8 @@ public class NBTHelper {
 	}
 
 	// enum
-	public static <E extends Enum<E>> E getEnum(ItemStack stack, String keyName, Class<E> clazz) {
+	public static <E extends Enum<E>> E getEnum(ItemStack stack,
+			String keyName, Class<E> clazz) {
 		initNBTTagCompound(stack);
 
 		if (!stack.getTagCompound().hasKey(keyName)) {
@@ -225,7 +234,8 @@ public class NBTHelper {
 
 	}
 
-	public static <E extends Enum<E>> void setEnum(ItemStack stack, String keyName, E keyValue) {
+	public static <E extends Enum<E>> void setEnum(ItemStack stack,
+			String keyName, E keyValue) {
 		initNBTTagCompound(stack);
 		if (keyValue != null)
 			stack.getTagCompound().setString(keyName, keyValue.toString());
@@ -242,7 +252,8 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setStringList(ItemStack stack, String keyName, List<String> keyValue) {
+	public static void setStringList(ItemStack stack, String keyName,
+			List<String> keyValue) {
 		initNBTTagCompound(stack);
 		if (keyValue != null) {
 			setInteger(stack, keyName + "Size", keyValue.size());
@@ -265,7 +276,8 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setBooleanList(ItemStack stack, String keyName, List<Boolean> keyValue) {
+	public static void setBooleanList(ItemStack stack, String keyName,
+			List<Boolean> keyValue) {
 		initNBTTagCompound(stack);
 		if (keyValue != null) {
 			setInteger(stack, keyName + "Size", keyValue.size());
@@ -288,7 +300,8 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setIntegerList(ItemStack stack, String keyName, List<Integer> keyValue) {
+	public static void setIntegerList(ItemStack stack, String keyName,
+			List<Integer> keyValue) {
 		initNBTTagCompound(stack);
 		if (keyValue != null) {
 			setInteger(stack, keyName + "Size", keyValue.size());
@@ -311,7 +324,8 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setDoubleList(ItemStack stack, String keyName, List<Double> keyValue) {
+	public static void setDoubleList(ItemStack stack, String keyName,
+			List<Double> keyValue) {
 		initNBTTagCompound(stack);
 		if (keyValue != null) {
 			setInteger(stack, keyName + "Size", keyValue.size());
@@ -324,7 +338,8 @@ public class NBTHelper {
 	}
 
 	// Stacklist
-	public static List<ItemStack> getItemStackList(ItemStack stack, String keyName) {
+	public static List<ItemStack> getItemStackList(ItemStack stack,
+			String keyName) {
 		initNBTTagCompound(stack);
 		ArrayList<ItemStack> lis = new ArrayList<ItemStack>();
 		int size = getInteger(stack, keyName + "Size");
@@ -333,7 +348,8 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setItemStackList(ItemStack stack, String keyName, List<ItemStack> keyValue) {
+	public static void setItemStackList(ItemStack stack, String keyName,
+			List<ItemStack> keyValue) {
 		initNBTTagCompound(stack);
 		if (keyValue != null) {
 			setInteger(stack, keyName + "Size", keyValue.size());
@@ -342,7 +358,8 @@ public class NBTHelper {
 				if (s != null)
 					setItemStack(stack, keyName + ":" + i, s);
 				else
-					setItemStack(stack, keyName + ":" + i, new ItemStack((Item)null));
+					setItemStack(stack, keyName + ":" + i, new ItemStack(
+							(Item) null));
 			}
 		}
 	}

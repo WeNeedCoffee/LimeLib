@@ -3,19 +3,21 @@ package mrriegel.limelib.gui;
 import java.io.IOException;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
+
+import com.google.common.collect.Lists;
 
 public class GuiContainerBase extends GuiContainer implements IGuiBase {
 
 	protected List<GuiSlot> slotList = Lists.<GuiSlot> newArrayList();
 	protected List<GuiLabel> labelList = Lists.<GuiLabel> newArrayList();
 
-	public GuiContainerBase(Container inventorySlotsIn) {
+	public GuiContainerBase(Container inventorySlotsIn, int xSize, int ySize) {
 		super(inventorySlotsIn);
+		this.xSize = xSize;
+		this.ySize = ySize;
 	}
 
 	@Override

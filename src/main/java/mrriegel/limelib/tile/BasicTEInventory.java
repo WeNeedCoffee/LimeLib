@@ -5,9 +5,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityBeacon;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.IChatComponent;
 
 public abstract class BasicTEInventory extends BasicTE implements IInventory {
@@ -98,9 +95,9 @@ public abstract class BasicTEInventory extends BasicTE implements IInventory {
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer player) {
 		return this.worldObj.getTileEntity(this.pos) != this ? false : player
-				.getDistanceSq((double) this.pos.getX() + 0.5D,
-						(double) this.pos.getY() + 0.5D,
-						(double) this.pos.getZ() + 0.5D) <= 64.0D;
+				.getDistanceSq(this.pos.getX() + 0.5D,
+						this.pos.getY() + 0.5D,
+						this.pos.getZ() + 0.5D) <= 64.0D;
 	}
 
 	@Override

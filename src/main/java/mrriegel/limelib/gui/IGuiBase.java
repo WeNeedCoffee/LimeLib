@@ -1,7 +1,5 @@
 package mrriegel.limelib.gui;
 
-import net.minecraft.block.BlockHopper;
-import net.minecraft.tileentity.TileEntityHopper;
 
 public interface IGuiBase {
 	public int getGuiLeft();

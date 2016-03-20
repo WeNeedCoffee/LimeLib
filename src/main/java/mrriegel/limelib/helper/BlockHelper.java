@@ -1,21 +1,12 @@
 package mrriegel.limelib.helper;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-import com.sun.jna.platform.win32.WinDef.HDC;
-
-import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -25,8 +16,9 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.oredict.OreDictionary;
+
+import com.google.common.collect.Lists;
 
 public class BlockHelper {
 	public static boolean isOreInDictionary(Block block) {
@@ -83,7 +75,7 @@ public class BlockHelper {
 			state.getBlock().dropXpOnBlockBreak(world, pos, b.getExpToDrop());
 			world.playAuxSFXAtEntity(player, 2001, pos, 0);
 			world.setBlockToAir(pos);
-			if(world.getTileEntity(pos)!=null)
+			if (world.getTileEntity(pos) != null)
 				world.removeTileEntity(pos);
 			return true;
 		}
@@ -123,7 +115,7 @@ public class BlockHelper {
 			}
 			world.playAuxSFXAtEntity(player, 2001, pos, 0);
 			world.setBlockToAir(pos);
-			if(world.getTileEntity(pos)!=null)
+			if (world.getTileEntity(pos) != null)
 				world.removeTileEntity(pos);
 			return true;
 		}
@@ -162,7 +154,7 @@ public class BlockHelper {
 			state.getBlock().dropXpOnBlockBreak(world, pos, b.getExpToDrop());
 			world.playAuxSFXAtEntity(player, 2001, pos, 0);
 			world.setBlockToAir(pos);
-			if(world.getTileEntity(pos)!=null)
+			if (world.getTileEntity(pos) != null)
 				world.removeTileEntity(pos);
 			return lis;
 		}
@@ -203,7 +195,7 @@ public class BlockHelper {
 			}
 			world.playAuxSFXAtEntity(player, 2001, pos, 0);
 			world.setBlockToAir(pos);
-			if(world.getTileEntity(pos)!=null)
+			if (world.getTileEntity(pos) != null)
 				world.removeTileEntity(pos);
 			return lis;
 		}

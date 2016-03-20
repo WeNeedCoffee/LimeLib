@@ -12,7 +12,7 @@ public class StackHelper {
 		s.stackSize = Math.min(num, s.getMaxStackSize());
 		return s;
 	}
-	
+
 	public static boolean equalOreDict(ItemStack a, ItemStack b) {
 		int[] ar = OreDictionary.getOreIDs(a);
 		int[] br = OreDictionary.getOreIDs(b);
@@ -22,7 +22,7 @@ public class StackHelper {
 					return true;
 		return false;
 	}
-	
+
 	public static FluidStack getFluid(ItemStack s) {
 		if (s == null || s.getItem() == null)
 			return null;

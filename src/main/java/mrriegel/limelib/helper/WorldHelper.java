@@ -15,20 +15,20 @@ public class WorldHelper {
 				&& worldIn.getGameRules().getBoolean("doTileDrops")
 				&& !worldIn.restoringBlockSnapshots) {
 			float f = 0.5F;
-			double d0 = (double) (worldIn.rand.nextFloat() * f)
-					+ (double) (1.0F - f) * 0.5D;
-			double d1 = (double) (worldIn.rand.nextFloat() * f)
-					+ (double) (1.0F - f) * 0.5D;
-			double d2 = (double) (worldIn.rand.nextFloat() * f)
-					+ (double) (1.0F - f) * 0.5D;
-			EntityItem entityitem = new EntityItem(worldIn, (double) pos.getX()
-					+ d0, (double) pos.getY() + d1, (double) pos.getZ() + d2,
+			double d0 = worldIn.rand.nextFloat() * f
+					+ (1.0F - f) * 0.5D;
+			double d1 = worldIn.rand.nextFloat() * f
+					+ (1.0F - f) * 0.5D;
+			double d2 = worldIn.rand.nextFloat() * f
+					+ (1.0F - f) * 0.5D;
+			EntityItem entityitem = new EntityItem(worldIn, pos.getX()
+					+ d0, pos.getY() + d1, pos.getZ() + d2,
 					stack);
 			entityitem.setDefaultPickupDelay();
 			worldIn.spawnEntityInWorld(entityitem);
 		}
 	}
-	
+
 	public static List<BlockPos> getNeighbors(BlockPos pos) {
 		List<BlockPos> lis = new ArrayList<BlockPos>();
 		lis.add(pos.up());

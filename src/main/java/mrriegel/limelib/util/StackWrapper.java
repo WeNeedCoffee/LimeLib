@@ -9,7 +9,7 @@ public class StackWrapper {
 
 	public StackWrapper(ItemStack stack, int size) {
 		super();
-		if(stack==null)
+		if (stack == null)
 			throw new NullPointerException();
 		this.stack = stack;
 		this.size = size;
@@ -39,7 +39,8 @@ public class StackWrapper {
 		if (!(obj instanceof StackWrapper))
 			return false;
 		StackWrapper o = (StackWrapper) obj;
-		return o.stack.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(o.stack, stack);
+		return o.stack.isItemEqual(stack)
+				&& ItemStack.areItemStackTagsEqual(o.stack, stack);
 	}
 
 	public ItemStack getStack() {
@@ -47,7 +48,7 @@ public class StackWrapper {
 	}
 
 	public void setStack(ItemStack stack) {
-		if(stack==null)
+		if (stack == null)
 			throw new NullPointerException();
 		this.stack = stack;
 	}
@@ -67,7 +68,8 @@ public class StackWrapper {
 	public static StackWrapper loadStackWrapperFromNBT(NBTTagCompound nbt) {
 		StackWrapper wrap = new StackWrapper(null, 0);
 		wrap.readFromNBT(nbt);
-		return wrap.getStack() != null && wrap.getStack().getItem() != null ? wrap : null;
+		return wrap.getStack() != null && wrap.getStack().getItem() != null ? wrap
+				: null;
 	}
 
 }

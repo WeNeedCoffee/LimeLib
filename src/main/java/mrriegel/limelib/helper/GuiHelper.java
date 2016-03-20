@@ -8,7 +8,6 @@ import mrriegel.limelib.util.StackWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -88,14 +87,14 @@ public class GuiHelper {
 
 	public static void drawGradientRect(int left, int top, int right,
 			int bottom, int startColor, int endColor, float zLevel) {
-		float f = (float) (startColor >> 24 & 255) / 255.0F;
-		float f1 = (float) (startColor >> 16 & 255) / 255.0F;
-		float f2 = (float) (startColor >> 8 & 255) / 255.0F;
-		float f3 = (float) (startColor & 255) / 255.0F;
-		float f4 = (float) (endColor >> 24 & 255) / 255.0F;
-		float f5 = (float) (endColor >> 16 & 255) / 255.0F;
-		float f6 = (float) (endColor >> 8 & 255) / 255.0F;
-		float f7 = (float) (endColor & 255) / 255.0F;
+		float f = (startColor >> 24 & 255) / 255.0F;
+		float f1 = (startColor >> 16 & 255) / 255.0F;
+		float f2 = (startColor >> 8 & 255) / 255.0F;
+		float f3 = (startColor & 255) / 255.0F;
+		float f4 = (endColor >> 24 & 255) / 255.0F;
+		float f5 = (endColor >> 16 & 255) / 255.0F;
+		float f6 = (endColor >> 8 & 255) / 255.0F;
+		float f7 = (endColor & 255) / 255.0F;
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlpha();
@@ -104,13 +103,13 @@ public class GuiHelper {
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 		worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-		worldrenderer.pos((double) right, (double) top, (double) zLevel)
+		worldrenderer.pos(right, top, zLevel)
 				.color(f1, f2, f3, f).endVertex();
-		worldrenderer.pos((double) left, (double) top, (double) zLevel)
+		worldrenderer.pos(left, top, zLevel)
 				.color(f1, f2, f3, f).endVertex();
-		worldrenderer.pos((double) left, (double) bottom, (double) zLevel)
+		worldrenderer.pos(left, bottom, zLevel)
 				.color(f5, f6, f7, f4).endVertex();
-		worldrenderer.pos((double) right, (double) bottom, (double) zLevel)
+		worldrenderer.pos(right, bottom, zLevel)
 				.color(f5, f6, f7, f4).endVertex();
 		tessellator.draw();
 		GlStateManager.shadeModel(7424);
@@ -185,8 +184,8 @@ public class GuiHelper {
 					j1, zLevel);
 
 			for (int k1 = 0; k1 < textLines.size(); ++k1) {
-				String s1 = (String) textLines.get(k1);
-				font.drawStringWithShadow(s1, (float) l1, (float) i2, -1);
+				String s1 = textLines.get(k1);
+				font.drawStringWithShadow(s1, l1, i2, -1);
 
 				if (k1 == 0) {
 					i2 += 2;
@@ -210,9 +209,9 @@ public class GuiHelper {
 		for (int i = 0; i < list.size(); ++i) {
 			if (i == 0) {
 				list.set(i,
-						stack.getRarity().rarityColor + (String) list.get(i));
+						stack.getRarity().rarityColor + list.get(i));
 			} else {
-				list.set(i, EnumChatFormatting.GRAY + (String) list.get(i));
+				list.set(i, EnumChatFormatting.GRAY + list.get(i));
 			}
 		}
 

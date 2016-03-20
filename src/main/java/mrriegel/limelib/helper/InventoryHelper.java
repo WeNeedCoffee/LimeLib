@@ -3,17 +3,13 @@ package mrriegel.limelib.helper;
 import java.util.List;
 
 import mrriegel.limelib.util.FilterItem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
-import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.collect.Lists;
 

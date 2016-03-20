@@ -3,11 +3,11 @@ package mrriegel.limelib.gui;
 import java.io.IOException;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+
+import com.google.common.collect.Lists;
 
 public class GuiScreenBase extends GuiScreen implements IGuiBase {
 	public int xSize;
@@ -39,7 +39,7 @@ public class GuiScreenBase extends GuiScreen implements IGuiBase {
 		GlStateManager.disableLighting();
 		GlStateManager.disableDepth();
 		GlStateManager.pushMatrix();
-		GlStateManager.translate((float) guiLeft, (float) guiTop, 0.0F);
+		GlStateManager.translate(guiLeft, guiTop, 0.0F);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableRescaleNormal();
 		drawGuiForegroundLayer(mouseX, mouseY);

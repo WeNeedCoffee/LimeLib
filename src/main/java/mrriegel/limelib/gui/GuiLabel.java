@@ -1,14 +1,6 @@
 package mrriegel.limelib.gui;
 
-import java.util.Arrays;
-
-import mrriegel.limelib.helper.GuiHelper;
-import mrriegel.limelib.util.StackWrapper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-
-import org.lwjgl.input.Keyboard;
 
 public class GuiLabel {
 	public String string;
@@ -32,11 +24,12 @@ public class GuiLabel {
 	public void drawString(Minecraft mc, int mouseX, int mouseY) {
 		if (!visible)
 			return;
-		string=string.trim();
+		string = string.trim();
 		this.hovered = mouseX >= this.x && mouseY >= this.y
 				&& mouseX < this.x + mc.fontRendererObj.getStringWidth(string)
 				&& mouseY < this.y + mc.fontRendererObj.FONT_HEIGHT;
-		mc.fontRendererObj.drawString(string, x, y, color+(hovered?0x1F1F00:0), shadow);
+		mc.fontRendererObj.drawString(string, x, y, color
+				+ (hovered ? 0x222200 : 0), shadow);
 	}
 
 	public boolean isMouseOver() {
