@@ -15,6 +15,9 @@ public class StackWrapper {
 		this.size = size;
 	}
 
+	private StackWrapper() {
+	}
+
 	public void readFromNBT(NBTTagCompound compound) {
 		NBTTagCompound c = compound.getCompoundTag("stack");
 		stack = ItemStack.loadItemStackFromNBT(c);
@@ -39,8 +42,7 @@ public class StackWrapper {
 		if (!(obj instanceof StackWrapper))
 			return false;
 		StackWrapper o = (StackWrapper) obj;
-		return o.stack.isItemEqual(stack)
-				&& ItemStack.areItemStackTagsEqual(o.stack, stack);
+		return o.stack.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(o.stack, stack);
 	}
 
 	public ItemStack getStack() {
@@ -66,10 +68,9 @@ public class StackWrapper {
 	}
 
 	public static StackWrapper loadStackWrapperFromNBT(NBTTagCompound nbt) {
-		StackWrapper wrap = new StackWrapper(null, 0);
+		StackWrapper wrap = new StackWrapper();
 		wrap.readFromNBT(nbt);
-		return wrap.getStack() != null && wrap.getStack().getItem() != null ? wrap
-				: null;
+		return wrap.getStack() != null && wrap.getStack().getItem() != null ? wrap : null;
 	}
 
 }
