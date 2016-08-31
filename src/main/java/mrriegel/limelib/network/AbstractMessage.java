@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 
 public abstract class AbstractMessage<T extends AbstractMessage<T>> implements IMessage, IMessageHandler<T, IMessage> {
 
@@ -30,7 +31,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 		ByteBufUtils.writeTag(buf, nbt);
 	}
 
-	public abstract void handleMessage(EntityPlayer player, NBTTagCompound nbt);
+	public abstract void handleMessage(EntityPlayer player, NBTTagCompound nbt,Side side);
 
 	// public static class Handler<T extends AbstractMessage<T>> implements
 	// IMessageHandler<T, IMessage> {
@@ -53,11 +54,11 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 	// }
 
 	@Override
-	public IMessage onMessage(final AbstractMessage message, final MessageContext ctx) {
+	public IMessage onMessage(final T message, final MessageContext ctx) {
 		Runnable run = new Runnable() {
 			@Override
 			public void run() {
-				message.handleMessage(ctx.side.isClient() ? Minecraft.getMinecraft().thePlayer : ctx.getServerHandler().playerEntity, message.nbt);
+				message.handleMessage(ctx.side.isClient() ? Minecraft.getMinecraft().thePlayer : ctx.getServerHandler().playerEntity, message.nbt,ctx.side);
 			}
 		};
 		(ctx.side.isClient() ? Minecraft.getMinecraft() : ctx.getServerHandler().playerEntity.getServerWorld()).addScheduledTask(run);

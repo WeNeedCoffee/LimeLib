@@ -5,7 +5,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -113,6 +116,11 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	}
 
 	@Override
+	public ItemStack[] getDroppingItems() {
+		return stacks;
+	}
+
+	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return InvHelper.hasItemHandler(this, facing);
@@ -126,6 +134,35 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 			return (T) InvHelper.getItemHandler(this, facing);
 		}
 		return super.getCapability(capability, facing);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound compound) {
+		super.readFromNBT(compound);
+		NBTTagList nbttaglist = compound.getTagList("Items", 10);
+		this.stacks = new ItemStack[this.getSizeInventory()];
+		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
+			NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+			int j = nbttagcompound.getByte("Slot") & 255;
+			if (j >= 0 && j < this.stacks.length) {
+				this.stacks[j] = ItemStack.loadItemStackFromNBT(nbttagcompound);
+			}
+		}
+	}
+
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		NBTTagList nbttaglist = new NBTTagList();
+		for (int i = 0; i < this.stacks.length; ++i) {
+			if (this.stacks[i] != null) {
+				NBTTagCompound nbttagcompound = new NBTTagCompound();
+				nbttagcompound.setByte("Slot", (byte) i);
+				this.stacks[i].writeToNBT(nbttagcompound);
+				nbttaglist.appendTag(nbttagcompound);
+			}
+		}
+		compound.setTag("Items", nbttaglist);
+		return super.writeToNBT(compound);
 	}
 
 }

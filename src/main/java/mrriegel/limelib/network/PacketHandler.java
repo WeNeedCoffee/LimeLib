@@ -11,15 +11,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class PacketHandler {
+public abstract class PacketHandler {
 
 	public static SimpleNetworkWrapper wrapper;
 
-	public static void register() {
+	public static void register(String name) {
 		int index = 0;
-		ModContainer mc = Loader.instance().activeModContainer();
-		String prefix = mc == null || (mc instanceof InjectedModContainer && ((InjectedModContainer) mc).wrappedContainer instanceof FMLContainer) ? "minecraft" : mc.getModId().toLowerCase();
-		wrapper = new SimpleNetworkWrapper(prefix);
+		wrapper = new SimpleNetworkWrapper(name);
 		wrapper.registerMessage(TestMessage.class, TestMessage.class, index++, Side.CLIENT);
 	}
 

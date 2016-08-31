@@ -4,6 +4,7 @@ import mrriegel.limelib.network.AbstractMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class TestMessage extends AbstractMessage<TestMessage> {
 
@@ -16,8 +17,8 @@ public class TestMessage extends AbstractMessage<TestMessage> {
 	}
 
 	@Override
-	public void handleMessage(EntityPlayer player, NBTTagCompound nbt) {
-		player.addChatComponentMessage(new TextComponentString(nbt.getString("l") + "  " + (player.worldObj.isRemote ? "client" : "server")));
+	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
+		player.addChatComponentMessage(new TextComponentString(nbt.getString("l") + " Side: " + side));
 	}
 
 }

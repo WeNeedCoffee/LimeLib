@@ -9,6 +9,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 public class CommonTile extends TileEntity {
@@ -52,5 +53,9 @@ public class CommonTile extends TileEntity {
 
 	public ItemStack[] getDroppingItems() {
 		return new ItemStack[0];
+	}
+
+	public boolean openGUI(EntityPlayer player) {
+		return false;
 	}
 }
