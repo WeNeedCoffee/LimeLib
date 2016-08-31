@@ -1,14 +1,10 @@
 package mrriegel.limelib.gui.element;
 
-import java.util.Arrays;
-
-import mrriegel.limelib.helper.GuiHelper;
 import mrriegel.limelib.util.StackWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 import org.lwjgl.input.Keyboard;

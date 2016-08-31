@@ -33,12 +33,12 @@ public class CommonBlock extends Block {
 	protected ItemBlock getItemBlock() {
 		return (ItemBlock) new ItemBlock(this).setRegistryName(getRegistryName());
 	}
-	
+
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
 		super.addInformation(stack, playerIn, tooltip, advanced);
-		String trans="tooltip."+getRegistryName();
-		if(I18n.hasKey(trans))
+		String trans = "tooltip." + getRegistryName();
+		if (I18n.hasKey(trans))
 			tooltip.add(I18n.format(trans));
 	}
 

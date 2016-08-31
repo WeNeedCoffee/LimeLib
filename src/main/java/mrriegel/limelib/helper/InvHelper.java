@@ -61,6 +61,8 @@ public class InvHelper {
 	}
 
 	public static boolean contains(IItemHandler inv, ItemStack stack) {
+		if (inv == null || stack == null)
+			return false;
 		for (int i = 0; i < inv.getSlots(); i++) {
 			if (ItemHandlerHelper.canItemStacksStack(inv.getStackInSlot(i), stack)) {
 				return true;
@@ -117,8 +119,12 @@ public class InvHelper {
 		}
 	}
 
-	public static boolean hasFluidHandler(IBlockAccess world, BlockPos pos, EnumFacing facing) {
-		return getFluidHandler(world.getTileEntity(pos), facing) != null;
+	public static boolean hasFluidHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
+		return getFluidHandler(world, pos, side) != null;
+	}
+
+	public static boolean hasFluidHandler(TileEntity tile, EnumFacing facing) {
+		return getFluidHandler(tile, facing) != null;
 	}
 
 	public static IFluidHandler getFluidHandler(TileEntity tile, EnumFacing side) {
@@ -126,33 +132,36 @@ public class InvHelper {
 			return null;
 		if (tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side))
 			return tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side);
-		/*
-		 * if (tile instanceof net.minecraftforge.fluids.IFluidHandler) return
-		 * new FluidHandlerWrapper((net.minecraftforge.fluids.IFluidHandler)
-		 * tile, side);
-		 */
 		return null;
 	}
 
-	public static FluidStack insert(TileEntity tile, FluidStack stack, EnumFacing side) {
-		if (tile == null)
-			return stack;
-		IFluidHandler inv = getFluidHandler(tile, side);
-		return new FluidStack(stack.getFluid(), inv.fill(stack, true));
+	public static IFluidHandler getFluidHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
+		return getFluidHandler(world.getTileEntity(pos), side);
 	}
 
-	public static int canInsert(IFluidHandler inv, FluidStack stack) {
-		if (inv == null || stack == null)
-			return 0;
-		FluidStack s = new FluidStack(stack.getFluid(), inv.fill(stack, false));
-		int rest = s == null ? 0 : s.amount;
-		return stack.amount - rest;
-
-	}
+	// public static FluidStack insert(TileEntity tile, FluidStack stack,
+	// EnumFacing side) {
+	// if (tile == null)
+	// return stack;
+	// IFluidHandler inv = getFluidHandler(tile, side);
+	// inv.fill(stack, true);
+	// return ItemHandlerHelper.insertItemStacked(inv, stack, false);
+	// }
+	//
+	// public static int canInsert(IItemHandler inv, FluidStack stack) {
+	// if (inv == null || stack == null)
+	// return 0;
+	// ItemStack s = ItemHandlerHelper.insertItemStacked(inv, stack, true);
+	// int rest = s == null ? 0 : s.stackSize;
+	// return stack.stackSize - rest;
+	//
+	// }
 
 	public static boolean contains(IFluidHandler inv, FluidStack stack) {
+		if (inv == null || stack == null)
+			return false;
 		for (IFluidTankProperties p : inv.getTankProperties()) {
-			if (p.getContents() != null && p.getContents().isFluidEqual(stack)) {
+			if (stack.isFluidEqual(p.getContents())) {
 				return true;
 			}
 		}
@@ -164,11 +173,45 @@ public class InvHelper {
 			return 0;
 		int amount = 0;
 		for (IFluidTankProperties p : inv.getTankProperties()) {
-			if (p.getContents() != null && p.getContents().isFluidEqual(stack)) {
+			if (stack.isFluidEqual(p.getContents())) {
 				amount += p.getContents().amount;
 			}
 		}
 		return amount;
+	}
+
+	// public static FluidStack extractItem(IFluidHandler inv, FilterItem fil,
+	// int num, boolean simulate) {
+	// if (inv == null || fil == null)
+	// return null;
+	// ItemStack extracted = null;
+	// int missing = num;
+	// for (int i = 0; i < inv.getSlots(); i++) {
+	// ItemStack slot = inv.getStackInSlot(i);
+	// if (fil.match(slot)) {
+	// ItemStack ex = inv.extractItem(i, missing, simulate);
+	// if (ex != null) {
+	// if (extracted == null)
+	// extracted = ex.copy();
+	// else {
+	// if (!ItemHandlerHelper.canItemStacksStack(extracted, ex))
+	// continue;
+	// }
+	// missing -= ex.stackSize;
+	// if (missing == 0)
+	// return ItemHandlerHelper.copyStackWithSize(slot, num);
+	// }
+	// }
+	// }
+	// return null;
+	// }
+
+	public static void clear(IFluidHandler inv) {
+		if (inv == null)
+			return;
+		for (IFluidTankProperties p : inv.getTankProperties()) {
+			inv.drain(Integer.MAX_VALUE, true);
+		}
 	}
 
 }

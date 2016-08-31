@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -53,9 +52,9 @@ public abstract class GuiElement {
 
 		for (int i = 0; i < list.size(); ++i) {
 			if (i == 0) {
-				list.set(i, stack.getRarity().rarityColor + (String) list.get(i));
+				list.set(i, stack.getRarity().rarityColor + list.get(i));
 			} else {
-				list.set(i, TextFormatting.GRAY + (String) list.get(i));
+				list.set(i, TextFormatting.GRAY + list.get(i));
 			}
 		}
 		FontRenderer font = stack.getItem().getFontRenderer(stack);

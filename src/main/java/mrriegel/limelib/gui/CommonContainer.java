@@ -4,15 +4,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -60,9 +57,17 @@ public abstract class CommonContainer extends Container {
 		return new Area(inv, l.get(0), l.get(l.size() - 1));
 	}
 
+	protected List<Slot> getSlotsFor(IInventory inv) {
+		List<Slot> slots = Lists.newArrayList();
+		for (Slot s : inventorySlots)
+			if (s.inventory == inv)
+				slots.add(s);
+		return slots;
+	}
+
 	protected void initPlayerSlots(int x, int y) {
-		setSlots(invPlayer, x, y, 9, 3, 9);
 		setSlots(invPlayer, x, y + 58, 9, 1, 0);
+		setSlots(invPlayer, x, y, 9, 3, 9);
 	}
 
 	protected void setSlots(IInventory inv, int x, int y, int width, int height, int startIndex) {
@@ -73,13 +78,7 @@ public abstract class CommonContainer extends Container {
 				int id = i + k * width + startIndex;
 				if (id >= inv.getSizeInventory())
 					break;
-				this.addSlotToContainer(new Slot(inv, id, x + i * 18, y + k * 18) {
-					@Override
-					public void onSlotChanged() {
-						super.onSlotChanged();
-						inventoryChanged();
-					}
-				});
+				this.addSlotToContainer(new UpdateSlot(inv, id, x + i * 18, y + k * 18));
 			}
 		}
 	}
@@ -97,8 +96,9 @@ public abstract class CommonContainer extends Container {
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
 		ItemStack itemstack = null;
-		Slot slot = (Slot) this.inventorySlots.get(index);
-
+		Slot slot = this.inventorySlots.get(index);
+		if (playerIn.worldObj.isRemote)
+			return null;
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
@@ -114,7 +114,6 @@ public abstract class CommonContainer extends Container {
 				Slot maxSlot = getSlotFromInventory(p.inv, p.max);
 				// while (maxSlot == null && p.max > 0)
 				// minSlot = getSlotFromInventory(p.inv, --p.max);
-				System.out.println(minSlot + " " + maxSlot);
 				if (minSlot == null || maxSlot == null)
 					return null;
 				if (this.mergeItemStack(itemstack1, minSlot.slotNumber, maxSlot.slotNumber + 1, !(slot.inventory instanceof InventoryPlayer))) {
@@ -173,6 +172,19 @@ public abstract class CommonContainer extends Container {
 			this.inv = inv;
 			this.min = min;
 			this.max = max;
+		}
+	}
+
+	protected class UpdateSlot extends Slot {
+
+		public UpdateSlot(IInventory inventoryIn, int index, int xPosition, int yPosition) {
+			super(inventoryIn, index, xPosition, yPosition);
+		}
+
+		@Override
+		public void onSlotChanged() {
+			super.onSlotChanged();
+			inventoryChanged();
 		}
 	}
 

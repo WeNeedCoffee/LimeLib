@@ -10,8 +10,8 @@ public class GuiLabel extends GuiElement {
 	public int color;
 	protected boolean shadow;
 
-	public GuiLabel(GuiScreen parent,int id, int x, int y, String text, int color, boolean shadow) {
-		super(id, x, y,parent);
+	public GuiLabel(GuiScreen parent, int id, int x, int y, String text, int color, boolean shadow) {
+		super(id, x, y, parent);
 		this.text = text;
 		this.color = color;
 		this.shadow = shadow;

@@ -31,7 +31,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 		ByteBufUtils.writeTag(buf, nbt);
 	}
 
-	public abstract void handleMessage(EntityPlayer player, NBTTagCompound nbt,Side side);
+	public abstract void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side);
 
 	// public static class Handler<T extends AbstractMessage<T>> implements
 	// IMessageHandler<T, IMessage> {
@@ -58,7 +58,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 		Runnable run = new Runnable() {
 			@Override
 			public void run() {
-				message.handleMessage(ctx.side.isClient() ? Minecraft.getMinecraft().thePlayer : ctx.getServerHandler().playerEntity, message.nbt,ctx.side);
+				message.handleMessage(ctx.side.isClient() ? Minecraft.getMinecraft().thePlayer : ctx.getServerHandler().playerEntity, message.nbt, ctx.side);
 			}
 		};
 		(ctx.side.isClient() ? Minecraft.getMinecraft() : ctx.getServerHandler().playerEntity.getServerWorld()).addScheduledTask(run);

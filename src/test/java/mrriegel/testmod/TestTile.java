@@ -1,7 +1,7 @@
 package mrriegel.testmod;
 
-import net.minecraft.entity.player.EntityPlayer;
 import mrriegel.limelib.tile.CommonTileInventory;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class TestTile extends CommonTileInventory {
 
