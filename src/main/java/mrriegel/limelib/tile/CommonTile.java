@@ -15,6 +15,11 @@ import net.minecraft.world.World;
 
 public class CommonTile extends TileEntity {
 
+	public CommonTile() {
+		super();
+		PacketHandler.init();
+	}
+
 	@Override
 	public NBTTagCompound getUpdateTag() {
 		return writeToNBT(new NBTTagCompound());
@@ -60,11 +65,12 @@ public class CommonTile extends TileEntity {
 		return false;
 	}
 
-	public void handleMessage(NBTTagCompound nbt) {
+	public void handleMessage(EntityPlayer player, NBTTagCompound nbt) {
 	}
 
-	public void sendMessge(NBTTagCompound nbt) {
+	public final void sendMessge(NBTTagCompound nbt) {
 		nbt.setLong("pos", pos.toLong());
 		PacketHandler.sendToServer(new TileMessage<CommonTile>(nbt));
 	}
+
 }

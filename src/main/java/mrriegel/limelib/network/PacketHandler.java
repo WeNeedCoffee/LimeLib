@@ -16,15 +16,27 @@ public class PacketHandler {
 
 	public static Map<String, SimpleNetworkWrapper> wrappers;
 	public static Map<String, Integer> indices;
+	private static boolean defaultsRegistered = false;
 
 	public static void init() {
-		if (wrappers == null || indices == null) {
+		String modID = Utils.getModID();
+		if (wrappers == null)
 			wrappers = Maps.newHashMap();
-			wrappers.put(Utils.getModID(), new SimpleNetworkWrapper(Utils.getModID()));
+		if (wrappers.get(modID) == null)
+			wrappers.put(modID, new SimpleNetworkWrapper(Utils.getModID()));
+		if (indices == null)
 			indices = Maps.newHashMap();
-			indices.put(Utils.getModID(), new Integer(0));
-			registerMessage(TileMessage.class, Side.SERVER);
-		}
+		if (indices.get(modID) == null)
+			indices.put(modID, new Integer(0));
+		registerDefaults();
+	}
+
+	private static void registerDefaults() {
+		if (defaultsRegistered)
+			return;
+		defaultsRegistered = true;
+		registerMessage(TileMessage.class, Side.SERVER);
+
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage> classMessage, Side side) {
@@ -34,10 +46,11 @@ public class PacketHandler {
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, Side side) {
-		if (wrappers == null || indices == null)
+		String modID = Utils.getModID();
+		if (wrappers == null || indices == null || wrappers.get(modID) == null || indices.get(modID) == null)
 			init();
-		wrappers.get(Utils.getModID()).registerMessage(messageHandler, requestMessageType, indices.get(Utils.getModID()), side);
-		indices.put(Utils.getModID(), indices.get(Utils.getModID()) + 1);
+		wrappers.get(modID).registerMessage(messageHandler, requestMessageType, indices.get(modID), side);
+		indices.put(modID, indices.get(modID) + 1);
 	}
 
 	public static void sendToAll(IMessage message) {

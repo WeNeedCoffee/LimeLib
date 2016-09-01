@@ -10,7 +10,7 @@ public abstract class CommonContainerTile extends CommonContainer {
 		super(invPlayer, InvEntry.of("tile", tile));
 	}
 
-	protected CommonTileInventory getTile() {
+	public CommonTileInventory getTile() {
 		return (CommonTileInventory) invs.get("tile");
 	}
 

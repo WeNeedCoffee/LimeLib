@@ -10,16 +10,16 @@ import net.minecraft.item.ItemStack;
 
 import com.google.common.collect.Lists;
 
-public class ContainerTest extends CommonContainerTile {
+public class TestContainer extends CommonContainerTile {
 
-	public ContainerTest(InventoryPlayer invPlayer, CommonTileInventory tile) {
+	public TestContainer(InventoryPlayer invPlayer, CommonTileInventory tile) {
 		super(invPlayer, tile);
 	}
 
 	@Override
 	protected void initSlots() {
-		initPlayerSlots(20, 0);
-		setSlots(getTile(), 0, 100, 2, 5, 0);
+		initPlayerSlots(20, 100);
+		setSlots(getTile(), 65, 20, 3, 3, 0);
 	}
 
 	@Override

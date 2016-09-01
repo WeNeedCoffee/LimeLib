@@ -3,6 +3,7 @@ package mrriegel.testmod;
 import java.util.Random;
 
 import mrriegel.limelib.block.CommonBlock;
+import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.tile.CommonTileInventory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,9 +33,14 @@ public class TestMod implements IGuiHandler {
 
 	public static final CommonBlock block = new TestBlock();
 
+	public static final CommonItem item = new TestItem();
+
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		block.registerBlock();
+		block.initModel();
+		item.registerItem();
+		item.initModel();
 	}
 
 	@Mod.EventHandler
@@ -63,12 +69,12 @@ public class TestMod implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		return new ContainerTest(player.inventory, (CommonTileInventory) world.getTileEntity(new BlockPos(x, y, z)));
+		return new TestContainer(player.inventory, (CommonTileInventory) world.getTileEntity(new BlockPos(x, y, z)));
 	}
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		return new TestGui(new ContainerTest(player.inventory, (CommonTileInventory) world.getTileEntity(new BlockPos(x, y, z))));
+		return new TestGui(new TestContainer(player.inventory, (CommonTileInventory) world.getTileEntity(new BlockPos(x, y, z))));
 	}
 
 }

@@ -27,7 +27,6 @@ public class CommonItem extends Item {
 
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-		super.addInformation(stack, playerIn, tooltip, advanced);
 		String trans = "tooltip." + getRegistryName();
 		if (I18n.hasKey(trans))
 			tooltip.add(I18n.format(trans));
