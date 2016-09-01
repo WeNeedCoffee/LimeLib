@@ -46,7 +46,6 @@ public class TestMod implements IGuiHandler {
 
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-
 	}
 
 	@SubscribeEvent

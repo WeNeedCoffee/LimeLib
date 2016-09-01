@@ -18,10 +18,13 @@ public class PacketHandler {
 	public static Map<String, Integer> indices;
 
 	public static void init() {
-		wrappers = Maps.newHashMap();
-		wrappers.put(Utils.getModID(), new SimpleNetworkWrapper(Utils.getModID()));
-		indices = Maps.newHashMap();
-		indices.put(Utils.getModID(), new Integer(0));
+		if (wrappers == null || indices == null) {
+			wrappers = Maps.newHashMap();
+			wrappers.put(Utils.getModID(), new SimpleNetworkWrapper(Utils.getModID()));
+			indices = Maps.newHashMap();
+			indices.put(Utils.getModID(), new Integer(0));
+			registerMessage(TileMessage.class, Side.SERVER);
+		}
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage> classMessage, Side side) {

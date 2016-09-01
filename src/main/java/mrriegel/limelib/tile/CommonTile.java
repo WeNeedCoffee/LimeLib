@@ -1,5 +1,7 @@
 package mrriegel.limelib.tile;
 
+import mrriegel.limelib.network.PacketHandler;
+import mrriegel.limelib.network.TileMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -56,5 +58,13 @@ public class CommonTile extends TileEntity {
 
 	public boolean openGUI(EntityPlayer player) {
 		return false;
+	}
+
+	public void handleMessage(NBTTagCompound nbt) {
+	}
+
+	public void sendMessge(NBTTagCompound nbt) {
+		nbt.setLong("pos", pos.toLong());
+		PacketHandler.sendToServer(new TileMessage<CommonTile>(nbt));
 	}
 }
