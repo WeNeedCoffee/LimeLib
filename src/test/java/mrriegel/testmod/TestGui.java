@@ -3,33 +3,23 @@ package mrriegel.testmod;
 import java.io.IOException;
 
 import mrriegel.limelib.gui.CommonContainerTile;
+import mrriegel.limelib.gui.CommonGuiContainer;
+import mrriegel.limelib.gui.GuiButtonColor;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.client.config.GuiButtonExt;
 
-public class TestGui extends GuiContainer {
+public class TestGui extends CommonGuiContainer {
 
 	public TestGui(Container inventorySlotsIn) {
 		super(inventorySlotsIn);
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		// mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		// drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
-	}
-
-	@Override
-	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-	}
-
-	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.add(new GuiButtonExt(44, 0 + guiLeft, 0 + guiTop, 44, 11, "klick"));
+		buttonList.add(new GuiButtonColor(3, 11 + guiLeft, 17 + guiTop, 33, 15, "DUMB", EnumDyeColor.BLUE));
 	}
 
 	@Override

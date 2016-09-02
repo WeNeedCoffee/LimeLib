@@ -2,6 +2,7 @@ package mrriegel.limelib.helper;
 
 import java.util.List;
 
+import mrriegel.limelib.util.Utils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -64,14 +65,11 @@ public class StackHelper {
 	public static List<ItemStack> split(ItemStack stack, int splits) {
 		if (stack == null)
 			return null;
-		List<Integer> ints = Lists.newArrayList();
-		for (int i = 0; i < splits; i++)
-			ints.add(stack.stackSize / splits);
-		for (int i = 0; i < stack.stackSize % splits; i++)
-			ints.set(i, ints.get(i) + 1);
+		List<Integer> ints = Utils.split(stack.stackSize, splits);
 		List<ItemStack> stacks = Lists.newArrayList();
 		for (int i : ints)
 			stacks.add(ItemHandlerHelper.copyStackWithSize(stack, i));
 		return stacks;
 	}
+
 }

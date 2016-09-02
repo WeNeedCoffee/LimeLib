@@ -7,6 +7,6 @@ public class ContainerNull extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return false;
+		return true;
 	}
 }

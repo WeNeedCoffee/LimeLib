@@ -1,8 +1,6 @@
 package mrriegel.limelib.network;
 
-import java.util.Map;
-
-import mrriegel.limelib.util.Utils;
+import mrriegel.limelib.LimeLib;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -10,24 +8,15 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
-import com.google.common.collect.Maps;
-
 public class PacketHandler {
 
-	public static Map<String, SimpleNetworkWrapper> wrappers;
-	public static Map<String, Integer> indices;
+	public static SimpleNetworkWrapper wrapper;
+	public static int index = 0;
 	private static boolean defaultsRegistered = false;
 
 	public static void init() {
-		String modID = Utils.getModID();
-		if (wrappers == null)
-			wrappers = Maps.newHashMap();
-		if (wrappers.get(modID) == null)
-			wrappers.put(modID, new SimpleNetworkWrapper(Utils.getModID()));
-		if (indices == null)
-			indices = Maps.newHashMap();
-		if (indices.get(modID) == null)
-			indices.put(modID, new Integer(0));
+		if (wrapper == null)
+			wrapper = new SimpleNetworkWrapper(LimeLib.NAME);
 		registerDefaults();
 	}
 
@@ -46,31 +35,34 @@ public class PacketHandler {
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, Side side) {
-		String modID = Utils.getModID();
-		if (wrappers == null || indices == null || wrappers.get(modID) == null || indices.get(modID) == null)
-			init();
-		wrappers.get(modID).registerMessage(messageHandler, requestMessageType, indices.get(modID), side);
-		indices.put(modID, indices.get(modID) + 1);
+		init();
+		wrapper.registerMessage(messageHandler, requestMessageType, index++, side);
+
 	}
 
 	public static void sendToAll(IMessage message) {
-		wrappers.get(Utils.getModID()).sendToAll(message);
+		init();
+		wrapper.sendToAll(message);
 	}
 
 	public static void sendTo(IMessage message, EntityPlayerMP player) {
-		wrappers.get(Utils.getModID()).sendTo(message, player);
+		init();
+		wrapper.sendTo(message, player);
 	}
 
 	public static void sendToAllAround(IMessage message, NetworkRegistry.TargetPoint point) {
-		wrappers.get(Utils.getModID()).sendToAllAround(message, point);
+		init();
+		wrapper.sendToAllAround(message, point);
 	}
 
 	public static void sendToDimension(IMessage message, int dimensionId) {
-		wrappers.get(Utils.getModID()).sendToDimension(message, dimensionId);
+		init();
+		wrapper.sendToDimension(message, dimensionId);
 	}
 
 	public static void sendToServer(IMessage message) {
-		wrappers.get(Utils.getModID()).sendToServer(message);
+		init();
+		wrapper.sendToServer(message);
 	}
 
 }

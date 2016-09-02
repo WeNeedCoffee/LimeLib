@@ -83,6 +83,10 @@ public abstract class CommonContainer extends Container {
 		}
 	}
 
+	protected void setSlots(IInventory inv, int x, int y, int width, int height) {
+		setSlots(inv, x, y, width, height, 0);
+	}
+
 	protected void setSlots(String name, int x, int y, int width, int height, int startIndex) {
 		setSlots(invs.get(name), x, y, width, height, startIndex);
 	}

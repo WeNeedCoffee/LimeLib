@@ -33,4 +33,13 @@ public class Utils {
 		return lis;
 	}
 
+	public static List<Integer> split(int ii, int splits) {
+		List<Integer> ints = Lists.newArrayList();
+		for (int i = 0; i < splits; i++)
+			ints.add(ii / splits);
+		for (int i = 0; i < ii % splits; i++)
+			ints.set(i, ints.get(i) + 1);
+		return ints;
+	}
+
 }
