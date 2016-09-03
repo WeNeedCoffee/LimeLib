@@ -68,9 +68,9 @@ public class CommonTile extends TileEntity {
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt) {
 	}
 
-	public final void sendMessge(NBTTagCompound nbt) {
+	public final void sendMessage(NBTTagCompound nbt) {
 		nbt.setLong("pos", pos.toLong());
-		PacketHandler.sendToServer(new TileMessage<CommonTile>(nbt));
+		PacketHandler.sendToServer(new TileMessage(nbt));
 	}
 
 }

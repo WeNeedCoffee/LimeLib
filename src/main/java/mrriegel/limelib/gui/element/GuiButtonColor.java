@@ -1,20 +1,19 @@
-package mrriegel.limelib.gui;
+package mrriegel.limelib.gui.element;
 
 import java.awt.Color;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class GuiButtonColor extends GuiButtonExt {
 
 	EnumDyeColor color;
-
-	public GuiButtonColor(int id, int xPos, int yPos, String displayString, EnumDyeColor color) {
-		super(id, xPos, yPos, displayString);
-		this.color = color;
-	}
 
 	public GuiButtonColor(int id, int xPos, int yPos, int width, int height, String displayString, EnumDyeColor color) {
 		super(id, xPos, yPos, width, height, displayString);

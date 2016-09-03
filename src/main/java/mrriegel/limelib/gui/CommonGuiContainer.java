@@ -1,8 +1,12 @@
 package mrriegel.limelib.gui;
 
 import java.awt.Color;
+import java.util.List;
 
 import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.gui.element.IGuiElement;
+import mrriegel.limelib.gui.element.ITooltip;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -38,9 +42,23 @@ public abstract class CommonGuiContainer extends GuiContainer {
 		int k = (int) System.currentTimeMillis();
 		k /= 65;
 		drawProgressArrow(148, 12, k, Direction.LEFT);
-		drawSizedSlot(150, 35, 18);
 		// drawTextfield(138, 67, 32);
-		drawScrollbar(1, 89, 50, 0, Direction.DOWN);
+//		drawScrollbar(4, 89, 50, 0, Direction.DOWN);
+		drawSizedSlot(150, 35, 9);
+	}
+
+	@Override
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+		for (GuiButton e : buttonList) {
+			if (e instanceof IGuiElement)
+				((IGuiElement) e).drawForeground(mouseX-guiLeft, mouseY-guiTop);
+			zLevel += 500;
+			if (e instanceof ITooltip) {
+				if(e.isMouseOver())
+					((ITooltip) e).drawTooltip(mouseX-guiLeft, mouseY-guiTop);
+			}
+			zLevel -= 500;
+		}
 	}
 
 	protected void drawSlot(int x, int y) {
@@ -48,8 +66,7 @@ public abstract class CommonGuiContainer extends GuiContainer {
 	}
 
 	protected void drawSizedSlot(int x, int y, int size) {
-		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
-		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 0, size, size, 18, 18, 1, zLevel);
+		drawRectangle(x, y, size, size);
 	}
 
 	protected void drawPlayerSlots(int x, int y) {
@@ -66,20 +83,22 @@ public abstract class CommonGuiContainer extends GuiContainer {
 	}
 
 	protected void drawScrollbar(int x, int y, int length, int percent, Direction dir) {
-		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
 		int width = dir.isHorizontal() ? length : 10;
 		int height = dir.isHorizontal() ? 10 : length;
-		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 0, width, height, 18, 18, 1, zLevel);
-		
+		drawRectangle(x, y, width, height);
 	}
 
 	protected void drawTextfield(int x, int y, int width) {
-		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
-		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 0, width, 12, 18, 18, 1, zLevel);
+		drawRectangle(x, y, width, 12);
 	}
 
 	protected void drawTextfield(GuiTextField textfield) {
 		drawTextfield(textfield.xPosition - guiLeft - 2, textfield.yPosition - guiTop - 2, textfield.width + 9);
+	}
+
+	protected void drawRectangle(int x, int y, int width, int height) {
+		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
+		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 0, width, height, 18, 18, 1, zLevel);
 	}
 
 	protected void drawBackgroundTexture(int x, int y, int width, int height) {

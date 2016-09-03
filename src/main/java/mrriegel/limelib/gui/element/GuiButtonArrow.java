@@ -1,13 +1,12 @@
-package mrriegel.limelib.gui;
+package mrriegel.limelib.gui.element;
 
+import mrriegel.limelib.gui.CommonGuiContainer;
 import mrriegel.limelib.gui.CommonGuiContainer.Direction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.client.config.GuiUtils;
 
-public class GuiButtonArrow extends GuiButtonExt {
+public class GuiButtonArrow extends GuiButtonExt{
 
 	Direction dir;
 
