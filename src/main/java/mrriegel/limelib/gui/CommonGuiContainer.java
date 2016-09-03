@@ -3,6 +3,7 @@ package mrriegel.limelib.gui;
 import java.awt.Color;
 
 import mrriegel.limelib.LimeLib;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
@@ -35,19 +36,20 @@ public abstract class CommonGuiContainer extends GuiContainer {
 		drawPlayerSlots(19, 99);
 		drawSlots(64, 19, 3, 3);
 		int k = (int) System.currentTimeMillis();
-		k /= 55;
-		drawProgressArrow(148, 12, k, Direction.RIGHT);
-		EnumDyeColor e = EnumDyeColor.CYAN;
-		Color c = Color.RED;
-		c = new Color(e.getMapColor().colorValue);
-		c = new Color(c.getRed(), c.getGreen(), c.getBlue(), 133);
-		// drawRect(0, 0, 15, 55, c.getRGB());
-		// System.out.println("S: "+k);
+		k /= 65;
+		drawProgressArrow(148, 12, k, Direction.LEFT);
+		drawSizedSlot(150, 35, 18);
+		// drawTextfield(138, 67, 32);
+		drawScrollbar(1, 89, 50, 0, Direction.DOWN);
 	}
 
 	protected void drawSlot(int x, int y) {
+		drawSizedSlot(x, y, 18);
+	}
+
+	protected void drawSizedSlot(int x, int y, int size) {
 		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
-		drawTexturedModalRect(x + guiLeft, y + guiTop, 0, 0, 18, 18);
+		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 0, size, size, 18, 18, 1, zLevel);
 	}
 
 	protected void drawPlayerSlots(int x, int y) {
@@ -63,9 +65,21 @@ public abstract class CommonGuiContainer extends GuiContainer {
 		}
 	}
 
+	protected void drawScrollbar(int x, int y, int length, int percent, Direction dir) {
+		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
+		int width = dir.isHorizontal() ? length : 10;
+		int height = dir.isHorizontal() ? 10 : length;
+		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 0, width, height, 18, 18, 1, zLevel);
+		
+	}
+
 	protected void drawTextfield(int x, int y, int width) {
 		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
-		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 36, width, 12, 18, 12, 1, zLevel);
+		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 0, width, 12, 18, 18, 1, zLevel);
+	}
+
+	protected void drawTextfield(GuiTextField textfield) {
+		drawTextfield(textfield.xPosition - guiLeft - 2, textfield.yPosition - guiTop - 2, textfield.width + 9);
 	}
 
 	protected void drawBackgroundTexture(int x, int y, int width, int height) {
@@ -117,6 +131,10 @@ public abstract class CommonGuiContainer extends GuiContainer {
 
 	public enum Direction {
 		UP, RIGHT, DOWN, LEFT;
+
+		public boolean isHorizontal() {
+			return this == RIGHT || this == LEFT;
+		}
 	}
 
 }

@@ -23,18 +23,10 @@ public class GuiButtonColor extends GuiButtonExt {
 
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-		// super.drawButton(mc, mouseX, mouseY);
-		// if (this.visible) {
-		// System.out.println("draw");
-		// Color c = new Color(color.getMapColor().colorValue);
-		// c = new Color(c.getRed(), c.getGreen(), c.getBlue(), 100);
-		// drawRect(xPosition, yPosition, xPosition + width, yPosition + height,
-		// c.getRGB());
-		// }
-		if (this.visible) {
+		if (this.visible && color != null) {
 			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			int k = this.getHoverState(this.hovered);
-			boolean h = k == 2;
+			boolean flag = k == 2;
 			if (k == 2)
 				k = 1;
 			GuiUtils.drawContinuousTexturedBox(BUTTON_TEXTURES, this.xPosition, this.yPosition, 0, 46 + k * 20, this.width, this.height, 200, 20, 2, 3, 2, 2, this.zLevel);
@@ -55,10 +47,12 @@ public class GuiButtonColor extends GuiButtonExt {
 
 			if (strWidth > width - 6 && strWidth > ellipsisWidth)
 				buttonText = mc.fontRendererObj.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
+
 			Color c = new Color(this.color.getMapColor().colorValue);
-			c = new Color(c.getRed(), c.getGreen(), c.getBlue(), 120 + (h ? 60 : 0));
+			c = new Color(c.getRed(), c.getGreen(), c.getBlue(), 140 + (flag ? 60 : 0));
 			drawRect(xPosition + 1, yPosition + 1, xPosition + width - 1, yPosition + height - 1, c.getRGB());
 			this.drawCenteredString(mc.fontRendererObj, buttonText, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, color);
-		}
+		} else
+			super.drawButton(mc, mouseX, mouseY);
 	}
 }
