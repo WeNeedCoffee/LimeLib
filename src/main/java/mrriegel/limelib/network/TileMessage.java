@@ -2,6 +2,7 @@ package mrriegel.limelib.network;
 
 import mrriegel.limelib.tile.CommonTile;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +22,7 @@ public class TileMessage extends AbstractMessage<TileMessage> {
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
 		TileEntity tile = player.worldObj.getTileEntity(BlockPos.fromLong(nbt.getLong("pos")));
 		if (tile instanceof CommonTile)
-			((CommonTile) tile).handleMessage(player, nbt);
+			((CommonTile) tile).handleMessage((EntityPlayerMP) player, nbt);
 	}
 
 }

@@ -1,9 +1,9 @@
 package mrriegel.testmod;
 
-import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.tile.CommonTileInventory;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -20,10 +20,21 @@ public class TestTile extends CommonTileInventory {
 	}
 
 	@Override
-	public void handleMessage(EntityPlayer player, NBTTagCompound nbt) {
+	public void handleMessage(EntityPlayerMP player, NBTTagCompound nbt) {
 		super.handleMessage(player, nbt);
-		for (ItemStack i : StackHelper.split(new ItemStack(Blocks.COAL_BLOCK, 44), 12))
-			System.out.print(i + " ");
-		System.out.println();
+		ItemStack a=new ItemStack(Items.DIAMOND);
+		a.setTagCompound(new NBTTagCompound());
+		ItemStack b=new ItemStack(Items.DIAMOND);
+		setint(a.getTagCompound(), 55);
+		setint(b.getTagCompound(), 55);
+		System.out.println(a.getTagCompound());
+		System.out.println(b.getTagCompound());
+		
+	}
+	
+	void setint(NBTTagCompound k,int r){
+		if(k==null)
+			k=new NBTTagCompound();
+		k.setInteger("no", r);
 	}
 }

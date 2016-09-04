@@ -65,7 +65,7 @@ public class CommonTile extends TileEntity {
 		return false;
 	}
 
-	public void handleMessage(EntityPlayer player, NBTTagCompound nbt) {
+	public void handleMessage(EntityPlayerMP player, NBTTagCompound nbt) {
 	}
 
 	public final void sendMessage(NBTTagCompound nbt) {
