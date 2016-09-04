@@ -1,8 +1,19 @@
 package mrriegel.testmod;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+
+import com.google.common.collect.Lists;
+
+import mrriegel.limelib.helper.BlockHelper;
+import mrriegel.limelib.helper.NBTHelper;
+import mrriegel.limelib.helper.NBTStackHelper;
+import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.CommonTileInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,19 +33,11 @@ public class TestTile extends CommonTileInventory {
 	@Override
 	public void handleMessage(EntityPlayerMP player, NBTTagCompound nbt) {
 		super.handleMessage(player, nbt);
-		ItemStack a=new ItemStack(Items.DIAMOND);
-		a.setTagCompound(new NBTTagCompound());
-		ItemStack b=new ItemStack(Items.DIAMOND);
-		setint(a.getTagCompound(), 55);
-		setint(b.getTagCompound(), 55);
-		System.out.println(a.getTagCompound());
-		System.out.println(b.getTagCompound());
-		
+		System.out.println("isOre: " + BlockHelper.isOre(worldObj, pos.up()) + " ");
+
 	}
-	
-	void setint(NBTTagCompound k,int r){
-		if(k==null)
-			k=new NBTTagCompound();
-		k.setInteger("no", r);
+
+	<T> T T(T T) {
+		return T;
 	}
 }

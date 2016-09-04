@@ -55,7 +55,12 @@ public class BlockHelper {
 		if (!state.getBlock().isFullCube(state))
 			return false;
 		try {
-			ItemStack stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, null);
+			ItemStack stack = null;
+			try {
+				stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, null);
+			} catch (Exception e) {
+				stack = new ItemStack(state.getBlock());
+			}
 			if (stack != null) {
 				for (int i : OreDictionary.getOreIDs(stack)) {
 					String oreName = OreDictionary.getOreName(i);

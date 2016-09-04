@@ -32,7 +32,6 @@ public class TestMod implements IGuiHandler {
 	public static TestMod mod;
 
 	public static final CommonBlock block = new TestBlock();
-
 	public static final CommonItem item = new TestItem();
 
 	@Mod.EventHandler
@@ -60,7 +59,7 @@ public class TestMod implements IGuiHandler {
 			NBTTagCompound x = new NBTTagCompound();
 			x.setString("l", WordUtils.capitalizeFully(RandomStringUtils.randomAlphabetic(new Random().nextInt(6) + 4)));
 			if (!e.getEntityLiving().worldObj.isRemote) {
-				PacketHandler.sendTo(new TestMessage(x), (EntityPlayerMP) e.getEntityLiving());
+				PacketHandler.sendTo(new TestMessage("hallo",777L,new BlockPos(44, 12, 90334)), (EntityPlayerMP) e.getEntityLiving());
 			}
 			// if (e.getEntityLiving().worldObj.isRemote)
 			// IN.sendToServer(new TestMessage(x));

@@ -1,6 +1,11 @@
 package mrriegel.limelib.tile;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.helper.InvHelper;
+import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -138,29 +143,15 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		NBTTagList nbttaglist = compound.getTagList("Items", 10);
-		this.stacks = new ItemStack[this.getSizeInventory()];
-		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-			NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-			int j = nbttagcompound.getByte("Slot") & 255;
-			if (j >= 0 && j < this.stacks.length) {
-				this.stacks[j] = ItemStack.loadItemStackFromNBT(nbttagcompound);
-			}
+		List<ItemStack> lis = NBTHelper.getItemStackList(compound, "Items");
+		for (int i = 0; i < lis.size(); i++) {
+			stacks[i] = lis.get(i);
 		}
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		NBTTagList nbttaglist = new NBTTagList();
-		for (int i = 0; i < this.stacks.length; ++i) {
-			if (this.stacks[i] != null) {
-				NBTTagCompound nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte("Slot", (byte) i);
-				this.stacks[i].writeToNBT(nbttagcompound);
-				nbttaglist.appendTag(nbttagcompound);
-			}
-		}
-		compound.setTag("Items", nbttaglist);
+		NBTHelper.setItemStackList(compound, "Items", Lists.newArrayList(stacks));
 		return super.writeToNBT(compound);
 	}
 

@@ -20,276 +20,223 @@ public class NBTStackHelper {
 	// list
 	public static NBTTagList getList(ItemStack stack, String tag, int objtype, boolean nullifyOnFail) {
 		initNBTTagCompound(stack);
-		return NBTHelper.hasTag(stack.getTagCompound(), tag) ? stack.getTagCompound().getTagList(tag, objtype) : nullifyOnFail ? null : new NBTTagList();
+		return NBTHelper.getList(stack.getTagCompound(), tag, objtype, nullifyOnFail);
 	}
 
 	public static void setList(ItemStack stack, String tag, NBTTagList list) {
 		initNBTTagCompound(stack);
-		stack.getTagCompound().setTag(tag, list);
+		NBTHelper.setList(stack.getTagCompound(), tag, list);
 	}
 
 	// String
 	public static String getString(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		if (!stack.getTagCompound().hasKey(keyName)) {
-			return null;
-		}
-		return stack.getTagCompound().getString(keyName);
+		return NBTHelper.getString(stack.getTagCompound(), keyName);
 	}
 
 	public static void setString(ItemStack stack, String keyName, String keyValue) {
 		initNBTTagCompound(stack);
-		if (keyValue != null)
-			stack.getTagCompound().setString(keyName, keyValue);
+		NBTHelper.setString(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// boolean
 	public static boolean getBoolean(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		if (!stack.getTagCompound().hasKey(keyName)) {
-			setBoolean(stack, keyName, false);
-		}
-		return stack.getTagCompound().getBoolean(keyName);
+		return NBTHelper.getBoolean(stack.getTagCompound(), keyName);
 	}
 
 	public static void setBoolean(ItemStack stack, String keyName, boolean keyValue) {
 		initNBTTagCompound(stack);
-		stack.getTagCompound().setBoolean(keyName, keyValue);
+		NBTHelper.setBoolean(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// byte
 	public static byte getByte(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		if (!stack.getTagCompound().hasKey(keyName)) {
-			setByte(stack, keyName, (byte) 0);
-		}
-		return stack.getTagCompound().getByte(keyName);
+		return NBTHelper.getByte(stack.getTagCompound(), keyName);
 	}
 
 	public static void setByte(ItemStack stack, String keyName, byte keyValue) {
 		initNBTTagCompound(stack);
-		stack.getTagCompound().setByte(keyName, keyValue);
+		NBTHelper.setByte(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// short
 	public static short getShort(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		if (!stack.getTagCompound().hasKey(keyName)) {
-			setShort(stack, keyName, (short) 0);
-		}
-		return stack.getTagCompound().getShort(keyName);
+		return NBTHelper.getShort(stack.getTagCompound(), keyName);
 	}
 
 	public static void setShort(ItemStack stack, String keyName, short keyValue) {
 		initNBTTagCompound(stack);
-		stack.getTagCompound().setShort(keyName, keyValue);
+		NBTHelper.setShort(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// int
 	public static int getInteger(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		if (!stack.getTagCompound().hasKey(keyName)) {
-			setInteger(stack, keyName, 0);
-		}
-		return stack.getTagCompound().getInteger(keyName);
+		return NBTHelper.getInteger(stack.getTagCompound(), keyName);
 	}
 
 	public static void setInteger(ItemStack stack, String keyName, int keyValue) {
 		initNBTTagCompound(stack);
-		stack.getTagCompound().setInteger(keyName, keyValue);
+		NBTHelper.setInteger(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// long
 	public static long getLong(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		if (!stack.getTagCompound().hasKey(keyName)) {
-			setLong(stack, keyName, 0L);
-		}
-		return stack.getTagCompound().getLong(keyName);
+		return NBTHelper.getLong(stack.getTagCompound(), keyName);
 	}
 
 	public static void setLong(ItemStack stack, String keyName, long keyValue) {
 		initNBTTagCompound(stack);
-		stack.getTagCompound().setLong(keyName, keyValue);
+		NBTHelper.setLong(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// float
 	public static float getFloat(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		if (!stack.getTagCompound().hasKey(keyName)) {
-			setFloat(stack, keyName, 0F);
-		}
-		return stack.getTagCompound().getFloat(keyName);
+		return NBTHelper.getFloat(stack.getTagCompound(), keyName);
 	}
 
 	public static void setFloat(ItemStack stack, String keyName, float keyValue) {
 		initNBTTagCompound(stack);
-		stack.getTagCompound().setFloat(keyName, keyValue);
+		NBTHelper.setFloat(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// double
 	public static double getDouble(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		if (!stack.getTagCompound().hasKey(keyName)) {
-			setDouble(stack, keyName, 0D);
-		}
-		return stack.getTagCompound().getDouble(keyName);
+		return NBTHelper.getDouble(stack.getTagCompound(), keyName);
 	}
 
 	public static void setDouble(ItemStack stack, String keyName, double keyValue) {
 		initNBTTagCompound(stack);
-		stack.getTagCompound().setDouble(keyName, keyValue);
+		NBTHelper.setDouble(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// itemstack
 	public static ItemStack getItemStack(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		if (!stack.getTagCompound().hasKey(keyName)) {
-			setItemStack(stack, keyName, null);
-		}
-		NBTTagCompound res = (NBTTagCompound) stack.getTagCompound().getTag(keyName);
-		return ItemStack.loadItemStackFromNBT(res);
+		return NBTHelper.getItemStack(stack.getTagCompound(), keyName);
 
 	}
 
 	public static void setItemStack(ItemStack stack, String keyName, ItemStack keyValue) {
 		initNBTTagCompound(stack);
-		NBTTagCompound res = new NBTTagCompound();
-		if (keyValue != null) {
-			keyValue.writeToNBT(res);
-		}
-		stack.getTagCompound().setTag(keyName, res);
+		NBTHelper.setItemStack(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// enum
 	public static <E extends Enum<E>> E getEnum(ItemStack stack, String keyName, Class<E> clazz) {
 		initNBTTagCompound(stack);
-		if (!stack.getTagCompound().hasKey(keyName)) {
-			return null;
-		}
-		String s = stack.getTagCompound().getString(keyName);
-		for (E e : EnumSet.allOf(clazz)) {
-			if (e.name().equals(s))
-				return e;
-		}
-		return null;
+		return NBTHelper.getEnum(stack.getTagCompound(), keyName, clazz);
 
 	}
 
 	public static <E extends Enum<E>> void setEnum(ItemStack stack, String keyName, E keyValue) {
 		initNBTTagCompound(stack);
-		if (keyValue != null)
-			stack.getTagCompound().setString(keyName, keyValue.name());
+		NBTHelper.setEnum(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// Stringlist
 	public static List<String> getStringList(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		List<String> lis = Lists.newArrayList();
-		int size = getInteger(stack, keyName + "Size");
-		for (int i = 0; i < size; i++)
-			lis.add(getString(stack, keyName + ":" + i));
-		return lis;
+		return NBTHelper.getStringList(stack.getTagCompound(), keyName);
 	}
 
 	public static void setStringList(ItemStack stack, String keyName, List<String> keyValue) {
 		initNBTTagCompound(stack);
-		if (keyValue != null) {
-			setInteger(stack, keyName + "Size", keyValue.size());
-			for (int i = 0; i < keyValue.size(); i++) {
-				String s = keyValue.get(i);
-				if (s != null)
-					setString(stack, keyName + ":" + i, s);
-			}
-		}
+		NBTHelper.setStringList(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// Booleanlist
 	public static List<Boolean> getBooleanList(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		List<Boolean> lis = Lists.newArrayList();
-		int size = getInteger(stack, keyName + "Size");
-		for (int i = 0; i < size; i++)
-			lis.add(getBoolean(stack, keyName + ":" + i));
-		return lis;
+		return NBTHelper.getBooleanList(stack.getTagCompound(), keyName);
 	}
 
 	public static void setBooleanList(ItemStack stack, String keyName, List<Boolean> keyValue) {
 		initNBTTagCompound(stack);
-		if (keyValue != null) {
-			setInteger(stack, keyName + "Size", keyValue.size());
-			for (int i = 0; i < keyValue.size(); i++) {
-				Boolean s = keyValue.get(i);
-				if (s != null)
-					setBoolean(stack, keyName + ":" + i, s);
-			}
-		}
+		NBTHelper.setBooleanList(stack.getTagCompound(), keyName, keyValue);
+	}
+
+	// Bytelist
+	public static List<Byte> getByteList(ItemStack stack, String keyName) {
+		initNBTTagCompound(stack);
+		return NBTHelper.getByteList(stack.getTagCompound(), keyName);
+	}
+
+	public static void setByteList(ItemStack stack, String keyName, List<Byte> keyValue) {
+		initNBTTagCompound(stack);
+		NBTHelper.setByteList(stack.getTagCompound(), keyName, keyValue);
+	}
+
+	// Shortlist
+	public static List<Short> getShortList(ItemStack stack, String keyName) {
+		initNBTTagCompound(stack);
+		return NBTHelper.getShortList(stack.getTagCompound(), keyName);
+	}
+
+	public static void setShortList(ItemStack stack, String keyName, List<Short> keyValue) {
+		initNBTTagCompound(stack);
+		NBTHelper.setShortList(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// Integerlist
 	public static List<Integer> getIntegerList(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		List<Integer> lis = Lists.newArrayList();
-		int size = getInteger(stack, keyName + "Size");
-		for (int i = 0; i < size; i++)
-			lis.add(getInteger(stack, keyName + ":" + i));
-		return lis;
+		return NBTHelper.getIntegerList(stack.getTagCompound(), keyName);
 	}
 
 	public static void setIntegerList(ItemStack stack, String keyName, List<Integer> keyValue) {
 		initNBTTagCompound(stack);
-		if (keyValue != null) {
-			setInteger(stack, keyName + "Size", keyValue.size());
-			for (int i = 0; i < keyValue.size(); i++) {
-				Integer s = keyValue.get(i);
-				if (s != null)
-					setInteger(stack, keyName + ":" + i, s);
-			}
-		}
+		NBTHelper.setIntegerList(stack.getTagCompound(), keyName, keyValue);
+	}
+
+	// Longlist
+	public static List<Long> getLongList(ItemStack stack, String keyName) {
+		initNBTTagCompound(stack);
+		return NBTHelper.getLongList(stack.getTagCompound(), keyName);
+	}
+
+	public static void setLongList(ItemStack stack, String keyName, List<Long> keyValue) {
+		initNBTTagCompound(stack);
+		NBTHelper.setLongList(stack.getTagCompound(), keyName, keyValue);
+	}
+
+	// Floatlist
+	public static List<Float> getFloatList(ItemStack stack, String keyName) {
+		initNBTTagCompound(stack);
+		return NBTHelper.getFloatList(stack.getTagCompound(), keyName);
+	}
+
+	public static void setFloatList(ItemStack stack, String keyName, List<Float> keyValue) {
+		initNBTTagCompound(stack);
+		NBTHelper.setFloatList(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// Doublelist
 	public static List<Double> getDoubleList(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		List<Double> lis = Lists.newArrayList();
-		int size = getInteger(stack, keyName + "Size");
-		for (int i = 0; i < size; i++)
-			lis.add(getDouble(stack, keyName + ":" + i));
-		return lis;
+		return NBTHelper.getDoubleList(stack.getTagCompound(), keyName);
 	}
 
 	public static void setDoubleList(ItemStack stack, String keyName, List<Double> keyValue) {
 		initNBTTagCompound(stack);
-		if (keyValue != null) {
-			setInteger(stack, keyName + "Size", keyValue.size());
-			for (int i = 0; i < keyValue.size(); i++) {
-				Double s = keyValue.get(i);
-				if (s != null)
-					setDouble(stack, keyName + ":" + i, s);
-			}
-		}
+		NBTHelper.setDoubleList(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// Stacklist
 	public static List<ItemStack> getItemStackList(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		List<ItemStack> lis = Lists.newArrayList();
-		int size = getInteger(stack, keyName + "Size");
-		for (int i = 0; i < size; i++)
-			lis.add(getItemStack(stack, keyName + ":" + i));
-		return lis;
+		return NBTHelper.getItemStackList(stack.getTagCompound(), keyName);
 	}
 
 	public static void setItemStackList(ItemStack stack, String keyName, List<ItemStack> keyValue) {
 		initNBTTagCompound(stack);
-		if (keyValue != null) {
-			setInteger(stack, keyName + "Size", keyValue.size());
-			for (int i = 0; i < keyValue.size(); i++) {
-				ItemStack s = keyValue.get(i);
-				if (s != null)
-					setItemStack(stack, keyName + ":" + i, s);
-			}
-		}
+		NBTHelper.setItemStackList(stack.getTagCompound(), keyName, keyValue);
 	}
 
 }
