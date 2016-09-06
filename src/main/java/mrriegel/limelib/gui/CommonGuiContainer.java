@@ -1,8 +1,5 @@
 package mrriegel.limelib.gui;
 
-import java.awt.Color;
-import java.util.List;
-
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.gui.element.IGuiElement;
 import mrriegel.limelib.gui.element.ITooltip;
@@ -11,7 +8,6 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
@@ -30,35 +26,26 @@ public abstract class CommonGuiContainer extends GuiContainer {
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		// drawBackgroundTexture(0, 0, 80, 80);
-		// drawBackgroundTexture(90, 0, 80, 80);
-		// drawBackgroundTexture(0, 95, 80, 80);
-		// drawBackgroundTexture(90, 95, 80, 80);
-		drawBackgroundTexture();
-		// drawSlot(32, 13);
-		drawPlayerSlots(19, 99);
-		drawSlots(64, 19, 3, 3);
-		int k = (int) System.currentTimeMillis();
-		k /= 65;
-		drawProgressArrow(148, 12, k, Direction.LEFT);
-		// drawTextfield(138, 67, 32);
-//		drawScrollbar(4, 89, 50, 0, Direction.DOWN);
-		drawSizedSlot(150, 35, 9);
-	}
-
-	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		for (GuiButton e : buttonList) {
 			if (e instanceof IGuiElement)
-				((IGuiElement) e).drawForeground(mouseX-guiLeft, mouseY-guiTop);
+				((IGuiElement) e).drawForeground(mouseX - guiLeft, mouseY - guiTop);
 			zLevel += 500;
 			if (e instanceof ITooltip) {
-				if(e.isMouseOver())
-					((ITooltip) e).drawTooltip(mouseX-guiLeft, mouseY-guiTop);
+				if (e.isMouseOver())
+					((ITooltip) e).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
 			}
 			zLevel -= 500;
 		}
+	}
+
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		onUpdate();
+		super.drawScreen(mouseX, mouseY, partialTicks);
+	}
+
+	protected void onUpdate() {
 	}
 
 	protected void drawSlot(int x, int y) {
@@ -82,7 +69,7 @@ public abstract class CommonGuiContainer extends GuiContainer {
 		}
 	}
 
-	protected void drawScrollbar(int x, int y, int length, int percent, Direction dir) {
+	protected void drawScrollbar(int x, int y, int length, float percent, Direction dir) {
 		int width = dir.isHorizontal() ? length : 10;
 		int height = dir.isHorizontal() ? 10 : length;
 		drawRectangle(x, y, width, height);
@@ -93,7 +80,8 @@ public abstract class CommonGuiContainer extends GuiContainer {
 	}
 
 	protected void drawTextfield(GuiTextField textfield) {
-		drawTextfield(textfield.xPosition - guiLeft - 2, textfield.yPosition - guiTop - 2, textfield.width + 9);
+		if (!textfield.getEnableBackgroundDrawing())
+			drawTextfield(textfield.xPosition - guiLeft - 2, textfield.yPosition - guiTop - 2, textfield.width + 9);
 	}
 
 	protected void drawRectangle(int x, int y, int width, int height) {
@@ -115,13 +103,10 @@ public abstract class CommonGuiContainer extends GuiContainer {
 		drawBackgroundTexture(0, 0);
 	}
 
-	protected void drawProgressArrow(int x, int y, int percent, Direction d) {
-		percent = Math.abs(percent);
-		percent %= 100;
+	protected void drawProgressArrow(int x, int y, float percent, Direction d) {
 		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
-		float pFactor = (percent / 100f);
 		int totalLength = 22;
-		int currentLength = (int) (totalLength * pFactor);
+		int currentLength = (int) (totalLength * percent);
 		switch (d) {
 		case DOWN:
 			drawTexturedModalRect(x + guiLeft, y + guiTop, 93, 0, 15, 22);

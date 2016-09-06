@@ -8,18 +8,15 @@ import net.minecraft.inventory.Container;
 
 import org.lwjgl.input.Keyboard;
 
-public abstract class CommonGuiContainerSub extends CommonGuiContainer {
+public abstract class CommonGuiScreenSub extends CommonGuiScreen {
 
 	protected GuiScreen parent;
 
-	public CommonGuiContainerSub(Container inventorySlotsIn) {
-		this(inventorySlotsIn, true);
-	}
-
-	public CommonGuiContainerSub(Container inventorySlotsIn, boolean darkBackground) {
-		super(inventorySlotsIn, darkBackground);
+	public CommonGuiScreenSub() {
+		super();
 		this.parent = Minecraft.getMinecraft().currentScreen;
 	}
+	
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {

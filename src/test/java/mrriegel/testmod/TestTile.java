@@ -25,7 +25,7 @@ public class TestTile extends CommonTileInventory {
 	}
 
 	@Override
-	public boolean openGUI(EntityPlayer player) {
+	public boolean openGUI(EntityPlayerMP player) {
 		player.openGui(TestMod.mod, 0, worldObj, getPos().getX(), getPos().getY(), getPos().getZ());
 		return true;
 	}

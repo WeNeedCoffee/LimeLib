@@ -3,11 +3,6 @@ package mrriegel.limelib.helper;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.commons.logging.LogFactory;
-
-import com.google.common.collect.Lists;
-
 import mrriegel.limelib.LimeLib;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -20,10 +15,13 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.Lists;
+
 public class NBTHelper {
+
 	public static boolean hasTag(NBTTagCompound nbt, String keyName) {
 		return nbt != null && nbt.hasKey(keyName);
 	}
@@ -45,6 +43,24 @@ public class NBTHelper {
 		for (NBTBase b : list)
 			tagList.appendTag(b);
 		return tagList;
+	}
+
+	public static NBTTagCompound getTag(Object... os) {
+		NBTTagCompound nbt = new NBTTagCompound();
+		List<NBTBase> lis = getNBTs(os);
+		NBTHelper.setInteger(nbt, "size", lis.size());
+		for (int i = 0; i < lis.size(); i++) {
+			NBTBase o = lis.get(i);
+			nbt.setTag("" + i, o);
+		}
+		return nbt;
+	}
+
+	public static List<NBTBase> getObjects(NBTTagCompound nbt) {
+		List<NBTBase> lis = Lists.newArrayList();
+		for (int i = 0; i < getInteger(nbt, "size"); i++)
+			lis.add(nbt.getTag("" + i));
+		return lis;
 	}
 
 	public static List<NBTBase> getNBTs(Object... os) {
@@ -74,9 +90,9 @@ public class NBTHelper {
 					((ItemStack) o).writeToNBT(n1);
 					lis.add(n1);
 				} else
-					LimeLib.log.error("Unacceptable Class.");
+					LimeLib.log.warn("Unacceptable Class.");
 			} catch (Exception e) {
-				LimeLib.log.error("Couldn't construct Message.");
+				LimeLib.log.error("Couldn't construct NBTBase.");
 			}
 		return lis;
 	}
@@ -103,10 +119,31 @@ public class NBTHelper {
 				return (T) BlockPos.fromLong(((NBTTagLong) nbt).getLong());
 			else if (clazz.equals(ItemStack.class)) {
 				return (T) ItemStack.loadItemStackFromNBT((NBTTagCompound) nbt);
-			}
+			} else
+				LimeLib.log.warn("Unacceptable Class.");
 		} catch (ClassCastException e) {
-			LimeLib.log.error("Wrong Class. Expected: ");
+			LimeLib.log.error("Wrong Class. Obtained: " + clazz.toString());
 		}
+		return null;
+	}
+
+	public static Object getObjectFrom(NBTBase nbt) {
+		if (nbt instanceof NBTTagByte)
+			return new Byte(((NBTTagByte) nbt).getByte());
+		else if (nbt instanceof NBTTagShort)
+			return new Short(((NBTTagShort) nbt).getShort());
+		else if (nbt instanceof NBTTagInt)
+			return new Integer(((NBTTagInt) nbt).getInt());
+		else if (nbt instanceof NBTTagLong)
+			return new Long(((NBTTagLong) nbt).getLong());
+		else if (nbt instanceof NBTTagFloat)
+			return new Float(((NBTTagFloat) nbt).getFloat());
+		else if (nbt instanceof NBTTagDouble)
+			return new Double(((NBTTagDouble) nbt).getDouble());
+		else if (nbt instanceof NBTTagString)
+			return new String(((NBTTagString) nbt).getString());
+		else
+			LimeLib.log.warn("Unacceptable Class.");
 		return null;
 	}
 
@@ -234,7 +271,21 @@ public class NBTHelper {
 		nbt.setDouble(keyName, keyValue);
 	}
 
-	// itemnbt
+	// tag
+	public static NBTTagCompound getTag(NBTTagCompound nbt, String keyName) {
+		if (!nbt.hasKey(keyName, 99)) {
+			return null;
+		}
+		return (NBTTagCompound) nbt.getTag(keyName);
+	}
+
+	public static void setTag(NBTTagCompound nbt, String keyName, NBTTagCompound keyValue) {
+		if (nbt == null)
+			return;
+		nbt.setTag(keyName, keyValue);
+	}
+
+	// itemstack
 	public static ItemStack getItemStack(NBTTagCompound nbt, String keyName) {
 		if (!nbt.hasKey(keyName)) {
 			setItemStack(nbt, keyName, null);
@@ -449,6 +500,28 @@ public class NBTHelper {
 				Double s = keyValue.get(i);
 				if (s != null)
 					setDouble(nbt, keyName + ":" + i, s);
+			}
+		}
+	}
+
+	// Taglist
+	public static List<NBTTagCompound> getTagList(NBTTagCompound nbt, String keyName) {
+		List<NBTTagCompound> lis = Lists.newArrayList();
+		int size = getInteger(nbt, keyName + SIZE);
+		for (int i = 0; i < size; i++)
+			lis.add(getTag(nbt, keyName + ":" + i));
+		return lis;
+	}
+
+	public static void setTagList(NBTTagCompound nbt, String keyName, List<NBTTagCompound> keyValue) {
+		if (nbt == null)
+			return;
+		if (keyValue != null && !keyValue.isEmpty()) {
+			setInteger(nbt, keyName + SIZE, keyValue.size());
+			for (int i = 0; i < keyValue.size(); i++) {
+				NBTTagCompound s = keyValue.get(i);
+				if (s != null)
+					setTag(nbt, keyName + ":" + i, s);
 			}
 		}
 	}

@@ -1,6 +1,8 @@
 package mrriegel.limelib.util;
 
 import mrriegel.limelib.helper.StackHelper;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
@@ -11,6 +13,18 @@ public class FilterItem {
 
 	public FilterItem(ItemStack stack) {
 		this(stack, stack != null ? stack.getItemDamage() != OreDictionary.WILDCARD_VALUE : true, false, false);
+	}
+
+	public FilterItem(String s) {
+		this(OreDictionary.getOres(s).isEmpty() ? null : OreDictionary.getOres(s).get(0), false, true, false);
+	}
+
+	public FilterItem(Item i) {
+		this(new ItemStack(i), false, false, false);
+	}
+
+	public FilterItem(Block b) {
+		this(new ItemStack(b));
 	}
 
 	public FilterItem(ItemStack stack, boolean meta, boolean ore, boolean nbt) {

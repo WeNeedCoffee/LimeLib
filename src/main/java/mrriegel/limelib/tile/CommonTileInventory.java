@@ -2,8 +2,7 @@ package mrriegel.limelib.tile;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,10 +10,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
+
+import com.google.common.collect.Lists;
 
 public class CommonTileInventory extends CommonTile implements IInventory {
 
@@ -72,6 +72,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 		stacks[index] = stack;
 		if (stack != null && stack.stackSize > getInventoryStackLimit()) {
 			stack.stackSize = getInventoryStackLimit();
+			LimeLib.log.warn("Size of itemstack is too high for inventory.");
 		}
 		markDirty();
 
@@ -80,11 +81,6 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	@Override
 	public int getInventoryStackLimit() {
 		return STACKLIMIT;
-	}
-
-	@Override
-	public boolean isUseableByPlayer(EntityPlayer player) {
-		return true;
 	}
 
 	@Override

@@ -1,15 +1,29 @@
 package mrriegel.limelib;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import mrriegel.limelib.network.PacketHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+@Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION)
 public class LimeLib {
-	private LimeLib() {
-	}
+
+	@Instance(LimeLib.MODID)
+	public static LimeLib INSTANCE;
 
 	public static final String VERSION = "1.0.0";
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
-	
-	public static final Log log=LogFactory.getLog(LimeLib.NAME);
+
+	public static final Logger log = LogManager.getLogger(NAME);
+
+	@EventHandler
+	public void init(FMLInitializationEvent event) {
+		PacketHandler.init();
+	}
+
 }

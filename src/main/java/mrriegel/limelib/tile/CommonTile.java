@@ -1,35 +1,20 @@
 package mrriegel.limelib.tile;
 
 import mrriegel.limelib.network.PacketHandler;
+import mrriegel.limelib.network.TileGuiMessage;
 import mrriegel.limelib.network.TileMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagDouble;
-import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagLong;
-import net.minecraft.nbt.NBTTagShort;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import org.apache.commons.lang3.reflect.ConstructorUtils;
-
 public class CommonTile extends TileEntity {
-
-	public CommonTile() {
-		super();
-		PacketHandler.init();
-		System.out.println("nesse");
-	}
 
 	@Override
 	public NBTTagCompound getUpdateTag() {
@@ -68,12 +53,22 @@ public class CommonTile extends TileEntity {
 			}
 	}
 
+	public boolean isUseableByPlayer(EntityPlayer player) {
+		return this.worldObj.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64.0D;
+	}
+
 	public ItemStack[] getDroppingItems() {
 		return new ItemStack[0];
 	}
 
-	public boolean openGUI(EntityPlayer player) {
+	public boolean openGUI(EntityPlayerMP player) {
 		return false;
+	}
+
+	public final void sendOpenGUI() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setLong("pos", pos.toLong());
+		PacketHandler.sendToServer(new TileGuiMessage(nbt));
 	}
 
 	public void handleMessage(EntityPlayerMP player, NBTTagCompound nbt) {

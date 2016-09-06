@@ -1,13 +1,10 @@
 package mrriegel.limelib.helper;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-
-import com.google.common.collect.Lists;
 
 public class NBTStackHelper {
 
@@ -114,6 +111,17 @@ public class NBTStackHelper {
 	public static void setDouble(ItemStack stack, String keyName, double keyValue) {
 		initNBTTagCompound(stack);
 		NBTHelper.setDouble(stack.getTagCompound(), keyName, keyValue);
+	}
+
+	// tag
+	public static NBTTagCompound getTag(ItemStack stack, String keyName) {
+		initNBTTagCompound(stack);
+		return NBTHelper.getTag(stack.getTagCompound(), keyName);
+	}
+
+	public static void setTag(ItemStack stack, String keyName, NBTTagCompound keyValue) {
+		initNBTTagCompound(stack);
+		NBTHelper.setTag(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// itemstack
@@ -226,6 +234,17 @@ public class NBTStackHelper {
 	public static void setDoubleList(ItemStack stack, String keyName, List<Double> keyValue) {
 		initNBTTagCompound(stack);
 		NBTHelper.setDoubleList(stack.getTagCompound(), keyName, keyValue);
+	}
+
+	// Taglist
+	public static List<NBTTagCompound> getTagList(ItemStack stack, String keyName) {
+		initNBTTagCompound(stack);
+		return NBTHelper.getTagList(stack.getTagCompound(), keyName);
+	}
+
+	public static void setTagList(ItemStack stack, String keyName, List<NBTTagCompound> keyValue) {
+		initNBTTagCompound(stack);
+		NBTHelper.setTagList(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// Stacklist

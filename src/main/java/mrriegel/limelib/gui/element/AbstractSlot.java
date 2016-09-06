@@ -21,7 +21,7 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import com.google.common.collect.Lists;
 
 public abstract class AbstractSlot extends GuiButton implements ITooltip {
-	public int  amount;
+	public int amount;
 	public boolean number, square, smallFont, toolTip;
 	Minecraft mc;
 
@@ -60,7 +60,9 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 
 		@Override
 		public void drawTooltip(int mouseX, int mouseY) {
-			if (toolTip && isMouseOver() && stack != null) {
+			if (!visible)
+				return;
+			if (toolTip && stack != null) {
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();
 				ScaledResolution sr = new ScaledResolution(mc);
@@ -75,6 +77,9 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 
 		@Override
 		public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+			if (!visible)
+				return;
+			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			GlStateManager.pushMatrix();
 			if (stack != null) {
 				RenderHelper.enableGUIStandardItemLighting();
@@ -115,7 +120,9 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 
 		@Override
 		public void drawTooltip(int mouseX, int mouseY) {
-			if (toolTip && isMouseOver() && fluid != null) {
+			if (!visible)
+				return;
+			if (toolTip && fluid != null) {
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();
 				ScaledResolution sr = new ScaledResolution(mc);
@@ -130,6 +137,9 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 
 		@Override
 		public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+			if (!visible)
+				return;
+			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			if (fluid != null) {
 				GlStateManager.pushMatrix();
 				TextureAtlasSprite fluidIcon = mc.getTextureMapBlocks().getTextureExtry(fluid.getStill().toString());

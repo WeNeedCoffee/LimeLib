@@ -5,6 +5,7 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -45,7 +46,7 @@ public abstract class CommonBlockContainer extends CommonBlock implements ITileE
 		} else {
 			TileEntity tileentity = worldIn.getTileEntity(pos);
 			if (tileentity instanceof CommonTile) {
-				return ((CommonTile) tileentity).openGUI(playerIn);
+				return ((CommonTile) tileentity).openGUI((EntityPlayerMP) playerIn);
 			}
 			return false;
 		}

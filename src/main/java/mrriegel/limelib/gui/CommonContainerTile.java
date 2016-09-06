@@ -17,12 +17,13 @@ public abstract class CommonContainerTile extends CommonContainer {
 	@Override
 	public void onContainerClosed(EntityPlayer playerIn) {
 		super.onContainerClosed(playerIn);
-		getTile().sync();
+		if (getTile() != null)
+			getTile().sync();
 	}
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return getTile().isUseableByPlayer(playerIn);
+		return getTile() != null && getTile().isUseableByPlayer(playerIn);
 	}
 
 }

@@ -5,9 +5,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.reflect.ConstructorUtils;
-
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraftforge.fml.common.FMLContainer;
 import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Loader;
@@ -45,9 +42,9 @@ public class Utils {
 			ints.set(i, ints.get(i) + 1);
 		return ints;
 	}
-	
-	public static Constructor getConstructor(){
-//		new ConstructorUtils()
+
+	public static Constructor getConstructor() {
+		// new ConstructorUtils()
 		return null;
 	}
 

@@ -110,6 +110,7 @@ public abstract class CommonContainer extends Container {
 			List<Area> ar = allowedSlots(itemstack1, slot.inventory, slot.getSlotIndex());
 			if (ar == null)
 				return null;
+			ar.removeAll(Collections.singleton(null));
 			boolean merged = false;
 			for (Area p : ar) {
 				Slot minSlot = getSlotFromInventory(p.inv, p.min);
@@ -136,7 +137,6 @@ public abstract class CommonContainer extends Container {
 			if (itemstack1.stackSize == itemstack.stackSize) {
 				return null;
 			}
-
 			slot.onPickupFromSlot(playerIn, itemstack1);
 		}
 

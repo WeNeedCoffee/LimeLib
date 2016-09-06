@@ -10,7 +10,7 @@ import net.minecraft.nbt.NBTTagList;
 
 public abstract class CommonContainerItem extends CommonContainer {
 
-	ItemStack stack;
+	protected ItemStack stack;
 
 	public CommonContainerItem(InventoryPlayer invPlayer, int num) {
 		super(invPlayer, InvEntry.of("inv", new InventoryBasic(null, false, num)));
