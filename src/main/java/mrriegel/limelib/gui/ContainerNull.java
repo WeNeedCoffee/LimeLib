@@ -16,4 +16,8 @@ public class ContainerNull extends Container {
 	public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
 		return null;
 	}
+
+	@Override
+	public void putStackInSlot(int slotID, ItemStack stack) {
+	}
 }

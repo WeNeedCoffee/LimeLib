@@ -1,4 +1,4 @@
-package mrriegel.limelib.gui;
+package mrriegel.limelib.gui.slot;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;

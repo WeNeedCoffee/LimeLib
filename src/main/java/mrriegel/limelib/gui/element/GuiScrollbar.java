@@ -1,6 +1,5 @@
 package mrriegel.limelib.gui.element;
 
-import mrriegel.limelib.gui.CommonGuiContainer;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.gui.GuiDrawer.Direction;
 import net.minecraft.client.Minecraft;

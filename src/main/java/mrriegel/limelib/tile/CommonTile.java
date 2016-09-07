@@ -52,9 +52,8 @@ public class CommonTile extends TileEntity {
 
 	public void sync() {
 		if (hasWorldObj() && !worldObj.isRemote)
-			for (EntityPlayer p : worldObj.playerEntities) {
+			for (EntityPlayer p : worldObj.playerEntities)
 				sync((EntityPlayerMP) p);
-			}
 	}
 
 	public void syncSafe(EntityPlayerMP player) {
@@ -66,11 +65,9 @@ public class CommonTile extends TileEntity {
 	}
 
 	public void syncSafe() {
-		if (worldObj.isRemote)
-			return;
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setLong("pos", pos.toLong());
-		PacketHandler.sendToDimension(new TileSyncMessage(nbt), worldObj.provider.getDimension());
+		if (hasWorldObj() && !worldObj.isRemote)
+			for (EntityPlayer p : worldObj.playerEntities)
+				syncSafe((EntityPlayerMP) p);
 	}
 
 	public boolean isUseableByPlayer(EntityPlayer player) {

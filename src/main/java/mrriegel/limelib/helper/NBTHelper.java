@@ -47,7 +47,7 @@ public class NBTHelper {
 	public static NBTTagCompound getTag(Object... os) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		List<NBTBase> lis = getNBTs(os);
-		NBTHelper.setInteger(nbt, "size", lis.size());
+		NBTHelper.setInt(nbt, "size", lis.size());
 		for (int i = 0; i < lis.size(); i++) {
 			NBTBase o = lis.get(i);
 			nbt.setTag("" + i, o);
@@ -57,7 +57,7 @@ public class NBTHelper {
 
 	public static List<NBTBase> getObjects(NBTTagCompound nbt) {
 		List<NBTBase> lis = Lists.newArrayList();
-		for (int i = 0; i < getInteger(nbt, "size"); i++)
+		for (int i = 0; i < getInt(nbt, "size"); i++)
 			lis.add(nbt.getTag("" + i));
 		return lis;
 	}
@@ -215,14 +215,14 @@ public class NBTHelper {
 	}
 
 	// int
-	public static int getInteger(NBTTagCompound nbt, String keyName) {
+	public static int getInt(NBTTagCompound nbt, String keyName) {
 		if (!nbt.hasKey(keyName, 99)) {
-			setInteger(nbt, keyName, 0);
+			setInt(nbt, keyName, 0);
 		}
 		return nbt.getInteger(keyName);
 	}
 
-	public static void setInteger(NBTTagCompound nbt, String keyName, int keyValue) {
+	public static void setInt(NBTTagCompound nbt, String keyName, int keyValue) {
 		if (nbt == null)
 			return;
 		nbt.setInteger(keyName, keyValue);
@@ -330,7 +330,7 @@ public class NBTHelper {
 	// Stringlist
 	public static List<String> getStringList(NBTTagCompound nbt, String keyName) {
 		List<String> lis = Lists.newArrayList();
-		int size = getInteger(nbt, keyName + SIZE);
+		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
 			lis.add(getString(nbt, keyName + ":" + i));
 		return lis;
@@ -340,7 +340,7 @@ public class NBTHelper {
 		if (nbt == null)
 			return;
 		if (keyValue != null && !keyValue.isEmpty()) {
-			setInteger(nbt, keyName + SIZE, keyValue.size());
+			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				String s = keyValue.get(i);
 				if (s != null)
@@ -352,7 +352,7 @@ public class NBTHelper {
 	// Booleanlist
 	public static List<Boolean> getBooleanList(NBTTagCompound nbt, String keyName) {
 		List<Boolean> lis = Lists.newArrayList();
-		int size = getInteger(nbt, keyName + SIZE);
+		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
 			lis.add(getBoolean(nbt, keyName + ":" + i));
 		return lis;
@@ -362,7 +362,7 @@ public class NBTHelper {
 		if (nbt == null)
 			return;
 		if (keyValue != null && !keyValue.isEmpty()) {
-			setInteger(nbt, keyName + SIZE, keyValue.size());
+			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				Boolean s = keyValue.get(i);
 				if (s != null)
@@ -374,7 +374,7 @@ public class NBTHelper {
 	// Bytelist
 	public static List<Byte> getByteList(NBTTagCompound nbt, String keyName) {
 		List<Byte> lis = Lists.newArrayList();
-		int size = getInteger(nbt, keyName + SIZE);
+		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
 			lis.add(getByte(nbt, keyName + ":" + i));
 		return lis;
@@ -384,7 +384,7 @@ public class NBTHelper {
 		if (nbt == null)
 			return;
 		if (keyValue != null && !keyValue.isEmpty()) {
-			setInteger(nbt, keyName + SIZE, keyValue.size());
+			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				Byte s = keyValue.get(i);
 				if (s != null)
@@ -396,7 +396,7 @@ public class NBTHelper {
 	// Shortlist
 	public static List<Short> getShortList(NBTTagCompound nbt, String keyName) {
 		List<Short> lis = Lists.newArrayList();
-		int size = getInteger(nbt, keyName + SIZE);
+		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
 			lis.add(getShort(nbt, keyName + ":" + i));
 		return lis;
@@ -406,7 +406,7 @@ public class NBTHelper {
 		if (nbt == null)
 			return;
 		if (keyValue != null && !keyValue.isEmpty()) {
-			setInteger(nbt, keyName + SIZE, keyValue.size());
+			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				Short s = keyValue.get(i);
 				if (s != null)
@@ -416,23 +416,23 @@ public class NBTHelper {
 	}
 
 	// Integerlist
-	public static List<Integer> getIntegerList(NBTTagCompound nbt, String keyName) {
+	public static List<Integer> getIntList(NBTTagCompound nbt, String keyName) {
 		List<Integer> lis = Lists.newArrayList();
-		int size = getInteger(nbt, keyName + SIZE);
+		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
-			lis.add(getInteger(nbt, keyName + ":" + i));
+			lis.add(getInt(nbt, keyName + ":" + i));
 		return lis;
 	}
 
-	public static void setIntegerList(NBTTagCompound nbt, String keyName, List<Integer> keyValue) {
+	public static void setIntList(NBTTagCompound nbt, String keyName, List<Integer> keyValue) {
 		if (nbt == null)
 			return;
 		if (keyValue != null && !keyValue.isEmpty()) {
-			setInteger(nbt, keyName + SIZE, keyValue.size());
+			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				Integer s = keyValue.get(i);
 				if (s != null)
-					setInteger(nbt, keyName + ":" + i, s);
+					setInt(nbt, keyName + ":" + i, s);
 			}
 		}
 	}
@@ -440,7 +440,7 @@ public class NBTHelper {
 	// Longlist
 	public static List<Long> getLongList(NBTTagCompound nbt, String keyName) {
 		List<Long> lis = Lists.newArrayList();
-		int size = getInteger(nbt, keyName + SIZE);
+		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
 			lis.add(getLong(nbt, keyName + ":" + i));
 		return lis;
@@ -450,7 +450,7 @@ public class NBTHelper {
 		if (nbt == null)
 			return;
 		if (keyValue != null && !keyValue.isEmpty()) {
-			setInteger(nbt, keyName + SIZE, keyValue.size());
+			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				Long s = keyValue.get(i);
 				if (s != null)
@@ -462,7 +462,7 @@ public class NBTHelper {
 	// Floatlist
 	public static List<Float> getFloatList(NBTTagCompound nbt, String keyName) {
 		List<Float> lis = Lists.newArrayList();
-		int size = getInteger(nbt, keyName + SIZE);
+		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
 			lis.add(getFloat(nbt, keyName + ":" + i));
 		return lis;
@@ -472,7 +472,7 @@ public class NBTHelper {
 		if (nbt == null)
 			return;
 		if (keyValue != null && !keyValue.isEmpty()) {
-			setInteger(nbt, keyName + SIZE, keyValue.size());
+			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				Float s = keyValue.get(i);
 				if (s != null)
@@ -484,7 +484,7 @@ public class NBTHelper {
 	// Doublelist
 	public static List<Double> getDoubleList(NBTTagCompound nbt, String keyName) {
 		List<Double> lis = Lists.newArrayList();
-		int size = getInteger(nbt, keyName + SIZE);
+		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
 			lis.add(getDouble(nbt, keyName + ":" + i));
 		return lis;
@@ -494,7 +494,7 @@ public class NBTHelper {
 		if (nbt == null)
 			return;
 		if (keyValue != null && !keyValue.isEmpty()) {
-			setInteger(nbt, keyName + SIZE, keyValue.size());
+			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				Double s = keyValue.get(i);
 				if (s != null)
@@ -506,7 +506,7 @@ public class NBTHelper {
 	// Taglist
 	public static List<NBTTagCompound> getTagList(NBTTagCompound nbt, String keyName) {
 		List<NBTTagCompound> lis = Lists.newArrayList();
-		int size = getInteger(nbt, keyName + SIZE);
+		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
 			lis.add(getTag(nbt, keyName + ":" + i));
 		return lis;
@@ -516,7 +516,7 @@ public class NBTHelper {
 		if (nbt == null)
 			return;
 		if (keyValue != null && !keyValue.isEmpty()) {
-			setInteger(nbt, keyName + SIZE, keyValue.size());
+			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				NBTTagCompound s = keyValue.get(i);
 				if (s != null)
@@ -528,7 +528,7 @@ public class NBTHelper {
 	// Stacklist
 	public static List<ItemStack> getItemStackList(NBTTagCompound nbt, String keyName) {
 		List<ItemStack> lis = Lists.newArrayList();
-		int size = getInteger(nbt, keyName + SIZE);
+		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
 			lis.add(getItemStack(nbt, keyName + ":" + i));
 		return lis;
@@ -538,7 +538,7 @@ public class NBTHelper {
 		if (nbt == null)
 			return;
 		if (keyValue != null && !keyValue.isEmpty()) {
-			setInteger(nbt, keyName + SIZE, keyValue.size());
+			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				ItemStack s = keyValue.get(i);
 				if (s != null)

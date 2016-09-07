@@ -30,7 +30,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -154,8 +153,6 @@ public class TestMod implements IGuiHandler {
 				if (held == null)
 					for (EntitySheep sheep : lis) {
 						RayTraceResult ra = Utils.rayTrace(sheep, 4.5F);
-						if (ra.typeOfHit == Type.BLOCK)
-							System.out.println(sheep.worldObj.getBlockState(ra.getBlockPos()));
 						// if (sheep.worldObj.provider.getDimension() == 0)
 						// TeleportationHelper.teleportEntity(sheep, -1, new
 						// BlockPos(0, 129, 0));

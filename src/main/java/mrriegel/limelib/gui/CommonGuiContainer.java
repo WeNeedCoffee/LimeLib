@@ -6,6 +6,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 
+import org.lwjgl.input.Keyboard;
+
 public abstract class CommonGuiContainer extends GuiContainer {
 
 	protected GuiDrawer drawer;
@@ -33,6 +35,12 @@ public abstract class CommonGuiContainer extends GuiContainer {
 		drawer = new GuiDrawer(guiLeft, guiTop, xSize, ySize, zLevel);
 		onUpdate();
 		super.drawScreen(mouseX, mouseY, partialTicks);
+	}
+
+	@Override
+	public void onGuiClosed() {
+		super.onGuiClosed();
+		Keyboard.enableRepeatEvents(false);
 	}
 
 	protected void onUpdate() {

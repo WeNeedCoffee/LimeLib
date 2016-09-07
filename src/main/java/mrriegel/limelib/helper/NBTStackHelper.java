@@ -70,14 +70,14 @@ public class NBTStackHelper {
 	}
 
 	// int
-	public static int getInteger(ItemStack stack, String keyName) {
+	public static int getInt(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		return NBTHelper.getInteger(stack.getTagCompound(), keyName);
+		return NBTHelper.getInt(stack.getTagCompound(), keyName);
 	}
 
-	public static void setInteger(ItemStack stack, String keyName, int keyValue) {
+	public static void setInt(ItemStack stack, String keyName, int keyValue) {
 		initNBTTagCompound(stack);
-		NBTHelper.setInteger(stack.getTagCompound(), keyName, keyValue);
+		NBTHelper.setInt(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// long
@@ -193,14 +193,14 @@ public class NBTStackHelper {
 	}
 
 	// Integerlist
-	public static List<Integer> getIntegerList(ItemStack stack, String keyName) {
+	public static List<Integer> getIntList(ItemStack stack, String keyName) {
 		initNBTTagCompound(stack);
-		return NBTHelper.getIntegerList(stack.getTagCompound(), keyName);
+		return NBTHelper.getIntList(stack.getTagCompound(), keyName);
 	}
 
-	public static void setIntegerList(ItemStack stack, String keyName, List<Integer> keyValue) {
+	public static void setIntList(ItemStack stack, String keyName, List<Integer> keyValue) {
 		initNBTTagCompound(stack);
-		NBTHelper.setIntegerList(stack.getTagCompound(), keyName, keyValue);
+		NBTHelper.setIntList(stack.getTagCompound(), keyName, keyValue);
 	}
 
 	// Longlist

@@ -5,6 +5,8 @@ import mrriegel.limelib.gui.element.ITooltip;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 
+import org.lwjgl.input.Keyboard;
+
 public abstract class CommonGuiScreen extends GuiScreen {
 
 	protected int xSize = 176;
@@ -39,6 +41,12 @@ public abstract class CommonGuiScreen extends GuiScreen {
 			}
 			zLevel -= 500;
 		}
+	}
+
+	@Override
+	public void onGuiClosed() {
+		super.onGuiClosed();
+		Keyboard.enableRepeatEvents(false);
 	}
 
 	protected void onUpdate() {

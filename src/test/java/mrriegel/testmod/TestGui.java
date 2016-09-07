@@ -10,6 +10,7 @@ import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.gui.element.GuiButtonArrow;
 import mrriegel.limelib.gui.element.GuiButtonColor;
 import mrriegel.limelib.gui.element.GuiButtonTooltip;
+import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.init.Items;
@@ -28,10 +29,12 @@ public class TestGui extends CommonGuiContainer {
 
 	GuiTextField t;
 	ItemSlot s;
+	TestTile tile;
 
 	@Override
 	public void initGui() {
 		super.initGui();
+		tile = (TestTile) ((CommonContainerTile) inventorySlots).getTile();
 		buttonList.add(new GuiButtonColor(3, 11 + guiLeft, 17 + guiTop, 33, 22, "DUMB", EnumDyeColor.WHITE));
 		buttonList.add(new GuiButtonArrow(4, 10 + guiLeft, 50 + guiTop, Direction.UP));
 		buttonList.add(s = new AbstractSlot.ItemSlot(new ItemStack(Items.BEEF), 5, 5 + guiLeft, 60 + guiTop, 3200, false, true, true, true));
@@ -39,6 +42,7 @@ public class TestGui extends CommonGuiContainer {
 		t = new GuiTextField(1, fontRendererObj, guiLeft + 130, guiTop + 77, 45, fontRendererObj.FONT_HEIGHT);
 		t.setEnableBackgroundDrawing(false);
 		t.setFocused(true);
+		t.setText(tile.k + "");
 	}
 
 	@Override
@@ -59,15 +63,22 @@ public class TestGui extends CommonGuiContainer {
 		NBTTagCompound l = new NBTTagCompound();
 		l.setString("fine", "number3");
 		l.setLong("fine2", "amerose".hashCode() + Long.MAX_VALUE);
-		((CommonContainerTile) inventorySlots).getTile().sendMessage(l);
+		tile.sendMessage(l);
 	}
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (!checkHotbarKeys(keyCode)) {
-			if (t.textboxKeyTyped(typedChar, keyCode))
-				;
-			else
+			if (t.textboxKeyTyped(typedChar, keyCode)) {
+				try {
+					tile.k = Integer.valueOf(t.getText());
+				} catch (Exception e) {
+					tile.k = 999;
+				}
+				NBTTagCompound nbt = new NBTTagCompound();
+				NBTHelper.setInt(nbt, "k", tile.k);
+				tile.sendMessage(nbt);
+			} else
 				super.keyTyped(typedChar, keyCode);
 		}
 	}
