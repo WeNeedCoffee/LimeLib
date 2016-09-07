@@ -29,6 +29,7 @@ public class PacketHandler {
 		registerMessage(WorldDataMessage.class, Side.CLIENT);
 		registerMessage(TileSyncMessage.class, Side.SERVER);
 		registerMessage(TileSyncMessage.class, Side.CLIENT);
+		registerMessage(TeleportMessage.class, Side.CLIENT);
 
 	}
 

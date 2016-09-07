@@ -13,11 +13,7 @@ public abstract class CommonGuiContainerSub extends CommonGuiContainer {
 	protected GuiScreen parent;
 
 	public CommonGuiContainerSub(Container inventorySlotsIn) {
-		this(inventorySlotsIn, true);
-	}
-
-	public CommonGuiContainerSub(Container inventorySlotsIn, boolean darkBackground) {
-		super(inventorySlotsIn, darkBackground);
+		super(inventorySlotsIn);
 		this.parent = Minecraft.getMinecraft().currentScreen;
 	}
 

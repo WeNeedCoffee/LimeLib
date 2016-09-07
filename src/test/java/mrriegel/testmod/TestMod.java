@@ -10,12 +10,12 @@ import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.RenderHelper2;
-import mrriegel.limelib.helper.TeleportationHelper;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.util.AbstractRecipe;
 import mrriegel.limelib.util.FilterItem;
+import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.passive.EntitySheep;
@@ -29,6 +29,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -145,20 +147,29 @@ public class TestMod implements IGuiHandler {
 					ItemHandlerHelper.insertItemStacked(pmiw, s.copy(), false);
 				r.removeIngredients(pmiw);
 			}
+			RayTraceResult ray = Utils.rayTrace(player);
+			// System.out.println(ray.typeOfHit);
 			if (!player.worldObj.isRemote) {
 				List<EntitySheep> lis = player.worldObj.getEntitiesWithinAABB(EntitySheep.class, new AxisAlignedBB(player.posX - 5, player.posY - 5, player.posZ - 5, player.posX + 5, player.posY + 5, player.posZ + 5));
 				if (held == null)
 					for (EntitySheep sheep : lis) {
-						if (sheep.worldObj.provider.getDimension() == 0)
-							TeleportationHelper.teleportToDimension(sheep, -1, new BlockPos(0, 130, 0));
-						else
-							TeleportationHelper.teleportToDimension(sheep, 0, new BlockPos(65, 81, 268));
+						RayTraceResult ra = Utils.rayTrace(sheep, 4.5F);
+						if (ra.typeOfHit == Type.BLOCK)
+							System.out.println(sheep.worldObj.getBlockState(ra.getBlockPos()));
+						// if (sheep.worldObj.provider.getDimension() == 0)
+						// TeleportationHelper.teleportEntity(sheep, -1, new
+						// BlockPos(0, 129, 0));
+						// else
+						// TeleportationHelper.teleportEntity(sheep, 0, new
+						// BlockPos(65, 81, 268));
 					}
 				else {
-					if (player.worldObj.provider.getDimension() == 0)
-						TeleportationHelper.teleportToDimension(player, -1, new BlockPos(0, 130, 0));
-					else
-						TeleportationHelper.teleportToDimension(player, 0, new BlockPos(65, 81, 268));
+					// if (player.worldObj.provider.getDimension() == 0)
+					// TeleportationHelper.teleportEntity(player, -1, new
+					// BlockPos(0, 129, 0));
+					// else
+					// TeleportationHelper.teleportEntity(player, 0, new
+					// BlockPos(65, 81, 268));
 				}
 				// ItemEntityWrapper w = new
 				// ItemEntityWrapper(e.getEntityLiving(), 4);

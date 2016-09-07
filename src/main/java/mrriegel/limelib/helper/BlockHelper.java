@@ -1,5 +1,6 @@
 package mrriegel.limelib.helper;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -33,6 +34,7 @@ public class BlockHelper {
 				world.playEvent(2001, pos, Block.getStateId(state));
 			world.setBlockToAir(pos);
 		}
+		lis.removeAll(Collections.singleton(null));
 		return lis;
 	}
 

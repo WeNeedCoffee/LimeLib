@@ -39,19 +39,30 @@ public class CommonTile extends TileEntity {
 		readFromNBT(pkt.getNbtCompound());
 	}
 
-	public void sync() {
+	public void sync(EntityPlayerMP player) {
 		markDirty();
+		if (hasWorldObj() && !worldObj.isRemote && player.getPosition().getDistance(pos.getX(), pos.getY(), pos.getZ()) < 32)
+			try {
+				player.connection.sendPacket(getUpdatePacket());
+			} catch (Error e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
+	}
+
+	public void sync() {
 		if (hasWorldObj() && !worldObj.isRemote)
 			for (EntityPlayer p : worldObj.playerEntities) {
-				if (p.getPosition().getDistance(pos.getX(), pos.getY(), pos.getZ()) < 32) {
-					try {
-						((EntityPlayerMP) p).connection.sendPacket(getUpdatePacket());
-					} catch (Error e) {
-						System.out.println(e.getMessage());
-						e.printStackTrace();
-					}
-				}
+				sync((EntityPlayerMP) p);
 			}
+	}
+
+	public void syncSafe(EntityPlayerMP player) {
+		if (worldObj.isRemote)
+			return;
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setLong("pos", pos.toLong());
+		PacketHandler.sendTo(new TileSyncMessage(nbt), player);
 	}
 
 	public void syncSafe() {

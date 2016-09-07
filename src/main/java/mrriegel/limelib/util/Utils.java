@@ -3,7 +3,16 @@ package mrriegel.limelib.util;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import mrriegel.limelib.LimeLib;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.common.FMLContainer;
 import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Loader;
@@ -11,6 +20,7 @@ import net.minecraftforge.fml.common.ModContainer;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.authlib.GameProfile;
 
 public class Utils {
 
@@ -51,5 +61,20 @@ public class Utils {
 			return String.valueOf(Math.round(value / 1000) / 1000D) + "M";
 		else
 			return String.valueOf(Math.round(value / 1000000) / 1000D) + "G";
+	}
+
+	public static FakePlayer getFakePlayer(WorldServer world) {
+		return FakePlayerFactory.get(world, new GameProfile(UUID.fromString("672ec311-27a5-449e-925c-69a55980d378"), LimeLib.MODID + "_FakePlayer"));
+	}
+
+	public static RayTraceResult rayTrace(Entity entity, double distance) {
+		Vec3d vec3d = entity.getPositionEyes(0);
+		Vec3d vec3d1 = entity.getLook(0);
+		Vec3d vec3d2 = vec3d.addVector(vec3d1.xCoord * distance, vec3d1.yCoord * distance, vec3d1.zCoord * distance);
+		return entity.worldObj.rayTraceBlocks(vec3d, vec3d2, false, false, true);
+	}
+
+	public static RayTraceResult rayTrace(EntityPlayer player) {
+		return rayTrace(player, player.capabilities.isCreativeMode ? 5F : 4.5F);
 	}
 }

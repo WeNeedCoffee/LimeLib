@@ -78,7 +78,13 @@ public abstract class CommonContainer extends Container {
 				int id = i + k * width + startIndex;
 				if (id >= inv.getSizeInventory())
 					break;
-				this.addSlotToContainer(new UpdateSlot(inv, id, x + i * 18, y + k * 18));
+				this.addSlotToContainer(new Slot(inv, id, x + i * 18, y + k * 18) {
+					@Override
+					public void onSlotChanged() {
+						super.onSlotChanged();
+						inventoryChanged();
+					}
+				});
 			}
 		}
 	}
@@ -180,19 +186,6 @@ public abstract class CommonContainer extends Container {
 			this.inv = inv;
 			this.min = min;
 			this.max = max;
-		}
-	}
-
-	protected class UpdateSlot extends Slot {
-
-		public UpdateSlot(IInventory inventoryIn, int index, int xPosition, int yPosition) {
-			super(inventoryIn, index, xPosition, yPosition);
-		}
-
-		@Override
-		public void onSlotChanged() {
-			super.onSlotChanged();
-			inventoryChanged();
 		}
 	}
 

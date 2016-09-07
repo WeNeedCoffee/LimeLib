@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import mrriegel.limelib.gui.CommonContainerTile;
 import mrriegel.limelib.gui.CommonGuiContainer;
+import mrriegel.limelib.gui.GuiDrawer.Direction;
 import mrriegel.limelib.gui.element.AbstractSlot;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.gui.element.GuiButtonArrow;
@@ -42,21 +43,14 @@ public class TestGui extends CommonGuiContainer {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		// drawBackgroundTexture(0, 0, 80, 80);
-		// drawBackgroundTexture(90, 0, 80, 80);
-		// drawBackgroundTexture(0, 95, 80, 80);
-		// drawBackgroundTexture(90, 95, 80, 80);
-		drawBackgroundTexture();
-		// drawSlot(32, 13);
-		drawPlayerSlots(19, 99);
-		drawSlots(64, 19, 3, 3);
+		drawer.drawBackgroundTexture();
+		drawer.drawPlayerSlots(19, 99);
+		drawer.drawSlots(64, 19, 3, 3);
 		int k = (int) System.currentTimeMillis();
 		k /= 65;
-		drawProgressArrow(148, 12, 0.4f, Direction.LEFT);
-		// drawTextfield(138, 67, 32);
-		// drawScrollbar(4, 89, 50, 0, Direction.DOWN);
-		drawSizedSlot(150, 35, 9);
-		drawTextfield(t);
+		drawer.drawProgressArrow(148, 12, 0.4f, Direction.LEFT);
+		drawer.drawSizedSlot(150, 35, 9);
+		drawer.drawTextfield(t);
 		t.drawTextBox();
 	}
 

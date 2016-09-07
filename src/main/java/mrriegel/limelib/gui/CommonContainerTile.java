@@ -4,14 +4,14 @@ import mrriegel.limelib.tile.CommonTileInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 
-public abstract class CommonContainerTile extends CommonContainer {
+public abstract class CommonContainerTile<T extends CommonTileInventory> extends CommonContainer {
 
-	public CommonContainerTile(InventoryPlayer invPlayer, CommonTileInventory tile) {
+	public CommonContainerTile(InventoryPlayer invPlayer, T tile) {
 		super(invPlayer, InvEntry.of("tile", tile));
 	}
 
-	public CommonTileInventory getTile() {
-		return (CommonTileInventory) invs.get("tile");
+	public T getTile() {
+		return (T) invs.get("tile");
 	}
 
 	@Override

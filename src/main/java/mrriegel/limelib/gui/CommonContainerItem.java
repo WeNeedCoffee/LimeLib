@@ -1,12 +1,12 @@
 package mrriegel.limelib.gui;
 
+import mrriegel.limelib.util.ItemInvWrapper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 
 public abstract class CommonContainerItem extends CommonContainer {
 
@@ -38,30 +38,17 @@ public abstract class CommonContainerItem extends CommonContainer {
 
 	protected void writeToStack() {
 		IInventory inv = invs.get("inv");
-		NBTTagList nbttaglist = new NBTTagList();
-		for (int i = 0; i < inv.getSizeInventory(); ++i) {
-			if (inv.getStackInSlot(i) != null) {
-				NBTTagCompound nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte("Slot", (byte) i);
-				inv.getStackInSlot(i).writeToNBT(nbttagcompound);
-				nbttaglist.appendTag(nbttagcompound);
-			}
-		}
-		stack.getTagCompound().setTag("Items", nbttaglist);
+		ItemInvWrapper w = new ItemInvWrapper(stack, inv.getSizeInventory());
+		for (int i = 0; i < inv.getSizeInventory(); i++)
+			w.setStackInSlot(i, inv.getStackInSlot(i));
 		invPlayer.mainInventory[invPlayer.currentItem] = stack;
 	}
 
 	protected void readFromStack() {
-		NBTTagCompound compound = stack.getTagCompound().getCompoundTag("items");
-		NBTTagList nbttaglist = compound.getTagList("Items", 10);
 		IInventory inv = new InventoryBasic(null, false, invs.get("inv").getSizeInventory());
-		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-			NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-			int j = nbttagcompound.getByte("Slot") & 255;
-			if (j >= 0 && j < inv.getSizeInventory()) {
-				inv.setInventorySlotContents(j, ItemStack.loadItemStackFromNBT(nbttagcompound));
-			}
-		}
+		ItemInvWrapper w = new ItemInvWrapper(stack, inv.getSizeInventory());
+		for (int i = 0; i < inv.getSizeInventory(); i++)
+			inv.setInventorySlotContents(i, w.getStackInSlot(i));
 		invs.put("inv", inv);
 	}
 

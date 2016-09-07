@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public abstract class CommonBlockContainer extends CommonBlock implements ITileEntityProvider {
+public abstract class CommonBlockContainer<T extends CommonTile> extends CommonBlock implements ITileEntityProvider {
 
 	public CommonBlockContainer(Material materialIn, String name) {
 		super(materialIn, name);
@@ -37,7 +37,7 @@ public abstract class CommonBlockContainer extends CommonBlock implements ITileE
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
 	}
 
-	protected abstract Class<? extends TileEntity> getTile();
+	protected abstract Class<? extends T> getTile();
 
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {

@@ -12,7 +12,7 @@ import net.minecraftforge.client.model.ModelLoader;
 
 public abstract class CommonSubtypeItem extends CommonItem {
 
-	int num;
+	private final int num;
 
 	public CommonSubtypeItem(String name, int num) {
 		super(name);
@@ -39,11 +39,11 @@ public abstract class CommonSubtypeItem extends CommonItem {
 
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-		String trans = "tooltip." + getRegistryName() + "_" + stack.getItemDamage();
-		if (I18n.hasKey(trans))
-			tooltip.add(I18n.format(trans));
+		for (int i = 0; i < 99; i++) {
+			String trans = "tooltip." + getRegistryName() + i + "_" + stack.getItemDamage();
+			if (I18n.hasKey(trans))
+				tooltip.add(I18n.format(trans));
+		}
 	}
-
-	// public abstract Class<? extends Enum> getEnum();
 
 }

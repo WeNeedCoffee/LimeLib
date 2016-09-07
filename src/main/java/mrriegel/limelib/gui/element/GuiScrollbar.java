@@ -1,7 +1,8 @@
 package mrriegel.limelib.gui.element;
 
 import mrriegel.limelib.gui.CommonGuiContainer;
-import mrriegel.limelib.gui.CommonGuiContainer.Direction;
+import mrriegel.limelib.gui.GuiDrawer;
+import mrriegel.limelib.gui.GuiDrawer.Direction;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
@@ -23,7 +24,7 @@ public class GuiScrollbar extends GuiButtonExt {
 			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			int k = this.getHoverState(this.hovered);
 			boolean horizontal = dir.isHorizontal();
-			GuiUtils.drawContinuousTexturedBox(CommonGuiContainer.COMMON_TEXTURES, this.xPosition, this.yPosition, 0, 0, this.width, this.height, 18, 18, 1, this.zLevel);
+			GuiUtils.drawContinuousTexturedBox(GuiDrawer.COMMON_TEXTURES, this.xPosition, this.yPosition, 0, 0, this.width, this.height, 18, 18, 1, this.zLevel);
 			this.mouseDragged(mc, mouseX, mouseY);
 			int x = xPosition + 1;
 			int y = yPosition + 1;

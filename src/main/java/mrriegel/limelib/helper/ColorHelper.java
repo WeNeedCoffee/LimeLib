@@ -21,7 +21,7 @@ public class ColorHelper {
 	}
 
 	public static void glColor(int color) {
-		GlStateManager.color(getRed(color) / 256f, getGreen(color) / 256f, getBlue(color) / 256f, getAlpha(color) / 256f);
+		GlStateManager.color(getRed(color) / 255f, getGreen(color) / 255f, getBlue(color) / 255f, getAlpha(color) / 255f);
 	}
 
 	public static int getRed(int color) {

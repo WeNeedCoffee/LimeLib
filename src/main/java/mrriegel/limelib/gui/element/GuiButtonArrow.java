@@ -1,7 +1,8 @@
 package mrriegel.limelib.gui.element;
 
 import mrriegel.limelib.gui.CommonGuiContainer;
-import mrriegel.limelib.gui.CommonGuiContainer.Direction;
+import mrriegel.limelib.gui.GuiDrawer;
+import mrriegel.limelib.gui.GuiDrawer.Direction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
@@ -51,7 +52,7 @@ public class GuiButtonArrow extends GuiButtonExt {
 			int tx = dir == Direction.DOWN || dir == Direction.UP ? 124 : dir == Direction.LEFT ? 142 : 152;
 			int ty = dir == Direction.UP || dir == Direction.LEFT || dir == Direction.RIGHT ? 0 : 10;
 
-			mc.getTextureManager().bindTexture(CommonGuiContainer.COMMON_TEXTURES);
+			mc.getTextureManager().bindTexture(GuiDrawer.COMMON_TEXTURES);
 			drawTexturedModalRect(xPosition, yPosition, tx, ty + k * 20, width, height);
 			// GuiUtils.drawContinuousTexturedBox(xPosition, yPosition, 0, 0,
 			// 18, 18, 18, 18, 1, zLevel);

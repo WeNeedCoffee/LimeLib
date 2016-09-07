@@ -27,10 +27,11 @@ public class CommonItem extends Item {
 
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-		super.addInformation(stack, playerIn, tooltip, advanced);
-		String trans = "tooltip." + getRegistryName();
-		if (I18n.hasKey(trans))
-			tooltip.add(I18n.format(trans));
+		for (int i = 0; i < 100; i++) {
+			String trans = "tooltip." + getRegistryName() + i;
+			if (I18n.hasKey(trans))
+				tooltip.add(I18n.format(trans));
+		}
 	}
 
 }

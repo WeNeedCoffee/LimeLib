@@ -1,7 +1,6 @@
 package mrriegel.limelib.network;
 
 import mrriegel.limelib.helper.NBTHelper;
-import mrriegel.limelib.util.CommonWorldData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldSavedData;
