@@ -19,7 +19,7 @@ public class TestContainer extends CommonContainerTile {
 	@Override
 	protected void initSlots() {
 		initPlayerSlots(20, 100);
-		setSlots(getTile(), 65, 20, 3, 3, 0);
+		initSlots(getTile(), 65, 20, 3, 3, 0);
 	}
 
 	@Override

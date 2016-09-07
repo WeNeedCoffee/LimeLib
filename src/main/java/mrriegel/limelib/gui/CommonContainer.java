@@ -66,11 +66,11 @@ public abstract class CommonContainer extends Container {
 	}
 
 	protected void initPlayerSlots(int x, int y) {
-		setSlots(invPlayer, x, y + 58, 9, 1, 0);
-		setSlots(invPlayer, x, y, 9, 3, 9);
+		initSlots(invPlayer, x, y + 58, 9, 1, 0);
+		initSlots(invPlayer, x, y, 9, 3, 9);
 	}
 
-	protected void setSlots(IInventory inv, int x, int y, int width, int height, int startIndex) {
+	protected void initSlots(IInventory inv, int x, int y, int width, int height, int startIndex) {
 		if (inv == null)
 			return;
 		for (int k = 0; k < height; ++k) {
@@ -83,12 +83,16 @@ public abstract class CommonContainer extends Container {
 		}
 	}
 
-	protected void setSlots(IInventory inv, int x, int y, int width, int height) {
-		setSlots(inv, x, y, width, height, 0);
+	protected void initSlots(IInventory inv, int x, int y, int width, int height) {
+		initSlots(inv, x, y, width, height, 0);
 	}
 
-	protected void setSlots(String name, int x, int y, int width, int height, int startIndex) {
-		setSlots(invs.get(name), x, y, width, height, startIndex);
+	protected void initSlots(String name, int x, int y, int width, int height, int startIndex) {
+		initSlots(invs.get(name), x, y, width, height, startIndex);
+	}
+
+	protected void initSlots(String name, int x, int y, int width, int height) {
+		initSlots(name, x, y, width, height, 0);
 	}
 
 	protected void inventoryChanged() {

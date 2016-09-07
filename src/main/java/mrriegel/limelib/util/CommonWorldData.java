@@ -11,14 +11,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import com.google.gson.Gson;
-
 public abstract class CommonWorldData extends WorldSavedData {
 
 	public CommonWorldData(String name) {
 		super(name);
 	}
-	
+
 	protected abstract boolean isGlobal();
 
 	public void sync(@Nullable EntityPlayer player) {

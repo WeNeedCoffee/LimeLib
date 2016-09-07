@@ -1,6 +1,5 @@
 package mrriegel.limelib.helper;
 
-import java.awt.Color;
 import java.util.Set;
 
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -15,7 +14,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import org.lwjgl.opengl.GL11;
 
 public class RenderHelper2 {
-	public static void renderBlockOverlays(RenderWorldLastEvent event, EntityPlayerSP player, Set<BlockPos> positions, Color cube, Color line) {
+	public static void renderBlockOverlays(RenderWorldLastEvent event, EntityPlayerSP player, Set<BlockPos> positions, int cube, int line) {
 		if (positions == null || positions.size() == 0)
 			return;
 
@@ -46,12 +45,12 @@ public class RenderHelper2 {
 		GlStateManager.popAttrib();
 	}
 
-	private static void renderCubes(Set<BlockPos> positions, float offset, Color color) {
+	private static void renderCubes(Set<BlockPos> positions, float offset, int color) {
 		RenderHelper.enableStandardItemLighting();
 		Tessellator t = Tessellator.getInstance();
 		VertexBuffer renderer = t.getBuffer();
 		renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-		GlStateManager.color(color.getRed() / 256f, color.getGreen() / 256f, color.getBlue() / 256f, color.getAlpha() / 256f);
+		ColorHelper.glColor(color);
 		for (BlockPos coordinate : positions) {
 			float x = coordinate.getX();
 			float y = coordinate.getY();
@@ -107,12 +106,12 @@ public class RenderHelper2 {
 		renderer.pos(x + o, y, z).endVertex();
 	}
 
-	private static void renderOutlines(Set<BlockPos> positions, float thickness, float offset, Color color) {
+	private static void renderOutlines(Set<BlockPos> positions, float thickness, float offset, int color) {
 		RenderHelper.enableStandardItemLighting();
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer worldRenderer = tessellator.getBuffer();
 		worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-		GlStateManager.color(color.getRed() / 256f, color.getGreen() / 256f, color.getBlue() / 256f, color.getAlpha() / 256f);
+		ColorHelper.glColor(color);
 		GL11.glLineWidth(thickness);
 
 		for (BlockPos coordinate : positions) {

@@ -3,6 +3,7 @@ package mrriegel.limelib.tile;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.TileGuiMessage;
 import mrriegel.limelib.network.TileMessage;
+import mrriegel.limelib.network.TileSyncMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -53,8 +54,16 @@ public class CommonTile extends TileEntity {
 			}
 	}
 
+	public void syncSafe() {
+		if (worldObj.isRemote)
+			return;
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setLong("pos", pos.toLong());
+		PacketHandler.sendToDimension(new TileSyncMessage(nbt), worldObj.provider.getDimension());
+	}
+
 	public boolean isUseableByPlayer(EntityPlayer player) {
-		return this.worldObj.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64.0D;
+		return this.worldObj.getTileEntity(this.pos) != this ? false : player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
 	}
 
 	public ItemStack[] getDroppingItems() {

@@ -17,7 +17,6 @@ import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.math.BlockPos;
 
-import com.google.common.collect.BiMap;
 import com.google.common.collect.Lists;
 
 public class NBTHelper {

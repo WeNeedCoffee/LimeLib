@@ -23,25 +23,27 @@ public class BlockHelper {
 		return !world.isAirBlock(pos) && !state.getBlock().getMaterial(state).isLiquid() && state.getBlock() != Blocks.BEDROCK && state.getBlock().getBlockHardness(state, world, pos) > -1.0F;
 	}
 
-	public static List<ItemStack> breakBlockWithFortune(World world, BlockPos pos, int fortune, EntityPlayer player, boolean simulate) {
+	public static List<ItemStack> breakBlockWithFortune(World world, BlockPos pos, int fortune, EntityPlayer player, boolean simulate, boolean particle) {
 		IBlockState state = world.getBlockState(pos);
 		if (!isBlockBreakable(world, pos))
 			return Lists.newArrayList();
 		List<ItemStack> lis = Lists.newArrayList(state.getBlock().getDrops(world, pos, state, fortune));
 		if (!simulate) {
-			world.playEvent(2001, pos, Block.getStateId(state));
+			if (particle)
+				world.playEvent(2001, pos, Block.getStateId(state));
 			world.setBlockToAir(pos);
 		}
 		return lis;
 	}
 
-	public static ItemStack breakBlockWithSilk(World world, BlockPos pos, int fortune, EntityPlayer player, boolean simulate) {
+	public static ItemStack breakBlockWithSilk(World world, BlockPos pos, int fortune, EntityPlayer player, boolean simulate, boolean particle) {
 		IBlockState state = world.getBlockState(pos);
 		if (!isBlockBreakable(world, pos) || state.getBlock().canSilkHarvest(world, pos, state, player))
 			return null;
 		ItemStack stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, player);
 		if (!simulate) {
-			world.playEvent(2001, pos, Block.getStateId(state));
+			if (particle)
+				world.playEvent(2001, pos, Block.getStateId(state));
 			world.setBlockToAir(pos);
 		}
 		return stack;

@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
-public class GuiButtonArrow extends GuiButtonExt{
+public class GuiButtonArrow extends GuiButtonExt {
 
 	Direction dir;
 
@@ -50,10 +50,11 @@ public class GuiButtonArrow extends GuiButtonExt{
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			int tx = dir == Direction.DOWN || dir == Direction.UP ? 124 : dir == Direction.LEFT ? 142 : 152;
 			int ty = dir == Direction.UP || dir == Direction.LEFT || dir == Direction.RIGHT ? 0 : 10;
-			
+
 			mc.getTextureManager().bindTexture(CommonGuiContainer.COMMON_TEXTURES);
 			drawTexturedModalRect(xPosition, yPosition, tx, ty + k * 20, width, height);
-//			GuiUtils.drawContinuousTexturedBox(xPosition, yPosition, 0, 0, 18, 18, 18, 18, 1, zLevel);
+			// GuiUtils.drawContinuousTexturedBox(xPosition, yPosition, 0, 0,
+			// 18, 18, 18, 18, 1, zLevel);
 			this.mouseDragged(mc, mouseX, mouseY);
 		}
 	}

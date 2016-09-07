@@ -5,21 +5,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.block.CommonBlock;
+import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.RenderHelper2;
+import mrriegel.limelib.helper.TeleportationHelper;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.util.AbstractRecipe;
-import mrriegel.limelib.util.DataWrapper;
 import mrriegel.limelib.util.FilterItem;
-import mrriegel.limelib.util.ItemInvWrapper;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -28,11 +27,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.minecraftforge.event.terraingen.OreGenEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -43,16 +45,13 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
-import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.common.primitives.Ints;
 
 @Mod(modid = "lalal", name = "kohle")
 public class TestMod implements IGuiHandler {
@@ -67,6 +66,7 @@ public class TestMod implements IGuiHandler {
 	public void preInit(FMLPreInitializationEvent event) {
 		System.out.println("zap");
 		System.out.println(Loader.instance().activeModContainer().getName());
+		OBJLoader.INSTANCE.addDomain("lalal");
 		block.registerBlock();
 		block.initModel();
 		item.registerItem();
@@ -78,6 +78,7 @@ public class TestMod implements IGuiHandler {
 		MinecraftForge.EVENT_BUS.register(this);
 		NetworkRegistry.INSTANCE.registerGuiHandler(mod, this);
 		PacketHandler.registerMessage(TestMessage.class, Side.CLIENT);
+		MinecraftForge.ORE_GEN_BUS.register(this);
 	}
 
 	@Mod.EventHandler
@@ -124,6 +125,10 @@ public class TestMod implements IGuiHandler {
 	}
 
 	@SubscribeEvent
+	public void stone(OreGenEvent.Post e) {
+	}
+
+	@SubscribeEvent
 	public void jump(LivingJumpEvent e) {
 		if (e.getEntityLiving() instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) e.getEntityLiving();
@@ -131,7 +136,7 @@ public class TestMod implements IGuiHandler {
 			NBTTagCompound x = new NBTTagCompound();
 			x.setString("l", WordUtils.capitalizeFully(RandomStringUtils.randomAlphabetic(new Random().nextInt(6) + 4)));
 			if (!e.getEntityLiving().worldObj.isRemote) {
-				PacketHandler.sendTo(new TestMessage(NBTHelper.getTag("oasis", 77L, .45122f, new ItemStack(Items.NETHER_STAR), "lach mal")), (EntityPlayerMP) player);
+				PacketHandler.sendTo(new TestMessage(NBTHelper.getTag("oasis", 77L, .45122f, "lach mal")), (EntityPlayerMP) player);
 			}
 			PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
 			R r = new R(Lists.newArrayList(new ItemStack(Blocks.GOLD_BLOCK), new ItemStack(Items.IRON_INGOT, 4)), true, Items.APPLE, Blocks.COAL_BLOCK, new ItemStack(Blocks.BOOKSHELF));
@@ -140,28 +145,42 @@ public class TestMod implements IGuiHandler {
 					ItemHandlerHelper.insertItemStacked(pmiw, s.copy(), false);
 				r.removeIngredients(pmiw);
 			}
-			if (held != null && !player.worldObj.isRemote) {
-				System.out.println(held.getTagCompound());
-				ItemInvWrapper w = new ItemInvWrapper(held, 8);
-				System.out.println(held.getTagCompound());
-				ItemHandlerHelper.insertItemStacked(w, new ItemStack(Items.APPLE, 55), false);
-				System.out.println(held.getTagCompound());
-				InvHelper.extractItem(w, new FilterItem(Items.APPLE), 2, false);
-				System.out.println(held.getTagCompound());
+			if (!player.worldObj.isRemote) {
+				List<EntitySheep> lis = player.worldObj.getEntitiesWithinAABB(EntitySheep.class, new AxisAlignedBB(player.posX - 5, player.posY - 5, player.posZ - 5, player.posX + 5, player.posY + 5, player.posZ + 5));
+				if (held == null)
+					for (EntitySheep sheep : lis) {
+						if (sheep.worldObj.provider.getDimension() == 0)
+							TeleportationHelper.teleportToDimension(sheep, -1, new BlockPos(0, 130, 0));
+						else
+							TeleportationHelper.teleportToDimension(sheep, 0, new BlockPos(65, 81, 268));
+					}
+				else {
+					if (player.worldObj.provider.getDimension() == 0)
+						TeleportationHelper.teleportToDimension(player, -1, new BlockPos(0, 130, 0));
+					else
+						TeleportationHelper.teleportToDimension(player, 0, new BlockPos(65, 81, 268));
+				}
+				// ItemEntityWrapper w = new
+				// ItemEntityWrapper(e.getEntityLiving(), 4);
+				// for (int i = 0; i < w.getSlots(); i++)
+				// System.out.println(i + " " + w.getStackInSlot(i));
+				// ItemHandlerHelper.insertItemStacked(w, new
+				// ItemStack(Items.BAKED_POTATO), false);
+				// System.out.println("ins");
+				// for (int i = 0; i < w.getSlots(); i++)
+				// System.out.println(i + " " + w.getStackInSlot(i));
+				// ItemHandlerHelper.insertItemStacked(pmiw,
+				// w.getStackInSlot(0), false);
 			}
-			// if (e.getEntityLiving().worldObj.isRemote)
-			// IN.sendToServer(new TestMessage(x));#
 		}
 	}
 
-	@SubscribeEvent
+	// @SubscribeEvent
 	public void r(RenderWorldLastEvent e) {
-		Color c = Color.cyan;
 		if (Minecraft.getMinecraft().thePlayer.getHeldItemMainhand() == null)
 			return;
-		c = new Color(c.getRed(), c.getGreen(), c.getBlue(), 144);
 		for (TileEntity t : Minecraft.getMinecraft().theWorld.loadedTileEntityList)
-			RenderHelper2.renderBlockOverlays(e, Minecraft.getMinecraft().thePlayer, Sets.newHashSet(t.getPos()), c, Color.orange);
+			RenderHelper2.renderBlockOverlays(e, Minecraft.getMinecraft().thePlayer, Sets.newHashSet(t.getPos()), ColorHelper.getRGB(Color.CYAN.getRGB(), 144), Color.orange.getRGB());
 	}
 
 	@Override

@@ -2,10 +2,7 @@ package mrriegel.limelib.gui.element;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.EnumDyeColor;

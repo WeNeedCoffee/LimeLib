@@ -8,13 +8,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class CommonItem extends Item {
 
 	public CommonItem(String name) {
-		System.out.println(Loader.instance().activeModContainer().getName());
 		setRegistryName(name);
 		setUnlocalizedName(getRegistryName().toString());
 	}

@@ -1,6 +1,5 @@
 package mrriegel.limelib.gui.element;
 
-import java.util.List;
 
 public interface ITooltip {
 

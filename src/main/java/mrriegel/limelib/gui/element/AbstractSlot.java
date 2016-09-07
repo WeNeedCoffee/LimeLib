@@ -39,9 +39,9 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 		List<String> list = stack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
 		for (int i = 0; i < list.size(); ++i) {
 			if (i == 0) {
-				list.set(i, stack.getRarity().rarityColor + (String) list.get(i));
+				list.set(i, stack.getRarity().rarityColor + list.get(i));
 			} else {
-				list.set(i, TextFormatting.GRAY + (String) list.get(i));
+				list.set(i, TextFormatting.GRAY + list.get(i));
 			}
 		}
 		FontRenderer font = stack.getItem().getFontRenderer(stack);
@@ -95,15 +95,15 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, stack, xPosition, yPosition, num);
 			}
 			if (square && isMouseOver()) {
-				GlStateManager.disableLighting();
-				GlStateManager.disableDepth();
+				// GlStateManager.disableLighting();
+				// GlStateManager.disableDepth();
 				int j1 = xPosition;
 				int k1 = yPosition;
 				GlStateManager.colorMask(true, true, true, false);
 				drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, -2130706433);
 				GlStateManager.colorMask(true, true, true, true);
-				GlStateManager.enableLighting();
-				GlStateManager.enableDepth();
+				// GlStateManager.enableLighting();
+				// GlStateManager.enableDepth();
 			}
 			GlStateManager.popMatrix();
 		}
@@ -171,15 +171,15 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 				}
 			}
 			if (square && isMouseOver()) {
-				GlStateManager.disableLighting();
-				GlStateManager.disableDepth();
+				// GlStateManager.disableLighting();
+				// GlStateManager.disableDepth();
 				int j1 = xPosition;
 				int k1 = yPosition;
 				GlStateManager.colorMask(true, true, true, false);
 				drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, -2130706433);
 				GlStateManager.colorMask(true, true, true, true);
-				GlStateManager.enableLighting();
-				GlStateManager.enableDepth();
+				// GlStateManager.enableLighting();
+				// GlStateManager.enableDepth();
 			}
 		}
 

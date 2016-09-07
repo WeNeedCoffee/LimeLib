@@ -2,7 +2,8 @@ package mrriegel.limelib.util;
 
 import java.util.List;
 
-import mrriegel.limelib.helper.NBTStackHelper;
+import mrriegel.limelib.helper.NBTHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
@@ -10,30 +11,30 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 import com.google.common.collect.Lists;
 
-public class ItemInvWrapper extends InvWrapper {
+public class ItemEntityWrapper extends InvWrapper {
 
-	private final ItemStack stack;
-	private static final String NAME = "invwrapper";
+	private final Entity entity;
+	private static final String NAME = "entitywrapper";
 	private String name;
 
-	public ItemInvWrapper(ItemStack stack, int size, String name) {
-		super(getInv(stack, size, name));
-		this.stack = stack;
+	public ItemEntityWrapper(Entity entity, int size, String name) {
+		super(getInv(entity, size, name));
+		this.entity = entity;
 		this.name = name;
 	}
 
-	public ItemInvWrapper(ItemStack stack, int size) {
-		this(stack, size, NAME);
+	public ItemEntityWrapper(Entity entity, int size) {
+		this(entity, size, NAME);
 	}
 
-	private static IInventory getInv(ItemStack stack, int size, String name) {
+	private static IInventory getInv(Entity entity, int size, String name) {
 		InventoryBasic inv = new InventoryBasic("null", false, size);
-		List<ItemStack> lis = NBTStackHelper.getItemStackList(stack, name);
+		List<ItemStack> lis = NBTHelper.getItemStackList(entity.getEntityData(), name);
 		if (lis.size() < size) {
 			List<ItemStack> l = Lists.newArrayList();
 			for (int i = 0; i < size; i++)
 				l.add(null);
-			NBTStackHelper.setItemStackList(stack, name, l);
+			NBTHelper.setItemStackList(entity.getEntityData(), name, l);
 			lis = Lists.newArrayList(l);
 		}
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
@@ -42,18 +43,18 @@ public class ItemInvWrapper extends InvWrapper {
 		return inv;
 	}
 
-	public ItemStack getStack() {
-		return stack;
+	public Entity getStack() {
+		return entity;
 	}
 
 	@Override
 	public int getSlots() {
-		return NBTStackHelper.getItemStackList(stack, name).size();
+		return NBTHelper.getItemStackList(entity.getEntityData(), name).size();
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int slot) {
-		return NBTStackHelper.getItemStackList(stack, name).get(slot);
+		return NBTHelper.getItemStackList(entity.getEntityData(), name).get(slot);
 	}
 
 	@Override
@@ -80,7 +81,7 @@ public class ItemInvWrapper extends InvWrapper {
 		List<ItemStack> l = Lists.newArrayList();
 		for (int i = 0; i < getInv().getSizeInventory(); i++)
 			l.add(getInv().getStackInSlot(i));
-		NBTStackHelper.setItemStackList(this.stack, name, l);
+		NBTHelper.setItemStackList(this.entity.getEntityData(), name, l);
 	}
 
 }

@@ -23,4 +23,22 @@ public class TestBlock extends CommonBlockContainer {
 		return TestTile.class;
 	}
 
+	// @Override
+	// public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess
+	// blockAccess, BlockPos pos, EnumFacing side) {
+	// // TODO Auto-generated method stub
+	// return false;
+	// }
+	//
+	// @Override
+	// public boolean isBlockNormalCube(IBlockState state) {
+	// // TODO Auto-generated method stub
+	// return false;
+	// }
+	// @Override
+	// public boolean isOpaqueCube(IBlockState state) {
+	// // TODO Auto-generated method stub
+	// return false;
+	// }
+
 }

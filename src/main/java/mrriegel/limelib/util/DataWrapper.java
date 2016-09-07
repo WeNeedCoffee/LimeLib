@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public abstract class DataWrapper implements INBTSerializable<NBTTagCompound> {
-	/**thats bad*/
+	/** thats bad */
 	public final String capaName;
 	protected NBTTagCompound nbt;
 

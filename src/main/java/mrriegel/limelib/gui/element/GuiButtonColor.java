@@ -1,13 +1,8 @@
 package mrriegel.limelib.gui.element;
 
-import java.awt.Color;
-import java.util.List;
-
-import com.google.common.collect.Lists;
-
+import mrriegel.limelib.helper.ColorHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
@@ -22,7 +17,7 @@ public class GuiButtonColor extends GuiButtonExt {
 
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-		if (this.visible && color != null) {
+		if (this.visible) {
 			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			int k = this.getHoverState(this.hovered);
 			boolean flag = k == 2;
@@ -39,17 +34,14 @@ public class GuiButtonColor extends GuiButtonExt {
 			} else if (this.hovered) {
 				color = 16777120;
 			}
-
 			String buttonText = this.displayString;
 			int strWidth = mc.fontRendererObj.getStringWidth(buttonText);
 			int ellipsisWidth = mc.fontRendererObj.getStringWidth("...");
 
 			if (strWidth > width - 6 && strWidth > ellipsisWidth)
 				buttonText = mc.fontRendererObj.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
-
-			Color c = new Color(this.color.getMapColor().colorValue);
-			c = new Color(c.getRed(), c.getGreen(), c.getBlue(), 140 + (flag ? 60 : 0));
-			drawRect(xPosition + 1, yPosition + 1, xPosition + width - 1, yPosition + height - 1, c.getRGB());
+			if (this.color != null)
+				drawRect(xPosition + 1, yPosition + 1, xPosition + width - 1, yPosition + height - 1, ColorHelper.getRGB(this.color, 140 + (flag ? 60 : 0)));
 			this.drawCenteredString(mc.fontRendererObj, buttonText, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, color);
 		} else
 			super.drawButton(mc, mouseX, mouseY);

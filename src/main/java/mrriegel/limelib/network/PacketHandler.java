@@ -27,6 +27,8 @@ public class PacketHandler {
 		registerMessage(TileMessage.class, Side.SERVER);
 		registerMessage(TileGuiMessage.class, Side.SERVER);
 		registerMessage(WorldDataMessage.class, Side.CLIENT);
+		registerMessage(TileSyncMessage.class, Side.SERVER);
+		registerMessage(TileSyncMessage.class, Side.CLIENT);
 
 	}
 
@@ -37,7 +39,7 @@ public class PacketHandler {
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, Side side) {
-		init(); 
+		init();
 		wrapper.registerMessage(messageHandler, requestMessageType, index++, side);
 
 	}

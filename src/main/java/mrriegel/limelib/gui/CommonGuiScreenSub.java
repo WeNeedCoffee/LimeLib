@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.inventory.Container;
 
 import org.lwjgl.input.Keyboard;
 
@@ -16,7 +15,6 @@ public abstract class CommonGuiScreenSub extends CommonGuiScreen {
 		super();
 		this.parent = Minecraft.getMinecraft().currentScreen;
 	}
-	
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {

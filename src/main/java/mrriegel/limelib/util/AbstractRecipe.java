@@ -26,7 +26,7 @@ public abstract class AbstractRecipe<T> {
 	protected abstract List<ItemStack> getList(T object);
 
 	public abstract void removeIngredients(T object);
-	
+
 	public abstract List<ItemStack> getResult(T object);
 
 	public List<ItemStack> getOutput() {
