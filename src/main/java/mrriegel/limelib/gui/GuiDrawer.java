@@ -4,7 +4,13 @@ import mrriegel.limelib.LimeLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class GuiDrawer {
@@ -30,7 +36,7 @@ public class GuiDrawer {
 	}
 
 	public void drawSizedSlot(int x, int y, int size) {
-		drawRectangle(x, y, size, size);
+		drawFramedRectangle(x, y, size, size);
 	}
 
 	public void drawPlayerSlots(int x, int y) {
@@ -47,11 +53,11 @@ public class GuiDrawer {
 	public void drawScrollbar(int x, int y, int length, float percent, Direction dir) {
 		int width = dir.isHorizontal() ? length : 10;
 		int height = dir.isHorizontal() ? 10 : length;
-		drawRectangle(x, y, width, height);
+		drawFramedRectangle(x, y, width, height);
 	}
 
 	public void drawTextfield(int x, int y, int width) {
-		drawRectangle(x, y, width, 12);
+		drawFramedRectangle(x, y, width, 12);
 	}
 
 	public void drawTextfield(GuiTextField textfield) {
@@ -59,7 +65,7 @@ public class GuiDrawer {
 			drawTextfield(textfield.xPosition - guiLeft - 2, textfield.yPosition - guiTop - 2, textfield.width + 9);
 	}
 
-	public void drawRectangle(int x, int y, int width, int height) {
+	public void drawFramedRectangle(int x, int y, int width, int height) {
 		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
 		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 0, width, height, 18, 18, 1, zLevel);
 	}
@@ -76,6 +82,81 @@ public class GuiDrawer {
 
 	public void drawBackgroundTexture() {
 		drawBackgroundTexture(0, 0);
+	}
+
+	public void drawColoredRectangle(int x, int y, int width, int height, int color) {
+		GuiUtils.drawGradientRect((int) zLevel, x + guiLeft, y + guiTop, x + width + guiLeft, y + height + guiTop, color, color);
+	}
+
+	public void drawFrame(int x, int y, int width, int height, int frame, int color) {
+		drawColoredRectangle(x, y, width, frame, color);
+		drawColoredRectangle(x, y + 1, frame, height, color);
+		drawColoredRectangle(x + 1, y + height - (frame - 1), width, frame, color);
+		drawColoredRectangle(x + width - (frame - 1), y, frame, height, color);
+	}
+
+	public void drawEnergyBarV(int x, int y, int height, float percent) {
+		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
+		for (int i = 0; i < height + 1; i++)
+			if (i % 2 == 0)
+				GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + i, 0, 36, 8, 1, zLevel);
+			else
+				GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + i, 0, 37, 8, 1, zLevel);
+		for (int i = 0; i < (height + 1) * (1f - percent); i++)
+			if (i % 2 == 0)
+				GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + i, 0, 38, 8, 1, zLevel);
+			else
+				GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + i, 0, 39, 8, 1, zLevel);
+	}
+
+	public void drawEnergyBarH(int x, int y, int width, float percent) {
+		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
+		for (int i = 0; i < width + 1; i++)
+			if (i % 2 == 0)
+				GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 8, 36, 1, 8, zLevel);
+			else
+				GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 9, 36, 1, 8, zLevel);
+		for (int i = 0; i < (width + 1) * (percent); i++)
+			if (i % 2 == 0)
+				GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 10, 36, 1, 8, zLevel);
+			else
+				GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 11, 36, 1, 8, zLevel);
+	}
+
+	public void drawFluidRect(int x, int y, int width, int height, FluidStack fluid) {
+		GlStateManager.pushMatrix();
+		TextureAtlasSprite fluidIcon = mc.getTextureMapBlocks().getTextureExtry(fluid.getFluid().getStill().toString());
+		if (fluidIcon == null)
+			return;
+		int color = fluid.getFluid().getColor(fluid);
+		float a = ((color >> 24) & 0xFF) / 255.0F;
+		float r = ((color >> 16) & 0xFF) / 255.0F;
+		float g = ((color >> 8) & 0xFF) / 255.0F;
+		float b = ((color >> 0) & 0xFF) / 255.0F;
+		GlStateManager.color(r, g, b, a);
+		this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		// GlStateManager.disableLighting();
+		// GlStateManager.disableDepth();
+		x += guiLeft;
+		y += guiTop;
+		Tessellator tessellator = Tessellator.getInstance();
+		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		// System.out.println(String.format("%f",Float.MAX_VALUE));
+		// System.out.println(String.format("%d",Long.MAX_VALUE));
+		// System.out.println(String.format("%f %f %f %f",
+		// fluidIcon.getMinU(),fluidIcon.getMaxU(),fluidIcon.getMinV(),fluidIcon.getMaxV()));
+		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		vertexbuffer.pos(x + 0, y + height, this.zLevel).tex(fluidIcon.getMinU(), fluidIcon.getMaxV()).endVertex();
+		vertexbuffer.pos(x + width, y + height, this.zLevel).tex(fluidIcon.getMaxU(), fluidIcon.getMaxV()).endVertex();
+		vertexbuffer.pos(x + width, y + 0, this.zLevel).tex(fluidIcon.getMaxU(), fluidIcon.getMinV()).endVertex();
+		vertexbuffer.pos(x + 0, y + 0, this.zLevel).tex(fluidIcon.getMinU(), fluidIcon.getMinV()).endVertex();
+		tessellator.draw();
+		// GuiUtils.drawTexturedModalRect(x+guiLeft, y+guiTop,
+		// (int)fluidIcon.getMinU(), (int)fluidIcon.getMinV(), width, height,
+		// zLevel);
+		// GlStateManager.enableLighting();
+		// GlStateManager.enableDepth();
+		GlStateManager.popMatrix();
 	}
 
 	public void drawProgressArrow(int x, int y, float percent, Direction d) {

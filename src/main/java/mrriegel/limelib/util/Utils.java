@@ -8,6 +8,7 @@ import java.util.UUID;
 import mrriegel.limelib.LimeLib;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
@@ -76,5 +77,21 @@ public class Utils {
 
 	public static RayTraceResult rayTrace(EntityPlayer player) {
 		return rayTrace(player, player.capabilities.isCreativeMode ? 5F : 4.5F);
+	}
+
+	public static List<Long> getLongList(List<BlockPos> list) {
+		List<Long> lis = Lists.newArrayList();
+		for (BlockPos p : list)
+			if (p != null)
+				lis.add(p.toLong());
+		return lis;
+	}
+
+	public static List<BlockPos> getBlockPosList(List<Long> list) {
+		List<BlockPos> lis = Lists.newArrayList();
+		for (Long p : list)
+			if (p != null)
+				lis.add(BlockPos.fromLong(p));
+		return lis;
 	}
 }

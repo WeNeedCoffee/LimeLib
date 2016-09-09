@@ -10,6 +10,7 @@ import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.RenderHelper2;
+import mrriegel.limelib.helper.TeleportationHelper;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.tile.CommonTileInventory;
@@ -148,25 +149,20 @@ public class TestMod implements IGuiHandler {
 			}
 			RayTraceResult ray = Utils.rayTrace(player);
 			// System.out.println(ray.typeOfHit);
-			if (!player.worldObj.isRemote) {
+			if (!player.worldObj.isRemote && false) {
 				List<EntitySheep> lis = player.worldObj.getEntitiesWithinAABB(EntitySheep.class, new AxisAlignedBB(player.posX - 5, player.posY - 5, player.posZ - 5, player.posX + 5, player.posY + 5, player.posZ + 5));
 				if (held == null)
 					for (EntitySheep sheep : lis) {
-						RayTraceResult ra = Utils.rayTrace(sheep, 4.5F);
-						// if (sheep.worldObj.provider.getDimension() == 0)
-						// TeleportationHelper.teleportEntity(sheep, -1, new
-						// BlockPos(0, 129, 0));
-						// else
-						// TeleportationHelper.teleportEntity(sheep, 0, new
-						// BlockPos(65, 81, 268));
+						if (sheep.worldObj.provider.getDimension() == 0)
+							TeleportationHelper.teleportEntity(sheep, -1, new BlockPos(0, 129, 0));
+						else
+							TeleportationHelper.teleportEntity(sheep, 0, new BlockPos(65, 81, 268));
 					}
 				else {
-					// if (player.worldObj.provider.getDimension() == 0)
-					// TeleportationHelper.teleportEntity(player, -1, new
-					// BlockPos(0, 129, 0));
-					// else
-					// TeleportationHelper.teleportEntity(player, 0, new
-					// BlockPos(65, 81, 268));
+					if (player.worldObj.provider.getDimension() == 0)
+						TeleportationHelper.teleportEntity(player, -1, new BlockPos(0, 129, 0));
+					else
+						TeleportationHelper.teleportEntity(player, 0, new BlockPos(65, 81, 268));
 				}
 				// ItemEntityWrapper w = new
 				// ItemEntityWrapper(e.getEntityLiving(), 4);

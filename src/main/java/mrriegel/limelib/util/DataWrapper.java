@@ -8,8 +8,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.INBTSerializable;
 
+/** thats bad */
+@Deprecated
 public abstract class DataWrapper implements INBTSerializable<NBTTagCompound> {
-	/** thats bad */
 	public final String capaName;
 	protected NBTTagCompound nbt;
 

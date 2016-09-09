@@ -8,6 +8,7 @@ import mrriegel.limelib.tile.IDataKeeper;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -17,6 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -68,7 +70,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
 		List<ItemStack> lis = getDrops(worldIn, pos, state, 0);
-		if (worldIn.getTileEntity(pos) instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
+		if (!player.capabilities.isCreativeMode && worldIn.getTileEntity(pos) instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
 			IDataKeeper tile = (IDataKeeper) worldIn.getTileEntity(pos);
 			ItemStack stack = lis.get(0);
 			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
@@ -76,6 +78,17 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 			worldIn.setBlockToAir(pos);
 			spawnAsEntity(worldIn, pos, stack.copy());
 		}
+	}
+
+	@Override
+	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
+		ItemStack stack = super.getPickBlock(state, target, world, pos, player);
+		if (GuiScreen.isShiftKeyDown() && player.capabilities.isCreativeMode && world.getTileEntity(pos) instanceof IDataKeeper && stack != null) {
+			IDataKeeper tile = (IDataKeeper) world.getTileEntity(pos);
+			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
+			tile.writeToStack(stack);
+		}
+		return stack;
 	}
 
 }

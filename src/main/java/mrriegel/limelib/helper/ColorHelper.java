@@ -8,7 +8,7 @@ import net.minecraft.item.EnumDyeColor;
 public class ColorHelper {
 
 	public static int getRGB(EnumDyeColor color) {
-		return color.getMapColor().colorValue;
+		return color.getMapColor().colorValue | 0xFF000000;
 	}
 
 	public static int getRGB(EnumDyeColor color, int alpha) {

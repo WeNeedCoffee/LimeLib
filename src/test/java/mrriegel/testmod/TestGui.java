@@ -10,6 +10,7 @@ import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.gui.element.GuiButtonArrow;
 import mrriegel.limelib.gui.element.GuiButtonColor;
 import mrriegel.limelib.gui.element.GuiButtonTooltip;
+import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -18,6 +19,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.google.common.collect.Lists;
 
@@ -52,9 +55,15 @@ public class TestGui extends CommonGuiContainer {
 		drawer.drawSlots(64, 19, 3, 3);
 		int k = (int) System.currentTimeMillis();
 		k /= 65;
-		drawer.drawProgressArrow(148, 12, 0.4f, Direction.LEFT);
+		drawer.drawProgressArrow(148, 12, 0.85f, Direction.LEFT);
 		drawer.drawSizedSlot(150, 35, 9);
 		drawer.drawTextfield(t);
+		int c = 99;
+		drawer.drawFrame(46, 15, 13, 60, 1, ColorHelper.getRGB(EnumDyeColor.BLUE));
+		drawer.drawEnergyBarH(3, 3, c, 0.99f);
+		drawer.drawFluidRect(47, 16, 16, 16, new FluidStack(FluidRegistry.LAVA, 1));
+		// drawer.drawColoredRectangle(120, 61, 18, 36,
+		// ColorHelper.getRGB(EnumDyeColor.BLUE));
 		t.drawTextBox();
 	}
 
