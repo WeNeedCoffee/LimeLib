@@ -8,6 +8,7 @@ import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.tile.IDataKeeper;
+import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -20,7 +21,7 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import com.google.common.collect.Lists;
 
-public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper {
+public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper,IOwneable {
 
 	public int k;
 
@@ -105,6 +106,16 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 	@Override
 	public void readFromStack(ItemStack stack) {
 		k = NBTStackHelper.getInt(stack, "k");
+	}
+
+	@Override
+	public String getOwner() {
+		return null;
+	}
+
+	@Override
+	public boolean canAccess(String name) {
+		return false;
 	}
 
 }

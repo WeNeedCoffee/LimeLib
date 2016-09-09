@@ -11,6 +11,7 @@ public class TestBlock extends CommonBlockContainer {
 	public TestBlock() {
 		super(Material.ROCK, "blocko");
 		setCreativeTab(CreativeTabs.REDSTONE);
+		setHardness(3f);
 	}
 
 	@Override

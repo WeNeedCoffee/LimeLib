@@ -16,6 +16,7 @@ public class ColorHelper {
 	}
 
 	public static int getRGB(int color, int alpha) {
+		alpha %= 255;
 		Color c = new Color(color);
 		return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha).getRGB();
 	}
@@ -25,22 +26,22 @@ public class ColorHelper {
 	}
 
 	public static int getRed(int color) {
-		return ((0xff000000 | color) >> 16) & 0xFF;
+		return ((0xFF000000 | color) >> 16) & 0xFF;
 		// return new Color(color).getRed();
 	}
 
 	public static int getGreen(int color) {
-		return ((0xff000000 | color) >> 8) & 0xFF;
+		return ((0xFF000000 | color) >> 8) & 0xFF;
 		// return new Color(color).getGreen();
 	}
 
 	public static int getBlue(int color) {
-		return ((0xff000000 | color) >> 0) & 0xFF;
+		return ((0xFF000000 | color) >> 0) & 0xFF;
 		// return new Color(color).getBlue();
 	}
 
 	public static int getAlpha(int color) {
-		return ((0xff000000 | color) >> 24) & 0xFF;
+		return ((0xFF000000 | color) >> 24) & 0xFF;
 		// return new Color(color).getAlpha();
 	}
 

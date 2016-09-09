@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.FMLContainer;
 import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -93,5 +94,11 @@ public class Utils {
 			if (p != null)
 				lis.add(BlockPos.fromLong(p));
 		return lis;
+	}
+
+	public static String getModName(IForgeRegistryEntry.Impl<?> registerable) {
+		final String modID = registerable.getRegistryName().getResourceDomain();
+		final ModContainer mod = Loader.instance().getIndexedModList().get(modID);
+		return mod != null ? mod.getName() : modID.equalsIgnoreCase("minecraft") ? "Minecraft" : "Unknown";
 	}
 }

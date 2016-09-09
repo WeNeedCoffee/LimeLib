@@ -1,15 +1,22 @@
 package mrriegel.limelib.gui;
 
+import java.util.List;
+
 import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.helper.ColorHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
@@ -67,6 +74,7 @@ public class GuiDrawer {
 
 	public void drawFramedRectangle(int x, int y, int width, int height) {
 		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
+		GlStateManager.color(1F, 1F, 1F, 1F);
 		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 0, width, height, 18, 18, 1, zLevel);
 	}
 
@@ -97,6 +105,7 @@ public class GuiDrawer {
 
 	public void drawEnergyBarV(int x, int y, int height, float percent) {
 		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
+		GlStateManager.color(1F, 1F, 1F, 1F);
 		for (int i = 0; i < height + 1; i++)
 			if (i % 2 == 0)
 				GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + i, 0, 36, 8, 1, zLevel);
@@ -111,6 +120,7 @@ public class GuiDrawer {
 
 	public void drawEnergyBarH(int x, int y, int width, float percent) {
 		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
+		GlStateManager.color(1F, 1F, 1F, 1F);
 		for (int i = 0; i < width + 1; i++)
 			if (i % 2 == 0)
 				GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 8, 36, 1, 8, zLevel);
@@ -123,6 +133,7 @@ public class GuiDrawer {
 				GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 11, 36, 1, 8, zLevel);
 	}
 
+	@Deprecated
 	public void drawFluidRect(int x, int y, int width, int height, FluidStack fluid) {
 		GlStateManager.pushMatrix();
 		TextureAtlasSprite fluidIcon = mc.getTextureMapBlocks().getTextureExtry(fluid.getFluid().getStill().toString());
@@ -159,8 +170,23 @@ public class GuiDrawer {
 		GlStateManager.popMatrix();
 	}
 
+	public void renderToolTip(ItemStack stack, int x, int y) {
+		List<String> list = stack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
+		for (int i = 0; i < list.size(); ++i) {
+			if (i == 0) {
+				list.set(i, stack.getRarity().rarityColor + list.get(i));
+			} else {
+				list.set(i, TextFormatting.GRAY + list.get(i));
+			}
+		}
+		FontRenderer font = stack.getItem().getFontRenderer(stack);
+		ScaledResolution sr = new ScaledResolution(mc);
+		GuiUtils.drawHoveringText(list, x, y, sr.getScaledWidth(), sr.getScaledHeight(), -1, (font == null ? mc.fontRendererObj : font));
+	}
+
 	public void drawProgressArrow(int x, int y, float percent, Direction d) {
 		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
+		GlStateManager.color(1F, 1F, 1F, 1F);
 		int totalLength = 22;
 		int currentLength = (int) (totalLength * percent);
 		switch (d) {
@@ -181,7 +207,12 @@ public class GuiDrawer {
 			GuiUtils.drawTexturedModalRect(x + guiLeft - 1, y + guiTop + (totalLength - currentLength), 62, 0 + (totalLength - currentLength), 16, currentLength, zLevel);
 			break;
 		}
+	}
 
+	public void drawStopSign(int x, int y) {
+		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
+		GlStateManager.color(1F, 1F, 1F, 1F);
+		GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 12, 36, 12, 12, zLevel);
 	}
 
 	public enum Direction {

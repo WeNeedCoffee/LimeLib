@@ -43,7 +43,7 @@ public class ItemEntityWrapper extends InvWrapper {
 		return inv;
 	}
 
-	public Entity getStack() {
+	public Entity getEntity() {
 		return entity;
 	}
 

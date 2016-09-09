@@ -5,14 +5,16 @@ import java.util.List;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class CommonItem extends Item{
+public class CommonArmorItem extends ItemArmor {
 
-	public CommonItem(String name) {
+	public CommonArmorItem(ArmorMaterial materialIn, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn, String name) {
+		super(materialIn, renderIndexIn, equipmentSlotIn);
 		setRegistryName(name);
 		setUnlocalizedName(getRegistryName().toString());
 	}

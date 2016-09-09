@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Random;
 
 import mrriegel.limelib.util.Utils;
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -19,12 +19,39 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 
 public class StackHelper {
+
 	public static boolean equalOreDict(ItemStack a, ItemStack b) {
 		if (a == null || b == null)
 			return false;
 		for (int i : OreDictionary.getOreIDs(a))
 			if (Ints.contains(OreDictionary.getOreIDs(b), i))
 				return true;
+		return false;
+	}
+
+	public static boolean isOre(ItemStack stack) {
+		if (stack != null) {
+			for (int i : OreDictionary.getOreIDs(stack)) {
+				String oreName = OreDictionary.getOreName(i);
+				if (oreName.startsWith("denseore") || (oreName.startsWith("ore") && Character.isUpperCase(oreName.charAt(3))))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean match(ItemStack stack, Object o) {
+		if (stack == null)
+			return false;
+		if (o instanceof Item || (o instanceof ItemStack) && ((ItemStack) o).getItemDamage() == OreDictionary.WILDCARD_VALUE)
+			return stack.getItem() == o;
+		if (o instanceof Block)
+			return stack.getItem() == Item.getItemFromBlock((Block) o);
+		if (o instanceof String)
+			return Ints.contains(OreDictionary.getOreIDs(stack), OreDictionary.getOreID((String) o));
+		if (o instanceof ItemStack) {
+			return stack.isItemEqual((ItemStack) o);
+		}
 		return false;
 	}
 
@@ -78,18 +105,19 @@ public class StackHelper {
 	}
 
 	public static void spawnItemStack(World worldIn, BlockPos pos, ItemStack stack) {
-		InventoryHelper.spawnItemStack(worldIn, pos.getX() + .5, pos.getY() + .1, pos.getZ() + .5, stack);
+		spawnItemStack(worldIn, pos.getX() + .5, pos.getY() + .1, pos.getZ() + .5, stack);
 	}
 
 	public static void spawnItemStack(World worldIn, double x, double y, double z, ItemStack stack) {
-		if (stack != null)
-			return;
+		// if (stack != null)
+		// return;
 		Random RANDOM = worldIn.rand;
 		float f = RANDOM.nextFloat() * 0.8F + 0.1F;
 		float f1 = RANDOM.nextFloat() * 0.8F + 0.1F;
 		float f2 = RANDOM.nextFloat() * 0.8F + 0.1F;
-
-		while (stack.stackSize > 0) {
+		if (stack != null)
+			stack = stack.copy();
+		while (stack != null && stack.stackSize > 0) {
 			int i = RANDOM.nextInt(21) + 10;
 
 			if (i > stack.stackSize) {

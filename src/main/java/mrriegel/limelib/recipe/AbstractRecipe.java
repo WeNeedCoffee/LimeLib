@@ -1,15 +1,12 @@
-package mrriegel.limelib.util;
+package mrriegel.limelib.recipe;
 
 import java.util.Arrays;
 import java.util.List;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
+import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.collect.Lists;
-import com.google.common.primitives.Ints;
 
 public abstract class AbstractRecipe<T> {
 	protected List<ItemStack> output;
@@ -47,7 +44,7 @@ public abstract class AbstractRecipe<T> {
 			return false;
 		if (order) {
 			for (int i = 0; i < input.size(); i++)
-				if (!match(list.get(i), input.get(i)))
+				if (!StackHelper.match(list.get(i), input.get(i)))
 					return false;
 			return true;
 		} else {
@@ -57,7 +54,7 @@ public abstract class AbstractRecipe<T> {
 					boolean flag = false;
 					for (int i = 0; i < foo.size(); i++) {
 						Object o = foo.get(i);
-						if (match(stack, o)) {
+						if (StackHelper.match(stack, o)) {
 							flag = true;
 							foo.remove(i);
 							break;
@@ -70,20 +67,5 @@ public abstract class AbstractRecipe<T> {
 			}
 			return foo.isEmpty();
 		}
-	}
-
-	protected boolean match(ItemStack stack, Object o) {
-		if (stack == null)
-			return false;
-		if (o instanceof Item || (o instanceof ItemStack) && ((ItemStack) o).getItemDamage() == OreDictionary.WILDCARD_VALUE)
-			return stack.getItem() == o;
-		if (o instanceof Block)
-			return stack.getItem() == Item.getItemFromBlock((Block) o);
-		if (o instanceof String)
-			return Ints.contains(OreDictionary.getOreIDs(stack), OreDictionary.getOreID((String) o));
-		if (o instanceof ItemStack) {
-			return stack.isItemEqual((ItemStack) o);
-		}
-		return false;
 	}
 }

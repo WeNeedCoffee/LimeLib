@@ -1,6 +1,8 @@
 package mrriegel.limelib;
 
 import mrriegel.limelib.network.PacketHandler;
+import mrriegel.limelib.util.Eventhandler;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -24,6 +26,7 @@ public class LimeLib {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		PacketHandler.init();
+		MinecraftForge.EVENT_BUS.register(new Eventhandler());
 	}
 
 }

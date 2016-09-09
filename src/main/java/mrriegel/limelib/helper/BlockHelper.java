@@ -12,7 +12,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.collect.Lists;
 
@@ -61,13 +60,7 @@ public class BlockHelper {
 			} catch (Exception e) {
 				stack = new ItemStack(state.getBlock());
 			}
-			if (stack != null) {
-				for (int i : OreDictionary.getOreIDs(stack)) {
-					String oreName = OreDictionary.getOreName(i);
-					if (oreName.startsWith("denseore") || (oreName.startsWith("ore") && Character.isUpperCase(oreName.charAt(3))))
-						return true;
-				}
-			}
+			return StackHelper.isOre(stack);
 		} catch (Exception e) {
 		}
 		return false;

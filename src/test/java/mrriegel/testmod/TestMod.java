@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import mrriegel.limelib.block.CommonBlock;
+import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
@@ -13,8 +14,8 @@ import mrriegel.limelib.helper.RenderHelper2;
 import mrriegel.limelib.helper.TeleportationHelper;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
+import mrriegel.limelib.recipe.AbstractRecipe;
 import mrriegel.limelib.tile.CommonTileInventory;
-import mrriegel.limelib.util.AbstractRecipe;
 import mrriegel.limelib.util.FilterItem;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
@@ -32,11 +33,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
-import net.minecraftforge.event.terraingen.OreGenEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -80,7 +83,6 @@ public class TestMod implements IGuiHandler {
 		MinecraftForge.EVENT_BUS.register(this);
 		NetworkRegistry.INSTANCE.registerGuiHandler(mod, this);
 		PacketHandler.registerMessage(TestMessage.class, Side.CLIENT);
-		MinecraftForge.ORE_GEN_BUS.register(this);
 	}
 
 	@Mod.EventHandler
@@ -127,7 +129,15 @@ public class TestMod implements IGuiHandler {
 	}
 
 	@SubscribeEvent
-	public void stone(OreGenEvent.Post e) {
+	public void overlay(RenderGameOverlayEvent event) {
+		if (event instanceof Post && event.getType() == ElementType.TEXT) {
+			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
+			// drawer.drawColoredRectangle(0, 0, 490, 420,
+			// ColorHelper.getRGB(0xff0000, 70));
+			// Minecraft.getMinecraft().fontRendererObj.drawString("lalala", 13,
+			// 13, ColorHelper.getRGB(EnumDyeColor.CYAN));
+
+		}
 	}
 
 	@SubscribeEvent
