@@ -1,16 +1,15 @@
 package mrriegel.limelib.gui.element;
 
-import java.util.List;
 import java.util.Random;
+
+import mrriegel.limelib.gui.GuiDrawer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraftforge.fml.client.config.GuiUtils;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
 import com.google.common.collect.Lists;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraftforge.fml.client.config.GuiUtils;
-import mrriegel.limelib.gui.GuiDrawer;
 
 public class MCLabel extends GuiElement implements ITooltip, IClickable, IScrollable {
 
@@ -63,7 +62,7 @@ public class MCLabel extends GuiElement implements ITooltip, IClickable, IScroll
 
 	@Override
 	public void onRelease(int button) {
-color=new Random().nextInt()%0xffffff;
+		color = new Random().nextInt() % 0xffffff;
 	}
 
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
-import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -20,7 +19,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -54,13 +52,16 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 			return true;
 		} else {
 			TileEntity tile = worldIn.getTileEntity(pos);
-//			if (tile instanceof IOwneable) {
-//				IOwneable o = (IOwneable) tile;
-//				if ((o.getOwner() != null && !o.getOwner().equals(playerIn.getName())) || !o.canAccess(playerIn.getName())) {
-//					playerIn.addChatComponentMessage(new TextComponentString("No permission!"));
-//					return false;
-//				}
-//			}
+			// if (tile instanceof IOwneable) {
+			// IOwneable o = (IOwneable) tile;
+			// if ((o.getOwner() != null &&
+			// !o.getOwner().equals(playerIn.getName())) ||
+			// !o.canAccess(playerIn.getName())) {
+			// playerIn.addChatComponentMessage(new
+			// TextComponentString("No permission!"));
+			// return false;
+			// }
+			// }
 			if (tile instanceof CommonTile) {
 				return ((CommonTile) tile).openGUI((EntityPlayerMP) playerIn);
 			}

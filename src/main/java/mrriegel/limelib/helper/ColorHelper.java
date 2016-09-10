@@ -45,4 +45,8 @@ public class ColorHelper {
 		// return new Color(color).getAlpha();
 	}
 
+	public static int getRainbow(long frequence) {
+		return Color.getHSBColor(((System.currentTimeMillis() / frequence) % 360l) / 360f, 1, 1).getRGB();
+	}
+
 }

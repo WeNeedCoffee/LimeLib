@@ -2,7 +2,6 @@ package mrriegel.limelib.util;
 
 import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;

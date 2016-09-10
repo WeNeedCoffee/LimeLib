@@ -3,7 +3,6 @@ package mrriegel.limelib.gui;
 import java.util.List;
 
 import mrriegel.limelib.LimeLib;
-import mrriegel.limelib.helper.ColorHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;

@@ -1,7 +1,7 @@
 package mrriegel.limelib.gui.element;
 
-import net.minecraft.client.Minecraft;
 import mrriegel.limelib.gui.GuiDrawer;
+import net.minecraft.client.Minecraft;
 
 public abstract class GuiElement {
 	protected GuiDrawer drawer;

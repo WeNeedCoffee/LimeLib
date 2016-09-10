@@ -2,7 +2,6 @@ package mrriegel.limelib.gui.element;
 
 import java.util.List;
 
-import net.minecraftforge.fml.client.config.GuiUtils;
 import mrriegel.limelib.gui.GuiDrawer;
 
 import com.google.common.collect.ImmutableList;

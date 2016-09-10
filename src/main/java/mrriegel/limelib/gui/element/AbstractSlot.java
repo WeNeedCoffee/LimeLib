@@ -108,7 +108,6 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 			GlStateManager.popMatrix();
 		}
 
-
 	}
 
 	public static class FluidSlot extends AbstractSlot {
@@ -183,7 +182,6 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 				// GlStateManager.enableDepth();
 			}
 		}
-
 
 	}
 
