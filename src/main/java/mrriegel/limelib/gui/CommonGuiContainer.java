@@ -14,7 +14,7 @@ import net.minecraft.inventory.Container;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-public class CommonGuiContainer extends GuiContainer implements IGui {
+public class CommonGuiContainer extends GuiContainer {
 
 	protected GuiDrawer drawer;
 	protected MCPanel panel;

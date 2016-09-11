@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-public class CommonGuiScreen extends GuiScreen implements IGui {
+public class CommonGuiScreen extends GuiScreen {
 
 	protected int xSize = 176;
 	protected int ySize = 166;
@@ -73,8 +73,6 @@ public class CommonGuiScreen extends GuiScreen implements IGui {
 		GlStateManager.translate(i, j, 0.0F);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableRescaleNormal();
-		int k = 240;
-		int l = 240;
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderHelper.disableStandardItemLighting();

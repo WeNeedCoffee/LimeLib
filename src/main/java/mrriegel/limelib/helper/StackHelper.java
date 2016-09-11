@@ -82,7 +82,6 @@ public class StackHelper {
 		String prefix = stack.getItem().getRegistryName().toString();
 		if (!simple)
 			return prefix + "#" + stack.stackSize + "/" + stack.getItemDamage();
-		String ret = prefix;
 		if (stack.stackSize == 1 && stack.getItemDamage() == 0)
 			return prefix;
 		if (stack.stackSize > 1 && stack.getItemDamage() == 0)
@@ -128,7 +127,6 @@ public class StackHelper {
 			if (stack.hasTagCompound()) {
 				entityitem.getEntityItem().setTagCompound(stack.getTagCompound().copy());
 			}
-			float f3 = 0.05F;
 			entityitem.motionX = RANDOM.nextGaussian() * 0.05000000074505806D;
 			entityitem.motionY = RANDOM.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
 			entityitem.motionZ = RANDOM.nextGaussian() * 0.05000000074505806D;
