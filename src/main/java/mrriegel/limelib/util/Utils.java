@@ -3,17 +3,23 @@ package mrriegel.limelib.util;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import mrriegel.limelib.LimeLib;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLContainer;
 import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Loader;
@@ -100,5 +106,14 @@ public class Utils {
 		final String modID = registerable.getRegistryName().getResourceDomain();
 		final ModContainer mod = Loader.instance().getIndexedModList().get(modID);
 		return mod != null ? mod.getName() : modID.equalsIgnoreCase("minecraft") ? "Minecraft" : "Unknown";
+	}
+
+	public static EntityPlayerMP getRandomPlayer() {
+		List<WorldServer> lis = Lists.newArrayList(FMLCommonHandler.instance().getMinecraftServerInstance().worldServers);
+		return getRandomPlayer(lis.get(new Random().nextInt(lis.size())));
+	}
+
+	public static EntityPlayerMP getRandomPlayer(World world) {
+		return (EntityPlayerMP) world.playerEntities.get(world.rand.nextInt(world.playerEntities.size()));
 	}
 }

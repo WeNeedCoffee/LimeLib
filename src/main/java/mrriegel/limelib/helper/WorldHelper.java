@@ -2,6 +2,7 @@ package mrriegel.limelib.helper;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -12,12 +13,14 @@ import net.minecraft.entity.EntityLiving.SpawnPlacementType;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEntitySpawner;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class WorldHelper {
 
@@ -89,5 +92,27 @@ public class WorldHelper {
 				}
 			}
 		}
+	}
+
+	public static boolean wayFree(World world, BlockPos pos1, BlockPos pos2) {
+		return wayFree(world, pos1.getX() + .5, pos1.getY() + .5, pos1.getZ() + .5, pos2.getX() + .5, pos2.getY() + .5, pos2.getZ() + .5);
+	}
+
+	public static boolean wayFree(World world, double x1, double y1, double z1, double x2, double y2, double z2) {
+		Vec3d p1 = new Vec3d(x1, y1, z1);
+		Vec3d p2 = new Vec3d(x2, y2, z2);
+		Vec3d d = new Vec3d(x2 - x1, y2 - y1, z2 - z1);
+		d = d.normalize().scale(0.25);
+		Set<BlockPos> set = Sets.newHashSet();
+		while (p1.distanceTo(p2) > 0.5) {
+			set.add(new BlockPos(p1));
+			p1 = p1.add(d);
+		}
+		set.remove(new BlockPos(p1));
+		set.remove(new BlockPos(p2));
+		for (BlockPos p : set)
+			if (!world.isAirBlock(p))
+				return false;
+		return true;
 	}
 }

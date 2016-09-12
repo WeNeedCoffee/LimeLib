@@ -1,8 +1,13 @@
 package mrriegel.limelib.helper;
 
 import java.util.List;
+import java.util.Random;
 
+import mrriegel.limelib.particle.CommonParticle;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -54,15 +59,37 @@ public class ParticleHelper {
 		return lis;
 	}
 
-	public static List<Vec3d> getVecsForExplosion(BlockPos pos1, double radius, double frequence, EnumFacing.Axis axis) {
-		return getVecsForExplosion(pos1.getX() + .5, pos1.getY() + .5, pos1.getZ() + .5, radius, frequence, axis);
+	public static List<Vec3d> getVecsForExplosion(BlockPos pos1, double force, double frequence, EnumFacing.Axis axis) {
+		return getVecsForExplosion(pos1.getX() + .5, pos1.getY() + .5, pos1.getZ() + .5, force, frequence, axis);
 	}
 
-	public static List<Vec3d> getVecsForExplosion(double x1, double y1, double z1, double radius, double frequence, EnumFacing.Axis axis) {
+	public static List<Vec3d> getVecsForExplosion(double x1, double y1, double z1, double force, double frequence, EnumFacing.Axis axis) {
 		List<Vec3d> lis = Lists.newArrayList();
-		for (Vec3d vec : ParticleHelper.getVecsForCircle(x1, y1, z1, radius, frequence, axis))
+		for (Vec3d vec : ParticleHelper.getVecsForCircle(x1, y1, z1, force, frequence, axis))
 			lis.add(new Vec3d(vec.xCoord - x1, vec.yCoord - y1, vec.zCoord - z1));
 		return lis;
+	}
+
+	public static Vec3d getVecForSpirale(BlockPos pos, double force, double speed, double frequence, boolean reverse, EnumFacing.Axis axis) {
+		return getVecForSpirale(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, force, speed, frequence, reverse, axis);
+	}
+
+	public static Vec3d getVecForSpirale(double x1, double y1, double z1, double force, double speed, double frequence, boolean reverse, EnumFacing.Axis axis) {
+		List<Vec3d> lis = ParticleHelper.getVecsForCircle(x1, y1, z1, force, frequence, axis);
+		if (reverse)
+			lis = Lists.reverse(lis);
+		int index = ((int) ((System.currentTimeMillis() % Integer.MAX_VALUE) * speed)) % lis.size();
+		Vec3d vec = lis.get(index);
+		switch (axis) {
+		case Y:
+			return new Vec3d(vec.xCoord - x1, 0, vec.zCoord - z1);
+		case X:
+			return new Vec3d(0, vec.yCoord - y1, vec.zCoord - z1);
+		case Z:
+			return new Vec3d(vec.xCoord - x1, vec.yCoord - y1, 0);
+		}
+		return null;
+
 	}
 
 }
