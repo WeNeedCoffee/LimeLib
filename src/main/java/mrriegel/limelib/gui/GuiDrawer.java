@@ -72,14 +72,12 @@ public class GuiDrawer {
 	}
 
 	public void drawFramedRectangle(int x, int y, int width, int height) {
-		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
-		GlStateManager.color(1F, 1F, 1F, 1F);
+		bindTexture();
 		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 0, width, height, 18, 18, 1, zLevel);
 	}
 
 	public void drawBackgroundTexture(int x, int y, int width, int height) {
-		GlStateManager.color(1F, 1F, 1F, 1F);
-		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
+		bindTexture();
 		GuiUtils.drawContinuousTexturedBox(x + guiLeft, y + guiTop, 0, 18, width, height, 18, 18, 4, zLevel);
 	}
 
@@ -103,8 +101,7 @@ public class GuiDrawer {
 	}
 
 	public void drawEnergyBarV(int x, int y, int height, float percent) {
-		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
-		GlStateManager.color(1F, 1F, 1F, 1F);
+		bindTexture();
 		for (int i = 0; i < height + 1; i++)
 			if (i % 2 == 0)
 				GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + i, 0, 36, 8, 1, zLevel);
@@ -118,8 +115,7 @@ public class GuiDrawer {
 	}
 
 	public void drawEnergyBarH(int x, int y, int width, float percent) {
-		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
-		GlStateManager.color(1F, 1F, 1F, 1F);
+		bindTexture();
 		for (int i = 0; i < width + 1; i++)
 			if (i % 2 == 0)
 				GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 8, 36, 1, 8, zLevel);
@@ -151,10 +147,6 @@ public class GuiDrawer {
 		y += guiTop;
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
-		// System.out.println(String.format("%f",Float.MAX_VALUE));
-		// System.out.println(String.format("%d",Long.MAX_VALUE));
-		// System.out.println(String.format("%f %f %f %f",
-		// fluidIcon.getMinU(),fluidIcon.getMaxU(),fluidIcon.getMinV(),fluidIcon.getMaxV()));
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		vertexbuffer.pos(x + 0, y + height, this.zLevel).tex(fluidIcon.getMinU(), fluidIcon.getMaxV()).endVertex();
 		vertexbuffer.pos(x + width, y + height, this.zLevel).tex(fluidIcon.getMaxU(), fluidIcon.getMaxV()).endVertex();
@@ -184,8 +176,7 @@ public class GuiDrawer {
 	}
 
 	public void drawProgressArrow(int x, int y, float percent, Direction d) {
-		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
-		GlStateManager.color(1F, 1F, 1F, 1F);
+		bindTexture();
 		int totalLength = 22;
 		int currentLength = (int) (totalLength * percent);
 		switch (d) {
@@ -208,10 +199,22 @@ public class GuiDrawer {
 		}
 	}
 
+	public void drawFlame(int x, int y, float percent) {
+		bindTexture();
+		GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 24, 31, 13, 13, zLevel);
+		int totalHeight = 13;
+		int currentHeight = (int) (totalHeight * percent);
+		GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + (totalHeight - currentHeight), 37, 31 + (totalHeight - currentHeight), 13, 13, zLevel);
+	}
+
 	public void drawStopSign(int x, int y) {
+		bindTexture();
+		GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 12, 36, 12, 12, zLevel);
+	}
+
+	private void bindTexture() {
 		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
 		GlStateManager.color(1F, 1F, 1F, 1F);
-		GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 12, 36, 12, 12, zLevel);
 	}
 
 	public enum Direction {

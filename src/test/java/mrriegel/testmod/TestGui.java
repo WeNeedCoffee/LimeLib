@@ -63,7 +63,7 @@ public class TestGui extends CommonGuiContainer {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		drawer.drawBackgroundTexture();
 		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-		if (mouseX % 2 != 2) {
+		if (mouseX % 2 == 2) {
 			drawer.drawPlayerSlots(19, 99);
 			drawer.drawSlots(64, 19, 3, 3);
 			int k = (int) System.currentTimeMillis();
@@ -79,6 +79,7 @@ public class TestGui extends CommonGuiContainer {
 			t.drawTextBox();
 			fontRendererObj.drawString(TextFormatting.AQUA + "ZEuth", 3, 4, 0xff);
 			drawer.drawStopSign(180, 12);
+			drawer.drawFlame(18, 18, 1.0f);
 		}
 	}
 

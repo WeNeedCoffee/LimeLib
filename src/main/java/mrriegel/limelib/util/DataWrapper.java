@@ -38,10 +38,6 @@ public abstract class DataWrapper implements INBTSerializable<NBTTagCompound> {
 
 	public abstract DataWrapper get(NBTTagCompound nbt);
 
-	public final void markDirty() {
-
-	}
-
 	public static void save(String name, Object o, NBTTagCompound nbt) {
 		if (o instanceof ItemStack) {
 			NBTStackHelper.setTag((ItemStack) o, name, nbt);
@@ -64,6 +60,32 @@ public abstract class DataWrapper implements INBTSerializable<NBTTagCompound> {
 		} else if (o instanceof TileEntity) {
 			TileEntity t = (TileEntity) o;
 			return NBTHelper.getTag(t.serializeNBT(), name);
+		}
+		return null;
+	}
+
+	public void save(Object o) {
+		if (o instanceof ItemStack) {
+			NBTStackHelper.setTag((ItemStack) o, capaName, nbt);
+		} else if (o instanceof Entity) {
+			NBTHelper.setTag(((Entity) o).getEntityData(), capaName, nbt);
+		} else if (o instanceof TileEntity) {
+			TileEntity t = (TileEntity) o;
+			NBTTagCompound nbt2 = t.writeToNBT(new NBTTagCompound());
+			NBTHelper.setTag(nbt2, capaName, new NBTTagCompound());
+			t.readFromNBT(nbt2);
+			t.markDirty();
+		}
+	}
+
+	public NBTTagCompound load(Object o) {
+		if (o instanceof ItemStack) {
+			return NBTStackHelper.getTag((ItemStack) o, capaName);
+		} else if (o instanceof Entity) {
+			return NBTHelper.getTag(((Entity) o).getEntityData(), capaName);
+		} else if (o instanceof TileEntity) {
+			TileEntity t = (TileEntity) o;
+			return NBTHelper.getTag(t.serializeNBT(), capaName);
 		}
 		return null;
 	}

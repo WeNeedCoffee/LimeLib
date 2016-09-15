@@ -18,6 +18,8 @@ public class MCPanel extends GuiElement {
 
 	@Override
 	public void drawForeground(int mouseX, int mouseY) {
+		if (!visible)
+			return;
 		for (GuiElement e : children)
 			if (e.isVisible()) {
 				e.drawForeground(mouseX, mouseY);
@@ -28,8 +30,9 @@ public class MCPanel extends GuiElement {
 
 	@Override
 	public void drawBackground(int mouseX, int mouseY) {
-		if (visible)
-			drawer.drawFramedRectangle(x + getOffsetX(), y + getOffsetY(), width, height);
+		if (!visible)
+			return;
+		drawer.drawFramedRectangle(x + getOffsetX(), y + getOffsetY(), width, height);
 		for (GuiElement e : children)
 			if (e.isVisible())
 				e.drawBackground(mouseX, mouseY);

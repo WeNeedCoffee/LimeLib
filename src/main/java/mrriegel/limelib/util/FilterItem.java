@@ -24,7 +24,7 @@ public class FilterItem {
 	}
 
 	public FilterItem(Block b) {
-		this(new ItemStack(b));
+		this(new ItemStack(b, 1, OreDictionary.WILDCARD_VALUE));
 	}
 
 	public FilterItem(ItemStack stack, boolean meta, boolean ore, boolean nbt) {

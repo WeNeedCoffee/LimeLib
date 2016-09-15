@@ -115,7 +115,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 
 	@Override
 	public boolean canAccess(String name) {
-		return false;
+		return true;
 	}
 
 }

@@ -29,6 +29,7 @@ public class MCLabel extends GuiElement implements ITooltip, IClickable, IScroll
 
 	@Override
 	public void drawBackground(int mouseX, int mouseY) {
+		drawer.drawFramedRectangle(x + getOffsetX() - 2, y + getOffsetY() - 2, mc.fontRendererObj.getStringWidth(text) + 4, mc.fontRendererObj.FONT_HEIGHT + 2);
 	}
 
 	@Override

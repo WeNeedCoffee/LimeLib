@@ -84,4 +84,14 @@ public class CommonParticle extends Particle {
 		return this;
 	}
 
+	public CommonParticle setGravity(float gravity) {
+		this.particleGravity = gravity;
+		return this;
+	}
+
+	public CommonParticle setNoClip(boolean noClip) {
+		this.field_190017_n = !noClip;
+		return this;
+	}
+
 }

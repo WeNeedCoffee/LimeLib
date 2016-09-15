@@ -11,19 +11,19 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 import com.google.common.collect.Lists;
 
-public class ItemEntityWrapper extends InvWrapper {
+public class EntityInvWrapper extends InvWrapper {
 
 	private final Entity entity;
 	private static final String NAME = "entitywrapper";
 	private String name;
 
-	public ItemEntityWrapper(Entity entity, int size, String name) {
+	public EntityInvWrapper(Entity entity, int size, String name) {
 		super(getInv(entity, size, name));
 		this.entity = entity;
 		this.name = name;
 	}
 
-	public ItemEntityWrapper(Entity entity, int size) {
+	public EntityInvWrapper(Entity entity, int size) {
 		this(entity, size, NAME);
 	}
 
