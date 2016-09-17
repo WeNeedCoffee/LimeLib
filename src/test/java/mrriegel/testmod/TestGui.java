@@ -56,14 +56,14 @@ public class TestGui extends CommonGuiContainer {
 		// p2.add(new MCPanel(7, 7, 9, 9, drawer));
 		p1.add(p2);
 		panel.add(p1);
-		panel.add(new MCLabel(4, 40, "oh damit", 0xff0000, drawer));
+//		panel.add(new MCLabel(4, 40, "oh damit", 0xff0000, drawer));
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		drawer.drawBackgroundTexture();
 		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-		if (mouseX % 2 == 2) {
+		if (mouseX % 2 != 2) {
 			drawer.drawPlayerSlots(19, 99);
 			drawer.drawSlots(64, 19, 3, 3);
 			int k = (int) System.currentTimeMillis();
@@ -73,13 +73,14 @@ public class TestGui extends CommonGuiContainer {
 			drawer.drawTextfield(t);
 			int c = 99;
 			drawer.drawFrame(122, 11, 9, 48, 1, ColorHelper.getRGB(EnumDyeColor.BLACK));
-			drawer.drawEnergyBarV(123, 12, 46, 0.39f);
+			drawer.drawEnergyBarV(123, 12, 46, 0.69f);
 			// drawer.drawColoredRectangle(120, 61, 18, 36,
 			// ColorHelper.getRGB(EnumDyeColor.BLUE));
 			t.drawTextBox();
 			fontRendererObj.drawString(TextFormatting.AQUA + "ZEuth", 3, 4, 0xff);
 			drawer.drawStopSign(180, 12);
 			drawer.drawFlame(18, 18, 1.0f);
+			drawer.drawScrollbar(0, 0, 100, 1.00f, Direction.RIGHT);
 		}
 	}
 

@@ -9,10 +9,13 @@ import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.tile.IDataKeeper;
 import mrriegel.limelib.tile.IOwneable;
+import mrriegel.limelib.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +24,7 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import com.google.common.collect.Lists;
 
-public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper,IOwneable {
+public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper, IOwneable {
 
 	public int k;
 
@@ -38,6 +41,8 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 	@Override
 	public void handleMessage(EntityPlayerMP player, NBTTagCompound nbt) {
 		super.handleMessage(player, nbt);
+		lis = null;
+		sync();
 		int range = 8;
 		if (NBTHelper.hasTag(nbt, "k"))
 			k = NBTHelper.getInt(nbt, "k");
@@ -56,13 +61,18 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 		}
 	}
 
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		super.onDataPacket(net, pkt);
+		System.out.println("onData");
+	};
+
 	List<BlockPos> lis = null;
 
 	@Override
 	public void update() {
 		if (worldObj.isRemote)
 			return;
-		int range = 30;
+		int range = 12;
 		if (lis == null) {
 			lis = Lists.newArrayList();
 			for (int y = pos.getY() - 1; y > 0; y--)
@@ -71,18 +81,24 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 						lis.add(new BlockPos(x, y, z));
 
 		}
-		EntityPlayer player = worldObj.playerEntities.isEmpty() ? null : worldObj.playerEntities.get(0);
+		EntityPlayer player = Utils.getRandomPlayer(worldObj);
 		if (worldObj.getTotalWorldTime() % 1 == 0 && worldObj.isBlockPowered(pos) && player != null) {
-			for (int i = 0; i < 1; i++)
-				for (BlockPos p : lis)
-					if (worldObj.getTileEntity(p) == null && BlockHelper.isBlockBreakable(worldObj, p) && !BlockHelper.isOre(worldObj, p)) {
-						List<ItemStack> drops = BlockHelper.breakBlockWithFortune(worldObj, p, 0, null, false, false);
-						drops.clear();
-						for (ItemStack drop : drops)
-							if (drop != null)
-								ItemHandlerHelper.insertItemStacked(new PlayerMainInvWrapper(player.inventory), drop.copy(), false);
-						break;
+			for (int i = 0; i < 5; i++)
+				try {
+					for (BlockPos p : lis) {
+						if (worldObj.getTileEntity(p) == null && BlockHelper.isBlockBreakable(worldObj, p) && !BlockHelper.isOre(worldObj, p)) {
+							List<ItemStack> drops = BlockHelper.breakBlockWithFortune(worldObj, p, 0, null, false, false);
+							drops.clear();
+							for (ItemStack drop : drops)
+								if (drop != null)
+									ItemHandlerHelper.insertItemStacked(new PlayerMainInvWrapper(player.inventory), drop.copy(), false);
+							break;
+						}
+						lis.remove(p);
 					}
+				} catch (Exception e) {
+					// System.out.println(e.getClass());
+				}
 		}
 	}
 

@@ -11,7 +11,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import com.google.common.collect.Lists;
 
-public class MCLabel extends GuiElement implements ITooltip, IClickable, IScrollable {
+public class MCLabel extends GuiElement implements ITooltip, IClickable {
 
 	public String text;
 	public int color;
@@ -42,18 +42,6 @@ public class MCLabel extends GuiElement implements ITooltip, IClickable, IScroll
 	public void drawTooltip(int mouseX, int mouseY) {
 		ScaledResolution sr = new ScaledResolution(mc);
 		GuiUtils.drawHoveringText(Lists.newArrayList("Neuer", "Lahm", "Hummels", "Martinez", "Alaba", "Alonso", "Sanches", "Thiago", "Ribery", "Lewandowski", "Müller"), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRendererObj);
-	}
-
-	@Override
-	public void onScrolled(int scroll) {
-		if (scroll == 0)
-			return;
-		else if (scroll < 0) {
-			if (text.length() > 1)
-				text = text.substring(0, text.length() - 1);
-		} else {
-			text += RandomStringUtils.randomAlphabetic(1);
-		}
 	}
 
 	@Override

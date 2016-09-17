@@ -51,9 +51,13 @@ public class CommonTile extends TileEntity {
 	}
 
 	public void sync() {
-		if (hasWorldObj() && !worldObj.isRemote)
-			for (EntityPlayer p : worldObj.playerEntities)
-				sync((EntityPlayerMP) p);
+		if (true)
+			worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(pos), worldObj.getBlockState(pos), 8);
+		else {
+			if (hasWorldObj() && !worldObj.isRemote)
+				for (EntityPlayer p : worldObj.playerEntities)
+					sync((EntityPlayerMP) p);
+		}
 	}
 
 	public void syncSafe(EntityPlayerMP player) {

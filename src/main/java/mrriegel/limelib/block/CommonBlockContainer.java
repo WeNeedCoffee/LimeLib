@@ -74,6 +74,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		if (worldIn.getTileEntity(pos) instanceof IDataKeeper && NBTStackHelper.getBoolean(stack, "idatakeeper")) {
 			IDataKeeper tile = (IDataKeeper) worldIn.getTileEntity(pos);
 			tile.readFromStack(stack);
+			worldIn.getTileEntity(pos).markDirty();
 		}
 	}
 

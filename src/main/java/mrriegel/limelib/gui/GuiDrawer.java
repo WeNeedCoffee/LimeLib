@@ -2,6 +2,10 @@ package mrriegel.limelib.gui;
 
 import java.util.List;
 
+import javax.vecmath.Vector3d;
+
+import org.lwjgl.input.Mouse;
+
 import mrriegel.limelib.LimeLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,8 +19,10 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class GuiDrawer {
@@ -60,6 +66,11 @@ public class GuiDrawer {
 		int width = dir.isHorizontal() ? length : 10;
 		int height = dir.isHorizontal() ? 10 : length;
 		drawFramedRectangle(x, y, width, height);
+		ScaledResolution sr = new ScaledResolution(mc);
+		if (!dir.isHorizontal())
+			new GuiButtonExt(0, x + guiLeft + 1, y + guiTop + 1 + (int) (percent * (length - 10)), 8, 8, "").drawButton(mc, getMouseX(), getMouseY());
+		else
+			new GuiButtonExt(0, x + guiLeft + 1 + (int) (percent * (length - 10)), y + guiTop + 1, 8, 8, "").drawButton(mc, getMouseX(), getMouseY());
 	}
 
 	public void drawTextfield(int x, int y, int width) {
@@ -215,6 +226,14 @@ public class GuiDrawer {
 	private void bindTexture() {
 		mc.getTextureManager().bindTexture(COMMON_TEXTURES);
 		GlStateManager.color(1F, 1F, 1F, 1F);
+	}
+
+	public int getMouseX() {
+		return Mouse.getX() * new ScaledResolution(mc).getScaledWidth() / this.mc.displayWidth;
+	}
+
+	public int getMouseY() {
+		return new ScaledResolution(mc).getScaledHeight() - Mouse.getY() * new ScaledResolution(mc).getScaledHeight() / this.mc.displayHeight - 1;
 	}
 
 	public enum Direction {

@@ -11,6 +11,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import com.google.common.collect.Lists;
@@ -49,14 +50,14 @@ public class BlockHelper {
 		return stack;
 	}
 
-	public static boolean isOre(World world, BlockPos pos) {
+	public static boolean isOre(IBlockAccess world, BlockPos pos) {
 		IBlockState state = world.getBlockState(pos);
 		if (!state.getBlock().isFullCube(state))
 			return false;
 		try {
 			ItemStack stack = null;
 			try {
-				stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, null);
+				stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), (World) world, pos, null);
 			} catch (Exception e) {
 				stack = new ItemStack(state.getBlock());
 			}

@@ -7,12 +7,15 @@ import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
+import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 import com.google.common.collect.Lists;
 
@@ -123,7 +126,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-			return InvHelper.hasItemHandler(this, facing);
+			return true;
 		}
 		return super.hasCapability(capability, facing);
 	}
@@ -131,7 +134,9 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-			return (T) InvHelper.getItemHandler(this, facing);
+			if (this instanceof ISidedInventory)
+				return (T) new SidedInvWrapper((ISidedInventory) this, facing);
+			return (T) new InvWrapper(this);
 		}
 		return super.getCapability(capability, facing);
 	}
