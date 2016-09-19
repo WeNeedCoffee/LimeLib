@@ -2,10 +2,6 @@ package mrriegel.limelib.gui;
 
 import java.util.List;
 
-import javax.vecmath.Vector3d;
-
-import org.lwjgl.input.Mouse;
-
 import mrriegel.limelib.LimeLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -19,11 +15,12 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
+
+import org.lwjgl.input.Mouse;
 
 public class GuiDrawer {
 

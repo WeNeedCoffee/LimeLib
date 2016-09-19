@@ -108,13 +108,13 @@ public class Utils {
 
 	public static EntityPlayerMP getRandomPlayer() {
 		List<WorldServer> lis = Lists.newArrayList(FMLCommonHandler.instance().getMinecraftServerInstance().worldServers);
-		if(lis.isEmpty())
+		if (lis.isEmpty())
 			return null;
 		return getRandomPlayer(lis.get(new Random().nextInt(lis.size())));
 	}
 
 	public static EntityPlayerMP getRandomPlayer(World world) {
-		if(world.playerEntities.isEmpty())
+		if (world.playerEntities.isEmpty())
 			return null;
 		return (EntityPlayerMP) world.playerEntities.get(world.rand.nextInt(world.playerEntities.size()));
 	}

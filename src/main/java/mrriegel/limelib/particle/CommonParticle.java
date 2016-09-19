@@ -10,6 +10,7 @@ import net.minecraft.util.ResourceLocation;
 public class CommonParticle extends Particle {
 
 	protected double flouncing = 0;
+	protected boolean depth = true;
 
 	public CommonParticle(double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn) {
 		super(Minecraft.getMinecraft().theWorld, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
@@ -93,5 +94,10 @@ public class CommonParticle extends Particle {
 		this.field_190017_n = !noClip;
 		return this;
 	}
+
+	// public CommonParticle disableDepth() {
+	// this.depth = false;
+	// return this;
+	// }
 
 }

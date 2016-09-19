@@ -2,7 +2,9 @@ package mrriegel.limelib.helper;
 
 import java.util.List;
 
+import mrriegel.limelib.LimeLib;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -10,11 +12,11 @@ import com.google.common.collect.Lists;
 
 public class ParticleHelper {
 
-	public static List<Vec3d> getVecsForLine(BlockPos pos1, BlockPos pos2, double frequence) {
+	public static List<Vec3d> getVecsForLine(BlockPos pos1, BlockPos pos2, int frequence) {
 		return getVecsForLine(pos1.getX() + .5, pos1.getY() + .5, pos1.getZ() + .5, pos2.getX() + .5, pos2.getY() + .5, pos2.getZ() + .5, frequence);
 	}
 
-	public static List<Vec3d> getVecsForLine(double x1, double y1, double z1, double x2, double y2, double z2, double frequence) {
+	public static List<Vec3d> getVecsForLine(double x1, double y1, double z1, double x2, double y2, double z2, int frequence) {
 		List<Vec3d> lis = Lists.newArrayList();
 		final Vec3d ovec = new Vec3d(x2 - x1, y2 - y1, z2 - z1);
 		int amount = (int) (ovec.lengthVector() * frequence);
@@ -27,11 +29,11 @@ public class ParticleHelper {
 		return lis;
 	}
 
-	public static List<Vec3d> getVecsForCircle(BlockPos pos1, double radius, double frequence, EnumFacing.Axis axis) {
+	public static List<Vec3d> getVecsForCircle(BlockPos pos1, double radius, int frequence, EnumFacing.Axis axis) {
 		return getVecsForCircle(pos1.getX() + .5, pos1.getY() + .5, pos1.getZ() + .5, radius, frequence, axis);
 	}
 
-	public static List<Vec3d> getVecsForCircle(double x1, double y1, double z1, double radius, double frequence, EnumFacing.Axis axis) {
+	public static List<Vec3d> getVecsForCircle(double x1, double y1, double z1, double radius, int frequence, EnumFacing.Axis axis) {
 		List<Vec3d> lis = Lists.newArrayList();
 		int amount = (int) (2 * Math.PI * radius * frequence);
 		double degree = 360 / (double) amount;
@@ -54,22 +56,22 @@ public class ParticleHelper {
 		return lis;
 	}
 
-	public static List<Vec3d> getVecsForExplosion(BlockPos pos1, double force, double frequence, EnumFacing.Axis axis) {
+	public static List<Vec3d> getVecsForExplosion(BlockPos pos1, double force, int frequence, EnumFacing.Axis axis) {
 		return getVecsForExplosion(pos1.getX() + .5, pos1.getY() + .5, pos1.getZ() + .5, force, frequence, axis);
 	}
 
-	public static List<Vec3d> getVecsForExplosion(double x1, double y1, double z1, double force, double frequence, EnumFacing.Axis axis) {
+	public static List<Vec3d> getVecsForExplosion(double x1, double y1, double z1, double force, int frequence, EnumFacing.Axis axis) {
 		List<Vec3d> lis = Lists.newArrayList();
 		for (Vec3d vec : ParticleHelper.getVecsForCircle(x1, y1, z1, force, frequence, axis))
 			lis.add(new Vec3d(vec.xCoord - x1, vec.yCoord - y1, vec.zCoord - z1));
 		return lis;
 	}
 
-	public static Vec3d getVecForSpirale(BlockPos pos, double force, double speed, double frequence, boolean reverse, EnumFacing.Axis axis) {
+	public static Vec3d getVecForSpirale(BlockPos pos, double force, double speed, int frequence, boolean reverse, EnumFacing.Axis axis) {
 		return getVecForSpirale(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, force, speed, frequence, reverse, axis);
 	}
 
-	public static Vec3d getVecForSpirale(double x1, double y1, double z1, double force, double speed, double frequence, boolean reverse, EnumFacing.Axis axis) {
+	public static Vec3d getVecForSpirale(double x1, double y1, double z1, double force, double speed, int frequence, boolean reverse, EnumFacing.Axis axis) {
 		List<Vec3d> lis = ParticleHelper.getVecsForCircle(x1, y1, z1, force, frequence, axis);
 		if (reverse)
 			lis = Lists.reverse(lis);
@@ -86,5 +88,9 @@ public class ParticleHelper {
 		return null;
 
 	}
+
+	public static final ResourceLocation roundParticle = new ResourceLocation(LimeLib.MODID + ":particle/roundParticle");
+	public static final ResourceLocation sparkleParticle = new ResourceLocation(LimeLib.MODID + ":particle/sparkleParticle");
+	public static final ResourceLocation squareParticle = new ResourceLocation(LimeLib.MODID + ":particle/squareParticle");
 
 }

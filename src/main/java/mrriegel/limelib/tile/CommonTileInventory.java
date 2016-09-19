@@ -3,7 +3,6 @@ package mrriegel.limelib.tile;
 import java.util.List;
 
 import mrriegel.limelib.LimeLib;
-import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
