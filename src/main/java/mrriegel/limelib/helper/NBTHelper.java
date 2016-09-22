@@ -272,9 +272,6 @@ public class NBTHelper {
 
 	// tag
 	public static NBTTagCompound getTag(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName, 99)) {
-			return null;
-		}
 		return (NBTTagCompound) nbt.getTag(keyName);
 	}
 

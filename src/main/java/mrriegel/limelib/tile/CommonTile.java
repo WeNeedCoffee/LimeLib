@@ -1,5 +1,7 @@
 package mrriegel.limelib.tile;
 
+import java.util.List;
+
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.TileGuiMessage;
 import mrriegel.limelib.network.TileMessage;
@@ -14,6 +16,8 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import com.google.common.collect.Lists;
 
 public class CommonTile extends TileEntity {
 
@@ -51,7 +55,7 @@ public class CommonTile extends TileEntity {
 	}
 
 	public void sync() {
-		if (true)
+		if (false)
 			worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(pos), worldObj.getBlockState(pos), 8);
 		else {
 			if (hasWorldObj() && !worldObj.isRemote)
@@ -78,8 +82,8 @@ public class CommonTile extends TileEntity {
 		return this.worldObj.getTileEntity(this.pos) != this || isInvalid() ? false : player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
 	}
 
-	public ItemStack[] getDroppingItems() {
-		return new ItemStack[0];
+	public List<ItemStack> getDroppingItems() {
+		return Lists.newArrayList();
 	}
 
 	public boolean openGUI(EntityPlayerMP player) {

@@ -118,8 +118,8 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	}
 
 	@Override
-	public ItemStack[] getDroppingItems() {
-		return stacks;
+	public List<ItemStack> getDroppingItems() {
+		return Lists.newArrayList(stacks);
 	}
 
 	@Override
