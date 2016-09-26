@@ -1,5 +1,6 @@
 package mrriegel.limelib.helper;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.TeleportMessage;
 import net.minecraft.entity.Entity;
@@ -15,6 +16,9 @@ import net.minecraft.network.play.server.SPacketSetExperience;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.Teleporter;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
@@ -136,5 +140,104 @@ public class TeleportationHelper {
 			NBTTagCompound nbt = new NBTTagCompound();
 			PacketHandler.sendTo(new TeleportMessage(nbt), (EntityPlayerMP) entity);
 		}
+	}
+
+	public static boolean serverTeleport(Entity entity, BlockPos pos, int targetDim) {
+
+		EntityPlayerMP player = null;
+		if (entity instanceof EntityPlayerMP) {
+			player = (EntityPlayerMP) entity;
+		}
+		int x = pos.getX();
+		int y = pos.getY();
+		int z = pos.getZ();
+
+		int from = entity.dimension;
+		if (from != targetDim) {
+			MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+			WorldServer fromDim = server.worldServerForDimension(from);
+			WorldServer toDim = server.worldServerForDimension(targetDim);
+			Teleporter teleporter = new TeleporterEIO(toDim);
+			// play sound at the dimension we are leaving for others to hear
+			if (player != null) {
+				server.getPlayerList().transferPlayerToDimension(player, targetDim, teleporter);
+				if (from == 1 && entity.isEntityAlive()) { // get around vanilla
+															// End
+															// hacks
+					toDim.spawnEntityInWorld(entity);
+					toDim.updateEntityWithOptionalForce(entity, false);
+				}
+			} else {
+				NBTTagCompound tagCompound = new NBTTagCompound();
+				float rotationYaw = entity.rotationYaw;
+				float rotationPitch = entity.rotationPitch;
+				entity.writeToNBT(tagCompound);
+				Class<? extends Entity> entityClass = entity.getClass();
+				fromDim.removeEntity(entity);
+
+				try {
+					Entity newEntity = entityClass.getConstructor(World.class).newInstance(toDim);
+					newEntity.readFromNBT(tagCompound);
+					newEntity.setLocationAndAngles(x, y, z, rotationYaw, rotationPitch);
+					newEntity.forceSpawn = true;
+					toDim.spawnEntityInWorld(newEntity);
+					newEntity.forceSpawn = false; // necessary?
+				} catch (Exception e) {
+					// Throwables.propagate(e);
+					LimeLib.log.error("serverTeleport: Error creating a entity to be created in new dimension.");
+					return false;
+				}
+			}
+		}
+
+		// Force the chunk to load
+		if (!entity.worldObj.isBlockLoaded(pos)) {
+			entity.worldObj.getChunkFromBlockCoords(pos);
+		}
+
+		if (player != null) {
+			player.connection.setPlayerLocation(x + 0.5, y + 1.1, z + 0.5, player.rotationYaw, player.rotationPitch);
+		} else {
+			entity.setPositionAndUpdate(x + 0.5, y + 1.1, z + 0.5);
+		}
+
+		entity.fallDistance = 0;
+		// play sound
+
+		return true;
+	}
+
+	public static class TeleporterEIO extends Teleporter {
+
+		public TeleporterEIO(WorldServer p_i1963_1_) {
+			super(p_i1963_1_);
+		}
+
+		@Override
+		public boolean makePortal(Entity p_makePortal_1_) {
+			return true;
+		}
+
+		@Override
+		public boolean placeInExistingPortal(Entity entityIn, float rotationYaw) {
+			return true;
+		}
+
+		@Override
+		public void placeInPortal(Entity entity, float rotationYaw) {
+			int x = MathHelper.floor_double(entity.posX);
+			int y = MathHelper.floor_double(entity.posY) - 1;
+			int z = MathHelper.floor_double(entity.posZ);
+
+			entity.setLocationAndAngles(x, y, z, entity.rotationPitch, entity.rotationYaw);
+			entity.motionX = 0;
+			entity.motionY = 0;
+			entity.motionZ = 0;
+		}
+
+		@Override
+		public void removeStalePortalLocations(long p_removeStalePortalLocations_1_) {
+		}
+
 	}
 }

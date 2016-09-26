@@ -55,9 +55,10 @@ public class CommonTile extends TileEntity {
 	}
 
 	public void sync() {
-		if (false)
+		if (false) {
+			markDirty();
 			worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(pos), worldObj.getBlockState(pos), 8);
-		else {
+		} else {
 			if (hasWorldObj() && !worldObj.isRemote)
 				for (EntityPlayer p : worldObj.playerEntities)
 					sync((EntityPlayerMP) p);
@@ -102,6 +103,18 @@ public class CommonTile extends TileEntity {
 	public final void sendMessage(NBTTagCompound nbt) {
 		nbt.setLong("pos", pos.toLong());
 		PacketHandler.sendToServer(new TileMessage(nbt));
+	}
+
+	public final int getX() {
+		return pos.getX();
+	}
+
+	public final int getY() {
+		return pos.getY();
+	}
+
+	public final int getZ() {
+		return pos.getZ();
 	}
 
 }
