@@ -97,7 +97,7 @@ public class CommonTile extends TileEntity {
 		PacketHandler.sendToServer(new TileGuiMessage(nbt));
 	}
 
-	public void handleMessage(EntityPlayerMP player, NBTTagCompound nbt) {
+	public void handleMessage(EntityPlayer player, NBTTagCompound nbt) {
 	}
 
 	public final void sendMessage(NBTTagCompound nbt) {

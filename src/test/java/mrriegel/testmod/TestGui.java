@@ -77,7 +77,7 @@ public class TestGui extends CommonGuiContainer {
 			// drawer.drawColoredRectangle(120, 61, 18, 36,
 			// ColorHelper.getRGB(EnumDyeColor.BLUE));
 			t.drawTextBox();
-			fontRendererObj.drawString(TextFormatting.AQUA + "ZEuth", 3, 4, 0xff);
+			fontRendererObj.drawString("ZEuth", 3, 4, 0xff);
 			drawer.drawStopSign(180, 12);
 			drawer.drawFlame(18, 18, 1.0f);
 			drawer.drawScrollbar(0, 0, 100, 1.00f, Direction.RIGHT);

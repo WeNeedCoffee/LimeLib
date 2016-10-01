@@ -39,7 +39,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 	}
 
 	@Override
-	public void handleMessage(EntityPlayerMP player, NBTTagCompound nbt) {
+	public void handleMessage(EntityPlayer player, NBTTagCompound nbt) {
 		super.handleMessage(player, nbt);
 		lis = null;
 		sync();

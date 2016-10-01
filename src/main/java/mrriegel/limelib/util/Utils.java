@@ -30,7 +30,7 @@ import com.mojang.authlib.GameProfile;
 
 public class Utils {
 
-	public static String getModID() {
+	public static String getCurrentModID() {
 		ModContainer mc = Loader.instance().activeModContainer();
 		return mc == null || (mc instanceof InjectedModContainer && ((InjectedModContainer) mc).wrappedContainer instanceof FMLContainer) ? "minecraft" : mc.getModId().toLowerCase();
 	}
@@ -100,10 +100,24 @@ public class Utils {
 		return lis;
 	}
 
-	public static String getModName(IForgeRegistryEntry.Impl<?> registerable) {
+	public static String getModID(IForgeRegistryEntry.Impl<?> registerable) {
 		final String modID = registerable.getRegistryName().getResourceDomain();
 		final ModContainer mod = Loader.instance().getIndexedModList().get(modID);
-		return mod != null ? mod.getName() : modID.equalsIgnoreCase("minecraft") ? "Minecraft" : "Unknown";
+		return mod != null ? mod.getModId() : "minecraft";
+	}
+
+	public static String getModName(IForgeRegistryEntry.Impl<?> registerable) {
+		ModContainer m = Loader.instance().getIndexedModList().get(getModID(registerable));
+		if (m != null)
+			return m.getName();
+		else
+			return "Minecraft";
+		// final String modID =
+		// registerable.getRegistryName().getResourceDomain();
+		// final ModContainer mod =
+		// Loader.instance().getIndexedModList().get(modID);
+		// return mod != null ? mod.getName() :
+		// modID.equalsIgnoreCase("minecraft") ? "Minecraft" : "Unknown";
 	}
 
 	public static EntityPlayerMP getRandomPlayer() {

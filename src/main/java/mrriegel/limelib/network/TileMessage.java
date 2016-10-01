@@ -22,7 +22,7 @@ public class TileMessage extends AbstractMessage<TileMessage> {
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
 		TileEntity tile = player.worldObj.getTileEntity(BlockPos.fromLong(nbt.getLong("pos")));
 		if (tile instanceof CommonTile)
-			((CommonTile) tile).handleMessage((EntityPlayerMP) player, nbt);
+			((CommonTile) tile).handleMessage(player, nbt);
 	}
 
 }

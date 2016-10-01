@@ -10,28 +10,36 @@ import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
+import mrriegel.limelib.helper.ParticleHelper;
 import mrriegel.limelib.helper.RenderHelper2;
 import mrriegel.limelib.helper.TeleportationHelper;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
+import mrriegel.limelib.particle.CommonParticle;
 import mrriegel.limelib.recipe.AbstractRecipe;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.util.FilterItem;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -40,6 +48,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -55,6 +64,7 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -195,6 +205,33 @@ public class TestMod implements IGuiHandler {
 			return;
 		for (TileEntity t : Minecraft.getMinecraft().theWorld.loadedTileEntityList)
 			RenderHelper2.renderBlockOverlays(e, Minecraft.getMinecraft().thePlayer, Sets.newHashSet(t.getPos()), ColorHelper.getRGB(Color.CYAN.getRGB(), 144), Color.orange.getRGB());
+	}
+
+	@SubscribeEvent
+	public void update(final LivingUpdateEvent e) {
+		if (!(e.getEntity() instanceof EntityPlayer) && e.getEntity().worldObj.isRemote && (e.getEntity().worldObj.getTotalWorldTime() + new BlockPos(e.getEntity()).hashCode()) % 10 == 0 && !GuiScreen.isCtrlKeyDown()) {
+
+			// for (Vec3d v : ParticleHelper.getVecsForExplosion(0.1, 54,
+			// Axis.Y))
+			// ParticleHelper.renderParticle(new
+			// CommonParticle(e.getEntity().posX, e.getEntity().posY +
+			// e.getEntity().height - .1, e.getEntity().posZ, v.xCoord, 0.05,
+			// v.zCoord).setMaxAge2(40 + new Random().nextInt(20)).setColor(new
+			// Random().nextInt(0xffffff), 0));
+			BlockPos pos = new BlockPos(e.getEntity());
+			int range=8;
+			List<EntityLivingBase> lis = e.getEntity().worldObj.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)),new Predicate<EntityLivingBase>() {
+
+				@Override
+				public boolean apply(EntityLivingBase input) {
+					return e.getEntity().getClass().equals(input.getClass());
+				}
+			});
+			lis.remove(e.getEntity());
+			for (EntityLivingBase ent : lis)
+				for (Vec3d v : ParticleHelper.getVecsForLine(e.getEntity().posX, e.getEntity().posY+e.getEntity().height-.1, e.getEntity().posZ, ent.posX, ent.posY+ent.height-.1, ent.posZ, 3))
+					ParticleHelper.renderParticle(new CommonParticle(v.xCoord, v.yCoord, v.zCoord));
+		}
 	}
 
 	@Override

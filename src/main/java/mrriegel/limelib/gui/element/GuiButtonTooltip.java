@@ -24,9 +24,8 @@ public class GuiButtonTooltip extends GuiButtonColor implements ITooltip {
 		GlStateManager.popMatrix();
 	}
 
-	// @Override
-	// public void setTooltip(List<String> lines) {
-	// strings = lines;
-	// }
+	public void setTooltip(List<String> lines) {
+		strings = lines;
+	}
 
 }

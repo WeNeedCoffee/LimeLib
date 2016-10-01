@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 public class CommonParticle extends Particle {
 
 	protected double flouncing = 0;
-	protected boolean depth = true;
+	protected int visibleRange = 32;
 
 	public CommonParticle(double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn) {
 		super(Minecraft.getMinecraft().theWorld, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
@@ -50,7 +50,8 @@ public class CommonParticle extends Particle {
 
 	@Override
 	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		super.renderParticle(worldRendererIn, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
+		if (entityIn.getDistance(posX, posY, posZ) <= visibleRange)
+			super.renderParticle(worldRendererIn, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 	}
 
 	@Override
@@ -66,6 +67,7 @@ public class CommonParticle extends Particle {
 	public CommonParticle setColor(int color, int diff) {
 		if (diff > 0) {
 			color += new Random().nextInt(diff) - (diff / 2f);
+
 		}
 		color &= 0xffffff;
 		this.particleRed = ColorHelper.getRed(color) / 255f;
@@ -102,6 +104,11 @@ public class CommonParticle extends Particle {
 
 	public CommonParticle setNoClip(boolean noClip) {
 		this.field_190017_n = !noClip;
+		return this;
+	}
+
+	public CommonParticle setVisibleRange(int visibleRange) {
+		this.visibleRange = visibleRange;
 		return this;
 	}
 

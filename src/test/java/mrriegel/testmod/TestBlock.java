@@ -12,8 +12,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class TestBlock extends CommonBlockContainer<TestTile> {
@@ -57,8 +59,13 @@ public class TestBlock extends CommonBlockContainer<TestTile> {
 		// TODO Auto-generated method stub
 		if (!worldIn.isRemote) {
 		} else {
-			pos = pos.up();
-			ParticleHelper.renderParticle(new CommonParticle(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, 0, 0.02, 0).setTexture(ParticleHelper.squareParticle).setMaxAge2(60).setScale(3f).setColor(Color.white.getRGB(), 0));
+//			pos = pos.up();
+			for (Vec3d v : ParticleHelper.getVecsForExplosion( 0.9, 15, Axis.Y))
+				ParticleHelper.renderParticle(new CommonParticle(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, v.xCoord, v.yCoord, v.zCoord).setTexture(ParticleHelper.squareParticle).setMaxAge2(60).setColor(Color.white.getRGB(), 0).setNoClip(true).setFlouncing(0.015));
+			// for (Vec3d v : ParticleHelper.getVecsForCircle(pos, 2, 7,
+			// Axis.Y))
+			// ParticleHelper.renderParticle(new CommonParticle(v.xCoord,
+			// v.yCoord, v.zCoord,0,0.09,0).setMaxAge2(60));
 		}
 		if (true)
 			return true;

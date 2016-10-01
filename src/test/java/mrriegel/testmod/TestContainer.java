@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 
 import com.google.common.collect.Lists;
 
-public class TestContainer extends CommonContainerTile {
+public class TestContainer extends CommonContainerTile<CommonTileInventory> {
 
 	public TestContainer(InventoryPlayer invPlayer, CommonTileInventory tile) {
 		super(invPlayer, tile);

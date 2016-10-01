@@ -73,7 +73,6 @@ public class StackHelper {
 		if (ar.length >= 3 && StringUtils.isNumeric(ar[2]))
 			meta = Integer.valueOf(ar[2]);
 		return new ItemStack(item, amount, meta);
-
 	}
 
 	public static String stackToString(ItemStack stack, boolean simple) {
