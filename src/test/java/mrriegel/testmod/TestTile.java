@@ -63,7 +63,6 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		super.onDataPacket(net, pkt);
-		System.out.println("onData");
 	};
 
 	List<BlockPos> lis = null;

@@ -5,7 +5,6 @@ import java.util.List;
 import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
@@ -22,7 +21,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public abstract class CommonBlockContainer<T extends CommonTile> extends CommonBlock implements ITileEntityProvider {
+public abstract class CommonBlockContainer<T extends CommonTile> extends CommonBlock {
 
 	public CommonBlockContainer(Material materialIn, String name) {
 		super(materialIn, name);
@@ -42,7 +41,16 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public void registerBlock() {
 		super.registerBlock();
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
+
 	}
+
+	@Override
+	public boolean hasTileEntity(IBlockState state) {
+		return true;
+	}
+
+	@Override
+	public abstract TileEntity createTileEntity(World world, IBlockState state);
 
 	protected abstract Class<? extends T> getTile();
 

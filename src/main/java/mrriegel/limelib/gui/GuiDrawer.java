@@ -8,6 +8,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -63,7 +64,6 @@ public class GuiDrawer {
 		int width = dir.isHorizontal() ? length : 10;
 		int height = dir.isHorizontal() ? 10 : length;
 		drawFramedRectangle(x, y, width, height);
-		ScaledResolution sr = new ScaledResolution(mc);
 		if (!dir.isHorizontal())
 			new GuiButtonExt(0, x + guiLeft + 1, y + guiTop + 1 + (int) (percent * (length - 10)), 8, 8, "").drawButton(mc, getMouseX(), getMouseY());
 		else
@@ -167,6 +167,15 @@ public class GuiDrawer {
 		// GlStateManager.enableLighting();
 		// GlStateManager.enableDepth();
 		GlStateManager.popMatrix();
+	}
+
+	public void drawItemStack(ItemStack stack, int x, int y) {
+		if (stack != null) {
+			GlStateManager.pushMatrix();
+			RenderHelper.enableGUIStandardItemLighting();
+			mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x + guiLeft, y + guiTop);
+			GlStateManager.popMatrix();
+		}
 	}
 
 	public void renderToolTip(ItemStack stack, int x, int y) {

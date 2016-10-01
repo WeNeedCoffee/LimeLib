@@ -47,12 +47,12 @@ public class Eventhandler {
 		}
 	}
 
-//	@SubscribeEvent
-//	public void clone(Clone event) {
-//		EntityPlayer old = event.getOriginal();
-//		EntityPlayer neu = event.getEntityPlayer();
-//		neu.getEntityData().merge(old.getEntityData());
-//	}
+	// @SubscribeEvent
+	// public void clone(Clone event) {
+	// EntityPlayer old = event.getOriginal();
+	// EntityPlayer neu = event.getEntityPlayer();
+	// neu.getEntityData().merge(old.getEntityData());
+	// }
 
 	@SubscribeEvent
 	public void onTextureStitch(TextureStitchEvent event) {

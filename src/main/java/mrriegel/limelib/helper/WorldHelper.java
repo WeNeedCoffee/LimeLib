@@ -115,4 +115,18 @@ public class WorldHelper {
 				return false;
 		return true;
 	}
+
+	public static List<BlockPos> getCuboid(BlockPos center, int rangeX, int rangeY, int rangeZ) {
+		List<BlockPos> lis = Lists.newArrayList();
+		for (int y = center.getY() + rangeY; y >= center.getY() - rangeY; y--)
+			for (int x = center.getX() - rangeX; x <= center.getX() + rangeX; x++)
+				for (int z = center.getZ() - rangeZ; z <= center.getZ() + rangeZ; z++)
+					lis.add(new BlockPos(x, y, z));
+		return lis;
+	}
+
+	public static List<BlockPos> getCuboid(BlockPos center, int range) {
+		return getCuboid(center, range, range, range);
+	}
+
 }

@@ -3,8 +3,11 @@ package mrriegel.limelib.particle;
 import java.util.Random;
 
 import mrriegel.limelib.helper.ColorHelper;
+import mrriegel.limelib.helper.ParticleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
 public class CommonParticle extends Particle {
@@ -17,6 +20,7 @@ public class CommonParticle extends Particle {
 		this.motionX = xSpeedIn;
 		this.motionY = ySpeedIn;
 		this.motionZ = zSpeedIn;
+		setTexture(ParticleHelper.roundParticle);
 	}
 
 	public CommonParticle(double posXIn, double posYIn, double posZIn) {
@@ -45,6 +49,11 @@ public class CommonParticle extends Particle {
 	}
 
 	@Override
+	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+		super.renderParticle(worldRendererIn, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
+	}
+
+	@Override
 	public int getFXLayer() {
 		return 1;
 	}
@@ -62,6 +71,7 @@ public class CommonParticle extends Particle {
 		this.particleRed = ColorHelper.getRed(color) / 255f;
 		this.particleGreen = ColorHelper.getGreen(color) / 255f;
 		this.particleBlue = ColorHelper.getBlue(color) / 255f;
+		this.particleAlpha = ColorHelper.getAlpha(color) / 255f;
 		return this;
 	}
 

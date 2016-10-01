@@ -3,6 +3,8 @@ package mrriegel.limelib.helper;
 import java.util.List;
 
 import mrriegel.limelib.LimeLib;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -11,6 +13,10 @@ import net.minecraft.util.math.Vec3d;
 import com.google.common.collect.Lists;
 
 public class ParticleHelper {
+
+	public static void renderParticle(Particle par) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(par);
+	}
 
 	public static List<Vec3d> getVecsForLine(BlockPos pos1, BlockPos pos2, int frequence) {
 		return getVecsForLine(pos1.getX() + .5, pos1.getY() + .5, pos1.getZ() + .5, pos2.getX() + .5, pos2.getY() + .5, pos2.getZ() + .5, frequence);

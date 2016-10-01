@@ -58,10 +58,11 @@ public class BlockHelper {
 			ItemStack stack = null;
 			try {
 				stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), (World) world, pos, null);
+				return StackHelper.isOre(stack);
 			} catch (Exception e) {
 				stack = new ItemStack(state.getBlock());
+				return StackHelper.isOre(stack);
 			}
-			return StackHelper.isOre(stack);
 		} catch (Exception e) {
 		}
 		return false;

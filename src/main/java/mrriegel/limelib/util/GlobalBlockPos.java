@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class GlobalBlockPos {
@@ -75,6 +76,8 @@ public class GlobalBlockPos {
 	}
 
 	public World getWorld(@Nullable World world) {
+		if (true)
+			return DimensionManager.getWorld(dimension);
 		if (world != null && world.provider.getDimension() == dimension)
 			return world;
 		return (world != null && world.getMinecraftServer() != null ? world.getMinecraftServer() : FMLCommonHandler.instance().getMinecraftServerInstance()).worldServerForDimension(dimension);

@@ -1,12 +1,22 @@
 package mrriegel.testmod;
 
+import java.awt.Color;
+
 import mrriegel.limelib.block.CommonBlockContainer;
+import mrriegel.limelib.helper.ParticleHelper;
+import mrriegel.limelib.particle.CommonParticle;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class TestBlock extends CommonBlockContainer {
+public class TestBlock extends CommonBlockContainer<TestTile> {
 
 	public TestBlock() {
 		super(Material.ROCK, "blocko");
@@ -15,12 +25,12 @@ public class TestBlock extends CommonBlockContainer {
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createTileEntity(World world, IBlockState state) {
 		return new TestTile();
 	}
 
 	@Override
-	protected Class<? extends TileEntity> getTile() {
+	protected Class<? extends TestTile> getTile() {
 		return TestTile.class;
 	}
 
@@ -41,5 +51,18 @@ public class TestBlock extends CommonBlockContainer {
 	// // TODO Auto-generated method stub
 	// return false;
 	// }
+
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+		// TODO Auto-generated method stub
+		if (!worldIn.isRemote) {
+		} else {
+			pos = pos.up();
+			ParticleHelper.renderParticle(new CommonParticle(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, 0, 0.02, 0).setTexture(ParticleHelper.squareParticle).setMaxAge2(60).setScale(3f).setColor(Color.white.getRGB(), 0));
+		}
+		if (true)
+			return true;
+		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
+	}
 
 }
