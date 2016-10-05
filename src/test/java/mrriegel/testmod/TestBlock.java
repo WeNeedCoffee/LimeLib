@@ -58,6 +58,11 @@ public class TestBlock extends CommonBlockContainer<TestTile> {
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		// TODO Auto-generated method stub
 		if (!worldIn.isRemote) {
+//			EntityFallingBlock e=new EntityFallingBlock(worldIn,pos .getX()+.5,pos . getY()+1.5,pos . getZ()+.5, Blocks.COBBLESTONE.getDefaultState());
+//			e.motionY=.3;
+//			e.motionX=(worldIn.rand.nextDouble()-.5)/3;
+//			e.motionZ=(worldIn.rand.nextDouble()-.5)/3;
+//			worldIn.spawnEntityInWorld(e);
 		} else {
 //			pos = pos.up();
 			for (Vec3d v : ParticleHelper.getVecsForExplosion( 0.9, 15, Axis.Y))

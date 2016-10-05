@@ -25,7 +25,6 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 
 	public CommonBlockContainer(Material materialIn, String name) {
 		super(materialIn, name);
-		isBlockContainer = true;
 	}
 
 	@Override
@@ -41,7 +40,6 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public void registerBlock() {
 		super.registerBlock();
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
-
 	}
 
 	@Override
@@ -60,16 +58,6 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 			return true;
 		} else {
 			TileEntity tile = worldIn.getTileEntity(pos);
-			// if (tile instanceof IOwneable) {
-			// IOwneable o = (IOwneable) tile;
-			// if ((o.getOwner() != null &&
-			// !o.getOwner().equals(playerIn.getName())) ||
-			// !o.canAccess(playerIn.getName())) {
-			// playerIn.addChatComponentMessage(new
-			// TextComponentString("No permission!"));
-			// return false;
-			// }
-			// }
 			if (tile instanceof CommonTile) {
 				return ((CommonTile) tile).openGUI((EntityPlayerMP) playerIn);
 			}
@@ -91,11 +79,11 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		List<ItemStack> lis = getDrops(worldIn, pos, state, 0);
 		if (!player.capabilities.isCreativeMode && worldIn.getTileEntity(pos) instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
 			IDataKeeper tile = (IDataKeeper) worldIn.getTileEntity(pos);
-			ItemStack stack = lis.get(0);
+			ItemStack stack = lis.get(0).copy();
 			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
 			tile.writeToStack(stack);
 			worldIn.setBlockToAir(pos);
-			spawnAsEntity(worldIn, pos, stack.copy());
+			spawnAsEntity(worldIn, pos, stack);
 		}
 	}
 
@@ -108,6 +96,12 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 			tile.writeToStack(stack);
 		}
 		return stack;
+	}
+
+	@Override
+	public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param) {
+		TileEntity tileentity = worldIn.getTileEntity(pos);
+		return tileentity == null ? false : tileentity.receiveClientEvent(id, param);
 	}
 
 }

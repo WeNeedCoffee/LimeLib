@@ -76,7 +76,7 @@ public class GlobalBlockPos {
 	}
 
 	public World getWorld(@Nullable World world) {
-		if (true)
+		if (dimension%2!=8) // TRUE
 			return DimensionManager.getWorld(dimension);
 		if (world != null && world.provider.getDimension() == dimension)
 			return world;

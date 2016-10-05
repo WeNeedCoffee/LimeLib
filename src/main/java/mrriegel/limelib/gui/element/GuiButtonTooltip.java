@@ -20,7 +20,8 @@ public class GuiButtonTooltip extends GuiButtonColor implements ITooltip {
 	public void drawTooltip(int mouseX, int mouseY) {
 		GlStateManager.pushMatrix();
 		ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-		GuiUtils.drawHoveringText(strings, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, Minecraft.getMinecraft().fontRendererObj);
+		if (strings != null)
+			GuiUtils.drawHoveringText(strings, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, Minecraft.getMinecraft().fontRendererObj);
 		GlStateManager.popMatrix();
 	}
 

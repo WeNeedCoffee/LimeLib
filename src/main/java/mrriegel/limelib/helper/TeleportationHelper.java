@@ -43,6 +43,7 @@ public class TeleportationHelper {
 	}
 
 	/** nicked from brandonscore */
+	@Deprecated
 	public static void teleportEntity(Entity entity, int dimension, BlockPos pos) {
 		if (!canTeleport(entity))
 			return;
@@ -137,13 +138,13 @@ public class TeleportationHelper {
 		// }
 		entity.fallDistance = 0;
 		if (entity instanceof EntityPlayerMP) {
-			NBTTagCompound nbt = new NBTTagCompound();
-			PacketHandler.sendTo(new TeleportMessage(nbt), (EntityPlayerMP) entity);
+			PacketHandler.sendTo(new TeleportMessage(), (EntityPlayerMP) entity);
 		}
 	}
 
 	public static boolean serverTeleport(Entity entity, BlockPos pos, int targetDim) {
-
+		if (!canTeleport(entity))
+			return false;
 		EntityPlayerMP player = null;
 		if (entity instanceof EntityPlayerMP) {
 			player = (EntityPlayerMP) entity;
@@ -202,6 +203,9 @@ public class TeleportationHelper {
 		}
 
 		entity.fallDistance = 0;
+		if (entity instanceof EntityPlayerMP) {
+			PacketHandler.sendTo(new TeleportMessage(), (EntityPlayerMP) entity);
+		}
 		// play sound
 
 		return true;

@@ -26,9 +26,6 @@ public class CommonGuiScreen extends GuiScreen {
 	protected GuiDrawer drawer;
 	protected MCPanel panel;
 
-	public CommonGuiScreen() {
-	}
-
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		if (panel != null) {
 			panel.drawForeground(mouseX, mouseY);

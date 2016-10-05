@@ -210,6 +210,7 @@ public class InvHelper {
 		if (inv == null)
 			return;
 		for (IFluidTankProperties p : inv.getTankProperties()) {
+			p.canDrain();
 			inv.drain(Integer.MAX_VALUE, true);
 		}
 	}

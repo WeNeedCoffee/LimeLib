@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import mrriegel.limelib.gui.slot.SlotGhost;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -131,9 +132,17 @@ public abstract class CommonContainer extends Container {
 				// minSlot = getSlotFromInventory(p.inv, --p.max);
 				if (minSlot == null || maxSlot == null)
 					return null;
-				if (this.mergeItemStack(itemstack1, minSlot.slotNumber, maxSlot.slotNumber + 1, !(slot.inventory instanceof InventoryPlayer))) {
-					merged = true;
-					break;
+				if (ghosts(p)) {
+					for (int i = p.min; i <= p.max; i++)
+						if (!getSlotFromInventory(p.inv, i).getHasStack()) {
+							getSlotFromInventory(p.inv, i).putStack(itemstack1);
+							return null;
+						}
+				} else {
+					if (this.mergeItemStack(itemstack1, minSlot.slotNumber, maxSlot.slotNumber + 1, !(slot.inventory instanceof InventoryPlayer))) {
+						merged = true;
+						break;
+					}
 				}
 			}
 			if (!merged)
@@ -151,6 +160,13 @@ public abstract class CommonContainer extends Container {
 		}
 
 		return itemstack;
+	}
+
+	private final boolean ghosts(Area area) {
+		for (int i = area.min; i <= area.max; i++)
+			if (!(getSlotFromInventory(area.inv, i) instanceof SlotGhost))
+				return false;
+		return true;
 	}
 
 	public static class InvEntry {

@@ -45,7 +45,7 @@ public class CommonTile extends TileEntity {
 
 	public void sync(EntityPlayerMP player) {
 		markDirty();
-		if (hasWorldObj() && !worldObj.isRemote && player.getPosition().getDistance(pos.getX(), pos.getY(), pos.getZ()) < 32)
+		if (hasWorldObj() && !worldObj.isRemote && player.getPosition().getDistance(getX(), getY(), getZ()) < 32)
 			try {
 				player.connection.sendPacket(getUpdatePacket());
 			} catch (Error e) {
@@ -80,7 +80,7 @@ public class CommonTile extends TileEntity {
 	}
 
 	public boolean isUseableByPlayer(EntityPlayer player) {
-		return this.worldObj.getTileEntity(this.pos) != this || isInvalid() ? false : player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+		return this.worldObj.getTileEntity(this.pos) != this || isInvalid() ? false : player.getDistanceSq(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D) <= 64.0D;
 	}
 
 	public List<ItemStack> getDroppingItems() {

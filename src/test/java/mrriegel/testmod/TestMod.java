@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Random;
 
 import mrriegel.limelib.block.CommonBlock;
+import mrriegel.limelib.book.Book;
+import mrriegel.limelib.book.GuiBook;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.InvHelper;
@@ -23,6 +25,7 @@ import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntitySheep;
@@ -76,6 +79,8 @@ public class TestMod implements IGuiHandler {
 
 	public static final CommonBlock block = new TestBlock();
 	public static final CommonItem item = new TestItem();
+	
+	public Book book=new Book();
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -93,6 +98,7 @@ public class TestMod implements IGuiHandler {
 		MinecraftForge.EVENT_BUS.register(this);
 		NetworkRegistry.INSTANCE.registerGuiHandler(mod, this);
 		PacketHandler.registerMessage(TestMessage.class, Side.CLIENT);
+		book.init();
 	}
 
 	@Mod.EventHandler
@@ -143,9 +149,7 @@ public class TestMod implements IGuiHandler {
 		if (event instanceof Post && event.getType() == ElementType.TEXT) {
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
 			// drawer.drawColoredRectangle(0, 0, 490, 420,
-			// ColorHelper.getRGB(0xff0000, 70));
-			// Minecraft.getMinecraft().fontRendererObj.drawString("lalala", 13,
-			// 13, ColorHelper.getRGB(EnumDyeColor.CYAN));
+			// ColorHelper.getRGB(0xff0000, 100));
 
 		}
 	}
@@ -155,11 +159,10 @@ public class TestMod implements IGuiHandler {
 		if (e.getEntityLiving() instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) e.getEntityLiving();
 			ItemStack held = player.getHeldItemMainhand();
-			NBTTagCompound x = new NBTTagCompound();
-			x.setString("l", WordUtils.capitalizeFully(RandomStringUtils.randomAlphabetic(new Random().nextInt(6) + 4)));
-			if (!e.getEntityLiving().worldObj.isRemote) {
-				PacketHandler.sendTo(new TestMessage(NBTHelper.getTag("oasis", 77L, .45122f, "lach mal")), (EntityPlayerMP) player);
+			if (player.worldObj.isRemote) {
+				player.openGui(mod, 1, player.worldObj, 0, 0, 0);
 			}
+
 			PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
 			R r = new R(Lists.newArrayList(new ItemStack(Blocks.GOLD_BLOCK), new ItemStack(Items.IRON_INGOT, 4)), true, Items.APPLE, Blocks.COAL_BLOCK, new ItemStack(Blocks.BOOKSHELF));
 			if (r.match(pmiw)) {
@@ -167,35 +170,7 @@ public class TestMod implements IGuiHandler {
 					ItemHandlerHelper.insertItemStacked(pmiw, s.copy(), false);
 				r.removeIngredients(pmiw);
 			}
-			RayTraceResult ray = Utils.rayTrace(player);
-			// System.out.println(ray.typeOfHit);
-			if (!player.worldObj.isRemote && false) {
-				List<EntitySheep> lis = player.worldObj.getEntitiesWithinAABB(EntitySheep.class, new AxisAlignedBB(player.posX - 5, player.posY - 5, player.posZ - 5, player.posX + 5, player.posY + 5, player.posZ + 5));
-				if (held == null)
-					for (EntitySheep sheep : lis) {
-						if (sheep.worldObj.provider.getDimension() == 0)
-							TeleportationHelper.teleportEntity(sheep, -1, new BlockPos(0, 129, 0));
-						else
-							TeleportationHelper.teleportEntity(sheep, 0, new BlockPos(65, 81, 268));
-					}
-				else {
-					if (player.worldObj.provider.getDimension() == 0)
-						TeleportationHelper.teleportEntity(player, -1, new BlockPos(0, 129, 0));
-					else
-						TeleportationHelper.teleportEntity(player, 0, new BlockPos(65, 81, 268));
-				}
-				// ItemEntityWrapper w = new
-				// ItemEntityWrapper(e.getEntityLiving(), 4);
-				// for (int i = 0; i < w.getSlots(); i++)
-				// System.out.println(i + " " + w.getStackInSlot(i));
-				// ItemHandlerHelper.insertItemStacked(w, new
-				// ItemStack(Items.BAKED_POTATO), false);
-				// System.out.println("ins");
-				// for (int i = 0; i < w.getSlots(); i++)
-				// System.out.println(i + " " + w.getStackInSlot(i));
-				// ItemHandlerHelper.insertItemStacked(pmiw,
-				// w.getStackInSlot(0), false);
-			}
+
 		}
 	}
 
@@ -219,8 +194,8 @@ public class TestMod implements IGuiHandler {
 			// v.zCoord).setMaxAge2(40 + new Random().nextInt(20)).setColor(new
 			// Random().nextInt(0xffffff), 0));
 			BlockPos pos = new BlockPos(e.getEntity());
-			int range=8;
-			List<EntityLivingBase> lis = e.getEntity().worldObj.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)),new Predicate<EntityLivingBase>() {
+			int range = 8;
+			List<EntityLivingBase> lis = e.getEntity().worldObj.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)), new Predicate<EntityLivingBase>() {
 
 				@Override
 				public boolean apply(EntityLivingBase input) {
@@ -229,19 +204,26 @@ public class TestMod implements IGuiHandler {
 			});
 			lis.remove(e.getEntity());
 			for (EntityLivingBase ent : lis)
-				for (Vec3d v : ParticleHelper.getVecsForLine(e.getEntity().posX, e.getEntity().posY+e.getEntity().height-.1, e.getEntity().posZ, ent.posX, ent.posY+ent.height-.1, ent.posZ, 3))
+				for (Vec3d v : ParticleHelper.getVecsForLine(e.getEntity().posX, e.getEntity().posY + e.getEntity().height - .1, e.getEntity().posZ, ent.posX, ent.posY + ent.height - .1, ent.posZ, 3))
 					ParticleHelper.renderParticle(new CommonParticle(v.xCoord, v.yCoord, v.zCoord));
 		}
 	}
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		return new TestContainer(player.inventory, (CommonTileInventory) world.getTileEntity(new BlockPos(x, y, z)));
+		if (ID == 0)
+			return new TestContainer(player.inventory, (CommonTileInventory) world.getTileEntity(new BlockPos(x, y, z)));
+		return null;
 	}
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		return new TestGui(new TestContainer(player.inventory, (CommonTileInventory) world.getTileEntity(new BlockPos(x, y, z))));
+		if (ID == 0)
+			return new TestGui(new TestContainer(player.inventory, (CommonTileInventory) world.getTileEntity(new BlockPos(x, y, z))));
+		else if (ID == 1)
+			return new GuiBook(book);
+//		return new GuiScreenBook(player, new ItemStack(Items.WRITTEN_BOOK), false);
+		return null;
 	}
 
 }

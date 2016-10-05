@@ -51,4 +51,26 @@ public class ColorHelper {
 		return Color.getHSBColor(((System.currentTimeMillis() / frequence) % 360l) / 360f, 1, 1).getRGB();
 	}
 
+	public static int brighter(int color, double factor) {
+		if (factor < 0D)
+			factor = 0D;
+		else if (factor > 1D)
+			factor = 1D;
+		int red = (int) Math.round(Math.min(255, getRed(color) + 255 * factor));
+		int green = (int) Math.round(Math.min(255, getGreen(color) + 255 * factor));
+		int blue = (int) Math.round(Math.min(255, getBlue(color) + 255 * factor));
+		return new Color(red, green, blue, getAlpha(color)).getRGB();
+	}
+
+	public static int darker(int color, double factor) {
+		if (factor < 0D)
+			factor = 0D;
+		else if (factor > 1D)
+			factor = 1D;
+		int red = (int) Math.round(Math.max(0, getRed(color) - 255 * factor));
+		int green = (int) Math.round(Math.max(0, getGreen(color) - 255 * factor));
+		int blue = (int) Math.round(Math.max(0, getBlue(color) - 255 * factor));
+		return new Color(red, green, blue, getAlpha(color)).getRGB();
+	}
+
 }

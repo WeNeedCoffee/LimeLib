@@ -14,7 +14,6 @@ public abstract class AbstractRecipe<T> {
 	protected List<Object> input;
 
 	public AbstractRecipe(List<ItemStack> output, boolean order, Object... input) {
-		super();
 		this.output = output;
 		this.order = order;
 		this.input = Lists.newArrayList(Arrays.asList(input));

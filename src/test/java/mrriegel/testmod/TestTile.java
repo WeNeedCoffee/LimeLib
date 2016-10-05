@@ -10,8 +10,10 @@ import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.tile.IDataKeeper;
 import mrriegel.limelib.tile.IOwneable;
 import mrriegel.limelib.util.Utils;
+import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -46,6 +48,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 		int range = 8;
 		if (NBTHelper.hasTag(nbt, "k"))
 			k = NBTHelper.getInt(nbt, "k");
+		
 		if (!InvHelper.hasItemHandler(worldObj.getTileEntity(pos.up()), EnumFacing.DOWN))
 			return;
 		List<BlockPos> lis = Lists.newArrayList();

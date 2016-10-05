@@ -2,7 +2,6 @@ package mrriegel.limelib.network;
 
 import mrriegel.limelib.tile.CommonTile;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;

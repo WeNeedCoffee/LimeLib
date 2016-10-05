@@ -6,8 +6,4 @@ public interface IOwneable {
 
 	public boolean canAccess(String name);
 
-	public static interface Item {
-
-	}
-
 }

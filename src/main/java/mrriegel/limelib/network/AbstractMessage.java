@@ -21,15 +21,6 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 		this.nbt = nbt;
 	}
 
-	// public AbstractMessage(Object... os) {
-	// NBTTagCompound n = new NBTTagCompound();
-	// List<NBTBase> lis = NBTHelper.getNBTs(os);
-	// n.setInteger("size", lis.size());
-	// for (int i = 0; i < lis.size(); i++)
-	// n.setTag("" + i, lis.get(i));
-	// this.nbt = n;
-	// }
-
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		nbt = ByteBufUtils.readTag(buf);
@@ -41,26 +32,6 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 	}
 
 	public abstract void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side);
-
-	// public static class Handler<T extends AbstractMessage<T>> implements
-	// IMessageHandler<T, IMessage> {
-	//
-	// @Override
-	// public IMessage onMessage(final T message, final MessageContext ctx) {
-	// Runnable run = new Runnable() {
-	// @Override
-	// public void run() {
-	// message.handleMessage(ctx.side.isClient() ?
-	// Minecraft.getMinecraft().thePlayer : ctx.getServerHandler().playerEntity,
-	// message.nbt);
-	// }
-	// };
-	// (ctx.side.isClient() ? Minecraft.getMinecraft() :
-	// ctx.getServerHandler().playerEntity.getServerWorld()).addScheduledTask(run);
-	// return null;
-	// }
-	//
-	// }
 
 	@Override
 	public IMessage onMessage(final T message, final MessageContext ctx) {

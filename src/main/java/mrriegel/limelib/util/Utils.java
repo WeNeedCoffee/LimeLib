@@ -35,6 +35,7 @@ public class Utils {
 		return mc == null || (mc instanceof InjectedModContainer && ((InjectedModContainer) mc).wrappedContainer instanceof FMLContainer) ? "minecraft" : mc.getModId().toLowerCase();
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static List<Enum> getEnums(Class<? extends Enum> clazz) {
 		List<Enum> lis = Lists.newArrayList();
 		EnumSet enums = EnumSet.allOf(clazz);
