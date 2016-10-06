@@ -7,6 +7,8 @@ import net.minecraft.item.ItemStack;
 
 public class ContainerNull extends Container {
 
+	public static final ContainerNull INSTANCE = new ContainerNull();
+
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
 		return true;

@@ -1,7 +1,8 @@
-package mrriegel.limelib.gui.element;
+package mrriegel.limelib.gui.button;
 
 import java.util.List;
 
+import mrriegel.limelib.gui.element.ITooltip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;

@@ -159,7 +159,8 @@ public class TestMod implements IGuiHandler {
 		if (e.getEntityLiving() instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) e.getEntityLiving();
 			ItemStack held = player.getHeldItemMainhand();
-			if (player.worldObj.isRemote) {
+			book.init();
+			if (player.worldObj.isRemote&&!player.isSneaking()) {
 				player.openGui(mod, 1, player.worldObj, 0, 0, 0);
 			}
 

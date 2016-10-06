@@ -1,4 +1,4 @@
-package mrriegel.limelib.gui.element;
+package mrriegel.limelib.gui.button;
 
 import mrriegel.limelib.helper.ColorHelper;
 import net.minecraft.client.Minecraft;

@@ -2,9 +2,8 @@ package mrriegel.limelib.gui.element;
 
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
+import mrriegel.limelib.gui.GuiDrawer;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -20,19 +19,17 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 
 import com.google.common.collect.Lists;
 
-public abstract class AbstractSlot extends GuiButton implements ITooltip {
+public abstract class AbstractSlot extends GuiElement implements ITooltip {
 	public int amount;
 	public boolean number, square, smallFont, toolTip;
-	Minecraft mc;
 
-	public AbstractSlot(int id, int x, int y, int amount, boolean number, boolean square, boolean smallFont, boolean toolTip) {
-		super(id, x, y, 16, 16, "");
+	public AbstractSlot(int id, int x, int y, int amount, GuiDrawer drawer, boolean number, boolean square, boolean smallFont, boolean toolTip) {
+		super(id, x, y, 16, 16, drawer);
 		this.amount = amount;
 		this.number = number;
 		this.square = square;
 		this.smallFont = smallFont;
 		this.toolTip = toolTip;
-		mc = Minecraft.getMinecraft();
 	}
 
 	public void renderToolTip(ItemStack stack, int x, int y) {
@@ -53,8 +50,8 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 
 		public ItemStack stack;
 
-		public ItemSlot(ItemStack stack, int id, int x, int y, int amount, boolean number, boolean square, boolean smallFont, boolean toolTip) {
-			super(id, x, y, amount, number, square, smallFont, toolTip);
+		public ItemSlot(ItemStack stack, int id, int x, int y, int amount, GuiDrawer drawer, boolean number, boolean square, boolean smallFont, boolean toolTip) {
+			super(id, x, y, amount, drawer, number, square, smallFont, toolTip);
 			this.stack = stack;
 		}
 
@@ -76,29 +73,28 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 		}
 
 		@Override
-		public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+		public void draw(int mouseX, int mouseY) {
 			if (!visible)
 				return;
-			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			GlStateManager.pushMatrix();
 			if (stack != null) {
 				RenderHelper.enableGUIStandardItemLighting();
-				mc.getRenderItem().renderItemAndEffectIntoGUI(stack, xPosition, yPosition);
+				mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x, y);
 				String num = amount < 1000 ? String.valueOf(amount) : amount < 1000000 ? amount / 1000 + "K" : amount / 1000000 + "M";
 				if (number)
 					if (smallFont) {
 						GlStateManager.pushMatrix();
 						GlStateManager.scale(.5f, .5f, .5f);
-						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, stack, xPosition * 2 + 16, yPosition * 2 + 16, num);
+						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, stack, x * 2 + 16, y * 2 + 16, num);
 						GlStateManager.popMatrix();
 					} else
-						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, stack, xPosition, yPosition, num);
+						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, stack, x, y, num);
 			}
-			if (square && isMouseOver()) {
+			if (square && isMouseOver(mouseX, mouseY)) {
 				// GlStateManager.disableLighting();
 				// GlStateManager.disableDepth();
-				int j1 = xPosition;
-				int k1 = yPosition;
+				int j1 = x;
+				int k1 = y;
 				GlStateManager.colorMask(true, true, true, false);
 				drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, -2130706433);
 				GlStateManager.colorMask(true, true, true, true);
@@ -113,8 +109,8 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 	public static class FluidSlot extends AbstractSlot {
 		Fluid fluid;
 
-		public FluidSlot(Fluid fluid, int id, int x, int y, int amount, boolean number, boolean square, boolean smallFont, boolean toolTip) {
-			super(id, x, y, amount, number, square, smallFont, toolTip);
+		public FluidSlot(Fluid fluid, int id, int x, int y, int amount, GuiDrawer drawer, boolean number, boolean square, boolean smallFont, boolean toolTip) {
+			super(id, x, y, amount, drawer, number, square, smallFont, toolTip);
 			this.fluid = fluid;
 		}
 
@@ -136,10 +132,9 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 		}
 
 		@Override
-		public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+		public void draw(int mouseX, int mouseY) {
 			if (!visible)
 				return;
-			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			if (fluid != null) {
 				GlStateManager.pushMatrix();
 				TextureAtlasSprite fluidIcon = mc.getTextureMapBlocks().getTextureExtry(fluid.getStill().toString());
@@ -154,7 +149,7 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 				this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 				GlStateManager.disableLighting();
 				GlStateManager.disableDepth();
-				drawTexturedModalRect(xPosition, yPosition, fluidIcon, 16, 16);
+				drawTexturedModalRect(x, y, fluidIcon, 16, 16);
 				GlStateManager.enableLighting();
 				GlStateManager.enableDepth();
 				GlStateManager.popMatrix();
@@ -164,17 +159,17 @@ public abstract class AbstractSlot extends GuiButton implements ITooltip {
 					if (smallFont) {
 						GlStateManager.pushMatrix();
 						GlStateManager.scale(.5f, .5f, .5f);
-						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, new ItemStack(Items.CHAINMAIL_BOOTS), xPosition * 2 + 16, yPosition * 2 + 16, num);
+						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, new ItemStack(Items.CHAINMAIL_BOOTS), x * 2 + 16, y * 2 + 16, num);
 						GlStateManager.popMatrix();
 					} else
-						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, new ItemStack(Items.CHAINMAIL_BOOTS), xPosition, yPosition, num);
+						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, new ItemStack(Items.CHAINMAIL_BOOTS), x, y, num);
 				}
 			}
-			if (square && isMouseOver()) {
+			if (square && isMouseOver(mouseX, mouseY)) {
 				// GlStateManager.disableLighting();
 				// GlStateManager.disableDepth();
-				int j1 = xPosition;
-				int k1 = yPosition;
+				int j1 = x;
+				int k1 = y;
 				GlStateManager.colorMask(true, true, true, false);
 				drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, -2130706433);
 				GlStateManager.colorMask(true, true, true, true);

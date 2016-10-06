@@ -74,7 +74,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 	public void update() {
 		if (worldObj.isRemote)
 			return;
-		int range = 12;
+		int range = 9;
 		if (lis == null) {
 			lis = Lists.newArrayList();
 			for (int y = pos.getY() - 1; y > 0; y--)

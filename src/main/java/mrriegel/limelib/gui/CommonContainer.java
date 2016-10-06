@@ -132,9 +132,9 @@ public abstract class CommonContainer extends Container {
 				// minSlot = getSlotFromInventory(p.inv, --p.max);
 				if (minSlot == null || maxSlot == null)
 					return null;
-				if (ghosts(p)) {
+				if (hasGhost(p)) {
 					for (int i = p.min; i <= p.max; i++)
-						if (!getSlotFromInventory(p.inv, i).getHasStack()) {
+						if (!getSlotFromInventory(p.inv, i).getHasStack() && getSlotFromInventory(p.inv, i) instanceof SlotGhost) {
 							getSlotFromInventory(p.inv, i).putStack(itemstack1);
 							return null;
 						}
@@ -162,11 +162,11 @@ public abstract class CommonContainer extends Container {
 		return itemstack;
 	}
 
-	private final boolean ghosts(Area area) {
+	private final boolean hasGhost(Area area) {
 		for (int i = area.min; i <= area.max; i++)
-			if (!(getSlotFromInventory(area.inv, i) instanceof SlotGhost))
-				return false;
-		return true;
+			if (getSlotFromInventory(area.inv, i) instanceof SlotGhost)
+				return true;
+		return false;
 	}
 
 	public static class InvEntry {

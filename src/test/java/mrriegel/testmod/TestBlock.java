@@ -72,8 +72,8 @@ public class TestBlock extends CommonBlockContainer<TestTile> {
 			// ParticleHelper.renderParticle(new CommonParticle(v.xCoord,
 			// v.yCoord, v.zCoord,0,0.09,0).setMaxAge2(60));
 		}
-		if (true)
-			return true;
+//		if (true)
+//			return true;
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
 

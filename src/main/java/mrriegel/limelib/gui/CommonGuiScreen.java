@@ -1,12 +1,11 @@
 package mrriegel.limelib.gui;
 
 import java.io.IOException;
+import java.util.List;
 
+import mrriegel.limelib.gui.component.MCPanel;
 import mrriegel.limelib.gui.element.GuiElement;
-import mrriegel.limelib.gui.element.IClickable;
-import mrriegel.limelib.gui.element.IScrollable;
 import mrriegel.limelib.gui.element.ITooltip;
-import mrriegel.limelib.gui.element.MCPanel;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -15,6 +14,8 @@ import net.minecraft.client.renderer.RenderHelper;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+
+import com.google.common.collect.Lists;
 
 public class CommonGuiScreen extends GuiScreen {
 
@@ -25,6 +26,7 @@ public class CommonGuiScreen extends GuiScreen {
 
 	protected GuiDrawer drawer;
 	protected MCPanel panel;
+	protected List<GuiElement> elementList = Lists.newArrayList();
 
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		if (panel != null) {
@@ -32,6 +34,9 @@ public class CommonGuiScreen extends GuiScreen {
 			if (panel instanceof ITooltip && panel.isMouseOver(mouseX, mouseY))
 				((ITooltip) panel).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
 		}
+		for (GuiElement e : elementList)
+			if (e.isMouseOver(mouseX, mouseY))
+				e.drawTooltip(mouseX - guiLeft, mouseY - guiTop);
 		for (GuiButton e : buttonList)
 			if (e instanceof ITooltip)
 				if (e.isMouseOver())
@@ -41,11 +46,22 @@ public class CommonGuiScreen extends GuiScreen {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		if (panel != null)
 			panel.drawBackground(mouseX, mouseY);
+		for (GuiElement e : elementList)
+			e.draw(mouseX, mouseY);
+	}
+
+	protected boolean isPointInRegion(int rectX, int rectY, int rectWidth, int rectHeight, int pointX, int pointY) {
+		int i = this.guiLeft;
+		int j = this.guiTop;
+		pointX = pointX - i;
+		pointY = pointY - j;
+		return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
+		Keyboard.enableRepeatEvents(true);
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
 		drawer = new GuiDrawer(guiLeft, guiTop, xSize, ySize, zLevel);
@@ -90,25 +106,20 @@ public class CommonGuiScreen extends GuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (panel != null && panel.isMouseOver(mouseX, mouseY)) {
-			if (panel instanceof IClickable)
-				((IClickable) panel).onClick(mouseButton);
-			for (GuiElement e : panel.getElements())
-				if (e instanceof IClickable && e.isMouseOver(mouseX, mouseY))
-					((IClickable) e).onClick(mouseButton);
-		}
+		for (GuiElement e : elementList)
+			if (e.isMouseOver(mouseX, mouseY)) {
+				e.onClick(mouseButton);
+				if (mouseButton == 0)
+					elementClicked(e);
+			}
 	}
 
 	@Override
 	protected void mouseReleased(int mouseX, int mouseY, int state) {
 		super.mouseReleased(mouseX, mouseY, state);
-		if (panel != null && panel.isMouseOver(mouseX, mouseY)) {
-			if (panel instanceof IClickable)
-				((IClickable) panel).onRelease(state);
-			for (GuiElement e : panel.getElements())
-				if (e instanceof IClickable && e.isMouseOver(mouseX, mouseY))
-					((IClickable) e).onRelease(state);
-		}
+		for (GuiElement e : elementList)
+			if (e.isMouseOver(mouseX, mouseY))
+				e.onRelease(state);
 	}
 
 	@Override
@@ -116,14 +127,12 @@ public class CommonGuiScreen extends GuiScreen {
 		super.handleMouseInput();
 		int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
 		int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
-		if (panel != null && panel.isMouseOver(mouseX, mouseY)) {
-			if (panel instanceof IScrollable)
-				((IScrollable) panel).onScrolled(Mouse.getEventDWheel());
-			for (GuiElement e : panel.getElements())
-				if (e instanceof IScrollable && e.isMouseOver(mouseX, mouseY))
-					((IScrollable) e).onScrolled(Mouse.getEventDWheel());
-		}
+		for (GuiElement e : elementList)
+			if (e.isMouseOver(mouseX, mouseY))
+				e.onScrolled(Mouse.getEventDWheel());
+	}
 
+	protected void elementClicked(GuiElement element) {
 	}
 
 	protected void onUpdate() {

@@ -5,12 +5,11 @@ import java.io.IOException;
 import mrriegel.limelib.gui.CommonContainerTile;
 import mrriegel.limelib.gui.CommonGuiContainer;
 import mrriegel.limelib.gui.GuiDrawer.Direction;
+import mrriegel.limelib.gui.button.GuiButtonArrow;
+import mrriegel.limelib.gui.button.GuiButtonTooltip;
+import mrriegel.limelib.gui.component.MCPanel;
 import mrriegel.limelib.gui.element.AbstractSlot;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
-import mrriegel.limelib.gui.element.GuiButtonArrow;
-import mrriegel.limelib.gui.element.GuiButtonTooltip;
-import mrriegel.limelib.gui.element.MCLabel;
-import mrriegel.limelib.gui.element.MCPanel;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.client.gui.GuiButton;
@@ -20,9 +19,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 
 import com.google.common.collect.Lists;
 
@@ -43,7 +39,7 @@ public class TestGui extends CommonGuiContainer {
 		// buttonList.add(new GuiButtonColor(3, 11 + guiLeft, 17 + guiTop, 33,
 		// 22, "DUMB", EnumDyeColor.WHITE));
 		buttonList.add(new GuiButtonArrow(4, 10 + guiLeft, 50 + guiTop, Direction.UP));
-		buttonList.add(s = new AbstractSlot.ItemSlot(new ItemStack(Items.BEEF), 5, 5 + guiLeft, 60 + guiTop, 3200, false, true, true, true));
+		elementList.add(s = new AbstractSlot.ItemSlot(new ItemStack(Items.COOKED_BEEF), 5, 5 + guiLeft, 60 + guiTop, 3200, drawer, false, true, true, true));
 		buttonList.add(new GuiButtonTooltip(5, guiLeft - 19, 78 + guiTop, 18, 22, "if", EnumDyeColor.PURPLE, Lists.newArrayList("horde", "maul")));
 		t = new GuiTextField(1, fontRendererObj, guiLeft + 130, guiTop + 77, 45, fontRendererObj.FONT_HEIGHT);
 		t.setEnableBackgroundDrawing(false);
@@ -56,7 +52,7 @@ public class TestGui extends CommonGuiContainer {
 		// p2.add(new MCPanel(7, 7, 9, 9, drawer));
 		p1.add(p2);
 		panel.add(p1);
-//		panel.add(new MCLabel(4, 40, "oh damit", 0xff0000, drawer));
+		// panel.add(new MCLabel(4, 40, "oh damit", 0xff0000, drawer));
 	}
 
 	@Override
@@ -112,7 +108,7 @@ public class TestGui extends CommonGuiContainer {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (s.enabled && s.visible && s.isMouseOver()) {
+		if (s.isVisible() && s.isMouseOver(mouseX, mouseY)) {
 			if (mc.thePlayer.inventory.getItemStack() != null)
 				s.stack = mc.thePlayer.inventory.getItemStack();
 			else

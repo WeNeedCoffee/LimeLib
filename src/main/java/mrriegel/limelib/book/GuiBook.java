@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.util.List;
 
 import mrriegel.limelib.gui.CommonGuiScreen;
-import mrriegel.limelib.gui.element.GuiButtonSimple;
+import mrriegel.limelib.gui.button.GuiButtonSimple;
+import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.Loader;
+
+import org.lwjgl.input.Mouse;
 
 import com.google.common.collect.Lists;
 
@@ -19,11 +22,14 @@ public class GuiBook extends CommonGuiScreen {
 	GuiButtonSimple left, right;
 
 	private static final int maxLines = 17;
+	private static final int maxSubChapters = 11;
 	protected List<GuiButton> buttons;
-	protected List<GuiButton> subChapters = Lists.newArrayList();
+	protected List<GuiButton> subChapButtons = Lists.newArrayList();
 	protected String currentText = TextFormatting.BOLD + Loader.instance().activeModContainer().getName();
-	protected int max = 1, current = 1;
+	protected int maxPage = 1, currentPage = 1, chapterPos = 0;
 	protected Chapter main;
+	protected SubChapter subMain;
+	protected ItemSlot slot;
 
 	public GuiBook(Book book) {
 		this.book = book;
@@ -39,18 +45,24 @@ public class GuiBook extends CommonGuiScreen {
 		drawer.drawFramedRectangle(57, 5, 50, ySize - 10);
 		drawer.drawFrame(109, 5, 225, ySize - 26, 1, Color.BLACK.getRGB());
 		drawer.drawFrame(110, 6, 223, ySize - 28, 1, Color.DARK_GRAY.getRGB());
+		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
+		// drawer.drawColoredRectangle(111, 7, 222, ySize - 29,
+		// ColorHelper.darker(Color.DARK_GRAY.getRGB(), 0.1));
 
-		String pages = current + "/" + max;
+		String pages = currentPage + "/" + maxPage;
 		drawString(fontRendererObj, pages, guiLeft + (218 - fontRendererObj.getStringWidth(pages) / 2), guiTop + 185, 14737632);
 		List<String> wrappedTextLines = fontRendererObj.listFormattedStringToWidth(currentText, 215);
-		max = wrappedTextLines.size() / maxLines;
+		maxPage = wrappedTextLines.size() / maxLines;
 		if (wrappedTextLines.size() % maxLines != 0)
-			max++;
+			maxPage++;
 		for (int i = 0; i < Math.min(wrappedTextLines.size(), maxLines); i++) {
-			int index = i + (current - 1) * maxLines;
+			int index = i + (currentPage - 1) * maxLines;
 			if (index >= wrappedTextLines.size())
 				break;
-			fontRendererObj.drawString(wrappedTextLines.get(index), guiLeft + 113, guiTop + 9 + i * 10, Color.BLACK.getRGB());
+			fontRendererObj.drawString(wrappedTextLines.get(index), guiLeft + 113, guiTop + 9 + i * 10, 0x111111, !true);
+		}
+		if (!isShiftKeyDown() && subMain != null) {
+			// drawer.drawItemStack(subMain.stack, 315, 8);
 		}
 	}
 
@@ -59,45 +71,101 @@ public class GuiBook extends CommonGuiScreen {
 		super.initGui();
 		buttonList.add(left = new GuiButtonSimple(0, guiLeft + 109, guiTop + 181, 9, 14, "<", Color.black.getRGB(), Color.gray.getRGB(), null));
 		buttonList.add(right = new GuiButtonSimple(1, guiLeft + 326, guiTop + 181, 9, 14, ">", Color.black.getRGB(), Color.gray.getRGB(), null));
+		elementList.add(slot = new ItemSlot(null, 0, guiLeft + 316, guiTop + 7, 1, drawer, false, false, false, true));
 		for (int i = 0; i < book.chapters.size(); i++) {
-			buttonList.add(new GuiButtonSimple(i + 100, guiLeft + 7, guiTop + 7 + i * 18, 46, 15, book.chapters.get(i).name, Color.BLACK.getRGB(), Color.DARK_GRAY.getRGB(), Lists.newArrayList(book.chapters.get(i).name)));
+			List<String> tooltip = Lists.newArrayList(book.chapters.get(i).name);
+			// if (isShiftKeyDown())
+			for (SubChapter c : book.chapters.get(i).subChapters)
+				tooltip.add(TextFormatting.GRAY + "  " + c.name);
+			// else
+			// tooltip.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC +
+			// "Hold Shift to see the chapters.");
+			buttonList.add(new GuiButtonSimple(i + 100, guiLeft + 7, guiTop + 7 + i * 18, 46, 15, book.chapters.get(i).name, Color.BLACK.getRGB(), Color.DARK_GRAY.getRGB(), tooltip));
 		}
-		for (int i = 0; i < 10; i++) {
-			GuiButtonSimple b = new GuiButtonSimple(i + 1000, guiLeft + 59, guiTop + 7 + i * 18, 46, 15, "", Color.DARK_GRAY.getRGB(), Color.GRAY.getRGB(), null);
+		for (int i = 0; i < maxSubChapters; i++) {
+			GuiButtonSimple b = new GuiButtonSimple(i + 1000, guiLeft + 59, guiTop + 7 + i * 17, 46, 14, "", Color.DARK_GRAY.getRGB(), Color.GRAY.getRGB(), null);
 			b.visible = false;
-			subChapters.add(b);
+			subChapButtons.add(b);
 		}
-		buttonList.addAll(subChapters);
+		buttonList.addAll(subChapButtons);
+		openLast();
+	}
+
+	private void openLast() {
+		if (book.lastChapter != null) {
+			chapterPos = 0;
+			main = book.lastChapter;
+			initSubChapters();
+		}
+		if (book.lastSubChapter != null) {
+			subMain = book.lastSubChapter;
+			currentText = TextFormatting.BOLD + book.lastSubChapter.name + TextFormatting.RESET + "\n\n" + book.lastSubChapter.text;
+			currentPage = book.lastPage;
+			slot.stack = subMain.stack;
+		}
+	}
+
+	@Override
+	public void onGuiClosed() {
+		super.onGuiClosed();
+		book.lastChapter = main != null ? main : null;
+		book.lastSubChapter = subMain != null ? subMain : null;
+		book.lastPage = currentPage;
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
 		if (button.id == 0)
-			current = Math.max(1, current - 1);
+			currentPage = Math.max(1, currentPage - 1);
 		else if (button.id == 1)
-			current = Math.min(max, current + 1);
+			currentPage = Math.min(maxPage, currentPage + 1);
 		else if (button.id >= 100 && button.id <= 999) {
 			Chapter c = book.chapters.get(button.id - 100);
 			if (c != null) {
+				chapterPos = 0;
 				main = c;
-				int subs = c.subChapters.size();
-				for (int i = 0; i < subChapters.size(); i++) {
-					if (i < subs) {
-						subChapters.get(i).visible = true;
-						subChapters.get(i).displayString = c.subChapters.get(i).name;
-						((GuiButtonSimple) subChapters.get(i)).setTooltip(Lists.newArrayList(c.subChapters.get(i).name));
-					} else {
-						subChapters.get(i).visible = false;
-					}
-				}
+				initSubChapters();
 			}
 		} else if (button.id >= 1000 && button.id <= 9999) {
 			if (main != null) {
-				Chapter sc = main.subChapters.get(button.id - 1000);
+				SubChapter sc = main.subChapters.get((button.id - 1000) + chapterPos);
 				if (sc != null) {
-					currentText = TextFormatting.BOLD + sc.name + TextFormatting.RESET + "\n" + sc.text;
-					current = 1;
+					subMain = sc;
+					currentText = TextFormatting.BOLD + sc.name + TextFormatting.RESET + "\n\n" + sc.text;
+					currentPage = 1;
+					slot.stack = subMain.stack;
 				}
+			}
+		}
+	}
+
+	private void initSubChapters() {
+		int subs = main.subChapters.size();
+		for (int i = 0; i < subChapButtons.size(); i++) {
+			if (i < subs) {
+				subChapButtons.get(i).visible = true;
+				subChapButtons.get(i).displayString = main.subChapters.get(i + chapterPos).name;
+				((GuiButtonSimple) subChapButtons.get(i)).setTooltip(Lists.newArrayList(main.subChapters.get(i + chapterPos).name));
+			} else {
+				subChapButtons.get(i).visible = false;
+			}
+		}
+	}
+
+	@Override
+	public void handleMouseInput() throws IOException {
+		super.handleMouseInput();
+		int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
+		int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
+		if (main != null) {
+			GuiButton first = subChapButtons.get(0), last = subChapButtons.get(subChapButtons.size() - 1);
+			if (isPointInRegion(first.xPosition, first.yPosition, first.width, last.yPosition + last.height - first.yPosition, guiLeft + mouseX, guiTop + mouseY)) {
+				int m = Mouse.getEventDWheel();
+				if (m > 0)
+					chapterPos = Math.max(0, chapterPos - 1);
+				else if (m < 0)
+					chapterPos = Math.min(Math.max(0, main.subChapters.size() - maxSubChapters), chapterPos + 1);
+				initSubChapters();
 			}
 		}
 	}

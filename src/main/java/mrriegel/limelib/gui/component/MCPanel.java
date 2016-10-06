@@ -1,15 +1,16 @@
-package mrriegel.limelib.gui.element;
+package mrriegel.limelib.gui.component;
 
 import java.util.List;
 
 import mrriegel.limelib.gui.GuiDrawer;
+import mrriegel.limelib.gui.element.ITooltip;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-public class MCPanel extends GuiElement {
+public class MCPanel extends GuiComponent {
 
-	protected List<GuiElement> children = Lists.newArrayList();
+	protected List<GuiComponent> children = Lists.newArrayList();
 
 	public MCPanel(int x, int y, int width, int height, GuiDrawer drawer) {
 		super(x, y, width, height, drawer);
@@ -20,7 +21,7 @@ public class MCPanel extends GuiElement {
 	public void drawForeground(int mouseX, int mouseY) {
 		if (!visible)
 			return;
-		for (GuiElement e : children)
+		for (GuiComponent e : children)
 			if (e.isVisible()) {
 				e.drawForeground(mouseX, mouseY);
 				if (e instanceof ITooltip && e.isMouseOver(mouseX, mouseY))
@@ -33,7 +34,7 @@ public class MCPanel extends GuiElement {
 		if (!visible)
 			return;
 		drawer.drawFramedRectangle(x + getOffsetX(), y + getOffsetY(), width, height);
-		for (GuiElement e : children)
+		for (GuiComponent e : children)
 			if (e.isVisible())
 				e.drawBackground(mouseX, mouseY);
 
@@ -41,11 +42,11 @@ public class MCPanel extends GuiElement {
 
 	@Override
 	public void onUpdate() {
-		for (GuiElement e : children)
+		for (GuiComponent e : children)
 			e.onUpdate();
 	}
 
-	public List<GuiElement> getElements() {
+	public List<GuiComponent> getElements() {
 		return ImmutableList.copyOf(children);
 	}
 
@@ -65,7 +66,7 @@ public class MCPanel extends GuiElement {
 		return height;
 	}
 
-	public void add(GuiElement element) {
+	public void add(GuiComponent element) {
 		if (element == this)
 			throw new IllegalArgumentException("adding panel's parent to itself");
 		element.parent = this;

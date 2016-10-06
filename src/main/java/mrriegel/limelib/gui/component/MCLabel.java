@@ -1,17 +1,14 @@
-package mrriegel.limelib.gui.element;
-
-import java.util.Random;
+package mrriegel.limelib.gui.component;
 
 import mrriegel.limelib.gui.GuiDrawer;
+import mrriegel.limelib.gui.element.ITooltip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
-import org.apache.commons.lang3.RandomStringUtils;
-
 import com.google.common.collect.Lists;
 
-public class MCLabel extends GuiElement implements ITooltip, IClickable {
+public class MCLabel extends GuiComponent implements ITooltip {
 
 	public String text;
 	public int color;
@@ -43,15 +40,4 @@ public class MCLabel extends GuiElement implements ITooltip, IClickable {
 		ScaledResolution sr = new ScaledResolution(mc);
 		GuiUtils.drawHoveringText(Lists.newArrayList("Neuer", "Lahm", "Hummels", "Martinez", "Alaba", "Alonso", "Sanches", "Thiago", "Ribery", "Lewandowski", "Müller"), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRendererObj);
 	}
-
-	@Override
-	public void onClick(int button) {
-		text = RandomStringUtils.randomAlphabetic(10);
-	}
-
-	@Override
-	public void onRelease(int button) {
-		color = new Random().nextInt() % 0xffffff;
-	}
-
 }
