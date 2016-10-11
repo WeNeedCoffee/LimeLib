@@ -18,11 +18,11 @@ public class ParticleHelper {
 		Minecraft.getMinecraft().effectRenderer.addEffect(par);
 	}
 
-	public static List<Vec3d> getVecsForLine(BlockPos pos1, BlockPos pos2, int frequence) {
+	public static List<Vec3d> getVecsForLine(BlockPos pos1, BlockPos pos2, double frequence) {
 		return getVecsForLine(pos1.getX() + .5, pos1.getY() + .5, pos1.getZ() + .5, pos2.getX() + .5, pos2.getY() + .5, pos2.getZ() + .5, frequence);
 	}
 
-	public static List<Vec3d> getVecsForLine(double x1, double y1, double z1, double x2, double y2, double z2, int frequence) {
+	public static List<Vec3d> getVecsForLine(double x1, double y1, double z1, double x2, double y2, double z2, double frequence) {
 		List<Vec3d> lis = Lists.newArrayList();
 		final Vec3d ovec = new Vec3d(x2 - x1, y2 - y1, z2 - z1);
 		int amount = (int) (ovec.lengthVector() * frequence);
@@ -35,11 +35,11 @@ public class ParticleHelper {
 		return lis;
 	}
 
-	public static List<Vec3d> getVecsForCircle(BlockPos pos1, double radius, int frequence, EnumFacing.Axis axis) {
+	public static List<Vec3d> getVecsForCircle(BlockPos pos1, double radius, double frequence, EnumFacing.Axis axis) {
 		return getVecsForCircle(pos1.getX() + .5, pos1.getY() + .5, pos1.getZ() + .5, radius, frequence, axis);
 	}
 
-	public static List<Vec3d> getVecsForCircle(double x1, double y1, double z1, double radius, int frequence, EnumFacing.Axis axis) {
+	public static List<Vec3d> getVecsForCircle(double x1, double y1, double z1, double radius, double frequence, EnumFacing.Axis axis) {
 		List<Vec3d> lis = Lists.newArrayList();
 		int amount = (int) (2 * Math.PI * radius * frequence);
 		double degree = 360 / (double) amount;
@@ -62,14 +62,14 @@ public class ParticleHelper {
 		return lis;
 	}
 
-	public static List<Vec3d> getVecsForExplosion(double force, int frequence, EnumFacing.Axis axis) {
+	public static List<Vec3d> getVecsForExplosion(double force, double frequence, EnumFacing.Axis axis) {
 		List<Vec3d> lis = Lists.newArrayList();
 		for (Vec3d vec : ParticleHelper.getVecsForCircle(0, 0, 0, force, frequence, axis))
 			lis.add(new Vec3d(vec.xCoord, vec.yCoord, vec.zCoord));
 		return lis;
 	}
 
-	public static Vec3d getVecForSpirale(double force, double speed, int frequence, boolean reverse, EnumFacing.Axis axis) {
+	public static Vec3d getVecForSpirale(double force, double speed, double frequence, boolean reverse, EnumFacing.Axis axis) {
 		List<Vec3d> lis = ParticleHelper.getVecsForCircle(0, 0, 0, force, frequence, axis);
 		if (reverse)
 			lis = Lists.reverse(lis);

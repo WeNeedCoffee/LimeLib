@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#./gradlew build
-#find ../*/libs -name "*dev.jar" | xargs -0 rm
-#echo ../*/libs | xargs -n 1 cp build/libs/limelib-1.10.2-1.0.1-dev.jar
-#find build/libs -name "*dev.jar" | xargs rm
+#find ../*/libs -name "*limelib-dev.jar" | xargs rm
+./gradlew build
+mv -f build/libs/*dev.jar build/libs/limelib-dev.jar
+echo ../*/libs | xargs -n 1 cp build/libs/limelib-dev.jar
+#find build/libs -name "*limelib-dev.jar" | xargs rm

@@ -44,9 +44,6 @@ public abstract class GuiElement extends Gui {
 	public void onScrolled(int scroll) {
 	}
 
-	public void drawTooltip(int mouseX, int mouseY) {
-	}
-
 	public void init() {
 	}
 

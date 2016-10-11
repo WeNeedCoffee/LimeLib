@@ -19,6 +19,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.google.common.collect.Lists;
 
@@ -77,6 +79,7 @@ public class TestGui extends CommonGuiContainer {
 			drawer.drawStopSign(180, 12);
 			drawer.drawFlame(18, 18, 1.0f);
 			drawer.drawScrollbar(0, 0, 100, 1.00f, Direction.RIGHT);
+			drawer.drawFluidRect(155, 25, 10, 30, new FluidStack(FluidRegistry.WATER, 323));
 		}
 	}
 

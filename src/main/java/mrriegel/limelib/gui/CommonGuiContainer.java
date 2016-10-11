@@ -33,8 +33,8 @@ public class CommonGuiContainer extends GuiContainer {
 				((ITooltip) panel).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
 		}
 		for (GuiElement e : elementList)
-			if (e.isMouseOver(mouseX, mouseY))
-				e.drawTooltip(mouseX - guiLeft, mouseY - guiTop);
+			if (e.isMouseOver(mouseX, mouseY) && e instanceof ITooltip)
+				((ITooltip) e).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
 		for (GuiButton e : buttonList)
 			if (e instanceof ITooltip)
 				if (e.isMouseOver())

@@ -7,7 +7,6 @@ import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -90,7 +89,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
 		ItemStack stack = super.getPickBlock(state, target, world, pos, player);
-		if (GuiScreen.isShiftKeyDown() && player.capabilities.isCreativeMode && world.getTileEntity(pos) instanceof IDataKeeper && stack != null) {
+		if (player.isSneaking() && player.capabilities.isCreativeMode && world.getTileEntity(pos) instanceof IDataKeeper && stack != null) {
 			IDataKeeper tile = (IDataKeeper) world.getTileEntity(pos);
 			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
 			tile.writeToStack(stack);

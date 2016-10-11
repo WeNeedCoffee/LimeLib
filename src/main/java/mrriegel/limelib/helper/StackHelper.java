@@ -5,11 +5,17 @@ import java.util.Random;
 
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -133,4 +139,14 @@ public class StackHelper {
 		}
 	}
 
+	public static ItemStack getStackFromBlock(World world, BlockPos pos) {
+		ItemStack s = null;
+		if (!world.isRemote) {
+			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), new RayTraceResult(Vec3d.ZERO, EnumFacing.UP), world, pos, FakePlayerFactory.getMinecraft((WorldServer) world
+			// DimensionManager.getWorld(0)
+					));
+		} else {
+			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), Minecraft.getMinecraft().objectMouseOver, world, pos, Minecraft.getMinecraft().thePlayer);
+		}
+	}
 }

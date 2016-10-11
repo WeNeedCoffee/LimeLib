@@ -105,6 +105,8 @@ public class CommonTile extends TileEntity {
 		PacketHandler.sendToServer(new TileMessage(nbt));
 	}
 
+	private boolean init = false;
+
 	public final int getX() {
 		return pos.getX();
 	}
@@ -115,6 +117,14 @@ public class CommonTile extends TileEntity {
 
 	public final int getZ() {
 		return pos.getZ();
+	}
+
+	public boolean onServer() {
+		return !worldObj.isRemote;
+	}
+
+	public boolean onClient() {
+		return !onServer();
 	}
 
 }

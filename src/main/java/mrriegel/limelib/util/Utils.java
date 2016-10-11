@@ -7,9 +7,13 @@ import java.util.Random;
 import java.util.UUID;
 
 import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.util.TypeAdapters.ItemStackLizer;
+import mrriegel.limelib.util.TypeAdapters.NBTLizer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -26,9 +30,17 @@ import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 
 public class Utils {
+
+	public static Gson GSON;
+
+	public static void init() {
+		GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(NBTTagCompound.class, new NBTLizer()).registerTypeAdapter(ItemStack.class, new ItemStackLizer()).create();
+	}
 
 	public static String getCurrentModID() {
 		ModContainer mc = Loader.instance().activeModContainer();
@@ -63,11 +75,11 @@ public class Utils {
 		if (value < 1000)
 			return String.valueOf(value);
 		else if (value < 1000000)
-			return String.valueOf(Math.round(value) / 1000D) + "K";
+			return String.valueOf((int) (Math.round(value) / 1000D)) + "K";
 		else if (value < 1000000000)
-			return String.valueOf(Math.round(value / 1000) / 1000D) + "M";
+			return String.valueOf((int) (Math.round(value / 1000) / 1000D)) + "M";
 		else
-			return String.valueOf(Math.round(value / 1000000) / 1000D) + "G";
+			return String.valueOf((int) (Math.round(value / 1000000) / 1000D)) + "G";
 	}
 
 	public static FakePlayer getFakePlayer(WorldServer world) {

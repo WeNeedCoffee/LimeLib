@@ -14,6 +14,7 @@ import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.ParticleHelper;
 import mrriegel.limelib.helper.RenderHelper2;
+import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.helper.TeleportationHelper;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
@@ -60,12 +61,16 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
+import scala.collection.parallel.ParIterableLike.Min;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
@@ -79,14 +84,11 @@ public class TestMod implements IGuiHandler {
 
 	public static final CommonBlock block = new TestBlock();
 	public static final CommonItem item = new TestItem();
-	
-	public Book book=new Book();
+
+	public TestBook book = new TestBook();
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		System.out.println("zap");
-		System.out.println(Loader.instance().activeModContainer().getName());
-		OBJLoader.INSTANCE.addDomain("lalal");
 		block.registerBlock();
 		block.initModel();
 		item.registerItem();
@@ -148,6 +150,8 @@ public class TestMod implements IGuiHandler {
 	public void overlay(RenderGameOverlayEvent event) {
 		if (event instanceof Post && event.getType() == ElementType.TEXT) {
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
+			//			if (StackHelper.getStackFromBlock(Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().objectMouseOver.getBlockPos()) != null)
+			//				drawer.renderToolTip(StackHelper.getStackFromBlock(Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().objectMouseOver.getBlockPos()), 0, 0);
 			// drawer.drawColoredRectangle(0, 0, 490, 420,
 			// ColorHelper.getRGB(0xff0000, 100));
 
@@ -160,8 +164,16 @@ public class TestMod implements IGuiHandler {
 			EntityPlayer player = (EntityPlayer) e.getEntityLiving();
 			ItemStack held = player.getHeldItemMainhand();
 			book.init();
-			if (player.worldObj.isRemote&&!player.isSneaking()) {
-				player.openGui(mod, 1, player.worldObj, 0, 0, 0);
+			if (player.worldObj.isRemote && !player.isSneaking()) {
+				//				book.openGUI();
+				if (held != null) {
+					Impl impl = Block.getBlockFromItem(held.getItem()) != null ? Block.getBlockFromItem(held.getItem()) : held.getItem();
+					Pair<Integer, Integer> p = book.getPage(held.getItem());
+					if (p != null)
+						book.openGUI(p.getLeft(), p.getRight());
+					else
+						book.openGUI();
+				}
 			}
 
 			PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
@@ -222,8 +234,13 @@ public class TestMod implements IGuiHandler {
 		if (ID == 0)
 			return new TestGui(new TestContainer(player.inventory, (CommonTileInventory) world.getTileEntity(new BlockPos(x, y, z))));
 		else if (ID == 1)
-			return new GuiBook(book);
-//		return new GuiScreenBook(player, new ItemStack(Items.WRITTEN_BOOK), false);
+			if (x == -1)
+				return new GuiBook(book);
+			else {
+				return new GuiBook(book, x, y);
+			}
+		// return new GuiScreenBook(player, new ItemStack(Items.WRITTEN_BOOK),
+		// false);
 		return null;
 	}
 

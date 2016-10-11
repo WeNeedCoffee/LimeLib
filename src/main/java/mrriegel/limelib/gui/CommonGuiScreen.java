@@ -35,8 +35,8 @@ public class CommonGuiScreen extends GuiScreen {
 				((ITooltip) panel).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
 		}
 		for (GuiElement e : elementList)
-			if (e.isMouseOver(mouseX, mouseY))
-				e.drawTooltip(mouseX - guiLeft, mouseY - guiTop);
+			if (e.isMouseOver(mouseX, mouseY) && e instanceof ITooltip)
+				((ITooltip) e).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
 		for (GuiButton e : buttonList)
 			if (e instanceof ITooltip)
 				if (e.isMouseOver())
@@ -125,8 +125,8 @@ public class CommonGuiScreen extends GuiScreen {
 	@Override
 	public void handleMouseInput() throws IOException {
 		super.handleMouseInput();
-		int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
-		int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
+		int mouseX = GuiDrawer.getMouseX();
+		int mouseY = GuiDrawer.getMouseY();
 		for (GuiElement e : elementList)
 			if (e.isMouseOver(mouseX, mouseY))
 				e.onScrolled(Mouse.getEventDWheel());

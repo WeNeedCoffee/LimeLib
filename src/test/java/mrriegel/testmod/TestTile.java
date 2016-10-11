@@ -1,26 +1,30 @@
 package mrriegel.testmod;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import mrriegel.limelib.helper.BlockHelper;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.NBTStackHelper;
+import mrriegel.limelib.helper.ParticleHelper;
+import mrriegel.limelib.particle.CommonParticle;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.tile.IDataKeeper;
 import mrriegel.limelib.tile.IOwneable;
 import mrriegel.limelib.util.Utils;
-import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
@@ -48,7 +52,15 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 		int range = 8;
 		if (NBTHelper.hasTag(nbt, "k"))
 			k = NBTHelper.getInt(nbt, "k");
-		
+		ItemStack st=new ItemStack(Blocks.SANDSTONE_STAIRS,1,1);
+		NBTTagCompound k=new NBTTagCompound();
+		k.setString("kamel", "kamel");
+		k.setBoolean("bo", false);
+		k.setTag("lis", new NBTTagList());
+		st.setTagCompound(k);
+//		System.out.println(st.getTagCompound());
+		String con=Utils.GSON.toJson(st);
+//		System.out.println(Utils.GSON.fromJson(con, ItemStack.class).getTagCompound());
 		if (!InvHelper.hasItemHandler(worldObj.getTileEntity(pos.up()), EnumFacing.DOWN))
 			return;
 		List<BlockPos> lis = Lists.newArrayList();
@@ -64,10 +76,6 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 		}
 	}
 
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		super.onDataPacket(net, pkt);
-	};
-
 	List<BlockPos> lis = null;
 
 	@Override
@@ -80,23 +88,29 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 			for (int y = pos.getY() - 1; y > 0; y--)
 				for (int x = pos.getX() - range; x <= pos.getX() + range; x++)
 					for (int z = pos.getZ() - range; z <= pos.getZ() + range; z++)
-						lis.add(new BlockPos(x, y, z));
+						if (!worldObj.isAirBlock(new BlockPos(x, y, z)))
+							lis.add(new BlockPos(x, y, z));
 
 		}
 		EntityPlayer player = Utils.getRandomPlayer(worldObj);
 		if (worldObj.getTotalWorldTime() % 1 == 0 && worldObj.isBlockPowered(pos) && player != null) {
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 1; i++)
 				try {
-					for (BlockPos p : lis) {
+					Iterator<BlockPos> it = lis.listIterator();
+					whil: while (it.hasNext()) {
+						BlockPos p = it.next();
 						if (worldObj.getTileEntity(p) == null && BlockHelper.isBlockBreakable(worldObj, p) && !BlockHelper.isOre(worldObj, p)) {
 							List<ItemStack> drops = BlockHelper.breakBlockWithFortune(worldObj, p, 0, null, false, false);
 							drops.clear();
 							for (ItemStack drop : drops)
 								if (drop != null)
 									ItemHandlerHelper.insertItemStacked(new PlayerMainInvWrapper(player.inventory), drop.copy(), false);
-							break;
+							break whil;
+						} else {
+							for (Vec3d vec : ParticleHelper.getVecsForLine(p, pos, .6))
+								ParticleHelper.renderParticle(new CommonParticle(vec.xCoord, vec.yCoord, vec.zCoord).setMaxAge2(1));
 						}
-						lis.remove(p);
+						it.remove();
 					}
 				} catch (Exception e) {
 					// System.out.println(e.getClass());

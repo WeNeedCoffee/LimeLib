@@ -41,7 +41,7 @@ public class GuiButtonColor extends GuiButtonExt {
 			if (strWidth > width - 6 && strWidth > ellipsisWidth)
 				buttonText = mc.fontRendererObj.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
 			if (this.color != null)
-				drawRect(xPosition + 1, yPosition + 1, xPosition + width - 1, yPosition + height - 1, ColorHelper.getRGB(this.color, 140 + (flag ? 60 : 0)));
+				drawRect(xPosition + 0, yPosition + 0, xPosition + width - 0, yPosition + height - 0, ColorHelper.getRGB(this.color, 140 + (flag ? 60 : 0)));
 			this.drawCenteredString(mc.fontRendererObj, buttonText, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, color);
 		} else
 			super.drawButton(mc, mouseX, mouseY);

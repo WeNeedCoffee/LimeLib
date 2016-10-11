@@ -40,7 +40,7 @@ public class GuiButtonSimple extends GuiButtonTooltip {
 			if (!enabled)
 				stringColor = ColorHelper.darker(stringColor, 0.2);
 
-			this.drawCenteredString(fontrenderer, fontrenderer.trimStringToWidth(displayString, width - 4), this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, stringColor);
+			this.drawCenteredString(fontrenderer, hovered ? displayString : fontrenderer.trimStringToWidth(displayString, width - 4), this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, stringColor);
 		}
 	}
 

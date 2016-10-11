@@ -22,6 +22,7 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 public class GuiDrawer {
 
@@ -29,7 +30,7 @@ public class GuiDrawer {
 
 	public int guiLeft, guiTop, xSize, ySize;
 	public float zLevel = 0;
-	private Minecraft mc;
+	private static Minecraft mc = Minecraft.getMinecraft();
 
 	public GuiDrawer(int guiLeft, int guiTop, int xSize, int ySize, float zLevel) {
 		super();
@@ -38,7 +39,7 @@ public class GuiDrawer {
 		this.xSize = xSize;
 		this.ySize = ySize;
 		this.zLevel = zLevel;
-		mc = Minecraft.getMinecraft();
+		// mc = Minecraft.getMinecraft();
 	}
 
 	public void drawSlot(int x, int y) {
@@ -136,37 +137,48 @@ public class GuiDrawer {
 				GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 11, 36, 1, 8, zLevel);
 	}
 
-	@Deprecated
 	public void drawFluidRect(int x, int y, int width, int height, FluidStack fluid) {
-		GlStateManager.pushMatrix();
-		TextureAtlasSprite fluidIcon = mc.getTextureMapBlocks().getTextureExtry(fluid.getFluid().getStill().toString());
-		if (fluidIcon == null)
+		if (fluid == null || fluid.getFluid() == null) {
 			return;
-		int color = fluid.getFluid().getColor(fluid);
-		float a = ((color >> 24) & 0xFF) / 255.0F;
-		float r = ((color >> 16) & 0xFF) / 255.0F;
-		float g = ((color >> 8) & 0xFF) / 255.0F;
-		float b = ((color >> 0) & 0xFF) / 255.0F;
-		GlStateManager.color(r, g, b, a);
-		this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		// GlStateManager.disableLighting();
-		// GlStateManager.disableDepth();
+		}
+		TextureAtlasSprite icon = mc.getTextureMapBlocks().getTextureExtry(fluid.getFluid().getStill().toString());
+		if (icon == null) {
+			return;
+		}
 		x += guiLeft;
 		y += guiTop;
-		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
-		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		vertexbuffer.pos(x + 0, y + height, this.zLevel).tex(fluidIcon.getMinU(), fluidIcon.getMaxV()).endVertex();
-		vertexbuffer.pos(x + width, y + height, this.zLevel).tex(fluidIcon.getMaxU(), fluidIcon.getMaxV()).endVertex();
-		vertexbuffer.pos(x + width, y + 0, this.zLevel).tex(fluidIcon.getMaxU(), fluidIcon.getMinV()).endVertex();
-		vertexbuffer.pos(x + 0, y + 0, this.zLevel).tex(fluidIcon.getMinU(), fluidIcon.getMinV()).endVertex();
-		tessellator.draw();
-		// GuiUtils.drawTexturedModalRect(x+guiLeft, y+guiTop,
-		// (int)fluidIcon.getMinU(), (int)fluidIcon.getMinV(), width, height,
-		// zLevel);
-		// GlStateManager.enableLighting();
-		// GlStateManager.enableDepth();
-		GlStateManager.popMatrix();
+		int renderAmount = Math.max(height, 1);
+		int posY = y + height - renderAmount;
+
+		mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		int color = fluid.getFluid().getColor(fluid);
+		GL11.glColor3ub((byte) (color >> 16 & 0xFF), (byte) (color >> 8 & 0xFF), (byte) (color & 0xFF));
+
+		GlStateManager.enableBlend();
+		for (int i = 0; i < width; i += 16) {
+			for (int j = 0; j < renderAmount; j += 16) {
+				int drawWidth = Math.min(width - i, 16);
+				int drawHeight = Math.min(renderAmount - j, 16);
+
+				int drawX = x + i;
+				int drawY = posY + j;
+
+				double minU = icon.getMinU();
+				double maxU = icon.getMaxU();
+				double minV = icon.getMinV();
+				double maxV = icon.getMaxV();
+
+				Tessellator tessellator = Tessellator.getInstance();
+				VertexBuffer tes = tessellator.getBuffer();
+				tes.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+				tes.pos(drawX, drawY + drawHeight, 0).tex(minU, minV + (maxV - minV) * drawHeight / 16F).endVertex();
+				tes.pos(drawX + drawWidth, drawY + drawHeight, 0).tex(minU + (maxU - minU) * drawWidth / 16F, minV + (maxV - minV) * drawHeight / 16F).endVertex();
+				tes.pos(drawX + drawWidth, drawY, 0).tex(minU + (maxU - minU) * drawWidth / 16F, minV).endVertex();
+				tes.pos(drawX, drawY, 0).tex(minU, minV).endVertex();
+				tessellator.draw();
+			}
+		}
+		GlStateManager.disableBlend();
 	}
 
 	public void drawItemStack(ItemStack stack, int x, int y) {
@@ -176,20 +188,6 @@ public class GuiDrawer {
 			mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x + guiLeft, y + guiTop);
 			GlStateManager.popMatrix();
 		}
-	}
-
-	public void renderToolTip(ItemStack stack, int x, int y) {
-		List<String> list = stack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
-		for (int i = 0; i < list.size(); ++i) {
-			if (i == 0) {
-				list.set(i, stack.getRarity().rarityColor + list.get(i));
-			} else {
-				list.set(i, TextFormatting.GRAY + list.get(i));
-			}
-		}
-		FontRenderer font = stack.getItem().getFontRenderer(stack);
-		ScaledResolution sr = new ScaledResolution(mc);
-		GuiUtils.drawHoveringText(list, x, y, sr.getScaledWidth(), sr.getScaledHeight(), -1, (font == null ? mc.fontRendererObj : font));
 	}
 
 	public void drawProgressArrow(int x, int y, float percent, Direction d) {
@@ -234,12 +232,26 @@ public class GuiDrawer {
 		GlStateManager.color(1F, 1F, 1F, 1F);
 	}
 
-	public int getMouseX() {
-		return Mouse.getX() * new ScaledResolution(mc).getScaledWidth() / this.mc.displayWidth;
+	public static int getMouseX() {
+		return Mouse.getX() * new ScaledResolution(mc).getScaledWidth() / mc.displayWidth;
 	}
 
-	public int getMouseY() {
-		return new ScaledResolution(mc).getScaledHeight() - Mouse.getY() * new ScaledResolution(mc).getScaledHeight() / this.mc.displayHeight - 1;
+	public static int getMouseY() {
+		return new ScaledResolution(mc).getScaledHeight() - Mouse.getY() * new ScaledResolution(mc).getScaledHeight() / mc.displayHeight - 1;
+	}
+
+	public static void renderToolTip(ItemStack stack, int x, int y) {
+		List<String> list = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
+		for (int i = 0; i < list.size(); ++i) {
+			if (i == 0) {
+				list.set(i, stack.getRarity().rarityColor + list.get(i));
+			} else {
+				list.set(i, TextFormatting.GRAY + list.get(i));
+			}
+		}
+		FontRenderer font = stack.getItem().getFontRenderer(stack);
+		ScaledResolution sr = new ScaledResolution(mc);
+		GuiUtils.drawHoveringText(list, x, y, sr.getScaledWidth(), sr.getScaledHeight(), -1, (font == null ? mc.fontRendererObj : font));
 	}
 
 	public enum Direction {

@@ -1,21 +1,61 @@
 package mrriegel.limelib.book;
 
 import java.util.List;
+import java.util.Map;
+
+import net.minecraft.block.Block;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class Chapter {
 
 	protected String name;
+	protected final Map<Impl, SubChapter> implMap = Maps.newHashMap();
 	protected List<SubChapter> subChapters = Lists.newArrayList();
+	protected int index;
 
 	public Chapter(String name) {
 		this.name = name;
 	}
 
+	public void addSubChapter(SubChapter c) {
+		c.index = subChapters.size();
+		subChapters.add(c);
+		if (c.stack != null && c.stack.getItem() != null)
+			implMap.put(Block.getBlockFromItem(c.stack.getItem()) != null ? Block.getBlockFromItem(c.stack.getItem()) : c.stack.getItem(), c);
+	}
+
 	public Chapter(String name, List<SubChapter> subChapters) {
 		this.name = name;
-		this.subChapters = subChapters;
+		for (SubChapter c : subChapters)
+			addSubChapter(c);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Chapter other = (Chapter) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 
 }
