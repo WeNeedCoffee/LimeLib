@@ -1,6 +1,5 @@
 package mrriegel.testmod;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
@@ -52,15 +50,15 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 		int range = 8;
 		if (NBTHelper.hasTag(nbt, "k"))
 			k = NBTHelper.getInt(nbt, "k");
-		ItemStack st=new ItemStack(Blocks.SANDSTONE_STAIRS,1,1);
-		NBTTagCompound k=new NBTTagCompound();
+		ItemStack st = new ItemStack(Blocks.SANDSTONE_STAIRS, 1, 1);
+		NBTTagCompound k = new NBTTagCompound();
 		k.setString("kamel", "kamel");
 		k.setBoolean("bo", false);
 		k.setTag("lis", new NBTTagList());
 		st.setTagCompound(k);
-//		System.out.println(st.getTagCompound());
-		String con=Utils.GSON.toJson(st);
-//		System.out.println(Utils.GSON.fromJson(con, ItemStack.class).getTagCompound());
+		//		System.out.println(st.getTagCompound());
+		String con = Utils.GSON.toJson(st);
+		//		System.out.println(Utils.GSON.fromJson(con, ItemStack.class).getTagCompound());
 		if (!InvHelper.hasItemHandler(worldObj.getTileEntity(pos.up()), EnumFacing.DOWN))
 			return;
 		List<BlockPos> lis = Lists.newArrayList();

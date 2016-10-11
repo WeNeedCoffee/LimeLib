@@ -10,8 +10,11 @@ import mrriegel.limelib.gui.button.GuiButtonSimple;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 
 import org.lwjgl.input.Mouse;
 
@@ -26,17 +29,19 @@ public class GuiBook extends CommonGuiScreen {
 	private static final int maxLines = 17;
 	private static final int maxSubChapters = 11;
 	protected List<GuiButton> subChapButtons = Lists.newArrayList();
-	protected String currentText = TextFormatting.BOLD + Loader.instance().getIndexedModList().get(Utils.getCurrentModID()).getName();
+	protected String currentText;
 	protected int maxPage = 1, currentPage = 1, subChapterPos = 0;
 	protected Chapter main;
 	protected SubChapter subMain;
-	protected ItemSlot slot;
+	protected List<ItemSlot> slots = Lists.newArrayList();
 	private int chapter = -1, subChapter = -1;
 
 	public GuiBook(Book book) {
 		this.book = book;
 		this.xSize = 340;
 		this.ySize = 200;
+		ModContainer mod = Loader.instance().getIndexedModList().get(Utils.getCurrentModID());
+		currentText = TextFormatting.BOLD + mod.getName() + "  " + mod.getVersion() + "\n\n" + MinecraftForge.MC_VERSION;
 	}
 
 	public GuiBook(Book book, int chapter, int subChapter) {
@@ -63,12 +68,17 @@ public class GuiBook extends CommonGuiScreen {
 		maxPage = wrappedTextLines.size() / maxLines;
 		if (wrappedTextLines.size() % maxLines != 0)
 			maxPage++;
+		GlStateManager.pushMatrix();
+		double scale = .7;
+		GlStateManager.scale(scale, scale, 0);
+		GlStateManager.translate((guiLeft) * scale, (guiTop) * scale, 0);
 		for (int i = 0; i < Math.min(wrappedTextLines.size(), maxLines); i++) {
 			int index = i + (currentPage - 1) * maxLines;
 			if (index >= wrappedTextLines.size())
 				break;
 			fontRendererObj.drawString(wrappedTextLines.get(index), guiLeft + 113, guiTop + 9 + i * 10, 0x111111, !true);
 		}
+		GlStateManager.popMatrix();
 		if (!isShiftKeyDown() && subMain != null) {
 			// drawer.drawItemStack(subMain.stack, 315, 8);
 		}
@@ -79,15 +89,15 @@ public class GuiBook extends CommonGuiScreen {
 		super.initGui();
 		buttonList.add(left = new GuiButtonSimple(0, guiLeft + 109, guiTop + 181, 9, 14, "<", Color.black.getRGB(), Color.gray.getRGB(), null));
 		buttonList.add(right = new GuiButtonSimple(1, guiLeft + 326, guiTop + 181, 9, 14, ">", Color.black.getRGB(), Color.gray.getRGB(), null));
-		elementList.add(slot = new ItemSlot(null, 0, guiLeft + 316, guiTop + 7, 1, drawer, false, false, false, true));
+		for (int i = 0; i < 10; i++)
+			slots.add(new ItemSlot(null, 0, 0, guiTop + 7, 1, drawer, false, false, false, true));
+		elementList.addAll(slots);
 		for (int i = 0; i < book.chapters.size(); i++) {
 			List<String> tooltip = Lists.newArrayList(book.chapters.get(i).name);
-			// if (isShiftKeyDown())
 			for (SubChapter c : book.chapters.get(i).subChapters)
 				tooltip.add(TextFormatting.GRAY + "  " + c.name);
-			// else
-			// tooltip.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC +
-			// "Hold Shift to see the chapters.");
+			/** clear tooltip */
+			tooltip.clear();
 			buttonList.add(new GuiButtonSimple(i + 100, guiLeft + 7, guiTop + 7 + i * 18, 46, 15, book.chapters.get(i).name, Color.BLACK.getRGB(), Color.DARK_GRAY.getRGB(), tooltip));
 		}
 		for (int i = 0; i < maxSubChapters; i++) {
@@ -105,8 +115,8 @@ public class GuiBook extends CommonGuiScreen {
 			main = book.chapters.get(chapter);
 			initSubChapters();
 			subMain = main.subChapters.get(subChapter);
-			currentText = TextFormatting.BOLD + subMain.name + TextFormatting.RESET + "\n\n" + subMain.text;
-			slot.stack = subMain.stack;
+			currentText = formatText();
+			initSlots();
 		} else {
 			if (book.lastChapter != null) {
 				subChapterPos = 0;
@@ -115,11 +125,21 @@ public class GuiBook extends CommonGuiScreen {
 			}
 			if (book.lastSubChapter != null) {
 				subMain = book.lastSubChapter;
-				currentText = TextFormatting.BOLD + subMain.name + TextFormatting.RESET + "\n\n" + subMain.text;
+				currentText = formatText();
 				currentPage = book.lastPage;
-				slot.stack = subMain.stack;
+				initSlots();
 			}
 		}
+	}
+
+	private String formatText() {
+		String s = TextFormatting.BOLD + subMain.name + TextFormatting.RESET + "\n\n" + subMain.text;
+		s = s.replaceAll("<r>", TextFormatting.RESET.toString());
+		s = s.replaceAll("<b>", TextFormatting.BOLD.toString());
+		s = s.replaceAll("<i>", TextFormatting.ITALIC.toString());
+		s = s.replaceAll("<u>", TextFormatting.UNDERLINE.toString());
+		s = s.replaceAll("<s>", TextFormatting.STRIKETHROUGH.toString());
+		return s;
 	}
 
 	@Override
@@ -148,11 +168,23 @@ public class GuiBook extends CommonGuiScreen {
 				SubChapter sc = main.subChapters.get((button.id - 1000) + subChapterPos);
 				if (sc != null) {
 					subMain = sc;
-					currentText = TextFormatting.BOLD + sc.name + TextFormatting.RESET + "\n\n" + sc.text;
+					currentText = formatText();
 					currentPage = 1;
-					slot.stack = subMain.stack;
 				}
 			}
+		}
+		initSlots();
+	}
+
+	private void initSlots() {
+		for (int i = 0; i < slots.size(); i++) {
+			slots.get(i).stack = null;
+		}
+		if (currentPage != 1)
+			return;
+		for (int i = 0; i < Math.min(subMain.stacks.size(), slots.size()); i++) {
+			slots.get(i).stack = subMain.stacks.get(i);
+			slots.get(i).x = guiLeft + 114 + (i * 18) + fontRendererObj.getStringWidth(TextFormatting.BOLD + subMain.name);
 		}
 	}
 
@@ -162,10 +194,6 @@ public class GuiBook extends CommonGuiScreen {
 			if (i < subs) {
 				subChapButtons.get(i).visible = true;
 				subChapButtons.get(i).displayString = main.subChapters.get(i + subChapterPos).name;
-				//				((GuiButtonSimple) subChapButtons.get(i)).setTooltip(Lists.<String>newArrayList());
-				//				if (!subChapButtons.get(i).displayString.equals(fontRendererObj.trimStringToWidth(subChapButtons.get(i).displayString, subChapButtons.get(i).width - 4)))
-
-				//					((GuiButtonSimple) subChapButtons.get(i)).setTooltip(Lists.newArrayList(main.subChapters.get(i + subChapterPos).name));
 			} else {
 				subChapButtons.get(i).visible = false;
 			}

@@ -43,7 +43,7 @@ public abstract class AbstractRecipe<T> {
 			return false;
 		if (order) {
 			for (int i = 0; i < input.size(); i++)
-				if (!StackHelper.match(list.get(i), input.get(i)))
+				if (!match(list.get(i), input.get(i)))
 					return false;
 			return true;
 		} else {
@@ -53,7 +53,7 @@ public abstract class AbstractRecipe<T> {
 					boolean flag = false;
 					for (int i = 0; i < foo.size(); i++) {
 						Object o = foo.get(i);
-						if (StackHelper.match(stack, o)) {
+						if (match(stack, o)) {
 							flag = true;
 							foo.remove(i);
 							break;
@@ -66,5 +66,9 @@ public abstract class AbstractRecipe<T> {
 			}
 			return foo.isEmpty();
 		}
+	}
+
+	protected boolean match(ItemStack stack, Object o) {
+		return StackHelper.match(stack, o);
 	}
 }

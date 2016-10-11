@@ -23,7 +23,7 @@ public abstract class Book {
 		chapters.add(c);
 	}
 
-	public Pair<Integer, Integer> getPage(Impl impl) {
+	public Pair<Integer, Integer> getPage(Impl<?> impl) {
 		for (Chapter c : chapters) {
 			if (c.implMap.get(impl) != null) {
 				return ImmutablePair.<Integer, Integer> of(c.index, c.implMap.get(impl).index);
@@ -34,7 +34,21 @@ public abstract class Book {
 		return null;
 	}
 
-	public abstract void openGUI();
+	public void openGUI() {
+		openGUI(-1, -1);
+	};
+
+	public void openGuiAt(Impl<?> impl, boolean openAnyway) {
+		Pair<Integer, Integer> p = getPage(impl);
+		if (p != null)
+			openGUI(p.getLeft(), p.getRight());
+		else if (openAnyway)
+			openGUI();
+	}
+
+	public boolean canOpen(Impl<?> impl) {
+		return getPage(impl) != null;
+	}
 
 	public abstract void openGUI(int chapter, int subchapter);
 

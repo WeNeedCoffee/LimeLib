@@ -1,12 +1,17 @@
 package mrriegel.limelib.book;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
 
 public class SubChapter {
 	protected String text;
-	protected ItemStack stack;
+	protected List<ItemStack> stacks = Lists.newArrayList();
 	protected String name;
 	protected int index;
 
@@ -14,19 +19,21 @@ public class SubChapter {
 		this.name = name;
 	}
 
-	public SubChapter(String name, ItemStack stack) {
+	public SubChapter(String name, ItemStack... stacks) {
 		this(name);
-		this.stack = stack;
+		for (ItemStack stack : stacks)
+			if (stack != null && this.stacks.size() < 10)
+				this.stacks.add(stack);
 	}
 
-	public SubChapter(String name, Item item) {
+	public SubChapter(String name, Impl<?>... impls) {
 		this(name);
-		this.stack = new ItemStack(item);
-	}
-
-	public SubChapter(String name, Block block) {
-		this(name);
-		this.stack = new ItemStack(block);
+		for (Impl<?> impl : impls) {
+			if (impl instanceof Item && this.stacks.size() < 10)
+				this.stacks.add(new ItemStack((Item) impl));
+			else if (impl instanceof Block && this.stacks.size() < 10)
+				this.stacks.add(new ItemStack((Block) impl));
+		}
 	}
 
 	public SubChapter setText(String text) {

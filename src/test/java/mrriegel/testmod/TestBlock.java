@@ -58,22 +58,22 @@ public class TestBlock extends CommonBlockContainer<TestTile> {
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		// TODO Auto-generated method stub
 		if (!worldIn.isRemote) {
-//			EntityFallingBlock e=new EntityFallingBlock(worldIn,pos .getX()+.5,pos . getY()+1.5,pos . getZ()+.5, Blocks.COBBLESTONE.getDefaultState());
-//			e.motionY=.3;
-//			e.motionX=(worldIn.rand.nextDouble()-.5)/3;
-//			e.motionZ=(worldIn.rand.nextDouble()-.5)/3;
-//			worldIn.spawnEntityInWorld(e);
+			//			EntityFallingBlock e=new EntityFallingBlock(worldIn,pos .getX()+.5,pos . getY()+1.5,pos . getZ()+.5, Blocks.COBBLESTONE.getDefaultState());
+			//			e.motionY=.3;
+			//			e.motionX=(worldIn.rand.nextDouble()-.5)/3;
+			//			e.motionZ=(worldIn.rand.nextDouble()-.5)/3;
+			//			worldIn.spawnEntityInWorld(e);
 		} else {
-//			pos = pos.up();
-			for (Vec3d v : ParticleHelper.getVecsForExplosion( 0.9, 15, Axis.Y))
+			//			pos = pos.up();
+			for (Vec3d v : ParticleHelper.getVecsForExplosion(0.9, 15, Axis.Y))
 				ParticleHelper.renderParticle(new CommonParticle(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, v.xCoord, v.yCoord, v.zCoord).setTexture(ParticleHelper.squareParticle).setMaxAge2(60).setColor(Color.white.getRGB(), 0).setNoClip(true).setFlouncing(0.015));
 			// for (Vec3d v : ParticleHelper.getVecsForCircle(pos, 2, 7,
 			// Axis.Y))
 			// ParticleHelper.renderParticle(new CommonParticle(v.xCoord,
 			// v.yCoord, v.zCoord,0,0.09,0).setMaxAge2(60));
 		}
-//		if (true)
-//			return true;
+		//		if (true)
+		//			return true;
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
 

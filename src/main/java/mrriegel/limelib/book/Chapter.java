@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
 
 import com.google.common.collect.Lists;
@@ -12,7 +13,7 @@ import com.google.common.collect.Maps;
 public class Chapter {
 
 	protected String name;
-	protected final Map<Impl, SubChapter> implMap = Maps.newHashMap();
+	protected final Map<Impl<?>, SubChapter> implMap = Maps.newHashMap();
 	protected List<SubChapter> subChapters = Lists.newArrayList();
 	protected int index;
 
@@ -23,8 +24,9 @@ public class Chapter {
 	public void addSubChapter(SubChapter c) {
 		c.index = subChapters.size();
 		subChapters.add(c);
-		if (c.stack != null && c.stack.getItem() != null)
-			implMap.put(Block.getBlockFromItem(c.stack.getItem()) != null ? Block.getBlockFromItem(c.stack.getItem()) : c.stack.getItem(), c);
+		for (ItemStack s : c.stacks)
+			if (s.getItem() != null)
+				implMap.put(Block.getBlockFromItem(s.getItem()) != null ? Block.getBlockFromItem(s.getItem()) : s.getItem(), c);
 	}
 
 	public Chapter(String name, List<SubChapter> subChapters) {

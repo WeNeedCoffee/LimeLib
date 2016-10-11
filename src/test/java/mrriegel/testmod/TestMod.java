@@ -1,59 +1,47 @@
 package mrriegel.testmod;
 
 import java.awt.Color;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import mrriegel.limelib.block.CommonBlock;
-import mrriegel.limelib.book.Book;
 import mrriegel.limelib.book.GuiBook;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.InvHelper;
-import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.ParticleHelper;
 import mrriegel.limelib.helper.RenderHelper2;
-import mrriegel.limelib.helper.StackHelper;
-import mrriegel.limelib.helper.TeleportationHelper;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.particle.CommonParticle;
 import mrriegel.limelib.recipe.AbstractRecipe;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.util.FilterItem;
-import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiScreenBook;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -66,11 +54,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
-
-import scala.collection.parallel.ParIterableLike.Min;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
@@ -165,16 +150,11 @@ public class TestMod implements IGuiHandler {
 			ItemStack held = player.getHeldItemMainhand();
 			book.init();
 			if (player.worldObj.isRemote && !player.isSneaking()) {
-				//				book.openGUI();
 				if (held != null) {
-					Impl impl = Block.getBlockFromItem(held.getItem()) != null ? Block.getBlockFromItem(held.getItem()) : held.getItem();
-					Pair<Integer, Integer> p = book.getPage(held.getItem());
-					if (p != null)
-						book.openGUI(p.getLeft(), p.getRight());
-					else
-						book.openGUI();
+					book.openGuiAt(held.getItem(), true);
 				}
 			}
+			//			System.out.println(A+" "+B);
 
 			PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
 			R r = new R(Lists.newArrayList(new ItemStack(Blocks.GOLD_BLOCK), new ItemStack(Items.IRON_INGOT, 4)), true, Items.APPLE, Blocks.COAL_BLOCK, new ItemStack(Blocks.BOOKSHELF));
