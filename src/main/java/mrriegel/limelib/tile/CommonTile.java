@@ -105,8 +105,6 @@ public class CommonTile extends TileEntity {
 		PacketHandler.sendToServer(new TileMessage(nbt));
 	}
 
-	private boolean init = false;
-
 	public final int getX() {
 		return pos.getX();
 	}

@@ -13,26 +13,26 @@ import com.google.common.collect.Maps;
 public class Chapter {
 
 	protected String name;
-	protected final Map<Impl<?>, SubChapter> implMap = Maps.newHashMap();
-	protected List<SubChapter> subChapters = Lists.newArrayList();
+	protected final Map<Impl<?>, Article> implMap = Maps.newHashMap();
+	protected List<Article> articles = Lists.newArrayList();
 	protected int index;
 
 	public Chapter(String name) {
 		this.name = name;
 	}
 
-	public void addSubChapter(SubChapter c) {
-		c.index = subChapters.size();
-		subChapters.add(c);
+	public void addArticle(Article c) {
+		c.index = articles.size();
+		articles.add(c);
 		for (ItemStack s : c.stacks)
 			if (s.getItem() != null)
 				implMap.put(Block.getBlockFromItem(s.getItem()) != null ? Block.getBlockFromItem(s.getItem()) : s.getItem(), c);
 	}
 
-	public Chapter(String name, List<SubChapter> subChapters) {
+	public Chapter(String name, List<Article> articles) {
 		this.name = name;
-		for (SubChapter c : subChapters)
-			addSubChapter(c);
+		for (Article c : articles)
+			addArticle(c);
 	}
 
 	@Override

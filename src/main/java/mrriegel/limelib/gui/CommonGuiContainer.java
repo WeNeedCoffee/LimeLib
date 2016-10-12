@@ -54,6 +54,7 @@ public class CommonGuiContainer extends GuiContainer {
 		super.initGui();
 		Keyboard.enableRepeatEvents(true);
 		drawer = new GuiDrawer(guiLeft, guiTop, xSize, ySize, zLevel);
+		elementList.clear();
 	}
 
 	@Override

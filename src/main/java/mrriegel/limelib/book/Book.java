@@ -15,7 +15,7 @@ public abstract class Book {
 
 	protected List<Chapter> chapters = Lists.newArrayList();
 	public Chapter lastChapter;
-	public SubChapter lastSubChapter;
+	public Article lastArticle;
 	public int lastPage;
 
 	public void addChapter(Chapter c) {

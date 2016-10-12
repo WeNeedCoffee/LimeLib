@@ -140,7 +140,6 @@ public class StackHelper {
 	}
 
 	public static ItemStack getStackFromBlock(World world, BlockPos pos) {
-		ItemStack s = null;
 		if (!world.isRemote) {
 			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), new RayTraceResult(Vec3d.ZERO, EnumFacing.UP), world, pos, FakePlayerFactory.getMinecraft((WorldServer) world
 			// DimensionManager.getWorld(0)

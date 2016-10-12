@@ -2,41 +2,43 @@ package mrriegel.limelib.book;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
 
-public class SubChapter {
+import com.google.common.collect.Lists;
+
+public class Article {
 	protected String text;
 	protected List<ItemStack> stacks = Lists.newArrayList();
 	protected String name;
 	protected int index;
 
-	public SubChapter(String name) {
+	static final int maxItems = 12;
+
+	public Article(String name) {
 		this.name = name;
 	}
 
-	public SubChapter(String name, ItemStack... stacks) {
+	public Article(String name, ItemStack... stacks) {
 		this(name);
 		for (ItemStack stack : stacks)
-			if (stack != null && this.stacks.size() < 10)
+			if (stack != null && this.stacks.size() < maxItems)
 				this.stacks.add(stack);
 	}
 
-	public SubChapter(String name, Impl<?>... impls) {
+	public Article(String name, Impl<?>... impls) {
 		this(name);
 		for (Impl<?> impl : impls) {
-			if (impl instanceof Item && this.stacks.size() < 10)
+			if (impl instanceof Item && this.stacks.size() < maxItems)
 				this.stacks.add(new ItemStack((Item) impl));
-			else if (impl instanceof Block && this.stacks.size() < 10)
+			else if (impl instanceof Block && this.stacks.size() < maxItems)
 				this.stacks.add(new ItemStack((Block) impl));
 		}
 	}
 
-	public SubChapter setText(String text) {
+	public Article setText(String text) {
 		this.text = text;
 		return this;
 	}
@@ -57,7 +59,7 @@ public class SubChapter {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SubChapter other = (SubChapter) obj;
+		Article other = (Article) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;

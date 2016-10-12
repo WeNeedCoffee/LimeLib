@@ -33,7 +33,7 @@ public class PacketHandler {
 
 	}
 
-	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage> classMessage, Side side) {
+	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage<?>> classMessage, Side side) {
 		Class<? extends IMessageHandler<REQ, REPLY>> c1 = (Class<? extends IMessageHandler<REQ, REPLY>>) classMessage;
 		Class<REQ> c2 = (Class<REQ>) classMessage;
 		registerMessage(c1, c2, side);

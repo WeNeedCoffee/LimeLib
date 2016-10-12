@@ -145,4 +145,20 @@ public class Utils {
 			return null;
 		return (EntityPlayerMP) world.playerEntities.get(world.rand.nextInt(world.playerEntities.size()));
 	}
+
+	public static int storeBytes(byte a, byte b, byte c, byte d) {
+		return (a << 24) ^ (b << 16) ^ (c << 8) ^ d;
+	}
+
+	public static byte[] loadBytes(int a) {
+		return new byte[] { (byte) (a >> 24 & 0xFF), (byte) (a >> 16 & 0xFF), (byte) (a >> 8 & 0xFF), (byte) (a & 0xFF) };
+	}
+
+	public static int storeShorts(short a, short b) {
+		return (a << 16) ^ (b);
+	}
+
+	public static short[] loadShorts(int a) {
+		return new short[] { (short) (a >> 16 & 0xFFFF), (short) (a & 0xFFFF) };
+	}
 }

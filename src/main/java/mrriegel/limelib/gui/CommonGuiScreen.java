@@ -65,6 +65,7 @@ public class CommonGuiScreen extends GuiScreen {
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
 		drawer = new GuiDrawer(guiLeft, guiTop, xSize, ySize, zLevel);
+		elementList.clear();
 	}
 
 	@Override
