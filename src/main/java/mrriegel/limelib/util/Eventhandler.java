@@ -1,16 +1,20 @@
 package mrriegel.limelib.util;
 
+import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class Eventhandler {
 
 	@SubscribeEvent
-	public void tick(LeftClickBlock event) {
+	public void left(LeftClickBlock event) {
 		if (event.getEntityPlayer() != null) {
 			TileEntity tile = event.getWorld().getTileEntity(event.getPos());
 			if (tile instanceof IOwneable) {
@@ -28,7 +32,7 @@ public class Eventhandler {
 	}
 
 	@SubscribeEvent
-	public void tick(RightClickBlock event) {
+	public void right(RightClickBlock event) {
 		if (event.getEntityPlayer() != null) {
 			TileEntity tile = event.getWorld().getTileEntity(event.getPos());
 			if (tile instanceof IOwneable) {
@@ -45,11 +49,19 @@ public class Eventhandler {
 		}
 	}
 
-	// @SubscribeEvent
-	// public void clone(Clone event) {
-	// EntityPlayer old = event.getOriginal();
-	// EntityPlayer neu = event.getEntityPlayer();
-	// neu.getEntityData().merge(old.getEntityData());
-	// }
+	@SubscribeEvent
+	public void tick(WorldTickEvent event) {
+		if (event.phase == Phase.END && event.side == Side.SERVER) {
+			for (TileEntity tile : event.world.loadedTileEntityList) {
+				if (tile instanceof CommonTile) {
+					if (((CommonTile) tile).needsSync()) {
+						((CommonTile) tile).sync();
+						((CommonTile) tile).setSyncDirty(false);
+					}
+
+				}
+			}
+		}
+	}
 
 }

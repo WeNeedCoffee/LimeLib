@@ -26,7 +26,7 @@ public class TestContainer extends CommonContainerTile<CommonTileInventory> {
 	protected List<Area> allowedSlots(ItemStack stack, IInventory inv, int index) {
 		List<Area> lis = Lists.newArrayList();
 		IInventory inv2 = inv instanceof InventoryPlayer ? getTile() : invPlayer;
-		Area x = getAreaforEntire(inv2);
+		Area x = getAreaForEntireInv(inv2);
 		if (x != null)
 			lis.add(x);
 		// lis.add(new Area(inv2, 0, inv2.getSizeInventory()-1));

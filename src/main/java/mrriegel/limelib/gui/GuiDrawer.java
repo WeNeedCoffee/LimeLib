@@ -5,6 +5,7 @@ import java.util.List;
 import mrriegel.limelib.LimeLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -20,6 +21,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -39,7 +42,6 @@ public class GuiDrawer {
 		this.xSize = xSize;
 		this.ySize = ySize;
 		this.zLevel = zLevel;
-		// mc = Minecraft.getMinecraft();
 	}
 
 	public void drawSlot(int x, int y) {
@@ -252,6 +254,12 @@ public class GuiDrawer {
 		FontRenderer font = stack.getItem().getFontRenderer(stack);
 		ScaledResolution sr = new ScaledResolution(mc);
 		GuiUtils.drawHoveringText(list, x, y, sr.getScaledWidth(), sr.getScaledHeight(), -1, (font == null ? mc.fontRendererObj : font));
+	}
+
+	public static void openGui(GuiScreen screen) {
+		if (FMLCommonHandler.instance().getSide().equals(Side.CLIENT)) {
+			FMLCommonHandler.instance().showGuiScreen(screen);
+		}
 	}
 
 	public enum Direction {

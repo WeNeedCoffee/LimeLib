@@ -15,7 +15,7 @@ public class Article {
 	protected String name;
 	protected int index;
 
-	static final int maxItems = 12;
+	static final int maxItems = 10;
 
 	public Article(String name) {
 		this.name = name;

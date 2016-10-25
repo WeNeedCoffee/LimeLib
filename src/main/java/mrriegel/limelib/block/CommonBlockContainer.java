@@ -39,6 +39,8 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public void registerBlock() {
 		super.registerBlock();
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
+		if (IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes())
+			GameRegistry.addShapelessRecipe(new ItemStack(this), this);
 	}
 
 	@Override

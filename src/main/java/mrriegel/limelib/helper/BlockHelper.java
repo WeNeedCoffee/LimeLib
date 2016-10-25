@@ -37,17 +37,21 @@ public class BlockHelper {
 		return lis;
 	}
 
-	public static ItemStack breakBlockWithSilk(World world, BlockPos pos, int fortune, EntityPlayer player, boolean simulate, boolean particle) {
+	public static List<ItemStack> breakBlockWithSilk(World world, BlockPos pos, EntityPlayer player, boolean simulate, boolean particle, boolean breakAnyway) {
 		IBlockState state = world.getBlockState(pos);
-		if (!isBlockBreakable(world, pos) || state.getBlock().canSilkHarvest(world, pos, state, player))
+		if (!isBlockBreakable(world, pos))
 			return null;
-		ItemStack stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, player);
-		if (!simulate) {
-			if (particle)
-				world.playEvent(2001, pos, Block.getStateId(state));
-			world.setBlockToAir(pos);
-		}
-		return stack;
+		if (state.getBlock().canSilkHarvest(world, pos, state, player)) {
+			ItemStack stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, player);
+			if (!simulate) {
+				if (particle)
+					world.playEvent(2001, pos, Block.getStateId(state));
+				world.setBlockToAir(pos);
+			}
+			return Lists.newArrayList(stack);
+		} else if (breakAnyway)
+			return breakBlockWithFortune(world, pos, 0, player, simulate, particle);
+		return Lists.newArrayList();
 	}
 
 	public static boolean isOre(IBlockAccess world, BlockPos pos) {

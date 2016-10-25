@@ -1,37 +1,14 @@
 package mrriegel.limelib.util;
 
-import java.io.IOException;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializer;
-import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public abstract class TaskEntity extends Entity {
 
-	protected static final DataParameter<NBTTagCompound> DATA = EntityDataManager.createKey(TaskEntity.class, new DataSerializer<NBTTagCompound>() {
-
-		@Override
-		public void write(PacketBuffer buf, NBTTagCompound value) {
-			ByteBufUtils.writeTag(buf, value);
-		}
-
-		@Override
-		public NBTTagCompound read(PacketBuffer buf) throws IOException {
-			return ByteBufUtils.readTag(buf);
-		}
-
-		@Override
-		public DataParameter<NBTTagCompound> createKey(int id) {
-			return new DataParameter<NBTTagCompound>(id, this);
-		}
-	});
+	public NBTTagCompound nbt;
 
 	public TaskEntity(World worldIn) {
 		super(worldIn);
@@ -39,25 +16,21 @@ public abstract class TaskEntity extends Entity {
 		this.noClip = true;
 		this.isImmuneToFire = true;
 		this.firstUpdate = false;
-	}
-
-	public NBTTagCompound getData() {
-		return this.dataManager.get(DATA);
+		nbt = new NBTTagCompound();
 	}
 
 	@Override
 	protected void entityInit() {
-		this.dataManager.register(DATA, new NBTTagCompound());
 	}
 
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound compound) {
-		this.dataManager.set(DATA, compound.getCompoundTag("DATA"));
+		nbt = compound.getCompoundTag("DATA");
 	}
 
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound compound) {
-		compound.setTag("DATA", this.dataManager.get(DATA));
+		compound.setTag("DATA", nbt);
 	}
 
 	@Override

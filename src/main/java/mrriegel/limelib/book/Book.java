@@ -2,6 +2,7 @@ package mrriegel.limelib.book;
 
 import java.util.List;
 
+import mrriegel.limelib.gui.GuiDrawer;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
@@ -24,6 +25,8 @@ public abstract class Book {
 	}
 
 	public Pair<Integer, Integer> getPage(Impl<?> impl) {
+		if (impl == null)
+			return null;
 		for (Chapter c : chapters) {
 			if (c.implMap.get(impl) != null) {
 				return ImmutablePair.<Integer, Integer> of(c.index, c.implMap.get(impl).index);
@@ -46,10 +49,12 @@ public abstract class Book {
 			openGUI();
 	}
 
+	public void openGUI(int chapter, int article) {
+		GuiDrawer.openGui(new GuiBook(this, chapter, article));
+	}
+
 	public boolean canOpen(Impl<?> impl) {
 		return getPage(impl) != null;
 	}
-
-	public abstract void openGUI(int chapter, int subchapter);
 
 }

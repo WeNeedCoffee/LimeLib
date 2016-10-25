@@ -1,14 +1,10 @@
 package mrriegel.testmod;
 
 import java.awt.Color;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.gui.RecipeGuiLogic;
-import mezz.jei.gui.RecipesGui;
 import mrriegel.limelib.block.CommonBlock;
-import mrriegel.limelib.book.GuiBook;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.InvHelper;
@@ -34,7 +30,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
@@ -42,7 +37,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.fml.client.config.HoverChecker;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -50,11 +44,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
-
-import org.lwjgl.input.Mouse;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
@@ -77,6 +70,7 @@ public class TestMod implements IGuiHandler {
 		block.initModel();
 		item.registerItem();
 		item.initModel();
+		EntityRegistry.registerModEntity(TestEntity.class, "test", 0, TestMod.mod, 80, 3, false);
 	}
 
 	@Mod.EventHandler
@@ -213,13 +207,12 @@ public class TestMod implements IGuiHandler {
 		if (ID == 0)
 			return new TestGui(new TestContainer(player.inventory, (CommonTileInventory) world.getTileEntity(new BlockPos(x, y, z))));
 		else if (ID == 1)
-			if (x == -1)
-				return new GuiBook(book);
-			else {
-				return new GuiBook(book, x, y);
-			}
-		// return new GuiScreenBook(player, new ItemStack(Items.WRITTEN_BOOK),
-		// false);
+			//			if (x == -1)
+			//				return new GuiBook(book);
+			//			else {
+			//				return new GuiBook(book, x, y);
+			//			}
+			;
 		return null;
 	}
 

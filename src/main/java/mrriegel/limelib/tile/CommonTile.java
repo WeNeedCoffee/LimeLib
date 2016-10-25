@@ -21,6 +21,8 @@ import com.google.common.collect.Lists;
 
 public class CommonTile extends TileEntity {
 
+	private boolean syncDirty;
+
 	@Override
 	public NBTTagCompound getUpdateTag() {
 		return writeToNBT(new NBTTagCompound());
@@ -33,14 +35,24 @@ public class CommonTile extends TileEntity {
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		NBTTagCompound syncData = new NBTTagCompound();
-		this.writeToNBT(syncData);
-		return new SPacketUpdateTileEntity(this.pos, 1, syncData);
+		return new SPacketUpdateTileEntity(this.pos, 1, serializeNBT());
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		readFromNBT(pkt.getNbtCompound());
+	}
+
+	public boolean needsSync() {
+		return syncDirty;
+	}
+
+	public void markForSync() {
+		syncDirty = true;
+	}
+
+	public void setSyncDirty(boolean syncDirty) {
+		this.syncDirty = syncDirty;
 	}
 
 	public void sync(EntityPlayerMP player) {

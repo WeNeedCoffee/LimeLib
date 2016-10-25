@@ -38,6 +38,7 @@ public class GuiBook extends CommonGuiScreen {
 	protected Chapter currentChapter;
 	protected Article currentArticle;
 	protected List<ItemSlot> slots = Lists.newArrayList();
+	protected final boolean unicode = false;
 
 	public GuiBook(Book book) {
 		this.book = book;
@@ -73,8 +74,17 @@ public class GuiBook extends CommonGuiScreen {
 			int index = i + (currentPage - 1) * maxLines;
 			if (index >= wrappedTextLines.size())
 				break;
+
 			fontRendererObj.drawString(wrappedTextLines.get(index), guiLeft + 113, guiTop + 9 + i * 10, 0x111111, !true);
 		}
+	}
+
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		boolean uni = fontRendererObj.getUnicodeFlag();
+		fontRendererObj.setUnicodeFlag(unicode);
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		fontRendererObj.setUnicodeFlag(uni);
 	}
 
 	@Override
@@ -83,7 +93,7 @@ public class GuiBook extends CommonGuiScreen {
 		buttonList.add(left = new GuiButtonSimple(0, guiLeft + 109, guiTop + 181, 9, 14, "<", Color.black.getRGB(), Color.gray.getRGB(), null));
 		buttonList.add(right = new GuiButtonSimple(1, guiLeft + 326, guiTop + 181, 9, 14, ">", Color.black.getRGB(), Color.gray.getRGB(), null));
 		for (int i = 0; i < Article.maxItems; i++)
-			slots.add(new ItemSlot(null, 0, 0, guiTop + 7, 1, drawer, false, false, false, true));
+			slots.add(new ItemSlot(null, i, 0, guiTop + 8, 1, drawer, false, false, false, true));
 		elementList.addAll(slots);
 		for (int i = 0; i < book.chapters.size(); i++) {
 			List<String> tooltip = Lists.newArrayList(book.chapters.get(i).name);
@@ -91,7 +101,7 @@ public class GuiBook extends CommonGuiScreen {
 				tooltip.add(TextFormatting.GRAY + "  " + c.name);
 			/** clear tooltip */
 			tooltip.clear();
-			buttonList.add(new GuiButtonSimple(i + 100, guiLeft + 7, guiTop + 7 + i * 18, 46, 15, book.chapters.get(i).name, Color.BLACK.getRGB(), Color.DARK_GRAY.getRGB(), tooltip));
+			buttonList.add(new GuiButtonSimple(i + 100, guiLeft + 7, guiTop + 7 + i * 18, 46, 15, book.chapters.get(i).name, tooltip));
 		}
 		for (int i = 0; i < maxSubChapters; i++) {
 			GuiButtonSimple b = new GuiButtonSimple(i + 1000, guiLeft + 59, guiTop + 7 + i * 17, 46, 14, "", Color.DARK_GRAY.getRGB(), Color.GRAY.getRGB(), null);
@@ -106,7 +116,7 @@ public class GuiBook extends CommonGuiScreen {
 		if (chapter != -1 && article != -1) {
 			articlePos = 0;
 			currentChapter = book.chapters.get(chapter);
-			initSubChapters();
+			initArticleButtons();
 			currentArticle = currentChapter.articles.get(article);
 			currentText = formatText();
 			chapter = -1;
@@ -115,7 +125,7 @@ public class GuiBook extends CommonGuiScreen {
 			if (book.lastChapter != null) {
 				articlePos = 0;
 				currentChapter = book.lastChapter;
-				initSubChapters();
+				initArticleButtons();
 			}
 			if (book.lastArticle != null) {
 				currentArticle = book.lastArticle;
@@ -133,6 +143,10 @@ public class GuiBook extends CommonGuiScreen {
 		s = s.replaceAll("<i>", TextFormatting.ITALIC.toString());
 		s = s.replaceAll("<u>", TextFormatting.UNDERLINE.toString());
 		s = s.replaceAll("<s>", TextFormatting.STRIKETHROUGH.toString());
+		for (int i = 0; i < TextFormatting.values().length; i++) {
+			s = s.replaceAll("<" + i + ">", TextFormatting.values()[i].toString());
+			s = s.replaceAll("<" + TextFormatting.values()[i].getFriendlyName() + ">", TextFormatting.values()[i].toString());
+		}
 		return s;
 	}
 
@@ -155,7 +169,7 @@ public class GuiBook extends CommonGuiScreen {
 			if (c != null) {
 				articlePos = 0;
 				currentChapter = c;
-				initSubChapters();
+				initArticleButtons();
 			}
 		} else if (button.id >= 1000 && button.id <= 9999) {
 			if (currentChapter != null) {
@@ -179,14 +193,13 @@ public class GuiBook extends CommonGuiScreen {
 			return;
 		for (int i = 0; i < Math.min(currentArticle.stacks.size(), slots.size()); i++) {
 			slots.get(i).stack = currentArticle.stacks.get(i);
-			slots.get(i).x = guiLeft + 114 + (i * 18) + fontRendererObj.getStringWidth(TextFormatting.BOLD + currentArticle.name);
+			slots.get(i).x = guiLeft + 114 + (i * 17) + fontRendererObj.getStringWidth(TextFormatting.BOLD + currentArticle.name);
 		}
 	}
 
-	private void initSubChapters() {
-		int subs = currentChapter.articles.size();
+	private void initArticleButtons() {
 		for (int i = 0; i < articleButtons.size(); i++) {
-			if (i < subs) {
+			if (i < currentChapter.articles.size()) {
 				articleButtons.get(i).visible = true;
 				articleButtons.get(i).displayString = currentChapter.articles.get(i + articlePos).name;
 			} else {
@@ -208,7 +221,7 @@ public class GuiBook extends CommonGuiScreen {
 					articlePos = Math.max(0, articlePos - 1);
 				else if (m < 0)
 					articlePos = Math.min(Math.max(0, currentChapter.articles.size() - maxSubChapters), articlePos + 1);
-				initSubChapters();
+				initArticleButtons();
 			}
 		}
 	}
@@ -220,7 +233,6 @@ public class GuiBook extends CommonGuiScreen {
 			return;
 		for (ItemSlot slot : slots) {
 			if (slot.stack != null && slot.isMouseOver(mouseX, mouseY)) {
-				onGuiClosed();
 				JEIInternalPlugin.jeiRuntime.getRecipesGui().show(new Focus<ItemStack>(mouseButton == 0 ? Mode.OUTPUT : Mode.INPUT, slot.stack));
 				break;
 			}

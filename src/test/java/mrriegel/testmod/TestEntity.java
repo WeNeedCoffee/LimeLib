@@ -25,7 +25,7 @@ public class TestEntity extends TaskEntity {
 	}
 
 	protected List<BlockPos> getList() {
-		return Utils.getBlockPosList(NBTHelper.getLongList(getData(), "list"));
+		return Utils.getBlockPosList(NBTHelper.getLongList(nbt, "list"));
 	}
 
 	protected static List<BlockPos> getChunk(World world, BlockPos pos) {
@@ -42,15 +42,16 @@ public class TestEntity extends TaskEntity {
 	@Override
 	protected void run() {
 		Iterator<BlockPos> it = getList().listIterator();
-		while (it.hasNext()) {
+		if (it.hasNext()) {
 			BlockPos p = it.next();
 			BlockHelper.breakBlockWithFortune(worldObj, p, 0, null, false, false);
+			it.remove();
 		}
 	}
 
 	@Override
 	protected boolean done() {
-		return getData().getBoolean("has") && getList().isEmpty();
+		return getList().isEmpty();
 	}
 
 }

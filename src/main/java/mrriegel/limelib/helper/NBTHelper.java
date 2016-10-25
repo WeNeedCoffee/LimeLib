@@ -174,8 +174,9 @@ public class NBTHelper {
 
 	// boolean
 	public static boolean getBoolean(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName)) {
-			setBoolean(nbt, keyName, false);
+		if (!nbt.hasKey(keyName, 99)) {
+			//			setBoolean(nbt, keyName, false);
+			return false;
 		}
 		return nbt.getBoolean(keyName);
 	}
@@ -189,7 +190,8 @@ public class NBTHelper {
 	// byte
 	public static byte getByte(NBTTagCompound nbt, String keyName) {
 		if (!nbt.hasKey(keyName, 99)) {
-			setByte(nbt, keyName, (byte) 0);
+			//			setByte(nbt, keyName, (byte) 0);
+			return (byte) 0;
 		}
 		return nbt.getByte(keyName);
 	}
@@ -203,7 +205,8 @@ public class NBTHelper {
 	// short
 	public static short getShort(NBTTagCompound nbt, String keyName) {
 		if (!nbt.hasKey(keyName, 99)) {
-			setShort(nbt, keyName, (short) 0);
+			//			setShort(nbt, keyName, (short) 0);
+			return (short) 0;
 		}
 		return nbt.getShort(keyName);
 	}
@@ -217,7 +220,8 @@ public class NBTHelper {
 	// int
 	public static int getInt(NBTTagCompound nbt, String keyName) {
 		if (!nbt.hasKey(keyName, 99)) {
-			setInt(nbt, keyName, 0);
+			//			setInt(nbt, keyName, 0);
+			return 0;
 		}
 		return nbt.getInteger(keyName);
 	}
@@ -231,7 +235,8 @@ public class NBTHelper {
 	// long
 	public static long getLong(NBTTagCompound nbt, String keyName) {
 		if (!nbt.hasKey(keyName, 99)) {
-			setLong(nbt, keyName, 0L);
+			//			setLong(nbt, keyName, 0L);
+			return 0L;
 		}
 		return nbt.getLong(keyName);
 	}
@@ -245,7 +250,8 @@ public class NBTHelper {
 	// float
 	public static float getFloat(NBTTagCompound nbt, String keyName) {
 		if (!nbt.hasKey(keyName, 99)) {
-			setFloat(nbt, keyName, 0F);
+			//			setFloat(nbt, keyName, 0F);
+			return 0F;
 		}
 		return nbt.getFloat(keyName);
 	}
@@ -259,7 +265,8 @@ public class NBTHelper {
 	// double
 	public static double getDouble(NBTTagCompound nbt, String keyName) {
 		if (!nbt.hasKey(keyName, 99)) {
-			setDouble(nbt, keyName, 0D);
+			//			setDouble(nbt, keyName, 0D);
+			return 0D;
 		}
 		return nbt.getDouble(keyName);
 	}

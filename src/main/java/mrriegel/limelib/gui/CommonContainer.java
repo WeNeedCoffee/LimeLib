@@ -47,14 +47,18 @@ public abstract class CommonContainer extends Container {
 
 	protected abstract List<Area> allowedSlots(ItemStack stack, IInventory inv, int index);
 
-	protected Area getAreaforEntire(IInventory inv) {
+	protected Area getAreaForEntireInv(IInventory inv) {
+		return getAreaForInv(inv, 0, inv.getSizeInventory());
+	}
+
+	protected Area getAreaForInv(IInventory inv, int start, int total) {
 		List<Integer> l = Lists.newArrayList();
 		for (Slot s : inventorySlots)
-			if (s.inventory == inv)
+			if (s.inventory == inv && s.getSlotIndex() >= start && s.getSlotIndex() < total + start)
 				l.add(s.getSlotIndex());
-		Collections.sort(l);
 		if (l.isEmpty())
 			return null;
+		Collections.sort(l);
 		return new Area(inv, l.get(0), l.get(l.size() - 1));
 	}
 
@@ -131,19 +135,19 @@ public abstract class CommonContainer extends Container {
 				// while (maxSlot == null && p.max > 0)
 				// minSlot = getSlotFromInventory(p.inv, --p.max);
 				if (minSlot == null || maxSlot == null)
-					return null;
+					continue;
 				if (hasGhost(p)) {
 					for (int i = p.min; i <= p.max; i++)
 						if (!getSlotFromInventory(p.inv, i).getHasStack() && getSlotFromInventory(p.inv, i) instanceof SlotGhost) {
 							getSlotFromInventory(p.inv, i).putStack(itemstack1);
 							return null;
 						}
-				} else {
-					if (this.mergeItemStack(itemstack1, minSlot.slotNumber, maxSlot.slotNumber + 1, !(slot.inventory instanceof InventoryPlayer))) {
-						merged = true;
-						break;
-					}
 				}
+				if (this.mergeItemStack(itemstack1, minSlot.slotNumber, maxSlot.slotNumber + 1, false)) {
+					merged = true;
+					break;
+				}
+
 			}
 			if (!merged)
 				return null;

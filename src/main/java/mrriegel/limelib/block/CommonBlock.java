@@ -2,6 +2,7 @@ package mrriegel.limelib.block;
 
 import java.util.List;
 
+import mrriegel.limelib.item.CommonItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -31,7 +32,7 @@ public class CommonBlock extends Block {
 	}
 
 	protected ItemBlock getItemBlock() {
-		return (ItemBlock) new ItemBlock(this).setRegistryName(getRegistryName());
+		return new CommonItemBlock(this);
 	}
 
 	@Override

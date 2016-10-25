@@ -24,37 +24,37 @@ public class TypeAdapters {
 		@Override
 		public JsonElement serialize(T src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject json = new JsonObject();
-			json.addProperty("NBTNBT", serialize(src).toString());
+			json.addProperty("NBTNBT", serialize(src, context).toString());
 			return json;
 		}
 
 		@Override
 		public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			try {
-				return deserialize(JsonToNBT.getTagFromJson(json.getAsJsonObject().get("NBTNBT").getAsString()));
+				return deserialize(JsonToNBT.getTagFromJson(json.getAsJsonObject().get("NBTNBT").getAsString()), context);
 			} catch (NBTException e) {
 				e.printStackTrace();
 			}
 			return null;
 		}
 
-		public abstract NBTTagCompound serialize(T t);
+		public abstract NBTTagCompound serialize(T t, JsonSerializationContext context);
 
-		public abstract T deserialize(NBTTagCompound nbt);
+		public abstract T deserialize(NBTTagCompound nbt, JsonDeserializationContext context);
 
 	}
 
 	public static class ItemLizer extends JsonLizer<Item> {
 
 		@Override
-		public NBTTagCompound serialize(Item t) {
+		public NBTTagCompound serialize(Item t, JsonSerializationContext context) {
 			NBTTagCompound n = new NBTTagCompound();
 			n.setInteger("item", Item.REGISTRY.getIDForObject(t));
 			return null;
 		}
 
 		@Override
-		public Item deserialize(NBTTagCompound nbt) {
+		public Item deserialize(NBTTagCompound nbt, JsonDeserializationContext context) {
 			return Item.REGISTRY.getObjectById(nbt.getInteger("item"));
 		}
 

@@ -1,7 +1,12 @@
 package mrriegel.limelib.util;
 
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.items.ItemHandlerHelper;
+
+import com.google.common.collect.Lists;
 
 public class StackWrapper {
 	ItemStack stack;
@@ -71,6 +76,42 @@ public class StackWrapper {
 		StackWrapper wrap = new StackWrapper();
 		wrap.readFromNBT(nbt);
 		return wrap.getStack() != null && wrap.getStack().getItem() != null ? wrap : null;
+	}
+
+	public static List<ItemStack> toStackList(List<StackWrapper> list) {
+		List<ItemStack> lis = Lists.newArrayList();
+		for (StackWrapper s : list) {
+			if (s == null || s.getStack() == null)
+				continue;
+			final int maxstacksize = s.getStack().getMaxStackSize();
+			int stacks = s.size / maxstacksize + (s.size % maxstacksize != 0 ? 1 : 0);
+			for (int i = 0; i < stacks; i++) {
+				ItemStack toAdd = s.getStack().copy();
+				toAdd.stackSize = (i < stacks - 1 ? maxstacksize : s.size % maxstacksize);
+				lis.add(toAdd);
+			}
+		}
+		return lis;
+	}
+
+	public static List<StackWrapper> toWrapperList(List<ItemStack> list) {
+		List<StackWrapper> lis = Lists.newArrayList();
+		for (ItemStack s : list) {
+			if (s == null)
+				continue;
+			boolean added = false;
+			for (int i = 0; i < lis.size(); i++) {
+				ItemStack stack = lis.get(i).getStack().copy();
+				if (ItemHandlerHelper.canItemStacksStack(s, stack)) {
+					lis.get(i).setSize(lis.get(i).getSize() + s.stackSize);
+					added = true;
+					break;
+				}
+			}
+			if (!added)
+				lis.add(new StackWrapper(s, s.stackSize));
+		}
+		return lis;
 	}
 
 }

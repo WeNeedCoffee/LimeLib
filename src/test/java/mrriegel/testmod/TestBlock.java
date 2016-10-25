@@ -65,8 +65,8 @@ public class TestBlock extends CommonBlockContainer<TestTile> {
 			//			worldIn.spawnEntityInWorld(e);
 		} else {
 			//			pos = pos.up();
-			for (Vec3d v : ParticleHelper.getVecsForExplosion(0.9, 15, Axis.Y))
-				ParticleHelper.renderParticle(new CommonParticle(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, v.xCoord, v.yCoord, v.zCoord).setTexture(ParticleHelper.squareParticle).setMaxAge2(60).setColor(Color.white.getRGB(), 0).setNoClip(true).setFlouncing(0.015));
+			for (Vec3d v : ParticleHelper.getVecsForExplosion(0.4, 10, Axis.Y))
+				ParticleHelper.renderParticle(new CommonParticle(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, v.xCoord, v.yCoord, v.zCoord).setTexture(ParticleHelper.sparkleParticle).setMaxAge2(60).setColor(Color.lightGray.getRGB(), 100).setScale(3f).setNoClip(true).setFlouncing(0.02));
 			// for (Vec3d v : ParticleHelper.getVecsForCircle(pos, 2, 7,
 			// Axis.Y))
 			// ParticleHelper.renderParticle(new CommonParticle(v.xCoord,

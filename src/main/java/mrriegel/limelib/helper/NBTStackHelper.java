@@ -8,10 +8,20 @@ import net.minecraft.nbt.NBTTagList;
 
 public class NBTStackHelper {
 
-	private static void initNBTTagCompound(ItemStack stack) {
+	public static void initNBTTagCompound(ItemStack stack) {
 		if (stack.getTagCompound() == null) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
+	}
+
+	public static boolean hasTag(ItemStack stack, String keyName) {
+		initNBTTagCompound(stack);
+		return NBTHelper.hasTag(stack.getTagCompound(), keyName);
+	}
+
+	public static void removeTag(ItemStack stack, String keyName) {
+		initNBTTagCompound(stack);
+		NBTHelper.removeTag(stack.getTagCompound(), keyName);
 	}
 
 	// list
