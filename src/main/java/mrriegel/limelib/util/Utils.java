@@ -1,9 +1,9 @@
 package mrriegel.limelib.util;
 
+import java.util.Base64;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
 import mrriegel.limelib.LimeLib;
@@ -137,7 +137,12 @@ public class Utils {
 		List<WorldServer> lis = Lists.newArrayList(FMLCommonHandler.instance().getMinecraftServerInstance().worldServers);
 		if (lis.isEmpty())
 			return null;
-		return getRandomPlayer(lis.get(new Random().nextInt(lis.size())));
+		for (WorldServer world : lis) {
+			EntityPlayerMP player = getRandomPlayer(world);
+			if (player != null)
+				return player;
+		}
+		return null;
 	}
 
 	public static EntityPlayerMP getRandomPlayer(World world) {
@@ -160,5 +165,13 @@ public class Utils {
 
 	public static short[] loadShorts(int a) {
 		return new short[] { (short) (a >> 16 & 0xFFFF), (short) (a & 0xFFFF) };
+	}
+
+	public static String toASCII(String text) {
+		return Base64.getEncoder().encodeToString(text.getBytes());
+	}
+
+	public static String fromASCII(String ascii) {
+		return new String(Base64.getDecoder().decode(ascii.getBytes()));
 	}
 }

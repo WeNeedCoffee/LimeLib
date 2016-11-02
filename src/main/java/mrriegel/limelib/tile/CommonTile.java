@@ -48,7 +48,8 @@ public class CommonTile extends TileEntity {
 	}
 
 	public void markForSync() {
-		syncDirty = true;
+		if (onServer())
+			syncDirty = true;
 	}
 
 	public void setSyncDirty(boolean syncDirty) {
@@ -67,7 +68,7 @@ public class CommonTile extends TileEntity {
 	}
 
 	public void sync() {
-		if (false) {
+		if (hashCode() % 2 != 3 /*TRUE*/) {
 			markDirty();
 			worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(pos), worldObj.getBlockState(pos), 8);
 		} else {

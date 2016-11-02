@@ -8,12 +8,14 @@ import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 public abstract class CommonContainerItem extends CommonContainer {
 
 	protected ItemStack stack;
 
 	public CommonContainerItem(InventoryPlayer invPlayer, int num) {
-		super(invPlayer, InvEntry.of("inv", new InventoryBasic(null, false, num)));
+		super(invPlayer, Pair.<String, IInventory> of("inv", new InventoryBasic(null, false, num)));
 		stack = invPlayer.getCurrentItem();
 		if (!stack.hasTagCompound())
 			stack.setTagCompound(new NBTTagCompound());

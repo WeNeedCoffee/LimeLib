@@ -22,6 +22,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public abstract class CommonBlockContainer<T extends CommonTile> extends CommonBlock {
 
+	protected boolean cleanRecipe = true;
+
 	public CommonBlockContainer(Material materialIn, String name) {
 		super(materialIn, name);
 	}
@@ -39,8 +41,8 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public void registerBlock() {
 		super.registerBlock();
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
-		if (IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes())
-			GameRegistry.addShapelessRecipe(new ItemStack(this), this);
+		if (cleanRecipe && IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes())
+			GameRegistry.addShapelessRecipe(new ItemStack(getItemBlock()), this);
 	}
 
 	@Override

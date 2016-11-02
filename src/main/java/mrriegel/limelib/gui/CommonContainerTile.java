@@ -3,11 +3,14 @@ package mrriegel.limelib.gui;
 import mrriegel.limelib.tile.CommonTileInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.IInventory;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class CommonContainerTile<T extends CommonTileInventory> extends CommonContainer {
 
 	public CommonContainerTile(InventoryPlayer invPlayer, T tile) {
-		super(invPlayer, InvEntry.of("tile", tile));
+		super(invPlayer, Pair.<String, IInventory> of("tile", tile));
 	}
 
 	public T getTile() {

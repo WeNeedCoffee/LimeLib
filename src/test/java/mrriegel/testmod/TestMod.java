@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -53,7 +54,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@Mod(modid = "lalal", name = "kohle")
+@Mod(modid = "lalal", name = "kohle",version="${version}")
 public class TestMod implements IGuiHandler {
 
 	@Mod.Instance("lalal")
@@ -78,7 +79,6 @@ public class TestMod implements IGuiHandler {
 		MinecraftForge.EVENT_BUS.register(this);
 		NetworkRegistry.INSTANCE.registerGuiHandler(mod, this);
 		PacketHandler.registerMessage(TestMessage.class, Side.CLIENT);
-		book.init();
 	}
 
 	@Mod.EventHandler
@@ -142,7 +142,7 @@ public class TestMod implements IGuiHandler {
 			EntityPlayer player = (EntityPlayer) e.getEntityLiving();
 			ItemStack held = player.getHeldItemMainhand();
 			book.init();
-			if (player.worldObj.isRemote && !player.isSneaking()) {
+			if (!player.worldObj.isRemote && !player.isSneaking()) {
 				if (held != null) {
 					book.openGuiAt(held.getItem(), true);
 				}
@@ -156,6 +156,8 @@ public class TestMod implements IGuiHandler {
 					ItemHandlerHelper.insertItemStacked(pmiw, s.copy(), false);
 				r.removeIngredients(pmiw);
 			}
+			if (!player.worldObj.isRemote)
+				PacketHandler.sendTo(new TestMessage(player.getEntityData()), (EntityPlayerMP) player);
 
 		}
 	}

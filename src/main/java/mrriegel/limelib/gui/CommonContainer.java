@@ -12,6 +12,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -20,13 +22,13 @@ public abstract class CommonContainer extends Container {
 	protected InventoryPlayer invPlayer;
 	protected Map<String, IInventory> invs;
 
-	public CommonContainer(InventoryPlayer invPlayer, InvEntry... invs) {
+	public CommonContainer(InventoryPlayer invPlayer, Pair<String, IInventory>... invs) {
 		this.invPlayer = invPlayer;
 		this.invs = Maps.newHashMap();
 		if (invs != null)
-			for (InvEntry e : invs) {
+			for (Pair<String, IInventory> e : invs) {
 				if (e != null)
-					this.invs.put(e.getName(), e.getInv());
+					this.invs.put(e.getLeft(), e.getRight());
 			}
 		initSlots();
 	}
@@ -140,6 +142,7 @@ public abstract class CommonContainer extends Container {
 					for (int i = p.min; i <= p.max; i++)
 						if (!getSlotFromInventory(p.inv, i).getHasStack() && getSlotFromInventory(p.inv, i) instanceof SlotGhost) {
 							getSlotFromInventory(p.inv, i).putStack(itemstack1);
+							detectAndSendChanges();
 							return null;
 						}
 				}
@@ -171,30 +174,6 @@ public abstract class CommonContainer extends Container {
 			if (getSlotFromInventory(area.inv, i) instanceof SlotGhost)
 				return true;
 		return false;
-	}
-
-	public static class InvEntry {
-		final String name;
-		final IInventory inv;
-
-		public InvEntry(String name, IInventory inv) {
-			super();
-			this.name = name;
-			this.inv = inv;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public IInventory getInv() {
-			return inv;
-		}
-
-		public static InvEntry of(String name, IInventory inv) {
-			return new InvEntry(name, inv);
-		}
-
 	}
 
 	protected static class Area {

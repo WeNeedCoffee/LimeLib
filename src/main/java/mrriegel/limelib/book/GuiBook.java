@@ -62,7 +62,7 @@ public class GuiBook extends CommonGuiScreen {
 		drawer.drawFrame(109, 5, 225, ySize - 26, 1, Color.BLACK.getRGB());
 		drawer.drawFrame(110, 6, 223, ySize - 28, 1, Color.DARK_GRAY.getRGB());
 		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-		drawer.drawColoredRectangle(111, 7, 222, ySize - 29, ColorHelper.darker(Color.LIGHT_GRAY.getRGB(), 0.12));
+		drawer.drawColoredRectangle(111, 7, 222, ySize - 29, ColorHelper.brighter(0xffd39b, 0.22));
 
 		String pages = currentPage + "/" + maxPage;
 		drawString(fontRendererObj, pages, guiLeft + (218 - fontRendererObj.getStringWidth(pages) / 2), guiTop + 185, 14737632);
@@ -232,7 +232,7 @@ public class GuiBook extends CommonGuiScreen {
 		if (!Loader.isModLoaded("JEI"))
 			return;
 		for (ItemSlot slot : slots) {
-			if (slot.stack != null && slot.isMouseOver(mouseX, mouseY)) {
+			if (slot.stack != null && slot.isMouseOver(mouseX, mouseY) && (mouseButton == 0 || mouseButton == 1)) {
 				JEIInternalPlugin.jeiRuntime.getRecipesGui().show(new Focus<ItemStack>(mouseButton == 0 ? Mode.OUTPUT : Mode.INPUT, slot.stack));
 				break;
 			}

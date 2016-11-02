@@ -60,7 +60,6 @@ public class CommonGuiContainer extends GuiContainer {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawer = new GuiDrawer(guiLeft, guiTop, xSize, ySize, zLevel);
-		onUpdate();
 		if (panel != null)
 			panel.onUpdate();
 		super.drawScreen(mouseX, mouseY, partialTicks);
@@ -104,7 +103,11 @@ public class CommonGuiContainer extends GuiContainer {
 	protected void elementClicked(GuiElement element) {
 	}
 
-	protected void onUpdate() {
+	@Override
+	public void updateScreen() {
+		super.updateScreen();
+		for (GuiElement e : elementList)
+			e.onUpdate();
 	}
 
 }

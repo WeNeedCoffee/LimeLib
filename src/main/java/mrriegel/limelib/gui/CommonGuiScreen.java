@@ -71,7 +71,6 @@ public class CommonGuiScreen extends GuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawer = new GuiDrawer(guiLeft, guiTop, xSize, ySize, zLevel);
-		onUpdate();
 		if (panel != null)
 			panel.onUpdate();
 		int i = this.guiLeft;
@@ -136,7 +135,11 @@ public class CommonGuiScreen extends GuiScreen {
 	protected void elementClicked(GuiElement element) {
 	}
 
-	protected void onUpdate() {
+	@Override
+	public void updateScreen() {
+		super.updateScreen();
+		for (GuiElement e : elementList)
+			e.onUpdate();
 	}
 
 }

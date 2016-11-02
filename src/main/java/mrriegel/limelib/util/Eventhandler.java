@@ -2,7 +2,11 @@ package mrriegel.limelib.util;
 
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IOwneable;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
@@ -61,6 +65,20 @@ public class Eventhandler {
 
 				}
 			}
+			//sync cappas
+		}
+	}
+
+	@SubscribeEvent
+	public void attachCapa(AttachCapabilitiesEvent<?> event) {
+		if (event.getObject() instanceof TileEntity) {
+
+		} else if (event.getObject() instanceof Entity) {
+
+		} else if (event.getObject() instanceof Item) {
+
+		} else if (event.getObject() instanceof World) {
+
 		}
 	}
 

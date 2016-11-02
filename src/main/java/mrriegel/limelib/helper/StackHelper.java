@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -39,7 +40,7 @@ public class StackHelper {
 		if (stack != null) {
 			for (int i : OreDictionary.getOreIDs(stack)) {
 				String oreName = OreDictionary.getOreName(i);
-				if (oreName.startsWith("denseore") || (oreName.startsWith("ore") && Character.isUpperCase(oreName.charAt(3))))
+				if ((oreName.startsWith("denseore") || (oreName.startsWith("ore")) && Character.isUpperCase(oreName.charAt(3))))
 					return true;
 			}
 		}
@@ -148,4 +149,18 @@ public class StackHelper {
 			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), Minecraft.getMinecraft().objectMouseOver, world, pos, Minecraft.getMinecraft().thePlayer);
 		}
 	}
+
+	public static boolean isWrench(ItemStack stack) {
+		if (stack == null || stack.getItem() instanceof ItemBlock)
+			return false;
+		boolean wrench = false;
+		for (String s : new String[] { "wrench", "scrench", "screwdriver" }) {
+			wrench |= stack.getItem().getClass().getSimpleName().toLowerCase().contains(s);
+			for (Class<?> c : stack.getItem().getClass().getInterfaces())
+				wrench |= c.getSimpleName().toLowerCase().contains(s);
+			wrench |= stack.getUnlocalizedName().toLowerCase().contains(s);
+		}
+		return wrench;
+	}
+
 }
