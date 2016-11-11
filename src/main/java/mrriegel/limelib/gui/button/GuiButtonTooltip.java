@@ -2,6 +2,8 @@ package mrriegel.limelib.gui.button;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.gui.element.ITooltip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -28,6 +30,10 @@ public class GuiButtonTooltip extends GuiButtonColor implements ITooltip {
 
 	public void setTooltip(List<String> lines) {
 		strings = lines;
+	}
+
+	public void setTooltip(String string) {
+		strings = Lists.newArrayList(string);
 	}
 
 }

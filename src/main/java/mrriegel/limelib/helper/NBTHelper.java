@@ -291,7 +291,7 @@ public class NBTHelper {
 	// itemstack
 	public static ItemStack getItemStack(NBTTagCompound nbt, String keyName) {
 		if (!nbt.hasKey(keyName)) {
-			setItemStack(nbt, keyName, null);
+			return null;
 		}
 		NBTTagCompound res = (NBTTagCompound) nbt.getTag(keyName);
 		return ItemStack.loadItemStackFromNBT(res);
@@ -523,7 +523,7 @@ public class NBTHelper {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				NBTTagCompound s = keyValue.get(i);
-				if (s != null)
+//				if (s != null)
 					setTag(nbt, keyName + ":" + i, s);
 			}
 		}
@@ -545,8 +545,7 @@ public class NBTHelper {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				ItemStack s = keyValue.get(i);
-				if (s != null)
-					setItemStack(nbt, keyName + ":" + i, s);
+				setItemStack(nbt, keyName + ":" + i, s);
 			}
 		}
 	}

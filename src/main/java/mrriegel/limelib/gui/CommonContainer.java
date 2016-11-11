@@ -9,8 +9,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -130,6 +132,8 @@ public abstract class CommonContainer extends Container {
 			ar.removeAll(Collections.singleton(null));
 			boolean merged = false;
 			for (Area p : ar) {
+				if (slot.inventory == p.inv)
+					continue;
 				Slot minSlot = getSlotFromInventory(p.inv, p.min);
 				// while (minSlot == null && p.min < p.inv.getSizeInventory())
 				// minSlot = getSlotFromInventory(p.inv, ++p.min);
@@ -141,7 +145,7 @@ public abstract class CommonContainer extends Container {
 				if (hasGhost(p)) {
 					for (int i = p.min; i <= p.max; i++)
 						if (!getSlotFromInventory(p.inv, i).getHasStack() && getSlotFromInventory(p.inv, i) instanceof SlotGhost) {
-							getSlotFromInventory(p.inv, i).putStack(itemstack1);
+							getSlotFromInventory(p.inv, i).putStack(ItemHandlerHelper.copyStackWithSize(itemstack1, 1));
 							detectAndSendChanges();
 							return null;
 						}
