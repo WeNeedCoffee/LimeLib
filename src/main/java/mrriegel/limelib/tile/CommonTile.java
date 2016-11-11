@@ -56,40 +56,9 @@ public class CommonTile extends TileEntity {
 		this.syncDirty = syncDirty;
 	}
 
-	public void sync(EntityPlayerMP player) {
-		markDirty();
-		if (hasWorldObj() && !worldObj.isRemote && player.getPosition().getDistance(getX(), getY(), getZ()) < 32)
-			try {
-				player.connection.sendPacket(getUpdatePacket());
-			} catch (Error e) {
-				System.out.println(e.getMessage());
-				e.printStackTrace();
-			}
-	}
-
 	public void sync() {
-		if (hashCode() % 2 != 3 /*TRUE*/) {
-			markDirty();
-			worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(pos), worldObj.getBlockState(pos), 8);
-		} else {
-			if (hasWorldObj() && !worldObj.isRemote)
-				for (EntityPlayer p : worldObj.playerEntities)
-					sync((EntityPlayerMP) p);
-		}
-	}
-
-	public void syncSafe(EntityPlayerMP player) {
-		if (worldObj.isRemote)
-			return;
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setLong("pos", pos.toLong());
-		PacketHandler.sendTo(new TileSyncMessage(nbt), player);
-	}
-
-	public void syncSafe() {
-		if (hasWorldObj() && !worldObj.isRemote)
-			for (EntityPlayer p : worldObj.playerEntities)
-				syncSafe((EntityPlayerMP) p);
+		markDirty();
+		worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(pos), worldObj.getBlockState(pos), 8);
 	}
 
 	public boolean isUseableByPlayer(EntityPlayer player) {

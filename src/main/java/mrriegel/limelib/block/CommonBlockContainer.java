@@ -2,6 +2,8 @@ package mrriegel.limelib.block;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
@@ -17,6 +19,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -69,6 +72,19 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	}
 
 	@Override
+	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+		List<ItemStack> lis = super.getDrops(world, pos, state, fortune);
+		ItemStack stack = null;
+		if (world.getTileEntity(pos) instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
+			IDataKeeper tile = (IDataKeeper) world.getTileEntity(pos);
+			stack = lis.get(0).copy();
+			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
+			tile.writeToStack(stack);
+		}
+		return stack != null ? Lists.newArrayList(stack) : lis;
+	}
+
+	@Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		if (worldIn.getTileEntity(pos) instanceof IDataKeeper && NBTStackHelper.getBoolean(stack, "idatakeeper")) {
 			IDataKeeper tile = (IDataKeeper) worldIn.getTileEntity(pos);
@@ -80,13 +96,9 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
 		List<ItemStack> lis = getDrops(worldIn, pos, state, 0);
-		if (!player.capabilities.isCreativeMode && worldIn.getTileEntity(pos) instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
-			IDataKeeper tile = (IDataKeeper) worldIn.getTileEntity(pos);
-			ItemStack stack = lis.get(0).copy();
-			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
-			tile.writeToStack(stack);
+		if (!player.capabilities.isCreativeMode && lis.size() == 1) {
 			worldIn.setBlockToAir(pos);
-			spawnAsEntity(worldIn, pos, stack);
+			spawnAsEntity(worldIn, pos, lis.get(0));
 		}
 	}
 

@@ -54,7 +54,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@Mod(modid = "lalal", name = "kohle",version="${version}")
+@Mod(modid = "lalal", name = "kohle", version = "${version}")
 public class TestMod implements IGuiHandler {
 
 	@Mod.Instance("lalal")
@@ -65,8 +65,12 @@ public class TestMod implements IGuiHandler {
 
 	public TestBook book = new TestBook();
 
+	public static final boolean ENABLE = false;
+
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		if (!ENABLE)
+			return;
 		block.registerBlock();
 		block.initModel();
 		item.registerItem();
@@ -76,6 +80,8 @@ public class TestMod implements IGuiHandler {
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
+		if (!ENABLE)
+			return;
 		MinecraftForge.EVENT_BUS.register(this);
 		NetworkRegistry.INSTANCE.registerGuiHandler(mod, this);
 		PacketHandler.registerMessage(TestMessage.class, Side.CLIENT);
