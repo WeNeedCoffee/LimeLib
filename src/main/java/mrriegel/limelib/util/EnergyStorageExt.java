@@ -3,6 +3,7 @@ package mrriegel.limelib.util;
 import net.minecraftforge.energy.EnergyStorage;
 
 public class EnergyStorageExt extends EnergyStorage {
+	
 	public EnergyStorageExt(int capacity) {
 		super(capacity);
 	}
@@ -32,4 +33,22 @@ public class EnergyStorageExt extends EnergyStorage {
 			this.energy = 0;
 		}
 	}
+
+	public int getMaxReceive() {
+		return maxReceive;
+	}
+
+	public void setMaxReceive(int maxReceive) {
+		this.maxReceive = maxReceive;
+	}
+
+	public int getMaxExtract() {
+		return maxExtract;
+	}
+
+	public void setMaxExtract(int maxExtract) {
+		this.maxExtract = maxExtract;
+	}
+	
+	
 }
