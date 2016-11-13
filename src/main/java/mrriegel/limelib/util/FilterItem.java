@@ -57,11 +57,6 @@ public class FilterItem {
 		return c;
 	}
 
-	@Override
-	public String toString() {
-		return "FilterItem [stack=" + stack + ", meta=" + meta + ", ore=" + ore + ", nbt=" + nbt + "]";
-	}
-
 	public ItemStack getStack() {
 		return stack;
 	}

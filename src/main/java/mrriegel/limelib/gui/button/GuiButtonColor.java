@@ -46,4 +46,9 @@ public class GuiButtonColor extends GuiButtonExt {
 		} else
 			super.drawButton(mc, mouseX, mouseY);
 	}
+
+	public void setColor(EnumDyeColor color) {
+		this.color = color;
+	}
+
 }

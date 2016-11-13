@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public abstract class AbstractMessage<T extends AbstractMessage<T>> implements IMessage, IMessageHandler<T, IMessage> {
 
-	protected NBTTagCompound nbt;
+	protected NBTTagCompound nbt = new NBTTagCompound();
 
 	public AbstractMessage() {
 	}

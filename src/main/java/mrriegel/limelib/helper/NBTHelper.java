@@ -523,8 +523,8 @@ public class NBTHelper {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
 				NBTTagCompound s = keyValue.get(i);
-//				if (s != null)
-					setTag(nbt, keyName + ":" + i, s);
+				//				if (s != null)
+				setTag(nbt, keyName + ":" + i, s);
 			}
 		}
 	}

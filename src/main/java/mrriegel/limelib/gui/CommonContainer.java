@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import mrriegel.limelib.gui.slot.SlotGhost;
+import mrriegel.limelib.gui.slot.SlotOutput;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -79,7 +79,7 @@ public abstract class CommonContainer extends Container {
 		initSlots(invPlayer, x, y, 9, 3, 9);
 	}
 
-	protected void initSlots(IInventory inv, int x, int y, int width, int height, int startIndex) {
+	protected void initSlots(IInventory inv, int x, int y, int width, int height, int startIndex, Class<? extends Slot> clazz) {
 		if (inv == null)
 			return;
 		for (int k = 0; k < height; ++k) {
@@ -87,15 +87,37 @@ public abstract class CommonContainer extends Container {
 				int id = i + k * width + startIndex;
 				if (id >= inv.getSizeInventory())
 					break;
-				this.addSlotToContainer(new Slot(inv, id, x + i * 18, y + k * 18) {
-					@Override
-					public void onSlotChanged() {
-						super.onSlotChanged();
-						inventoryChanged();
-					}
-				});
+				if (clazz == Slot.class) {
+					this.addSlotToContainer(new Slot(inv, id, x + i * 18, y + k * 18) {
+						@Override
+						public void onSlotChanged() {
+							super.onSlotChanged();
+							inventoryChanged();
+						}
+					});
+				} else if (clazz == SlotGhost.class) {
+					this.addSlotToContainer(new SlotGhost(inv, id, x + i * 18, y + k * 18) {
+						@Override
+						public void onSlotChanged() {
+							super.onSlotChanged();
+							inventoryChanged();
+						}
+					});
+				} else if (clazz == SlotOutput.class) {
+					this.addSlotToContainer(new SlotOutput(inv, id, x + i * 18, y + k * 18) {
+						@Override
+						public void onSlotChanged() {
+							super.onSlotChanged();
+							inventoryChanged();
+						}
+					});
+				}
 			}
 		}
+	}
+
+	protected void initSlots(IInventory inv, int x, int y, int width, int height, int startIndex) {
+		initSlots(inv, x, y, width, height, startIndex, Slot.class);
 	}
 
 	protected void initSlots(IInventory inv, int x, int y, int width, int height) {
@@ -132,8 +154,8 @@ public abstract class CommonContainer extends Container {
 			ar.removeAll(Collections.singleton(null));
 			boolean merged = false;
 			for (Area p : ar) {
-				if (slot.inventory == p.inv)
-					continue;
+				//				if (slot.inventory == p.inv)
+				//					continue;
 				Slot minSlot = getSlotFromInventory(p.inv, p.min);
 				// while (minSlot == null && p.min < p.inv.getSizeInventory())
 				// minSlot = getSlotFromInventory(p.inv, ++p.min);

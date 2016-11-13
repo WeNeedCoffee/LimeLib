@@ -2,8 +2,6 @@ package mrriegel.limelib.block;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
@@ -22,6 +20,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import com.google.common.collect.Lists;
 
 public abstract class CommonBlockContainer<T extends CommonTile> extends CommonBlock {
 
@@ -45,7 +45,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		super.registerBlock();
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
 		if (cleanRecipe && IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes())
-			GameRegistry.addShapelessRecipe(new ItemStack(getItemBlock()), this);
+			GameRegistry.addShapelessRecipe(new ItemStack(this), this);
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.List;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.TileGuiMessage;
 import mrriegel.limelib.network.TileMessage;
-import mrriegel.limelib.network.TileSyncMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

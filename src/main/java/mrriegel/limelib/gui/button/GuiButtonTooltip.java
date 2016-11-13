@@ -2,14 +2,14 @@ package mrriegel.limelib.gui.button;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import mrriegel.limelib.gui.element.ITooltip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraftforge.fml.client.config.GuiUtils;
+
+import com.google.common.collect.Lists;
 
 public class GuiButtonTooltip extends GuiButtonColor implements ITooltip {
 	protected List<String> strings;

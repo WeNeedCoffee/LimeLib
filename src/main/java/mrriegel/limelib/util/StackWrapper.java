@@ -39,7 +39,7 @@ public class StackWrapper {
 
 	@Override
 	public String toString() {
-		return "StackWrapper [stack=" + stack + ", size=" + size + "]";
+		return "[" + size + "x" + stack.getItem().getUnlocalizedName() + "@" + stack.getItemDamage() + "]";
 	}
 
 	@Override
