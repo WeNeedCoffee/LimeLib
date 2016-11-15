@@ -2,6 +2,7 @@ package mrriegel.limelib.block;
 
 import java.util.List;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
@@ -23,12 +24,14 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.RecipeSorter.Category;
 
 import com.google.common.collect.Lists;
 
 public abstract class CommonBlockContainer<T extends CommonTile> extends CommonBlock {
 
-	protected boolean cleanRecipe = true;
+	protected boolean clearRecipe = true;
 
 	public CommonBlockContainer(Material materialIn, String name) {
 		super(materialIn, name);
@@ -47,14 +50,16 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public void registerBlock() {
 		super.registerBlock();
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
-		if (cleanRecipe && IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes()) {
+		if (clearRecipe && IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes()) {
 			final ItemStack result = new ItemStack(this);
-			GameRegistry.addRecipe(new ShapelessRecipes(NBTStackHelper.setBoolean(new ItemStack(this), "ClEaR", true), Lists.newArrayList(new ItemStack(this))) {
+			ShapelessRecipes r = new ShapelessRecipes(NBTStackHelper.setBoolean(new ItemStack(this), "ClEaR", true), Lists.newArrayList(new ItemStack(this))) {
 				@Override
 				public ItemStack getCraftingResult(InventoryCrafting inv) {
 					return result;
 				}
-			});
+			};
+			RecipeSorter.register(LimeLib.MODID + ":idatakeeperClear", r.getClass(), Category.SHAPELESS, "after:minecraft:shapeless");
+			GameRegistry.addRecipe(r);
 		}
 	}
 
@@ -132,7 +137,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
 		super.addInformation(stack, player, tooltip, advanced);
-		if (cleanRecipe && NBTStackHelper.getBoolean(stack, "ClEaR"))
+		if (clearRecipe && NBTStackHelper.getBoolean(stack, "ClEaR"))
 			tooltip.add(TextFormatting.YELLOW + "Clear content");
 	}
 }
