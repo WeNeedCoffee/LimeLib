@@ -1,16 +1,11 @@
 package mrriegel.limelib.block;
 
-import java.util.List;
-
 import mrriegel.limelib.item.CommonItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -33,14 +28,6 @@ public class CommonBlock extends Block {
 
 	protected ItemBlock getItemBlock() {
 		return new CommonItemBlock(this);
-	}
-
-	@Override
-	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-		super.addInformation(stack, playerIn, tooltip, advanced);
-		String trans = "tooltip." + getRegistryName();
-		if (I18n.hasKey(trans))
-			tooltip.add(I18n.format(trans));
 	}
 
 }

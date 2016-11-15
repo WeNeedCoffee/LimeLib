@@ -195,6 +195,68 @@ public abstract class CommonContainer extends Container {
 		return itemstack;
 	}
 
+	@Override
+	protected boolean mergeItemStack(ItemStack stack, int start, int end, boolean backwards) {
+		boolean flag1 = false;
+		int k = (backwards ? end - 1 : start);
+		Slot slot;
+		ItemStack itemstack1;
+
+		if (stack.isStackable()) {
+			while (stack.stackSize > 0 && (!backwards && k < end || backwards && k >= start)) {
+				slot = inventorySlots.get(k);
+				itemstack1 = slot.getStack();
+				if (!slot.isItemValid(stack)) {
+					k += (backwards ? -1 : 1);
+					continue;
+				}
+				if (itemstack1 != null && itemstack1.getItem() == stack.getItem() && (!stack.getHasSubtypes() || stack.getItemDamage() == itemstack1.getItemDamage()) && ItemStack.areItemStackTagsEqual(stack, itemstack1)) {
+					int l = itemstack1.stackSize + stack.stackSize;
+					if (l <= stack.getMaxStackSize() && l <= slot.getSlotStackLimit()) {
+						stack.stackSize = 0;
+						itemstack1.stackSize = l;
+						//						inventory.markDirty();
+						flag1 = true;
+					} else if (itemstack1.stackSize < stack.getMaxStackSize() && l < slot.getSlotStackLimit()) {
+						stack.stackSize -= stack.getMaxStackSize() - itemstack1.stackSize;
+						itemstack1.stackSize = stack.getMaxStackSize();
+						//						inventory.markDirty();
+						flag1 = true;
+					}
+				}
+				k += (backwards ? -1 : 1);
+			}
+		}
+		if (stack.stackSize > 0) {
+			k = (backwards ? end - 1 : start);
+			while (!backwards && k < end || backwards && k >= start) {
+				slot = inventorySlots.get(k);
+				itemstack1 = slot.getStack();
+				if (!slot.isItemValid(stack)) {
+					k += (backwards ? -1 : 1);
+					continue;
+				}
+				if (itemstack1 == null) {
+					int l = stack.stackSize;
+					if (l <= slot.getSlotStackLimit()) {
+						slot.putStack(stack.copy());
+						stack.stackSize = 0;
+						//						inventory.markDirty();
+						flag1 = true;
+						break;
+					} else {
+						putStackInSlot(k, new ItemStack(stack.getItem(), slot.getSlotStackLimit(), stack.getItemDamage()));
+						stack.stackSize -= slot.getSlotStackLimit();
+						//						inventory.markDirty();
+						flag1 = true;
+					}
+				}
+				k += (backwards ? -1 : 1);
+			}
+		}
+		return flag1;
+	}
+
 	private final boolean hasGhost(Area area) {
 		for (int i = area.min; i <= area.max; i++)
 			if (getSlotFromInventory(area.inv, i) instanceof SlotGhost)

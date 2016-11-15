@@ -3,9 +3,7 @@ package mrriegel.limelib.item;
 import java.util.List;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
@@ -35,15 +33,6 @@ public abstract class CommonSubtypeItem extends CommonItem {
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
 		return super.getUnlocalizedName() + "_" + stack.getItemDamage();
-	}
-
-	@Override
-	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-		for (int i = 0; i < 99; i++) {
-			String trans = "tooltip." + getRegistryName() + i + "_" + stack.getItemDamage();
-			if (I18n.hasKey(trans))
-				tooltip.add(I18n.format(trans));
-		}
 	}
 
 }

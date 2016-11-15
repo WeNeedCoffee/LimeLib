@@ -65,7 +65,6 @@ public class Eventhandler {
 
 				}
 			}
-			//sync cappas
 		}
 	}
 

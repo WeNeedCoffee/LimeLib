@@ -30,6 +30,7 @@ public class PacketHandler {
 		registerMessage(TileSyncMessage.class, Side.SERVER);
 		registerMessage(TileSyncMessage.class, Side.CLIENT);
 		registerMessage(TeleportMessage.class, Side.CLIENT);
+		registerMessage(DataPartSyncMessage.class, Side.CLIENT);
 
 	}
 

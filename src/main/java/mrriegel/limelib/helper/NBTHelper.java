@@ -151,10 +151,11 @@ public class NBTHelper {
 		return hasTag(nbt, tag) ? nbt.getTagList(tag, objtype) : nullifyOnFail ? null : new NBTTagList();
 	}
 
-	public static void setList(NBTTagCompound nbt, String tag, NBTTagList list) {
+	public static NBTTagCompound setList(NBTTagCompound nbt, String tag, NBTTagList list) {
 		if (nbt == null)
-			return;
+			return nbt;
 		nbt.setTag(tag, list);
+		return nbt;
 	}
 
 	// String
@@ -165,11 +166,12 @@ public class NBTHelper {
 		return nbt.getString(keyName);
 	}
 
-	public static void setString(NBTTagCompound nbt, String keyName, String keyValue) {
+	public static NBTTagCompound setString(NBTTagCompound nbt, String keyName, String keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null)
 			nbt.setString(keyName, keyValue);
+		return nbt;
 	}
 
 	// boolean
@@ -181,10 +183,11 @@ public class NBTHelper {
 		return nbt.getBoolean(keyName);
 	}
 
-	public static void setBoolean(NBTTagCompound nbt, String keyName, boolean keyValue) {
+	public static NBTTagCompound setBoolean(NBTTagCompound nbt, String keyName, boolean keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		nbt.setBoolean(keyName, keyValue);
+		return nbt;
 	}
 
 	// byte
@@ -196,10 +199,11 @@ public class NBTHelper {
 		return nbt.getByte(keyName);
 	}
 
-	public static void setByte(NBTTagCompound nbt, String keyName, byte keyValue) {
+	public static NBTTagCompound setByte(NBTTagCompound nbt, String keyName, byte keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		nbt.setByte(keyName, keyValue);
+		return nbt;
 	}
 
 	// short
@@ -211,10 +215,11 @@ public class NBTHelper {
 		return nbt.getShort(keyName);
 	}
 
-	public static void setShort(NBTTagCompound nbt, String keyName, short keyValue) {
+	public static NBTTagCompound setShort(NBTTagCompound nbt, String keyName, short keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		nbt.setShort(keyName, keyValue);
+		return nbt;
 	}
 
 	// int
@@ -226,10 +231,11 @@ public class NBTHelper {
 		return nbt.getInteger(keyName);
 	}
 
-	public static void setInt(NBTTagCompound nbt, String keyName, int keyValue) {
+	public static NBTTagCompound setInt(NBTTagCompound nbt, String keyName, int keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		nbt.setInteger(keyName, keyValue);
+		return nbt;
 	}
 
 	// long
@@ -241,10 +247,11 @@ public class NBTHelper {
 		return nbt.getLong(keyName);
 	}
 
-	public static void setLong(NBTTagCompound nbt, String keyName, long keyValue) {
+	public static NBTTagCompound setLong(NBTTagCompound nbt, String keyName, long keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		nbt.setLong(keyName, keyValue);
+		return nbt;
 	}
 
 	// float
@@ -256,10 +263,11 @@ public class NBTHelper {
 		return nbt.getFloat(keyName);
 	}
 
-	public static void setFloat(NBTTagCompound nbt, String keyName, float keyValue) {
+	public static NBTTagCompound setFloat(NBTTagCompound nbt, String keyName, float keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		nbt.setFloat(keyName, keyValue);
+		return nbt;
 	}
 
 	// double
@@ -271,10 +279,11 @@ public class NBTHelper {
 		return nbt.getDouble(keyName);
 	}
 
-	public static void setDouble(NBTTagCompound nbt, String keyName, double keyValue) {
+	public static NBTTagCompound setDouble(NBTTagCompound nbt, String keyName, double keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		nbt.setDouble(keyName, keyValue);
+		return nbt;
 	}
 
 	// tag
@@ -282,10 +291,11 @@ public class NBTHelper {
 		return (NBTTagCompound) nbt.getTag(keyName);
 	}
 
-	public static void setTag(NBTTagCompound nbt, String keyName, NBTTagCompound keyValue) {
+	public static NBTTagCompound setTag(NBTTagCompound nbt, String keyName, NBTTagCompound keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		nbt.setTag(keyName, keyValue);
+		return nbt;
 	}
 
 	// itemstack
@@ -298,14 +308,15 @@ public class NBTHelper {
 
 	}
 
-	public static void setItemStack(NBTTagCompound nbt, String keyName, ItemStack keyValue) {
+	public static NBTTagCompound setItemStack(NBTTagCompound nbt, String keyName, ItemStack keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		NBTTagCompound res = new NBTTagCompound();
 		if (keyValue != null) {
 			keyValue.writeToNBT(res);
 		}
 		nbt.setTag(keyName, res);
+		return nbt;
 	}
 
 	// enum
@@ -322,11 +333,12 @@ public class NBTHelper {
 
 	}
 
-	public static <E extends Enum<E>> void setEnum(NBTTagCompound nbt, String keyName, E keyValue) {
+	public static <E extends Enum<E>> NBTTagCompound setEnum(NBTTagCompound nbt, String keyName, E keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null)
 			setString(nbt, keyName, keyValue.name());
+		return nbt;
 	}
 
 	private static final String SIZE = "§Size";
@@ -340,9 +352,9 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setStringList(NBTTagCompound nbt, String keyName, List<String> keyValue) {
+	public static NBTTagCompound setStringList(NBTTagCompound nbt, String keyName, List<String> keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null && !keyValue.isEmpty()) {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
@@ -351,6 +363,7 @@ public class NBTHelper {
 					setString(nbt, keyName + ":" + i, s);
 			}
 		}
+		return nbt;
 	}
 
 	// Booleanlist
@@ -362,9 +375,9 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setBooleanList(NBTTagCompound nbt, String keyName, List<Boolean> keyValue) {
+	public static NBTTagCompound setBooleanList(NBTTagCompound nbt, String keyName, List<Boolean> keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null && !keyValue.isEmpty()) {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
@@ -373,6 +386,7 @@ public class NBTHelper {
 					setBoolean(nbt, keyName + ":" + i, s);
 			}
 		}
+		return nbt;
 	}
 
 	// Bytelist
@@ -384,9 +398,9 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setByteList(NBTTagCompound nbt, String keyName, List<Byte> keyValue) {
+	public static NBTTagCompound setByteList(NBTTagCompound nbt, String keyName, List<Byte> keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null && !keyValue.isEmpty()) {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
@@ -395,6 +409,7 @@ public class NBTHelper {
 					setByte(nbt, keyName + ":" + i, s);
 			}
 		}
+		return nbt;
 	}
 
 	// Shortlist
@@ -406,9 +421,9 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setShortList(NBTTagCompound nbt, String keyName, List<Short> keyValue) {
+	public static NBTTagCompound setShortList(NBTTagCompound nbt, String keyName, List<Short> keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null && !keyValue.isEmpty()) {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
@@ -417,6 +432,7 @@ public class NBTHelper {
 					setShort(nbt, keyName + ":" + i, s);
 			}
 		}
+		return nbt;
 	}
 
 	// Integerlist
@@ -428,9 +444,9 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setIntList(NBTTagCompound nbt, String keyName, List<Integer> keyValue) {
+	public static NBTTagCompound setIntList(NBTTagCompound nbt, String keyName, List<Integer> keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null && !keyValue.isEmpty()) {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
@@ -439,6 +455,7 @@ public class NBTHelper {
 					setInt(nbt, keyName + ":" + i, s);
 			}
 		}
+		return nbt;
 	}
 
 	// Longlist
@@ -450,9 +467,9 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setLongList(NBTTagCompound nbt, String keyName, List<Long> keyValue) {
+	public static NBTTagCompound setLongList(NBTTagCompound nbt, String keyName, List<Long> keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null && !keyValue.isEmpty()) {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
@@ -461,6 +478,7 @@ public class NBTHelper {
 					setLong(nbt, keyName + ":" + i, s);
 			}
 		}
+		return nbt;
 	}
 
 	// Floatlist
@@ -472,9 +490,9 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setFloatList(NBTTagCompound nbt, String keyName, List<Float> keyValue) {
+	public static NBTTagCompound setFloatList(NBTTagCompound nbt, String keyName, List<Float> keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null && !keyValue.isEmpty()) {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
@@ -483,6 +501,7 @@ public class NBTHelper {
 					setFloat(nbt, keyName + ":" + i, s);
 			}
 		}
+		return nbt;
 	}
 
 	// Doublelist
@@ -494,9 +513,9 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setDoubleList(NBTTagCompound nbt, String keyName, List<Double> keyValue) {
+	public static NBTTagCompound setDoubleList(NBTTagCompound nbt, String keyName, List<Double> keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null && !keyValue.isEmpty()) {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
@@ -505,6 +524,7 @@ public class NBTHelper {
 					setDouble(nbt, keyName + ":" + i, s);
 			}
 		}
+		return nbt;
 	}
 
 	// Taglist
@@ -516,9 +536,9 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setTagList(NBTTagCompound nbt, String keyName, List<NBTTagCompound> keyValue) {
+	public static NBTTagCompound setTagList(NBTTagCompound nbt, String keyName, List<NBTTagCompound> keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null && !keyValue.isEmpty()) {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
@@ -527,6 +547,7 @@ public class NBTHelper {
 				setTag(nbt, keyName + ":" + i, s);
 			}
 		}
+		return nbt;
 	}
 
 	// Stacklist
@@ -538,9 +559,9 @@ public class NBTHelper {
 		return lis;
 	}
 
-	public static void setItemStackList(NBTTagCompound nbt, String keyName, List<ItemStack> keyValue) {
+	public static NBTTagCompound setItemStackList(NBTTagCompound nbt, String keyName, List<ItemStack> keyValue) {
 		if (nbt == null)
-			return;
+			return nbt;
 		if (keyValue != null && !keyValue.isEmpty()) {
 			setInt(nbt, keyName + SIZE, keyValue.size());
 			for (int i = 0; i < keyValue.size(); i++) {
@@ -548,6 +569,7 @@ public class NBTHelper {
 				setItemStack(nbt, keyName + ":" + i, s);
 			}
 		}
+		return nbt;
 	}
 
 }

@@ -10,13 +10,16 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -44,8 +47,15 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public void registerBlock() {
 		super.registerBlock();
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
-		if (cleanRecipe && IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes())
-			GameRegistry.addShapelessRecipe(new ItemStack(this), this);
+		if (cleanRecipe && IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes()) {
+			final ItemStack result = new ItemStack(this);
+			GameRegistry.addRecipe(new ShapelessRecipes(NBTStackHelper.setBoolean(new ItemStack(this), "ClEaR", true), Lists.newArrayList(new ItemStack(this))) {
+				@Override
+				public ItemStack getCraftingResult(InventoryCrafting inv) {
+					return result;
+				}
+			});
+		}
 	}
 
 	@Override
@@ -119,4 +129,10 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		return tileentity == null ? false : tileentity.receiveClientEvent(id, param);
 	}
 
+	@Override
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
+		super.addInformation(stack, player, tooltip, advanced);
+		if (cleanRecipe && NBTStackHelper.getBoolean(stack, "ClEaR"))
+			tooltip.add(TextFormatting.YELLOW + "Clear content");
+	}
 }
