@@ -3,8 +3,8 @@ package mrriegel.limelib.helper;
 import java.util.List;
 
 import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.particle.CommonParticle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 
 public class ParticleHelper {
 
-	public static void renderParticle(Particle par) {
+	public static void renderParticle(CommonParticle par) {
 		Minecraft.getMinecraft().effectRenderer.addEffect(par);
 	}
 

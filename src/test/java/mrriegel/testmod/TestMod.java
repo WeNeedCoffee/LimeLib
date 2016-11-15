@@ -63,7 +63,7 @@ public class TestMod implements IGuiHandler {
 	public static final CommonBlock block = new TestBlock();
 	public static final CommonItem item = new TestItem();
 
-	public TestBook book = new TestBook();
+//	public TestBook book = new TestBook();
 
 	public static final boolean ENABLE = false;
 
@@ -147,13 +147,13 @@ public class TestMod implements IGuiHandler {
 		if (e.getEntityLiving() instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) e.getEntityLiving();
 			ItemStack held = player.getHeldItemMainhand();
-			book.init();
-			if (!player.worldObj.isRemote && !player.isSneaking()) {
-				if (held != null) {
-					book.openGuiAt(held.getItem(), true);
-				}
-			}
-			//			System.out.println(A+" "+B);
+			
+//			book.init();
+//			if (!player.worldObj.isRemote && !player.isSneaking()) {
+//				if (held != null) {
+//					book.openGuiAt(held.getItem(), true);
+//				}
+//			}
 
 			PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
 			R r = new R(Lists.newArrayList(new ItemStack(Blocks.GOLD_BLOCK), new ItemStack(Items.IRON_INGOT, 4)), true, Items.APPLE, Blocks.COAL_BLOCK, new ItemStack(Blocks.BOOKSHELF));

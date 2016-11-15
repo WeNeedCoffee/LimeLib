@@ -130,16 +130,16 @@ public class DataPartSavedData extends WorldSavedData {
 		}
 	}
 
-	@SubscribeEvent
-	public static void tickClient(ClientTickEvent event) {
-		Minecraft mc = Minecraft.getMinecraft();
-		if (event.phase == Phase.END && mc.theWorld != null) {
-			for (DataPart part : get(mc.theWorld).dataParts.values()) {
-				if (part != null) {
-					part.onUpdate();
-				}
-			}
-		}
-	}
+//	@SubscribeEvent
+//	public static void tickClient(ClientTickEvent event) {
+//		Minecraft mc = Minecraft.getMinecraft();
+//		if (event.phase == Phase.END && mc.theWorld != null) {
+//			for (DataPart part : get(mc.theWorld).dataParts.values()) {
+//				if (part != null) {
+//					part.onUpdate();
+//				}
+//			}
+//		}
+//	}
 
 }
