@@ -1,9 +1,10 @@
 package mrriegel.limelib.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
+import mrriegel.limelib.LimeLib;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -38,10 +39,12 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 		Runnable run = new Runnable() {
 			@Override
 			public void run() {
-				message.handleMessage(ctx.side.isClient() ? Minecraft.getMinecraft().thePlayer : ctx.getServerHandler().playerEntity, message.nbt, ctx.side);
+				EntityPlayer player = (ctx.side.isClient() ? LimeLib.proxy.getPlayer(ctx) : ctx.getServerHandler().playerEntity);
+				message.handleMessage(player, message.nbt, ctx.side);
 			}
 		};
-		(ctx.side.isClient() ? Minecraft.getMinecraft() : ctx.getServerHandler().playerEntity.getServerWorld()).addScheduledTask(run);
+		IThreadListener listener = (ctx.side.isClient() ? LimeLib.proxy.getListener(ctx) : ctx.getServerHandler().playerEntity.getServerWorld());
+		listener.addScheduledTask(run);
 		return null;
 	}
 

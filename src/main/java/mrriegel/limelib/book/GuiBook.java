@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
 
+import mezz.jei.Internal;
 import mezz.jei.api.recipe.IFocus.Mode;
 import mezz.jei.gui.Focus;
-import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mrriegel.limelib.gui.CommonGuiScreen;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.gui.button.GuiButtonSimple;
@@ -233,7 +233,7 @@ public class GuiBook extends CommonGuiScreen {
 			return;
 		for (ItemSlot slot : slots) {
 			if (slot.stack != null && slot.isMouseOver(mouseX, mouseY) && (mouseButton == 0 || mouseButton == 1)) {
-				JEIInternalPlugin.jeiRuntime.getRecipesGui().show(new Focus<ItemStack>(mouseButton == 0 ? Mode.OUTPUT : Mode.INPUT, slot.stack));
+				Internal.getRuntime().getRecipesGui().show(new Focus<ItemStack>(mouseButton == 0 ? Mode.OUTPUT : Mode.INPUT, slot.stack));
 				break;
 			}
 		}

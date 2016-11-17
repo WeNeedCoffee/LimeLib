@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import mrriegel.limelib.helper.NBTHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -14,7 +13,6 @@ import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -130,16 +128,16 @@ public class DataPartSavedData extends WorldSavedData {
 		}
 	}
 
-//	@SubscribeEvent
-//	public static void tickClient(ClientTickEvent event) {
-//		Minecraft mc = Minecraft.getMinecraft();
-//		if (event.phase == Phase.END && mc.theWorld != null) {
-//			for (DataPart part : get(mc.theWorld).dataParts.values()) {
-//				if (part != null) {
-//					part.onUpdate();
-//				}
-//			}
-//		}
-//	}
+	//	@SubscribeEvent
+	//	public static void tickClient(ClientTickEvent event) {
+	//		Minecraft mc = Minecraft.getMinecraft();
+	//		if (event.phase == Phase.END && mc.theWorld != null) {
+	//			for (DataPart part : get(mc.theWorld).dataParts.values()) {
+	//				if (part != null) {
+	//					part.onUpdate();
+	//				}
+	//			}
+	//		}
+	//	}
 
 }

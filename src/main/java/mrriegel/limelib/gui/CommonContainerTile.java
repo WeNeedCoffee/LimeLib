@@ -1,32 +1,35 @@
 package mrriegel.limelib.gui;
 
-import mrriegel.limelib.tile.CommonTileInventory;
+import mrriegel.limelib.tile.CommonTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-public abstract class CommonContainerTile<T extends CommonTileInventory> extends CommonContainer {
+public abstract class CommonContainerTile<T extends CommonTile> extends CommonContainer {
 
-	public CommonContainerTile(InventoryPlayer invPlayer, T tile) {
-		super(invPlayer, Pair.<String, IInventory> of("tile", tile));
+	protected T tile;
+
+	public CommonContainerTile(InventoryPlayer invPlayer, Pair<String, IInventory>[] invs, T tile) {
+		super(invPlayer, invs);
+		this.tile = tile;
 	}
 
 	public T getTile() {
-		return (T) invs.get("tile");
+		return tile;
 	}
 
 	@Override
 	public void onContainerClosed(EntityPlayer playerIn) {
 		super.onContainerClosed(playerIn);
-		if (getTile() != null)
-			getTile().sync();
+		if (tile != null)
+			tile.sync();
 	}
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return getTile() != null && getTile().isUseableByPlayer(playerIn);
+		return tile != null && tile.isUseableByPlayer(playerIn);
 	}
 
 }

@@ -2,7 +2,7 @@ package mrriegel.testmod;
 
 import java.util.List;
 
-import mrriegel.limelib.gui.CommonContainerTile;
+import mrriegel.limelib.gui.CommonContainerTileInventory;
 import mrriegel.limelib.tile.CommonTileInventory;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 
 import com.google.common.collect.Lists;
 
-public class TestContainer extends CommonContainerTile<CommonTileInventory> {
+public class TestContainer extends CommonContainerTileInventory<CommonTileInventory> {
 
 	public TestContainer(InventoryPlayer invPlayer, CommonTileInventory tile) {
 		super(invPlayer, tile);

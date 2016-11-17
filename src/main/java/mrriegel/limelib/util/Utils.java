@@ -115,7 +115,15 @@ public class Utils {
 
 	public static String getModID(IForgeRegistryEntry.Impl<?> registerable) {
 		final String modID = registerable.getRegistryName().getResourceDomain();
-		final ModContainer mod = Loader.instance().getIndexedModList().get(modID);
+		ModContainer mod = Loader.instance().getIndexedModList().get(modID);
+		if (mod == null) {
+			for (String s : Loader.instance().getIndexedModList().keySet()) {
+				if (s.equalsIgnoreCase(modID)) {
+					mod = Loader.instance().getIndexedModList().get(s);
+					break;
+				}
+			}
+		}
 		return mod != null ? mod.getModId() : "minecraft";
 	}
 

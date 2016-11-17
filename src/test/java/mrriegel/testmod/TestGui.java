@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-import mrriegel.limelib.gui.CommonContainerTile;
+import mrriegel.limelib.gui.CommonContainerTileInventory;
 import mrriegel.limelib.gui.CommonGuiContainer;
 import mrriegel.limelib.gui.GuiDrawer.Direction;
 import mrriegel.limelib.gui.button.GuiButtonArrow;
@@ -41,7 +41,7 @@ public class TestGui extends CommonGuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		tile = (TestTile) ((CommonContainerTile<?>) inventorySlots).getTile();
+		tile = (TestTile) ((CommonContainerTileInventory<?>) inventorySlots).getTile();
 		buttonList.add(new GuiButtonColor(3, 11 + guiLeft, 17 + guiTop, 33, 22, "DUMB", EnumDyeColor.WHITE));
 		buttonList.add(new GuiButtonArrow(4, 10 + guiLeft, 50 + guiTop, Direction.UP));
 		elementList.add(s = new AbstractSlot.ItemSlot(new ItemStack(Items.COOKED_BEEF), 5, 5 + guiLeft, 60 + guiTop, 3200, drawer, false, true, true, true));
