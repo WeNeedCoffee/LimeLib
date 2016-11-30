@@ -2,12 +2,11 @@ package mrriegel.limelib.util;
 
 import net.minecraftforge.energy.IEnergyStorage;
 
-public class CombinedEnergyStorageExt implements IEnergyStorage {
+public class CombinedEnergyStorage implements IEnergyStorage {
 
 	IEnergyStorage[] storages;
 
-	public CombinedEnergyStorageExt(IEnergyStorage... storages) {
-		//		super(getCapacity(storages), getReceive(storages), getExtract(storages));
+	public CombinedEnergyStorage(IEnergyStorage... storages) {
 		this.storages = storages;
 	}
 

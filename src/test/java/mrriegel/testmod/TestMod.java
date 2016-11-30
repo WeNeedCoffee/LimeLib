@@ -134,6 +134,7 @@ public class TestMod implements IGuiHandler {
 	public void overlay(RenderGameOverlayEvent event) {
 		if (event instanceof Post && event.getType() == ElementType.TEXT) {
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
+			drawer.hashCode();
 			//			if (StackHelper.getStackFromBlock(Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().objectMouseOver.getBlockPos()) != null)
 			//				drawer.renderToolTip(StackHelper.getStackFromBlock(Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().objectMouseOver.getBlockPos()), 0, 0);
 			// drawer.drawColoredRectangle(0, 0, 490, 420,
@@ -147,6 +148,7 @@ public class TestMod implements IGuiHandler {
 		if (e.getEntityLiving() instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) e.getEntityLiving();
 			ItemStack held = player.getHeldItemMainhand();
+			held.canEditBlocks();
 			
 //			book.init();
 //			if (!player.worldObj.isRemote && !player.isSneaking()) {

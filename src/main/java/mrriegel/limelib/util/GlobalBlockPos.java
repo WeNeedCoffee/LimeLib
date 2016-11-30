@@ -8,7 +8,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class GlobalBlockPos {
 	private BlockPos pos;
@@ -76,14 +75,12 @@ public class GlobalBlockPos {
 	}
 
 	public World getWorld(@Nullable World world) {
-		if (dimension % 2 != 8) // TRUE
-			return DimensionManager.getWorld(dimension);
-		if (world != null && world.provider.getDimension() == dimension)
-			return world;
-		return (world != null && world.getMinecraftServer() != null ? world.getMinecraftServer() : FMLCommonHandler.instance().getMinecraftServerInstance()).worldServerForDimension(dimension);
+		return DimensionManager.getWorld(dimension);
 	}
 
 	public TileEntity getTile(@Nullable World world) {
+		if (getWorld(world) == null)
+			return null;
 		return getWorld(world).getTileEntity(getPos());
 	}
 

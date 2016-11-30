@@ -148,7 +148,7 @@ public class NBTHelper {
 
 	// list
 	public static NBTTagList getList(NBTTagCompound nbt, String tag, int objtype, boolean nullifyOnFail) {
-		return hasTag(nbt, tag) ? nbt.getTagList(tag, objtype) : nullifyOnFail ? null : new NBTTagList();
+		return nbt != null && hasTag(nbt, tag) ? nbt.getTagList(tag, objtype) : nullifyOnFail ? null : new NBTTagList();
 	}
 
 	public static NBTTagCompound setList(NBTTagCompound nbt, String tag, NBTTagList list) {
@@ -160,7 +160,7 @@ public class NBTHelper {
 
 	// String
 	public static String getString(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName, 8)) {
+		if (nbt == null || !nbt.hasKey(keyName, 8)) {
 			return null;
 		}
 		return nbt.getString(keyName);
@@ -176,7 +176,7 @@ public class NBTHelper {
 
 	// boolean
 	public static boolean getBoolean(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName, 99)) {
+		if (nbt == null ||!nbt.hasKey(keyName, 99)) {
 			//			setBoolean(nbt, keyName, false);
 			return false;
 		}
@@ -192,7 +192,7 @@ public class NBTHelper {
 
 	// byte
 	public static byte getByte(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName, 99)) {
+		if (nbt == null ||!nbt.hasKey(keyName, 99)) {
 			//			setByte(nbt, keyName, (byte) 0);
 			return (byte) 0;
 		}
@@ -208,7 +208,7 @@ public class NBTHelper {
 
 	// short
 	public static short getShort(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName, 99)) {
+		if (nbt == null ||!nbt.hasKey(keyName, 99)) {
 			//			setShort(nbt, keyName, (short) 0);
 			return (short) 0;
 		}
@@ -224,7 +224,7 @@ public class NBTHelper {
 
 	// int
 	public static int getInt(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName, 99)) {
+		if (nbt == null ||!nbt.hasKey(keyName, 99)) {
 			//			setInt(nbt, keyName, 0);
 			return 0;
 		}
@@ -240,7 +240,7 @@ public class NBTHelper {
 
 	// long
 	public static long getLong(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName, 99)) {
+		if (nbt == null ||!nbt.hasKey(keyName, 99)) {
 			//			setLong(nbt, keyName, 0L);
 			return 0L;
 		}
@@ -256,7 +256,7 @@ public class NBTHelper {
 
 	// float
 	public static float getFloat(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName, 99)) {
+		if (nbt == null ||!nbt.hasKey(keyName, 99)) {
 			//			setFloat(nbt, keyName, 0F);
 			return 0F;
 		}
@@ -272,7 +272,7 @@ public class NBTHelper {
 
 	// double
 	public static double getDouble(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName, 99)) {
+		if (nbt == null ||!nbt.hasKey(keyName, 99)) {
 			//			setDouble(nbt, keyName, 0D);
 			return 0D;
 		}
@@ -288,6 +288,8 @@ public class NBTHelper {
 
 	// tag
 	public static NBTTagCompound getTag(NBTTagCompound nbt, String keyName) {
+		if(nbt==null)
+			return null;
 		return (NBTTagCompound) nbt.getTag(keyName);
 	}
 
@@ -300,7 +302,7 @@ public class NBTHelper {
 
 	// itemstack
 	public static ItemStack getItemStack(NBTTagCompound nbt, String keyName) {
-		if (!nbt.hasKey(keyName)) {
+		if (nbt == null ||!nbt.hasKey(keyName)) {
 			return null;
 		}
 		NBTTagCompound res = (NBTTagCompound) nbt.getTag(keyName);
@@ -321,7 +323,7 @@ public class NBTHelper {
 
 	// enum
 	public static <E extends Enum<E>> E getEnum(NBTTagCompound nbt, String keyName, Class<E> clazz) {
-		if (!nbt.hasKey(keyName)) {
+		if (nbt == null ||!nbt.hasKey(keyName)) {
 			return null;
 		}
 		String s = getString(nbt, keyName);

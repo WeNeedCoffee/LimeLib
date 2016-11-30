@@ -98,6 +98,10 @@ public class CommonTile extends TileEntity {
 		return pos.getZ();
 	}
 
+	public IBlockState getBlockState() {
+		return worldObj.getBlockState(pos);
+	}
+
 	public boolean onServer() {
 		return !worldObj.isRemote;
 	}

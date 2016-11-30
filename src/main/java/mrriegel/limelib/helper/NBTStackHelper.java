@@ -15,7 +15,6 @@ public class NBTStackHelper {
 	}
 
 	public static boolean hasTag(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.hasTag(stack.getTagCompound(), keyName);
 	}
 
@@ -26,7 +25,6 @@ public class NBTStackHelper {
 
 	// list
 	public static NBTTagList getList(ItemStack stack, String tag, int objtype, boolean nullifyOnFail) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getList(stack.getTagCompound(), tag, objtype, nullifyOnFail);
 	}
 
@@ -38,7 +36,6 @@ public class NBTStackHelper {
 
 	// String
 	public static String getString(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getString(stack.getTagCompound(), keyName);
 	}
 
@@ -50,7 +47,6 @@ public class NBTStackHelper {
 
 	// boolean
 	public static boolean getBoolean(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getBoolean(stack.getTagCompound(), keyName);
 	}
 
@@ -62,7 +58,6 @@ public class NBTStackHelper {
 
 	// byte
 	public static byte getByte(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getByte(stack.getTagCompound(), keyName);
 	}
 
@@ -74,7 +69,6 @@ public class NBTStackHelper {
 
 	// short
 	public static short getShort(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getShort(stack.getTagCompound(), keyName);
 	}
 
@@ -86,7 +80,6 @@ public class NBTStackHelper {
 
 	// int
 	public static int getInt(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getInt(stack.getTagCompound(), keyName);
 	}
 
@@ -98,7 +91,6 @@ public class NBTStackHelper {
 
 	// long
 	public static long getLong(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getLong(stack.getTagCompound(), keyName);
 	}
 
@@ -110,7 +102,6 @@ public class NBTStackHelper {
 
 	// float
 	public static float getFloat(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getFloat(stack.getTagCompound(), keyName);
 	}
 
@@ -122,7 +113,6 @@ public class NBTStackHelper {
 
 	// double
 	public static double getDouble(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getDouble(stack.getTagCompound(), keyName);
 	}
 
@@ -134,7 +124,6 @@ public class NBTStackHelper {
 
 	// tag
 	public static NBTTagCompound getTag(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getTag(stack.getTagCompound(), keyName);
 	}
 
@@ -146,7 +135,6 @@ public class NBTStackHelper {
 
 	// itemstack
 	public static ItemStack getItemStack(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getItemStack(stack.getTagCompound(), keyName);
 
 	}
@@ -159,7 +147,6 @@ public class NBTStackHelper {
 
 	// enum
 	public static <E extends Enum<E>> E getEnum(ItemStack stack, String keyName, Class<E> clazz) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getEnum(stack.getTagCompound(), keyName, clazz);
 
 	}
@@ -172,7 +159,6 @@ public class NBTStackHelper {
 
 	// Stringlist
 	public static List<String> getStringList(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getStringList(stack.getTagCompound(), keyName);
 	}
 
@@ -184,7 +170,6 @@ public class NBTStackHelper {
 
 	// Booleanlist
 	public static List<Boolean> getBooleanList(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getBooleanList(stack.getTagCompound(), keyName);
 	}
 
@@ -196,7 +181,6 @@ public class NBTStackHelper {
 
 	// Bytelist
 	public static List<Byte> getByteList(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getByteList(stack.getTagCompound(), keyName);
 	}
 
@@ -208,7 +192,6 @@ public class NBTStackHelper {
 
 	// Shortlist
 	public static List<Short> getShortList(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getShortList(stack.getTagCompound(), keyName);
 	}
 
@@ -220,7 +203,6 @@ public class NBTStackHelper {
 
 	// Integerlist
 	public static List<Integer> getIntList(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getIntList(stack.getTagCompound(), keyName);
 	}
 
@@ -232,7 +214,6 @@ public class NBTStackHelper {
 
 	// Longlist
 	public static List<Long> getLongList(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getLongList(stack.getTagCompound(), keyName);
 	}
 
@@ -244,7 +225,6 @@ public class NBTStackHelper {
 
 	// Floatlist
 	public static List<Float> getFloatList(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getFloatList(stack.getTagCompound(), keyName);
 	}
 
@@ -256,7 +236,6 @@ public class NBTStackHelper {
 
 	// Doublelist
 	public static List<Double> getDoubleList(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getDoubleList(stack.getTagCompound(), keyName);
 	}
 
@@ -268,7 +247,6 @@ public class NBTStackHelper {
 
 	// Taglist
 	public static List<NBTTagCompound> getTagList(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getTagList(stack.getTagCompound(), keyName);
 	}
 
@@ -280,7 +258,6 @@ public class NBTStackHelper {
 
 	// Stacklist
 	public static List<ItemStack> getItemStackList(ItemStack stack, String keyName) {
-		initNBTTagCompound(stack);
 		return NBTHelper.getItemStackList(stack.getTagCompound(), keyName);
 	}
 

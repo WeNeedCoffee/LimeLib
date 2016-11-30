@@ -26,6 +26,7 @@ import com.google.common.collect.Maps;
 public class DataPartSavedData extends WorldSavedData {
 
 	private Map<BlockPos, DataPart> dataParts = Maps.newHashMap();
+	private World world;
 
 	private static final String DATA_NAME = "DataPart";
 
@@ -46,6 +47,7 @@ public class DataPartSavedData extends WorldSavedData {
 		DataPartSavedData instance = (DataPartSavedData) storage.getOrLoadData(DataPartSavedData.class, name);
 		if (instance == null) {
 			instance = new DataPartSavedData(name);
+			instance.world = world;
 			storage.setData(name, instance);
 		}
 		return instance;
@@ -84,6 +86,7 @@ public class DataPartSavedData extends WorldSavedData {
 			try {
 				DataPart part = (DataPart) ConstructorUtils.invokeConstructor(Class.forName(n.getString("class")));
 				part.readFromNBT(n);
+				part.world = world;
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}

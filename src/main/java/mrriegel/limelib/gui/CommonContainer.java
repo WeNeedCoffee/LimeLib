@@ -32,6 +32,7 @@ public abstract class CommonContainer extends Container {
 				if (e != null)
 					this.invs.put(e.getLeft(), e.getRight());
 			}
+		modifyInvs();
 		initSlots();
 	}
 
@@ -40,14 +41,10 @@ public abstract class CommonContainer extends Container {
 		return true;
 	}
 
-	@Override
-	public void detectAndSendChanges() {
-		super.detectAndSendChanges();
-		if (Thread.currentThread().getStackTrace()[2].getClassName().equals("net.minecraft.entity.player.EntityPlayerMP"))
-			onUpdate();
-	}
-
 	protected abstract void initSlots();
+
+	protected void modifyInvs() {
+	}
 
 	protected abstract List<Area> allowedSlots(ItemStack stack, IInventory inv, int index);
 
