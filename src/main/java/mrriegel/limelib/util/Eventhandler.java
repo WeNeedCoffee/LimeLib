@@ -1,5 +1,7 @@
 package mrriegel.limelib.util;
 
+import java.util.ConcurrentModificationException;
+
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.entity.Entity;
@@ -56,14 +58,18 @@ public class Eventhandler {
 	@SubscribeEvent
 	public void tick(WorldTickEvent event) {
 		if (event.phase == Phase.END && event.side == Side.SERVER) {
-			for (TileEntity tile : event.world.loadedTileEntityList) {
-				if (tile instanceof CommonTile) {
-					if (((CommonTile) tile).needsSync()) {
-						((CommonTile) tile).sync();
-						((CommonTile) tile).setSyncDirty(false);
+			try {
+				if (event.world.getTotalWorldTime() % 4 == 0) {
+					for (TileEntity tile : event.world.loadedTileEntityList) {
+						if (tile instanceof CommonTile) {
+							if (((CommonTile) tile).needsSync()) {
+								((CommonTile) tile).sync();
+								((CommonTile) tile).setSyncDirty(false);
+							}
+						}
 					}
-
 				}
+			} catch (ConcurrentModificationException e) {
 			}
 		}
 	}

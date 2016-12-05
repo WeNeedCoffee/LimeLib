@@ -1,6 +1,7 @@
 package mrriegel.limelib.util;
 
 import java.util.Base64;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -145,6 +146,7 @@ public class Utils {
 		List<WorldServer> lis = Lists.newArrayList(FMLCommonHandler.instance().getMinecraftServerInstance().worldServers);
 		if (lis.isEmpty())
 			return null;
+		Collections.shuffle(lis);
 		for (WorldServer world : lis) {
 			EntityPlayerMP player = getRandomPlayer(world);
 			if (player != null)

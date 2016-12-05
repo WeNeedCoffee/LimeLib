@@ -1,6 +1,6 @@
 package mrriegel.limelib.gui.slot;
 
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -8,16 +8,16 @@ import net.minecraft.item.ItemStack;
 
 public class SlotFilter extends Slot {
 
-	private Function<ItemStack, Boolean> func;
+	private Predicate<ItemStack> pred;
 
-	public SlotFilter(IInventory inventoryIn, int index, int xPosition, int yPosition, Function<ItemStack, Boolean> func) {
+	public SlotFilter(IInventory inventoryIn, int index, int xPosition, int yPosition, Predicate<ItemStack> pred) {
 		super(inventoryIn, index, xPosition, yPosition);
-		this.func = func;
+		this.pred = pred;
 	}
 
 	@Override
 	public boolean isItemValid(ItemStack stack) {
-		return func.apply(stack).booleanValue();
+		return pred.test(stack);
 	}
 
 }

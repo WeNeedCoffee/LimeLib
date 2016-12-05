@@ -3,6 +3,8 @@ package mrriegel.limelib.helper;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -161,6 +163,10 @@ public class StackHelper {
 			wrench |= stack.getUnlocalizedName().toLowerCase().contains(s);
 		}
 		return wrench;
+	}
+
+	public static int getSize(@Nullable ItemStack stack) {
+		return stack == null ? 0 : stack.stackSize;
 	}
 
 }
