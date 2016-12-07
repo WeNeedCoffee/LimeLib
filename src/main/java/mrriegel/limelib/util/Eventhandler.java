@@ -17,6 +17,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import com.google.common.collect.Iterables;
+
 public class Eventhandler {
 
 	@SubscribeEvent
@@ -60,7 +62,7 @@ public class Eventhandler {
 		if (event.phase == Phase.END && event.side == Side.SERVER) {
 			try {
 				if (event.world.getTotalWorldTime() % 4 == 0) {
-					for (TileEntity tile : event.world.loadedTileEntityList) {
+					for (TileEntity tile : Iterables.filter(event.world.loadedTileEntityList, t -> t instanceof CommonTile)) {
 						if (tile instanceof CommonTile) {
 							if (((CommonTile) tile).needsSync()) {
 								((CommonTile) tile).sync();
