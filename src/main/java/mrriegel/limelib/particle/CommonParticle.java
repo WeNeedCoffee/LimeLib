@@ -2,6 +2,7 @@ package mrriegel.limelib.particle;
 
 import java.util.Random;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.ParticleHelper;
 import net.minecraft.client.Minecraft;
@@ -16,7 +17,7 @@ public class CommonParticle extends Particle {
 	protected int visibleRange = 32;
 
 	public CommonParticle(double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn) {
-		super(Minecraft.getMinecraft().theWorld, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
+		super(LimeLib.proxy.getClientWorld(), xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
 		this.motionX = xSpeedIn;
 		this.motionY = ySpeedIn;
 		this.motionZ = zSpeedIn;

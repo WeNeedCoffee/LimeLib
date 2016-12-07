@@ -49,7 +49,7 @@ public class BlockHelper {
 			 * RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos,
 			 * player);
 			 */
-			StackHelper.getStackFromBlock(world, pos);
+			StackHelper.getStackFromBlock(world, pos,player);
 			if (stack != null) {
 				if (breakAnyway)
 					return breakBlockWithFortune(world, pos, 0, player, simulate, particle);

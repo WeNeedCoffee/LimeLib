@@ -5,10 +5,11 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -142,13 +143,13 @@ public class StackHelper {
 		}
 	}
 
-	public static ItemStack getStackFromBlock(World world, BlockPos pos) {
+	public static ItemStack getStackFromBlock(World world, BlockPos pos, EntityPlayer player) {
 		if (!world.isRemote) {
 			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), new RayTraceResult(Vec3d.ZERO, EnumFacing.UP), world, pos, FakePlayerFactory.getMinecraft((WorldServer) world
 			// DimensionManager.getWorld(0)
 					));
 		} else {
-			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), Minecraft.getMinecraft().objectMouseOver, world, pos, Minecraft.getMinecraft().thePlayer);
+			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), LimeLib.proxy.getClientRayTrace(), world, pos, player);
 		}
 	}
 
