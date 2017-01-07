@@ -32,16 +32,17 @@ public class LimeLib {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		Config.init(event.getSuggestedConfigurationFile());
 		Utils.init();
 	}
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		PacketHandler.init();
-		MinecraftForge.EVENT_BUS.register(new Eventhandler());
+		MinecraftForge.EVENT_BUS.register(Eventhandler.class);
 		MinecraftForge.EVENT_BUS.register(DataPartSavedData.class);
 		if (event.getSide().isClient())
-			MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
+			MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
 	}
 
 }

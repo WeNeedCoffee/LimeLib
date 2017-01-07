@@ -51,7 +51,7 @@ public class StackHelper {
 	}
 
 	public static boolean match(ItemStack stack, Object o) {
-		if (stack == null)
+		if (stack == null || stack.getItem() == null)
 			return false;
 		if (o instanceof Item || (o instanceof ItemStack) && ((ItemStack) o).getItemDamage() == OreDictionary.WILDCARD_VALUE)
 			return stack.getItem() == o;

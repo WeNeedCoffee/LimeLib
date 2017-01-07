@@ -1,5 +1,6 @@
 package mrriegel.limelib.util;
 
+import java.lang.reflect.Type;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -29,18 +30,39 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
 import com.mojang.authlib.GameProfile;
 
 public class Utils {
 
-	public static Gson GSON;
+	private static GsonBuilder GSONBUILDER;
 
 	public static void init() {
-		GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(NBTTagCompound.class, new NBTLizer()).registerTypeAdapter(ItemStack.class, new ItemStackLizer()).create();
+	}
+
+	public static Gson getGSON() {
+		if (GSONBUILDER == null)
+			registerDefaultAdapters();
+		return GSONBUILDER.create();
+	}
+
+	private static void registerDefaultAdapters() {
+		GSONBUILDER = new GsonBuilder().setPrettyPrinting().//
+				registerTypeAdapter(NBTTagCompound.class, new NBTLizer()).//
+				registerTypeAdapter(ItemStack.class, new ItemStackLizer());
+	}
+
+	public static void registerGsonAdapter(Type type, Object adapter) {
+		Preconditions.checkArgument(adapter instanceof JsonSerializer<?> || adapter instanceof JsonDeserializer<?> || adapter instanceof InstanceCreator<?> || adapter instanceof TypeAdapter<?>);
+		GSONBUILDER.registerTypeAdapter(type, adapter);
 	}
 
 	public static String getCurrentModID() {

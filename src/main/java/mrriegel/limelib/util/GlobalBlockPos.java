@@ -25,6 +25,12 @@ public class GlobalBlockPos {
 	private GlobalBlockPos() {
 	}
 
+	public static GlobalBlockPos fromTile(TileEntity tile) {
+		if (tile == null)
+			return null;
+		return new GlobalBlockPos(tile.getPos(), tile.getWorld());
+	}
+
 	@Override
 	public String toString() {
 		return "GlobalBlockPos [pos=" + pos + ", dimension=" + dimension + "]";
@@ -78,10 +84,18 @@ public class GlobalBlockPos {
 		return DimensionManager.getWorld(dimension);
 	}
 
+	public World getWorld() {
+		return getWorld(null);
+	}
+
 	public TileEntity getTile(@Nullable World world) {
 		if (getWorld(world) == null)
 			return null;
 		return getWorld(world).getTileEntity(getPos());
+	}
+
+	public TileEntity getTile() {
+		return getTile(null);
 	}
 
 	public IBlockState getBlockState(@Nullable World world) {

@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
 public abstract class TaskEntity extends Entity {
@@ -125,11 +126,15 @@ public abstract class TaskEntity extends Entity {
 
 	@Override
 	public void onEntityUpdate() {
-		super.onEntityUpdate();
+		//		super.onEntityUpdate();
+		if (worldObj.isRemote && worldObj.rand.nextBoolean())
+			worldObj.spawnParticle(EnumParticleTypes.FLAME, posX + (worldObj.rand.nextDouble() - .5), posY + worldObj.rand.nextDouble() / 2, posZ + (worldObj.rand.nextDouble() - .5), 0, 0, 0);
 		if (canRun())
 			run();
-		if (done())
+		if (done()) {
 			isDead = true;
+			System.out.println("die");
+		}
 	}
 
 }

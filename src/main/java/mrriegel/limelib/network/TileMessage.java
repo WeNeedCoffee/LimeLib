@@ -1,5 +1,6 @@
 package mrriegel.limelib.network;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.tile.CommonTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,6 +24,8 @@ public class TileMessage extends AbstractMessage<TileMessage> {
 		if (tile instanceof CommonTile) {
 			((CommonTile) tile).handleMessage(player, nbt);
 			tile.markDirty();
+		} else {
+			LimeLib.log.warn("Tile entity on server is missing at " + BlockPos.fromLong(nbt.getLong("pos")));
 		}
 	}
 

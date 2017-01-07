@@ -11,6 +11,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 import com.google.common.collect.Lists;
 
+@Deprecated
 public class EntityInvWrapper extends InvWrapper {
 
 	private final Entity entity;

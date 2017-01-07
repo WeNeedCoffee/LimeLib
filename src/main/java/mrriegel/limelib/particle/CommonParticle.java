@@ -2,6 +2,8 @@ package mrriegel.limelib.particle;
 
 import java.util.Random;
 
+import javax.vecmath.Tuple4f;
+
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.ParticleHelper;
@@ -51,6 +53,11 @@ public class CommonParticle extends Particle {
 
 	@Override
 	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+		Tuple4f color = getColor();
+		this.particleRed = color.x;
+		this.particleGreen = color.y;
+		this.particleBlue = color.z;
+		this.particleAlpha = color.w;
 		if (entityIn.getDistance(posX, posY, posZ) <= visibleRange)
 			super.renderParticle(worldRendererIn, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 	}
@@ -76,6 +83,12 @@ public class CommonParticle extends Particle {
 		this.particleBlue = ColorHelper.getBlue(color) / 255f;
 		this.particleAlpha = ColorHelper.getAlpha(color) / 255f;
 		return this;
+	}
+
+	@SuppressWarnings("serial")
+	protected Tuple4f getColor() {
+		return new Tuple4f(particleRed, particleGreen, particleBlue, particleAlpha) {
+		};
 	}
 
 	public CommonParticle setFlouncing(double flouncing) {

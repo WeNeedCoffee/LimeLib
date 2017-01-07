@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import mrriegel.limelib.block.CommonBlock;
+import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.InvHelper;
@@ -13,20 +14,18 @@ import mrriegel.limelib.helper.RenderHelper2;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.particle.CommonParticle;
-import mrriegel.limelib.recipe.AbstractRecipe;
+import mrriegel.limelib.recipe.RecipeItemHandler;
 import mrriegel.limelib.tile.CommonTileInventory;
-import mrriegel.limelib.util.FilterItem;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -38,6 +37,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -47,6 +47,7 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
@@ -63,7 +64,7 @@ public class TestMod implements IGuiHandler {
 	public static final CommonBlock block = new TestBlock();
 	public static final CommonItem item = new TestItem();
 
-//	public TestBook book = new TestBook();
+	//	public TestBook book = new TestBook();
 
 	public static final boolean ENABLE = false;
 
@@ -91,41 +92,46 @@ public class TestMod implements IGuiHandler {
 	public void postInit(FMLPostInitializationEvent event) {
 	}
 
-	class R extends AbstractRecipe<PlayerMainInvWrapper> {
+	class R extends RecipeItemHandler {
 
 		public R(List<ItemStack> output, boolean order, Object... input) {
 			super(output, order, input);
 		}
 
 		@Override
-		protected List<ItemStack> getList(PlayerMainInvWrapper object) {
+		protected List<ItemStack> getIngredients(IItemHandler object) {
 			List<ItemStack> hotbar = Lists.newArrayList();
 			for (int i = 0; i < 9; i++)
-				hotbar.add(object.getInventoryPlayer().getStackInSlot(i));
+				hotbar.add(((PlayerMainInvWrapper) object).getInventoryPlayer().getStackInSlot(i));
 			hotbar.removeAll(Collections.singleton(null));
 			return hotbar;
 		}
 
+	}
+
+	class Part extends DataPart {
+		public int k;
+
 		@Override
-		public void removeIngredients(PlayerMainInvWrapper object) {
-			for (Object o : getInput()) {
-				FilterItem f = null;
-				if (o instanceof Item)
-					f = new FilterItem((Item) o);
-				if (o instanceof Block)
-					f = new FilterItem((Block) o);
-				if (o instanceof String)
-					f = new FilterItem((String) o);
-				if (o instanceof ItemStack) {
-					f = new FilterItem((ItemStack) o);
-				}
-				InvHelper.extractItem(object, f, 1, false);
-			}
+		public void readFromNBT(NBTTagCompound compound) {
+			k = compound.getInteger("k");
+			super.readFromNBT(compound);
 		}
 
 		@Override
-		public List<ItemStack> getResult(PlayerMainInvWrapper object) {
-			return getOutput();
+		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+			compound.setInteger("k", k);
+			return super.writeToNBT(compound);
+		}
+
+		@Override
+		public void update(World world) {
+			if (world.getTotalWorldTime() % 30 == 0)
+				world.setBlockState(getPos().up(), Blocks.LAPIS_ORE.getDefaultState());
+		}
+
+		{
+			k = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
 		}
 
 	}
@@ -144,19 +150,54 @@ public class TestMod implements IGuiHandler {
 	}
 
 	@SubscribeEvent
+	public void right(RightClickBlock event) {
+		if (!event.getWorld().isRemote && false) {
+			BlockPos po = new BlockPos(0, 80, 0);
+			if (DataPart.getDataPart(event.getWorld(), po) == null) {
+				boolean added = DataPart.addDataPart(event.getWorld(), po, new Part(), false);
+				System.out.println("add: " + added);
+				System.out.println(DataPart.partMap);
+			}
+			Part part = (Part) DataPart.getDataPart(event.getWorld(), po);
+			if (part != null) {
+				//				part.k = 33;
+				System.out.println(part.k + " time");
+			}
+			System.out.println(DataPart.partMap);
+		}
+		if (event.getWorld().getTileEntity(event.getPos()) instanceof TileEntityChest) {
+			IItemHandler h = InvHelper.getItemHandler(event.getWorld().getTileEntity(event.getPos()), null);
+			RecipeItemHandler rr = new RecipeItemHandler(Lists.newArrayList(new ItemStack(Items.BAKED_POTATO)), false, Items.POTATO, Items.COAL);
+			if (rr.match(h)) {
+				for (ItemStack x : rr.getOutput())
+					event.getEntityPlayer().inventory.addItemStackToInventory(x);
+				rr.removeIngredients(h);
+			}
+		}
+
+	}
+
+	@SubscribeEvent
 	public void jump(LivingJumpEvent e) {
 		if (e.getEntityLiving() instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) e.getEntityLiving();
 			ItemStack held = player.getHeldItemMainhand();
-			held.canEditBlocks();
-			
-//			book.init();
-//			if (!player.worldObj.isRemote && !player.isSneaking()) {
-//				if (held != null) {
-//					book.openGuiAt(held.getItem(), true);
-//				}
-//			}
+			if (held != null)
+				held.canEditBlocks();
 
+			//			book.init();
+			//			if (!player.worldObj.isRemote && !player.isSneaking()) {
+			//				if (held != null) {
+			//					book.openGuiAt(held.getItem(), true);
+			//				}
+			//			}
+
+			if (!e.getEntity().worldObj.isRemote && e.getEntityLiving() instanceof EntityPlayer) {
+				TestEntity en = new TestEntity(e.getEntity().worldObj);
+				en.setPosition(e.getEntity().posX, e.getEntity().posY, e.getEntity().posZ);
+				en.worldObj.spawnEntityInWorld(en);
+				System.out.println("spawned");
+			}
 			PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
 			R r = new R(Lists.newArrayList(new ItemStack(Blocks.GOLD_BLOCK), new ItemStack(Items.IRON_INGOT, 4)), true, Items.APPLE, Blocks.COAL_BLOCK, new ItemStack(Blocks.BOOKSHELF));
 			if (r.match(pmiw)) {
@@ -164,8 +205,8 @@ public class TestMod implements IGuiHandler {
 					ItemHandlerHelper.insertItemStacked(pmiw, s.copy(), false);
 				r.removeIngredients(pmiw);
 			}
-			if (!player.worldObj.isRemote)
-				PacketHandler.sendTo(new TestMessage(player.getEntityData()), (EntityPlayerMP) player);
+			//			if (!player.worldObj.isRemote)
+			//				PacketHandler.sendTo(new TestMessage(player.getEntityData()), (EntityPlayerMP) player);
 
 		}
 	}

@@ -41,6 +41,10 @@ public abstract class CommonContainer extends Container {
 		return true;
 	}
 
+	public EntityPlayer getPlayer() {
+		return invPlayer.player;
+	}
+
 	protected abstract void initSlots();
 
 	protected void modifyInvs() {

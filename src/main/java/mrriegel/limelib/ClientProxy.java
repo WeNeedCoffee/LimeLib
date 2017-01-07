@@ -28,7 +28,7 @@ public class ClientProxy extends CommonProxy {
 	public EntityPlayer getClientPlayer() {
 		return Minecraft.getMinecraft().thePlayer;
 	}
-	
+
 	@Override
 	public RayTraceResult getClientRayTrace() {
 		return Minecraft.getMinecraft().objectMouseOver;

@@ -10,6 +10,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 import com.google.common.collect.Lists;
 
+@Deprecated
 public class ItemInvWrapper extends InvWrapper {
 
 	private final ItemStack stack;

@@ -1,6 +1,7 @@
 package mrriegel.limelib.recipe;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import mrriegel.limelib.helper.StackHelper;
@@ -8,24 +9,32 @@ import net.minecraft.item.ItemStack;
 
 import com.google.common.collect.Lists;
 
-public abstract class AbstractRecipe<T> {
-	protected List<ItemStack> output;
-	protected boolean order;
-	protected List<Object> input;
+/**
+ * @param <S>
+ *            type of output
+ * @param <T>
+ *            type of interacting object
+ */
+public abstract class AbstractRecipe<S, T> {
+	protected final List<S> output;
+	protected final boolean order;
+	protected final List<Object> input;
 
-	public AbstractRecipe(List<ItemStack> output, boolean order, Object... input) {
-		this.output = output;
+	public AbstractRecipe(List<S> output, boolean order, Object... input) {
+		if (output.contains(null))
+			throw new IllegalArgumentException("output contains null");
+		this.output = Collections.unmodifiableList(output);
 		this.order = order;
-		this.input = Lists.newArrayList(Arrays.asList(input));
+		this.input = Collections.unmodifiableList(Arrays.asList(input));
 	}
 
-	protected abstract List<ItemStack> getList(T object);
+	protected abstract List<ItemStack> getIngredients(T object);
 
 	public abstract void removeIngredients(T object);
 
 	public abstract List<ItemStack> getResult(T object);
 
-	public List<ItemStack> getOutput() {
+	public List<S> getOutput() {
 		return output;
 	}
 
@@ -38,7 +47,7 @@ public abstract class AbstractRecipe<T> {
 	}
 
 	public boolean match(T object) {
-		List<ItemStack> list = getList(object);
+		List<ItemStack> list = getIngredients(object);
 		if (list.size() != input.size())
 			return false;
 		if (order) {

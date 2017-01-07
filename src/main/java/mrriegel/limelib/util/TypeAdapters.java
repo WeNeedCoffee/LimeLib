@@ -19,7 +19,7 @@ import com.google.gson.JsonSerializer;
 
 public class TypeAdapters {
 
-	public abstract static class JsonLizer<T> implements JsonDeserializer<T>, JsonSerializer<T> {
+	private abstract static class JsonLizer<T> implements JsonDeserializer<T>, JsonSerializer<T> {
 
 		@Override
 		public JsonElement serialize(T src, Type typeOfSrc, JsonSerializationContext context) {

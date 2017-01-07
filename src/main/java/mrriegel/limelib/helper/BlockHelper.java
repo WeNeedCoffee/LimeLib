@@ -26,7 +26,7 @@ public class BlockHelper {
 
 	public static List<ItemStack> breakBlockWithFortune(World world, BlockPos pos, int fortune, EntityPlayer player, boolean simulate, boolean particle) {
 		IBlockState state = world.getBlockState(pos);
-		if (!isBlockBreakable(world, pos) || !state.getBlock().canHarvestBlock(world, pos, player))
+		if (!isBlockBreakable(world, pos) /*|| !state.getBlock().canHarvestBlock(world, pos, player)*/)
 			return Lists.newArrayList();
 		List<ItemStack> lis = Lists.newArrayList(state.getBlock().getDrops(world, pos, state, fortune));
 		ForgeEventFactory.fireBlockHarvesting(lis, world, pos, state, fortune, 1.0f, false, player);
@@ -49,7 +49,7 @@ public class BlockHelper {
 			 * RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos,
 			 * player);
 			 */
-			StackHelper.getStackFromBlock(world, pos,player);
+			StackHelper.getStackFromBlock(world, pos, player);
 			if (stack != null) {
 				if (breakAnyway)
 					return breakBlockWithFortune(world, pos, 0, player, simulate, particle);
