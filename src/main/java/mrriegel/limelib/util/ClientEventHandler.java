@@ -25,7 +25,7 @@ import com.google.common.collect.Maps;
 
 public class ClientEventHandler {
 
-	public static Map<BlockPos, Pair<Integer, Integer>> energyTiles = Maps.newHashMap();
+	public static Map<BlockPos, Pair<Long, Long>> energyTiles = Maps.newHashMap();
 
 	@SubscribeEvent
 	public static void onTextureStitch(TextureStitchEvent event) {
@@ -37,9 +37,9 @@ public class ClientEventHandler {
 	@SubscribeEvent
 	public static void renderEnergy(Post event) {
 		Minecraft mc = Minecraft.getMinecraft();
-		if (!Config.showEnergy || mc == null || mc.theWorld == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.theWorld.getTileEntity(mc.objectMouseOver.getBlockPos()) == null)
+		if (!Config.showEnergy || mc == null || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null)
 			return;
-		TileEntity t = mc.theWorld.getTileEntity(mc.objectMouseOver.getBlockPos());
+		TileEntity t = mc.world.getTileEntity(mc.objectMouseOver.getBlockPos());
 		if (event.getType() == ElementType.TEXT && energyTiles.containsKey(t.getPos())) {
 			Energy energyType;
 			if ((energyType = EnergyHelper.isEnergyInterface(t.getWorld(), t.getPos())) == null) {
@@ -50,7 +50,7 @@ public class ClientEventHandler {
 			GlStateManager.pushMatrix();
 			GlStateManager.enableBlend();
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
-			int energy = energyTiles.get(t.getPos()).getLeft(), max = energyTiles.get(t.getPos()).getRight();
+			long energy = energyTiles.get(t.getPos()).getLeft(), max = energyTiles.get(t.getPos()).getRight();
 			String text = (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(energy) : energy) + "/" + (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(max) : max) + " " + energyType.unit;
 			int lenght = 90/*mc.fontRendererObj.getStringWidth(text)*/;
 			mc.fontRendererObj.drawString(text, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(text)) / 2, (sr.getScaledHeight() - 15 - mc.fontRendererObj.FONT_HEIGHT) / 2, GuiScreen.isShiftKeyDown() ? 0xffff00 : 0x80ffff00, true);
@@ -59,7 +59,7 @@ public class ClientEventHandler {
 			String config = "Can be disabled in LimeLib config.";
 			mc.fontRendererObj.drawString(config, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(config)) / 2, (sr.getScaledHeight() + 40 - mc.fontRendererObj.FONT_HEIGHT) / 2, 0x40ffff00, true);
 			mc.fontRendererObj.setUnicodeFlag(before);
-			drawer.drawEnergyBarH((sr.getScaledWidth() - lenght) / 2, (sr.getScaledHeight() + 20 - 8) / 2, lenght, (float) energy / (float) max);
+			drawer.drawEnergyBarH((sr.getScaledWidth() - lenght) / 2, (sr.getScaledHeight() + 20 - 8) / 2, lenght, (float) ((double) energy / (double) max));
 			GlStateManager.disableBlend();
 			GlStateManager.popMatrix();
 		}

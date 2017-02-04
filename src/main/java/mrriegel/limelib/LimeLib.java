@@ -27,8 +27,8 @@ public class LimeLib {
 
 	public static final Logger log = LogManager.getLogger(NAME);
 
-	@SidedProxy(clientSide = "mrriegel.limelib.ClientProxy", serverSide = "mrriegel.limelib.CommonProxy")
-	public static CommonProxy proxy;
+	@SidedProxy(clientSide = "mrriegel.limelib.LimeClientProxy", serverSide = "mrriegel.limelib.LimeCommonProxy")
+	public static LimeCommonProxy proxy;
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {

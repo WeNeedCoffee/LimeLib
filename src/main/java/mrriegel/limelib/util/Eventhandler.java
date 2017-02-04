@@ -80,7 +80,7 @@ public class Eventhandler {
 	@SubscribeEvent
 	public static void playerTick(PlayerTickEvent event) {
 		if (event.phase == Phase.END && event.side == Side.SERVER) {
-			if (Config.showEnergy && event.player.worldObj.getTotalWorldTime() % 20 == 0) {
+			if (Config.showEnergy && event.player.world.getTotalWorldTime() % 20 == 0) {
 				PacketHandler.sendTo(new EnergySyncMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
 			}
 		}

@@ -1,6 +1,7 @@
 package mrriegel.testmod;
 
 import java.awt.Color;
+import java.util.List;
 
 import mrriegel.limelib.block.CommonBlockContainer;
 import mrriegel.limelib.helper.ParticleHelper;
@@ -16,6 +17,7 @@ import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class TestBlock extends CommonBlockContainer<TestTile> {

@@ -5,10 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import mrriegel.limelib.block.CommonBlock;
-import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
-import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.ParticleHelper;
 import mrriegel.limelib.helper.RenderHelper2;
 import mrriegel.limelib.item.CommonItem;
@@ -16,16 +14,18 @@ import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.particle.CommonParticle;
 import mrriegel.limelib.recipe.RecipeItemHandler;
 import mrriegel.limelib.tile.CommonTileInventory;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -34,10 +34,14 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.minecraftforge.fluids.BlockFluidBase;
+import net.minecraftforge.fluids.BlockFluidClassic;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -45,7 +49,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
+import net.minecraftforge.fml.common.registry.RegistryBuilder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -63,10 +70,16 @@ public class TestMod implements IGuiHandler {
 
 	public static final CommonBlock block = new TestBlock();
 	public static final CommonItem item = new TestItem();
+	public static Fluid alcohol;
+	public static Block alcoholBlock;
 
 	//	public TestBook book = new TestBook();
 
-	public static final boolean ENABLE = false;
+	public static final boolean ENABLE = !false;
+
+	static {
+		FluidRegistry.enableUniversalBucket();
+	}
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -76,7 +89,18 @@ public class TestMod implements IGuiHandler {
 		block.initModel();
 		item.registerItem();
 		item.initModel();
-		EntityRegistry.registerModEntity(TestEntity.class, "test", 0, TestMod.mod, 80, 3, false);
+
+		alcohol = new Fluid("alcohol", new ResourceLocation("lalal", "fluid/alcohol_still"), new ResourceLocation("lalal", "fluid/alcohol_flowing"));
+		FluidRegistry.registerFluid(alcohol);
+		FluidRegistry.addBucketForFluid(alcohol);
+		alcoholBlock = new BlockFluidClassic(alcohol, Material.WATER);
+		alcoholBlock.setRegistryName("alcohol");
+		alcoholBlock.setUnlocalizedName(alcoholBlock.getRegistryName().toString());
+		ModelLoader.setCustomStateMapper(alcoholBlock, new StateMap.Builder().ignore(BlockFluidBase.LEVEL).build());
+		GameRegistry.register(alcoholBlock);
+		Part part = new Part();
+		part.setRegistryName("party");
+		GameRegistry.register(part);
 	}
 
 	@Mod.EventHandler
@@ -109,72 +133,17 @@ public class TestMod implements IGuiHandler {
 
 	}
 
-	class Part extends DataPart {
-		public int k;
-
-		@Override
-		public void readFromNBT(NBTTagCompound compound) {
-			k = compound.getInteger("k");
-			super.readFromNBT(compound);
-		}
-
-		@Override
-		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-			compound.setInteger("k", k);
-			return super.writeToNBT(compound);
-		}
-
-		@Override
-		public void update(World world) {
-			if (world.getTotalWorldTime() % 30 == 0)
-				world.setBlockState(getPos().up(), Blocks.LAPIS_ORE.getDefaultState());
-		}
-
-		{
-			k = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
-		}
-
-	}
-
 	@SubscribeEvent
 	public void overlay(RenderGameOverlayEvent event) {
 		if (event instanceof Post && event.getType() == ElementType.TEXT) {
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
 			drawer.hashCode();
-			//			if (StackHelper.getStackFromBlock(Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().objectMouseOver.getBlockPos()) != null)
-			//				drawer.renderToolTip(StackHelper.getStackFromBlock(Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().objectMouseOver.getBlockPos()), 0, 0);
+			//			if (StackHelper.getStackFromBlock(Minecraft.getMinecraft().world, Minecraft.getMinecraft().objectMouseOver.getBlockPos()) != null)
+			//				drawer.renderToolTip(StackHelper.getStackFromBlock(Minecraft.getMinecraft().world, Minecraft.getMinecraft().objectMouseOver.getBlockPos()), 0, 0);
 			// drawer.drawColoredRectangle(0, 0, 490, 420,
 			// ColorHelper.getRGB(0xff0000, 100));
 
 		}
-	}
-
-	@SubscribeEvent
-	public void right(RightClickBlock event) {
-		if (!event.getWorld().isRemote && false) {
-			BlockPos po = new BlockPos(0, 80, 0);
-			if (DataPart.getDataPart(event.getWorld(), po) == null) {
-				boolean added = DataPart.addDataPart(event.getWorld(), po, new Part(), false);
-				System.out.println("add: " + added);
-				System.out.println(DataPart.partMap);
-			}
-			Part part = (Part) DataPart.getDataPart(event.getWorld(), po);
-			if (part != null) {
-				//				part.k = 33;
-				System.out.println(part.k + " time");
-			}
-			System.out.println(DataPart.partMap);
-		}
-		if (event.getWorld().getTileEntity(event.getPos()) instanceof TileEntityChest) {
-			IItemHandler h = InvHelper.getItemHandler(event.getWorld().getTileEntity(event.getPos()), null);
-			RecipeItemHandler rr = new RecipeItemHandler(Lists.newArrayList(new ItemStack(Items.BAKED_POTATO)), false, Items.POTATO, Items.COAL);
-			if (rr.match(h)) {
-				for (ItemStack x : rr.getOutput())
-					event.getEntityPlayer().inventory.addItemStackToInventory(x);
-				rr.removeIngredients(h);
-			}
-		}
-
 	}
 
 	@SubscribeEvent
@@ -186,42 +155,38 @@ public class TestMod implements IGuiHandler {
 				held.canEditBlocks();
 
 			//			book.init();
-			//			if (!player.worldObj.isRemote && !player.isSneaking()) {
+			//			if (!player.world.isRemote && !player.isSneaking()) {
 			//				if (held != null) {
 			//					book.openGuiAt(held.getItem(), true);
 			//				}
 			//			}
+			if (!player.world.isRemote) {
 
-			if (!e.getEntity().worldObj.isRemote && e.getEntityLiving() instanceof EntityPlayer) {
-				TestEntity en = new TestEntity(e.getEntity().worldObj);
-				en.setPosition(e.getEntity().posX, e.getEntity().posY, e.getEntity().posZ);
-				en.worldObj.spawnEntityInWorld(en);
-				System.out.println("spawned");
-			}
-			PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
-			R r = new R(Lists.newArrayList(new ItemStack(Blocks.GOLD_BLOCK), new ItemStack(Items.IRON_INGOT, 4)), true, Items.APPLE, Blocks.COAL_BLOCK, new ItemStack(Blocks.BOOKSHELF));
-			if (r.match(pmiw)) {
-				for (ItemStack s : r.getResult(pmiw))
-					ItemHandlerHelper.insertItemStacked(pmiw, s.copy(), false);
-				r.removeIngredients(pmiw);
-			}
-			//			if (!player.worldObj.isRemote)
-			//				PacketHandler.sendTo(new TestMessage(player.getEntityData()), (EntityPlayerMP) player);
+				PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
+				R r = new R(Lists.newArrayList(new ItemStack(Blocks.GOLD_BLOCK), new ItemStack(Items.IRON_INGOT, 4)), true, Items.APPLE, Blocks.COAL_BLOCK, new ItemStack(Blocks.BOOKSHELF));
+				if (r.match(pmiw) && r.removeIngredients(pmiw, false)) {
+					for (ItemStack s : r.getResult(pmiw))
+						ItemHandlerHelper.insertItemStacked(pmiw, s.copy(), false);
 
+				}
+				//			if (!player.world.isRemote)
+				//				PacketHandler.sendTo(new TestMessage(player.getEntityData()), (EntityPlayerMP) player);
+
+			}
 		}
 	}
 
 	// @SubscribeEvent
 	public void r(RenderWorldLastEvent e) {
-		if (Minecraft.getMinecraft().thePlayer.getHeldItemMainhand() == null)
+		if (Minecraft.getMinecraft().player.getHeldItemMainhand() == null)
 			return;
-		for (TileEntity t : Minecraft.getMinecraft().theWorld.loadedTileEntityList)
-			RenderHelper2.renderBlockOverlays(e, Minecraft.getMinecraft().thePlayer, Sets.newHashSet(t.getPos()), ColorHelper.getRGB(Color.CYAN.getRGB(), 144), Color.orange.getRGB());
+		for (TileEntity t : Minecraft.getMinecraft().world.loadedTileEntityList)
+			RenderHelper2.renderBlockOverlays(e, Minecraft.getMinecraft().player, Sets.newHashSet(t.getPos()), ColorHelper.getRGB(Color.CYAN.getRGB(), 144), Color.orange.getRGB());
 	}
 
 	@SubscribeEvent
 	public void update(final LivingUpdateEvent e) {
-		if (!(e.getEntity() instanceof EntityPlayer) && e.getEntity().worldObj.isRemote && (e.getEntity().worldObj.getTotalWorldTime() + new BlockPos(e.getEntity()).hashCode()) % 10 == 0 && !GuiScreen.isCtrlKeyDown()) {
+		if (!(e.getEntity() instanceof EntityPlayer) && e.getEntity().world.isRemote && (e.getEntity().world.getTotalWorldTime() + new BlockPos(e.getEntity()).hashCode()) % 10 == 0 && !GuiScreen.isCtrlKeyDown()) {
 
 			// for (Vec3d v : ParticleHelper.getVecsForExplosion(0.1, 54,
 			// Axis.Y))
@@ -232,7 +197,7 @@ public class TestMod implements IGuiHandler {
 			// Random().nextInt(0xffffff), 0));
 			BlockPos pos = new BlockPos(e.getEntity());
 			int range = 8;
-			List<EntityLivingBase> lis = e.getEntity().worldObj.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)), new Predicate<EntityLivingBase>() {
+			List<EntityLivingBase> lis = e.getEntity().world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)), new Predicate<EntityLivingBase>() {
 
 				@Override
 				public boolean apply(EntityLivingBase input) {
@@ -242,7 +207,7 @@ public class TestMod implements IGuiHandler {
 			lis.remove(e.getEntity());
 			for (EntityLivingBase ent : lis)
 				for (Vec3d v : ParticleHelper.getVecsForLine(e.getEntity().posX, e.getEntity().posY + e.getEntity().height - .1, e.getEntity().posZ, ent.posX, ent.posY + ent.height - .1, ent.posZ, 3))
-					ParticleHelper.renderParticle(new CommonParticle(v.xCoord, v.yCoord, v.zCoord));
+					ParticleHelper.renderParticle(new CommonParticle(v.xCoord, v.yCoord, v.zCoord).setMaxAge2(10).setTexture(ParticleHelper.sparkleParticle));
 		}
 	}
 
@@ -267,4 +232,8 @@ public class TestMod implements IGuiHandler {
 		return null;
 	}
 
+	public static class Part extends Impl<Part> {
+		public static IForgeRegistry<Part> PARTREGISTRY = new RegistryBuilder<Part>().setName(new ResourceLocation("lalal" + ":partss")).setType(Part.class).create();
+
+	}
 }

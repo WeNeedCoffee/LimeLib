@@ -2,6 +2,7 @@ package mrriegel.limelib.helper;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -86,10 +87,7 @@ public class BlockHelper {
 	}
 
 	public static List<BlockPos> getNeighbors(BlockPos p) {
-		List<BlockPos> lis = Lists.newArrayList();
-		for (EnumFacing e : EnumFacing.VALUES)
-			lis.add(p.offset(e));
-		return lis;
+		return Lists.newArrayList(EnumFacing.VALUES).stream().map(f -> p.offset(f)).collect(Collectors.toList());
 	}
 
 }

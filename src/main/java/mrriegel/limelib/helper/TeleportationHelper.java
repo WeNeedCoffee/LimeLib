@@ -39,7 +39,7 @@ public class TeleportationHelper {
 	}
 
 	public static boolean canTeleport(Entity e) {
-		return e != null && !e.worldObj.isRemote && e.isEntityAlive() && !e.isBeingRidden() && e.isNonBoss() && !e.isRiding() && (e instanceof EntityLivingBase || e instanceof EntityItem);
+		return e != null && !e.world.isRemote && e.isEntityAlive() && !e.isBeingRidden() && e.isNonBoss() && !e.isRiding() && (e instanceof EntityLivingBase || e instanceof EntityItem);
 	}
 
 	/** nicked from brandonscore */
@@ -47,10 +47,10 @@ public class TeleportationHelper {
 	public static void teleportEntity(Entity entity, int dimension, BlockPos pos) {
 		if (!canTeleport(entity))
 			return;
-		int oldDimension = entity.worldObj.provider.getDimension();
+		int oldDimension = entity.world.provider.getDimension();
 		if (oldDimension == dimension)
 			return;
-		MinecraftServer server = entity.worldObj.getMinecraftServer();
+		MinecraftServer server = entity.world.getMinecraftServer();
 		WorldServer oldWorld = server.worldServerForDimension(oldDimension);
 		WorldServer newWorld = server.worldServerForDimension(dimension);
 
@@ -65,7 +65,7 @@ public class TeleportationHelper {
 			player.closeScreen();
 			player.addExperienceLevel(0);
 			player.dimension = newWorld.provider.getDimension();
-			player.connection.sendPacket(new SPacketRespawn(player.dimension, player.worldObj.getDifficulty(), newWorld.getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
+			player.connection.sendPacket(new SPacketRespawn(player.dimension, player.world.getDifficulty(), newWorld.getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
 			oldWorld.getPlayerChunkMap().removePlayer(player);
 			oldWorld.playerEntities.remove(player);
 			oldWorld.updateAllPlayersSleepingFlag();
@@ -97,7 +97,7 @@ public class TeleportationHelper {
 		boolean flag = entity.forceSpawn;
 		entity.forceSpawn = true;
 		int entsize = newWorld.loadedEntityList.size(), plsize = newWorld.playerEntities.size();
-		newWorld.spawnEntityInWorld(entity);
+		newWorld.spawnEntity(entity);
 		System.out.println("new ent: " + (newWorld.loadedEntityList.size() - entsize));
 		System.out.println("new pl: " + (newWorld.playerEntities.size() - plsize));
 		entity.forceSpawn = flag;
@@ -165,7 +165,7 @@ public class TeleportationHelper {
 				if (from == 1 && entity.isEntityAlive()) { // get around vanilla
 															// End
 															// hacks
-					toDim.spawnEntityInWorld(entity);
+					toDim.spawnEntity(entity);
 					toDim.updateEntityWithOptionalForce(entity, false);
 				}
 			} else {
@@ -181,7 +181,7 @@ public class TeleportationHelper {
 					newEntity.readFromNBT(tagCompound);
 					newEntity.setLocationAndAngles(x, y, z, rotationYaw, rotationPitch);
 					newEntity.forceSpawn = true;
-					toDim.spawnEntityInWorld(newEntity);
+					toDim.spawnEntity(newEntity);
 					newEntity.forceSpawn = false; // necessary?
 				} catch (Exception e) {
 					// Throwables.propagate(e);
@@ -192,8 +192,8 @@ public class TeleportationHelper {
 		}
 
 		// Force the chunk to load
-		if (!entity.worldObj.isBlockLoaded(pos)) {
-			entity.worldObj.getChunkFromBlockCoords(pos);
+		if (!entity.world.isBlockLoaded(pos)) {
+			entity.world.getChunkFromBlockCoords(pos);
 		}
 
 		if (player != null) {
@@ -229,9 +229,9 @@ public class TeleportationHelper {
 
 		@Override
 		public void placeInPortal(Entity entity, float rotationYaw) {
-			int x = MathHelper.floor_double(entity.posX);
-			int y = MathHelper.floor_double(entity.posY) - 1;
-			int z = MathHelper.floor_double(entity.posZ);
+			int x = MathHelper.floor(entity.posX);
+			int y = MathHelper.floor(entity.posY) - 1;
+			int z = MathHelper.floor(entity.posZ);
 
 			entity.setLocationAndAngles(x, y, z, entity.rotationPitch, entity.rotationYaw);
 			entity.motionX = 0;

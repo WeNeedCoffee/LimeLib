@@ -26,7 +26,7 @@ public abstract class CommonContainerTileInventory<T extends CommonTileInventory
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return getTile() != null && getTile().isUseableByPlayer(playerIn);
+		return getTile() != null && getTile().isUsableByPlayer(playerIn);
 	}
 
 }

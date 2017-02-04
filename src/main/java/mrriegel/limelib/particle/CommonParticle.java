@@ -37,7 +37,7 @@ public class CommonParticle extends Particle {
 		this.prevPosZ = this.posZ;
 
 		this.motionY -= 0.04D * this.particleGravity;
-		this.moveEntity(this.motionX, this.motionY, this.motionZ);
+		this.move(this.motionX, this.motionY, this.motionZ);
 		this.motionX += (this.rand.nextDouble() - .5) * flouncing;
 		this.motionY += (this.rand.nextDouble() - .5) * flouncing;
 		this.motionZ += (this.rand.nextDouble() - .5) * flouncing;
@@ -117,7 +117,7 @@ public class CommonParticle extends Particle {
 	}
 
 	public CommonParticle setNoClip(boolean noClip) {
-		this.field_190017_n = !noClip;
+		this.canCollide = !noClip;
 		return this;
 	}
 

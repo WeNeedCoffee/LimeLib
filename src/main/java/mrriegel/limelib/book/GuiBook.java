@@ -28,7 +28,7 @@ public class GuiBook extends CommonGuiScreen {
 
 	protected Book book;
 
-	GuiButtonSimple left, right;
+	protected GuiButtonSimple left, right;
 
 	private static final int maxLines = 17;
 	private static final int maxSubChapters = 11;

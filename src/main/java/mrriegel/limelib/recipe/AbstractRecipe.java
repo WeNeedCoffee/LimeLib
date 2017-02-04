@@ -30,7 +30,7 @@ public abstract class AbstractRecipe<S, T> {
 
 	protected abstract List<ItemStack> getIngredients(T object);
 
-	public abstract void removeIngredients(T object);
+	public abstract boolean removeIngredients(T object, boolean simulate);
 
 	public abstract List<ItemStack> getResult(T object);
 

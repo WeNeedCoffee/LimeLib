@@ -21,7 +21,7 @@ public class WorldDataMessage extends AbstractMessage<WorldDataMessage> {
 
 	@Override
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
-		MapStorage storage = NBTHelper.getBoolean(nbt, "global") ? player.worldObj.getMapStorage() : player.worldObj.getPerWorldStorage();
+		MapStorage storage = NBTHelper.getBoolean(nbt, "global") ? player.world.getMapStorage() : player.world.getPerWorldStorage();
 		Class<WorldSavedData> clazz = null;
 		try {
 			clazz = (Class<WorldSavedData>) Class.forName(NBTHelper.getString(nbt, "className"));

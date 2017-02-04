@@ -41,7 +41,7 @@ public class InvHelper {
 	}
 
 	public static IItemHandler getItemHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
-		return getItemHandler(world.getTileEntity(pos), side);
+		return getItemHandler(WorldHelper.getTile(world, pos), side);
 	}
 
 	public static ItemStack insert(TileEntity tile, ItemStack stack, EnumFacing side) {
@@ -136,7 +136,7 @@ public class InvHelper {
 	}
 
 	public static IFluidHandler getFluidHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
-		return getFluidHandler(world.getTileEntity(pos), side);
+		return getFluidHandler(WorldHelper.getTile(world, pos), side);
 	}
 
 	// public static FluidStack insert(TileEntity tile, FluidStack stack,

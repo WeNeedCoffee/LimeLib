@@ -11,11 +11,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLiving.SpawnPlacementType;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.ChunkCache;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEntitySpawner;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 
 import com.google.common.base.Predicate;
@@ -59,7 +63,7 @@ public class WorldHelper {
 			entity.posX = fin.getX() + .5D;
 			entity.posY = fin.getY() + .1D;
 			entity.posZ = fin.getZ() + .5D;
-			boolean spawned = entity.worldObj.spawnEntityInWorld(entity);
+			boolean spawned = entity.world.spawnEntity(entity);
 			entity.setPositionAndUpdate(entity.posX, entity.posY, entity.posZ);
 			if (spawned)
 				return true;
@@ -85,7 +89,7 @@ public class WorldHelper {
 					Block block = worldIn.getBlockState(blockpos).getBlock();
 					boolean flag = block != Blocks.BEDROCK && block != Blocks.BARRIER;
 					boolean upFree = true;
-					for (int i = 1; i <= MathHelper.floor_double(entity.height) && upFree; i++)
+					for (int i = 1; i <= MathHelper.floor(entity.height) && upFree; i++)
 						if (!WorldEntitySpawner.isValidEmptySpawnBlock(worldIn.getBlockState(pos.up(i))))
 							upFree = false;
 					return flag && upFree && WorldEntitySpawner.isValidEmptySpawnBlock(iblockstate);
@@ -127,6 +131,20 @@ public class WorldHelper {
 
 	public static List<BlockPos> getCuboid(BlockPos center, int range) {
 		return getCuboid(center, range, range, range);
+	}
+
+	public static List<BlockPos> getChunk(World world, BlockPos pos) {
+		Chunk chunk = world.getChunkFromBlockCoords(pos);
+		List<BlockPos> lis = Lists.newLinkedList();
+		for (int y = world.getActualHeight() - 1; y > 0; y--)
+			for (int x = chunk.xPosition * 16; x < chunk.xPosition * 16 + 16; x++)
+				for (int z = chunk.zPosition * 16; z < chunk.zPosition * 16 + 16; z++)
+					lis.add(new BlockPos(x, y, z));
+		return lis;
+	}
+
+	public static TileEntity getTile(IBlockAccess world, BlockPos pos) {
+		return world instanceof ChunkCache ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : world.getTileEntity(pos);
 	}
 
 }

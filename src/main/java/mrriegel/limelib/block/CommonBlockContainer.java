@@ -4,6 +4,7 @@ import java.util.List;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTStackHelper;
+import mrriegel.limelib.helper.WorldHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
 import net.minecraft.block.material.Material;
@@ -90,8 +91,8 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 		List<ItemStack> lis = super.getDrops(world, pos, state, fortune);
 		ItemStack stack = null;
-		if (world.getTileEntity(pos) instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
-			IDataKeeper tile = (IDataKeeper) world.getTileEntity(pos);
+		if (WorldHelper.getTile(world, pos) instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
+			IDataKeeper tile = (IDataKeeper) WorldHelper.getTile(world, pos);
 			stack = lis.get(0).copy();
 			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
 			tile.writeToStack(stack);

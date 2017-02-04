@@ -122,8 +122,8 @@ public class TestGui extends CommonGuiContainer {
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 		if (s.isVisible() && s.isMouseOver(mouseX, mouseY)) {
-			if (mc.thePlayer.inventory.getItemStack() != null)
-				s.stack = mc.thePlayer.inventory.getItemStack();
+			if (mc.player.inventory.getItemStack() != null)
+				s.stack = mc.player.inventory.getItemStack();
 			else
 				s.stack = null;
 		}

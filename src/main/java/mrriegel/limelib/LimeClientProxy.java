@@ -6,12 +6,13 @@ import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 
-public class ClientProxy extends CommonProxy {
+public class LimeClientProxy extends LimeCommonProxy {
 
 	@Override
 	public EntityPlayer getPlayer(MessageContext ctx) {
-		return Minecraft.getMinecraft().thePlayer;
+		return Minecraft.getMinecraft().player;
 	}
 
 	@Override
@@ -19,14 +20,18 @@ public class ClientProxy extends CommonProxy {
 		return Minecraft.getMinecraft();
 	}
 
+	public Side getSide() {
+		return Side.CLIENT;
+	}
+
 	@Override
 	public World getClientWorld() {
-		return Minecraft.getMinecraft().theWorld;
+		return Minecraft.getMinecraft().world;
 	}
 
 	@Override
 	public EntityPlayer getClientPlayer() {
-		return Minecraft.getMinecraft().thePlayer;
+		return Minecraft.getMinecraft().player;
 	}
 
 	@Override

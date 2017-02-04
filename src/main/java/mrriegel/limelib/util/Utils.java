@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.TypeAdapters.ItemStackLizer;
@@ -19,7 +20,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -62,6 +62,7 @@ public class Utils {
 
 	public static void registerGsonAdapter(Type type, Object adapter) {
 		Preconditions.checkArgument(adapter instanceof JsonSerializer<?> || adapter instanceof JsonDeserializer<?> || adapter instanceof InstanceCreator<?> || adapter instanceof TypeAdapter<?>);
+		getGSON();
 		GSONBUILDER.registerTypeAdapter(type, adapter);
 	}
 
@@ -94,7 +95,7 @@ public class Utils {
 		return ints;
 	}
 
-	public static String formatNumber(int value) {
+	public static String formatNumber(long value) {
 		if (value < 1000)
 			return String.valueOf(value);
 		else if (value < 1000000)
@@ -113,7 +114,7 @@ public class Utils {
 		Vec3d vec3d = entity.getPositionEyes(0);
 		Vec3d vec3d1 = entity.getLook(0);
 		Vec3d vec3d2 = vec3d.addVector(vec3d1.xCoord * distance, vec3d1.yCoord * distance, vec3d1.zCoord * distance);
-		return entity.worldObj.rayTraceBlocks(vec3d, vec3d2, false, false, true);
+		return entity.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
 	}
 
 	public static RayTraceResult rayTrace(EntityPlayer player) {
@@ -121,22 +122,14 @@ public class Utils {
 	}
 
 	public static List<Long> getLongList(List<BlockPos> list) {
-		List<Long> lis = Lists.newArrayList();
-		for (BlockPos p : list)
-			if (p != null)
-				lis.add(p.toLong());
-		return lis;
+		return list.stream().map(p -> p != null ? p.toLong() : null).collect(Collectors.toList());
 	}
 
 	public static List<BlockPos> getBlockPosList(List<Long> list) {
-		List<BlockPos> lis = Lists.newArrayList();
-		for (Long p : list)
-			if (p != null)
-				lis.add(BlockPos.fromLong(p));
-		return lis;
+		return list.stream().map(p -> p != null ? BlockPos.fromLong(p) : null).collect(Collectors.toList());
 	}
 
-	public static String getModID(IForgeRegistryEntry.Impl<?> registerable) {
+	public static String getModID(IForgeRegistryEntry<?> registerable) {
 		final String modID = registerable.getRegistryName().getResourceDomain();
 		ModContainer mod = Loader.instance().getIndexedModList().get(modID);
 		if (mod == null) {
@@ -150,7 +143,7 @@ public class Utils {
 		return mod != null ? mod.getModId() : "minecraft";
 	}
 
-	public static String getModName(IForgeRegistryEntry.Impl<?> registerable) {
+	public static String getModName(IForgeRegistryEntry<?> registerable) {
 		ModContainer m = Loader.instance().getIndexedModList().get(getModID(registerable));
 		if (m != null)
 			return m.getName();
@@ -165,7 +158,7 @@ public class Utils {
 	}
 
 	public static EntityPlayerMP getRandomPlayer() {
-		List<WorldServer> lis = Lists.newArrayList(FMLCommonHandler.instance().getMinecraftServerInstance().worldServers);
+		List<WorldServer> lis = Lists.newArrayList(FMLCommonHandler.instance().getMinecraftServerInstance().worlds);
 		if (lis.isEmpty())
 			return null;
 		Collections.shuffle(lis);
@@ -177,7 +170,7 @@ public class Utils {
 		return null;
 	}
 
-	public static EntityPlayerMP getRandomPlayer(World world) {
+	public static EntityPlayerMP getRandomPlayer(WorldServer world) {
 		if (world.playerEntities.isEmpty())
 			return null;
 		return (EntityPlayerMP) world.playerEntities.get(world.rand.nextInt(world.playerEntities.size()));

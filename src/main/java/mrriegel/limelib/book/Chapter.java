@@ -5,7 +5,7 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -13,7 +13,7 @@ import com.google.common.collect.Maps;
 public class Chapter {
 
 	protected String name;
-	protected final Map<Impl<?>, Article> implMap = Maps.newHashMap();
+	protected final Map<IForgeRegistryEntry<?>, Article> implMap = Maps.newHashMap();
 	protected List<Article> articles = Lists.newArrayList();
 	protected int index;
 

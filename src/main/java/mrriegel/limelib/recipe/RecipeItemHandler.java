@@ -29,7 +29,7 @@ public class RecipeItemHandler extends AbstractRecipe<ItemStack, IItemHandler> {
 	}
 
 	@Override
-	public void removeIngredients(IItemHandler object) {
+	public boolean removeIngredients(IItemHandler object, boolean simulate) {
 		for (Object o : getInput()) {
 			FilterItem f = null;
 			if (o instanceof Item)
@@ -41,8 +41,10 @@ public class RecipeItemHandler extends AbstractRecipe<ItemStack, IItemHandler> {
 			if (o instanceof ItemStack) {
 				f = new FilterItem((ItemStack) o);
 			}
-			InvHelper.extractItem(object, f, 1, false);
+			if (InvHelper.extractItem(object, f, 1, simulate) == null)
+				return false;
 		}
+		return true;
 	}
 
 	@Override

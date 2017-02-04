@@ -21,6 +21,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
@@ -36,7 +37,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 
 	@Override
 	public boolean openGUI(EntityPlayerMP player) {
-		player.openGui(TestMod.mod, 0, worldObj, getPos().getX(), getPos().getY(), getPos().getZ());
+		player.openGui(TestMod.mod, 0, world, getPos().getX(), getPos().getY(), getPos().getZ());
 		return true;
 	}
 
@@ -48,17 +49,17 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 		int range = 8;
 		if (NBTHelper.hasTag(nbt, "k"))
 			k = NBTHelper.getInt(nbt, "k");
-		if (!InvHelper.hasItemHandler(worldObj.getTileEntity(pos.up()), EnumFacing.DOWN))
+		if (!InvHelper.hasItemHandler(world.getTileEntity(pos.up()), EnumFacing.DOWN))
 			return;
 		List<BlockPos> lis = Lists.newArrayList();
 		for (int y = pos.getY() - 1; y > 0; y--)
 			for (int x = pos.getX() - range; x <= pos.getX() + range; x++)
 				for (int z = pos.getZ() - range; z <= pos.getZ() + range; z++)
-					if (!BlockHelper.isOre(worldObj, new BlockPos(x, y, z)))
+					if (!BlockHelper.isOre(world, new BlockPos(x, y, z)))
 						lis.add(new BlockPos(x, y, z));
 		for (BlockPos p : lis) {
-			for (ItemStack s : BlockHelper.breakBlockWithFortune(worldObj, p, 3, player, false, false))
-				if (ItemHandlerHelper.insertItem(InvHelper.getItemHandler(worldObj.getTileEntity(pos.up()), EnumFacing.DOWN), s.copy(), false) != null)
+			for (ItemStack s : BlockHelper.breakBlockWithFortune(world, p, 3, player, false, false))
+				if (ItemHandlerHelper.insertItem(InvHelper.getItemHandler(world.getTileEntity(pos.up()), EnumFacing.DOWN), s.copy(), false) != null)
 					return;
 		}
 	}
@@ -67,7 +68,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 
 	@Override
 	public void update() {
-		if (worldObj.isRemote)
+		if (world.isRemote)
 			return;
 		int range = 9;
 		if (lis == null) {
@@ -75,19 +76,19 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 			for (int y = pos.getY() - 1; y > 0; y--)
 				for (int x = pos.getX() - range; x <= pos.getX() + range; x++)
 					for (int z = pos.getZ() - range; z <= pos.getZ() + range; z++)
-						if (!worldObj.isAirBlock(new BlockPos(x, y, z)))
+						if (!world.isAirBlock(new BlockPos(x, y, z)))
 							lis.add(new BlockPos(x, y, z));
 
 		}
-		EntityPlayer player = Utils.getRandomPlayer(worldObj);
-		if (worldObj.getTotalWorldTime() % 1 == 0 && worldObj.isBlockPowered(pos) && player != null) {
+		EntityPlayer player = Utils.getRandomPlayer((WorldServer) world);
+		if (world.getTotalWorldTime() % 1 == 0 && world.isBlockPowered(pos) && player != null) {
 			for (int i = 0; i < 1; i++)
 				try {
 					Iterator<BlockPos> it = lis.listIterator();
 					whil: while (it.hasNext()) {
 						BlockPos p = it.next();
-						if (worldObj.getTileEntity(p) == null && BlockHelper.isBlockBreakable(worldObj, p) && !BlockHelper.isOre(worldObj, p)) {
-							List<ItemStack> drops = BlockHelper.breakBlockWithFortune(worldObj, p, 0, null, false, false);
+						if (world.getTileEntity(p) == null && BlockHelper.isBlockBreakable(world, p) && !BlockHelper.isOre(world, p)) {
+							List<ItemStack> drops = BlockHelper.breakBlockWithFortune(world, p, 0, null, false, false);
 							drops.clear();
 							for (ItemStack drop : drops)
 								if (drop != null)

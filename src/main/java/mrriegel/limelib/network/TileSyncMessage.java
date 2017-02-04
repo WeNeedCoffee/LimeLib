@@ -18,12 +18,12 @@ public class TileSyncMessage extends AbstractMessage<TileSyncMessage> {
 	@Override
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
 		if (side == Side.CLIENT) {
-			if (player.worldObj.getTileEntity(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos"))) instanceof CommonTile) {
+			if (player.world.getTileEntity(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos"))) instanceof CommonTile) {
 				PacketHandler.sendToServer(new TileSyncMessage(nbt));
 			}
 		} else {
-			if (player.worldObj.getTileEntity(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos"))) instanceof CommonTile) {
-				((CommonTile) player.worldObj.getTileEntity(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos")))).sync();
+			if (player.world.getTileEntity(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos"))) instanceof CommonTile) {
+				((CommonTile) player.world.getTileEntity(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos")))).sync();
 			}
 		}
 	}

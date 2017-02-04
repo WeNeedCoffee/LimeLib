@@ -57,11 +57,11 @@ public class CommonTile extends TileEntity {
 
 	public void sync() {
 		markDirty();
-		worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(pos), worldObj.getBlockState(pos), 8);
+		world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 8);
 	}
 
-	public boolean isUseableByPlayer(EntityPlayer player) {
-		return this.worldObj.getTileEntity(this.pos) != this || isInvalid() ? false : player.getDistanceSq(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D) <= 64.0D;
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return this.world.getTileEntity(this.pos) != this || isInvalid() ? false : player.getDistanceSq(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D) <= 64.0D;
 	}
 
 	public List<ItemStack> getDroppingItems() {
@@ -99,11 +99,11 @@ public class CommonTile extends TileEntity {
 	}
 
 	public IBlockState getBlockState() {
-		return worldObj.getBlockState(pos);
+		return world.getBlockState(pos);
 	}
 
 	public boolean onServer() {
-		return !worldObj.isRemote;
+		return !world.isRemote;
 	}
 
 	public boolean onClient() {

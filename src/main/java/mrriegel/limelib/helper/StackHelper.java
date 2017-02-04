@@ -139,7 +139,7 @@ public class StackHelper {
 			entityitem.motionX = RANDOM.nextGaussian() * 0.05000000074505806D;
 			entityitem.motionY = RANDOM.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
 			entityitem.motionZ = RANDOM.nextGaussian() * 0.05000000074505806D;
-			worldIn.spawnEntityInWorld(entityitem);
+			worldIn.spawnEntity(entityitem);
 		}
 	}
 

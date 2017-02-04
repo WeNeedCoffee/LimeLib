@@ -20,7 +20,7 @@ public class TileGuiMessage extends AbstractMessage<TileGuiMessage> {
 
 	@Override
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
-		TileEntity tile = player.worldObj.getTileEntity(BlockPos.fromLong(nbt.getLong("pos")));
+		TileEntity tile = player.world.getTileEntity(BlockPos.fromLong(nbt.getLong("pos")));
 		if (tile instanceof CommonTile)
 			((CommonTile) tile).openGUI((EntityPlayerMP) player);
 	}

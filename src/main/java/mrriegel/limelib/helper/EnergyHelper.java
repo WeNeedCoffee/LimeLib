@@ -11,7 +11,7 @@ import cofh.api.energy.IEnergyHandler;
 public class EnergyHelper {
 
 	public enum Energy {
-		RF("RF"), FORGE("FE"), TESLA("Tesla");
+		RF("RF"), FORGE("FU"), TESLA("Tesla");
 
 		public String unit;
 
@@ -34,7 +34,7 @@ public class EnergyHelper {
 		return null;
 	}
 
-	public static int getEnergy(World world, BlockPos pos) {
+	public static long getEnergy(World world, BlockPos pos) {
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile == null)
 			return 0;
@@ -48,12 +48,12 @@ public class EnergyHelper {
 		} else if (tile.hasCapability(CapabilityEnergy.ENERGY, null)) {
 			return tile.getCapability(CapabilityEnergy.ENERGY, null).getEnergyStored();
 		} else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
-			return (int) tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getStoredPower() % Integer.MAX_VALUE;
+			return tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getStoredPower();
 		}
 		return 0;
 	}
 
-	public static int getMaxEnergy(World world, BlockPos pos) {
+	public static long getMaxEnergy(World world, BlockPos pos) {
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile == null)
 			return 0;
@@ -67,7 +67,7 @@ public class EnergyHelper {
 		} else if (tile.hasCapability(CapabilityEnergy.ENERGY, null)) {
 			return tile.getCapability(CapabilityEnergy.ENERGY, null).getMaxEnergyStored();
 		} else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
-			return (int) tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getCapacity() % Integer.MAX_VALUE;
+			return tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getCapacity();
 		}
 		return 0;
 	}
