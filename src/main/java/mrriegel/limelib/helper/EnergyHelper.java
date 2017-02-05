@@ -1,11 +1,9 @@
 package mrriegel.limelib.helper;
 
-import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fml.common.Loader;
 import cofh.api.energy.IEnergyHandler;
 
 public class EnergyHelper {
@@ -28,9 +26,10 @@ public class EnergyHelper {
 			return Energy.RF;
 		} else if (tile.hasCapability(CapabilityEnergy.ENERGY, null)) {
 			return Energy.FORGE;
-		} else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
-			return Energy.TESLA;
 		}
+		//		else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
+		//			return Energy.TESLA;
+		//		}
 		return null;
 	}
 
@@ -47,9 +46,10 @@ public class EnergyHelper {
 			}
 		} else if (tile.hasCapability(CapabilityEnergy.ENERGY, null)) {
 			return tile.getCapability(CapabilityEnergy.ENERGY, null).getEnergyStored();
-		} else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
-			return tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getStoredPower();
 		}
+		//		else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
+		//			return tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getStoredPower();
+		//		}
 		return 0;
 	}
 
@@ -66,9 +66,10 @@ public class EnergyHelper {
 			}
 		} else if (tile.hasCapability(CapabilityEnergy.ENERGY, null)) {
 			return tile.getCapability(CapabilityEnergy.ENERGY, null).getMaxEnergyStored();
-		} else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
-			return tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getCapacity();
 		}
+		//		else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
+		//			return tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getCapacity();
+		//		}
 		return 0;
 	}
 

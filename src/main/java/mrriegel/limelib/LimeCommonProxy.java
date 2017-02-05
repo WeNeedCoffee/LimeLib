@@ -1,5 +1,6 @@
 package mrriegel.limelib;
 
+import mrriegel.limelib.particle.CommonParticle;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.RayTraceResult;
@@ -32,4 +33,8 @@ public class LimeCommonProxy {
 	public RayTraceResult getClientRayTrace() {
 		throw new IllegalStateException();
 	}
+
+	public void renderParticle(CommonParticle par) {
+	}
+
 }

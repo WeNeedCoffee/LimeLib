@@ -42,11 +42,11 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 		public void drawTooltip(int mouseX, int mouseY) {
 			if (!visible)
 				return;
-			if (toolTip && stack != null) {
+			if (toolTip && !stack.isEmpty()) {
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();
 				ScaledResolution sr = new ScaledResolution(mc);
-				NBTTagCompound n = stack.getTagCompound() != null ? stack.getTagCompound().copy() : null;
+				NBTTagCompound n = stack.hasTagCompound() ? stack.getTagCompound().copy() : null;
 				if (!GuiScreen.isShiftKeyDown())
 					GuiDrawer.renderToolTip(stack, mouseX, mouseY);
 				else
@@ -62,7 +62,7 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 			if (!visible)
 				return;
 			GlStateManager.pushMatrix();
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				RenderHelper.enableGUIStandardItemLighting();
 				mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x, y);
 				String num = amount < 1000 ? String.valueOf(amount) : amount < 1000000 ? amount / 1000 + "K" : amount / 1000000 + "M";

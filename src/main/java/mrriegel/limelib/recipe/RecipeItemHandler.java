@@ -24,7 +24,7 @@ public class RecipeItemHandler extends AbstractRecipe<ItemStack, IItemHandler> {
 		for (int i = 0; i < object.getSlots(); i++)
 			lis.add(object.getStackInSlot(i));
 		if (!order)
-			lis.removeAll(Collections.singleton(null));
+			lis.removeAll(Collections.singleton(ItemStack.EMPTY));
 		return lis;
 	}
 

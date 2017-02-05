@@ -25,7 +25,7 @@ public class Chapter {
 		c.index = articles.size();
 		articles.add(c);
 		for (ItemStack s : c.stacks)
-			if (s.getItem() != null)
+			if (!s.isEmpty())
 				implMap.put(Block.getBlockFromItem(s.getItem()) != null ? Block.getBlockFromItem(s.getItem()) : s.getItem(), c);
 	}
 

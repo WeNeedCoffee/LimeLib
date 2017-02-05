@@ -3,6 +3,7 @@ package mrriegel.testmod;
 import java.util.Iterator;
 import java.util.List;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.BlockHelper;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
@@ -96,7 +97,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 							break whil;
 						} else {
 							for (Vec3d vec : ParticleHelper.getVecsForLine(p, pos, .6))
-								ParticleHelper.renderParticle(new CommonParticle(vec.xCoord, vec.yCoord, vec.zCoord).setMaxAge2(1));
+								LimeLib.proxy.renderParticle(new CommonParticle(vec.xCoord, vec.yCoord, vec.zCoord).setMaxAge2(1));
 						}
 						it.remove();
 					}

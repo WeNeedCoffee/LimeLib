@@ -1,11 +1,10 @@
 package mrriegel.limelib.item;
 
-import java.util.List;
-
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
 
 public abstract class CommonSubtypeItem extends CommonItem {
@@ -25,7 +24,7 @@ public abstract class CommonSubtypeItem extends CommonItem {
 	}
 
 	@Override
-	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
 		for (int i = 0; i < num; i++)
 			subItems.add(new ItemStack(itemIn, 1, i));
 	}

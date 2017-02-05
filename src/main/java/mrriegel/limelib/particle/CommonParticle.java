@@ -42,7 +42,7 @@ public class CommonParticle extends Particle {
 		this.motionY += (this.rand.nextDouble() - .5) * flouncing;
 		this.motionZ += (this.rand.nextDouble() - .5) * flouncing;
 
-		if (this.isCollided) {
+		if (this.onGround) {
 			this.motionX *= 0.699999988079071D;
 			this.motionZ *= 0.699999988079071D;
 		}

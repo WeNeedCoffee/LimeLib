@@ -11,6 +11,7 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -20,7 +21,7 @@ import com.google.common.collect.Lists;
 
 public class CommonTileInventory extends CommonTile implements IInventory {
 
-	private ItemStack[] stacks;
+	private List<ItemStack> stacks;
 	public final int SIZE, STACKLIMIT;
 
 	public CommonTileInventory(int size) {
@@ -30,7 +31,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	public CommonTileInventory(int size, int limit) {
 		SIZE = size;
 		STACKLIMIT = limit;
-		stacks = new ItemStack[SIZE];
+		stacks = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 	}
 
 	@Override
@@ -50,13 +51,13 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 
 	@Override
 	public ItemStack getStackInSlot(int index) {
-		return stacks[index];
+		return stacks.get(index);
 	}
 
 	@Override
 	public ItemStack decrStackSize(int index, int count) {
 		ItemStack itemstack = ItemStackHelper.getAndSplit(stacks, index, count);
-		if (itemstack != null) {
+		if (itemstack.isEmpty()) {
 			markDirty();
 		}
 		return itemstack;
@@ -71,9 +72,9 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 
 	@Override
 	public void setInventorySlotContents(int index, ItemStack stack) {
-		stacks[index] = stack;
-		if (stack != null && stack.stackSize > getInventoryStackLimit()) {
-			stack.stackSize = getInventoryStackLimit();
+		stacks.set(index, stack);
+		if (stack.getCount() > getInventoryStackLimit()) {
+			stack.setCount(getInventoryStackLimit());
 			LimeLib.log.warn("Size of itemstack is too high for inventory.");
 		}
 		markDirty();
@@ -114,7 +115,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 
 	@Override
 	public void clear() {
-		stacks = new ItemStack[SIZE];
+		stacks.clear();
 	}
 
 	@Override
@@ -145,7 +146,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 		super.readFromNBT(compound);
 		List<ItemStack> lis = NBTHelper.getItemStackList(compound, "Items");
 		for (int i = 0; i < lis.size(); i++) {
-			stacks[i] = lis.get(i);
+			stacks.set(i, lis.get(i));
 		}
 	}
 
@@ -153,6 +154,17 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		NBTHelper.setItemStackList(compound, "Items", Lists.newArrayList(stacks));
 		return super.writeToNBT(compound);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		for (ItemStack itemstack : stacks) {
+			if (!itemstack.isEmpty()) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 }

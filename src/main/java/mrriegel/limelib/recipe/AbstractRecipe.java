@@ -58,7 +58,7 @@ public abstract class AbstractRecipe<S, T> {
 		} else {
 			List<Object> foo = Lists.newArrayList(input);
 			for (ItemStack stack : list) {
-				if (stack != null) {
+				if (!stack.isEmpty()) {
 					boolean flag = false;
 					for (int i = 0; i < foo.size(); i++) {
 						Object o = foo.get(i);

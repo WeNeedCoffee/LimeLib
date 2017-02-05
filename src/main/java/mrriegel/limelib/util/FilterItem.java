@@ -12,7 +12,7 @@ public class FilterItem {
 	boolean meta, ore, nbt;
 
 	public FilterItem(ItemStack stack) {
-		this(stack, stack != null ? stack.getItemDamage() != OreDictionary.WILDCARD_VALUE : true, false, false);
+		this(stack, !stack.isEmpty() ? stack.getItemDamage() != OreDictionary.WILDCARD_VALUE : true, false, false);
 	}
 
 	public FilterItem(String s) {
@@ -28,7 +28,7 @@ public class FilterItem {
 	}
 
 	public FilterItem(ItemStack stack, boolean meta, boolean ore, boolean nbt) {
-		if (stack == null)
+		if (stack.isEmpty())
 			throw new NullPointerException();
 		this.stack = stack;
 		this.meta = meta;
@@ -41,7 +41,7 @@ public class FilterItem {
 
 	public void readFromNBT(NBTTagCompound compound) {
 		NBTTagCompound c = compound.getCompoundTag("stack");
-		stack = ItemStack.loadItemStackFromNBT(c);
+		stack = new ItemStack(c);
 		meta = compound.getBoolean("meta");
 		ore = compound.getBoolean("ore");
 		nbt = compound.getBoolean("nbt");
@@ -62,7 +62,7 @@ public class FilterItem {
 	}
 
 	public void setStack(ItemStack stack) {
-		if (stack == null)
+		if (stack.isEmpty())
 			throw new NullPointerException();
 		this.stack = stack;
 	}
@@ -94,11 +94,11 @@ public class FilterItem {
 	public static FilterItem loadFilterItemFromNBT(NBTTagCompound nbt) {
 		FilterItem fil = new FilterItem();
 		fil.readFromNBT(nbt);
-		return fil.getStack() != null && fil.getStack().getItem() != null ? fil : null;
+		return !fil.getStack().isEmpty() ? fil : null;
 	}
 
 	public boolean match(ItemStack s) {
-		if (s == null)
+		if (s.isEmpty())
 			return false;
 		if (ore && StackHelper.equalOreDict(s, stack))
 			return true;

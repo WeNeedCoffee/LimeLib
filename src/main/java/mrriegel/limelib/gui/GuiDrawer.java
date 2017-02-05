@@ -184,12 +184,10 @@ public class GuiDrawer {
 	}
 
 	public void drawItemStack(ItemStack stack, int x, int y) {
-		if (stack != null) {
-			GlStateManager.pushMatrix();
-			RenderHelper.enableGUIStandardItemLighting();
-			mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x + guiLeft, y + guiTop);
-			GlStateManager.popMatrix();
-		}
+		GlStateManager.pushMatrix();
+		RenderHelper.enableGUIStandardItemLighting();
+		mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x + guiLeft, y + guiTop);
+		GlStateManager.popMatrix();
 	}
 
 	public void drawProgressArrow(int x, int y, float percent, Direction d) {

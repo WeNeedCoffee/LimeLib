@@ -52,16 +52,16 @@ public class InvHelper {
 	}
 
 	public static int canInsert(IItemHandler inv, ItemStack stack) {
-		if (inv == null || stack == null)
+		if (inv == null || stack.isEmpty())
 			return 0;
 		ItemStack s = ItemHandlerHelper.insertItemStacked(inv, stack, true);
-		int rest = s == null ? 0 : s.stackSize;
-		return stack.stackSize - rest;
+		int rest = s.getCount();
+		return stack.getCount() - rest;
 
 	}
 
 	public static boolean contains(IItemHandler inv, ItemStack stack) {
-		if (inv == null || stack == null)
+		if (inv == null || stack.isEmpty())
 			return false;
 		for (int i = 0; i < inv.getSlots(); i++) {
 			if (ItemHandlerHelper.canItemStacksStack(inv.getStackInSlot(i), stack)) {
@@ -78,7 +78,7 @@ public class InvHelper {
 		for (int i = 0; i < inv.getSlots(); i++) {
 			ItemStack slot = inv.getStackInSlot(i);
 			if (fil.match(slot))
-				amount += slot.stackSize;
+				amount += slot.getCount();
 		}
 		return amount;
 	}
@@ -92,14 +92,14 @@ public class InvHelper {
 			ItemStack slot = inv.getStackInSlot(i);
 			if (fil.match(slot)) {
 				ItemStack ex = inv.extractItem(i, missing, simulate);
-				if (ex != null) {
+				if (!ex.isEmpty()) {
 					if (extracted == null)
 						extracted = ex.copy();
 					else {
 						if (!ItemHandlerHelper.canItemStacksStack(extracted, ex))
 							continue;
 					}
-					missing -= ex.stackSize;
+					missing -= ex.getCount();
 					if (missing == 0)
 						return ItemHandlerHelper.copyStackWithSize(slot, num);
 				}
@@ -110,12 +110,12 @@ public class InvHelper {
 
 	public static void clear(IItemHandler inv) {
 		for (int i = 0; i < inv.getSlots(); i++) {
-			if (inv.getStackInSlot(i) == null)
+			if (inv.getStackInSlot(i).isEmpty())
 				continue;
 			if (inv instanceof IItemHandlerModifiable)
 				((IItemHandlerModifiable) inv).setStackInSlot(i, null);
 			else
-				inv.extractItem(i, inv.getStackInSlot(i).stackSize, false);
+				inv.extractItem(i, inv.getStackInSlot(i).getCount(), false);
 		}
 	}
 

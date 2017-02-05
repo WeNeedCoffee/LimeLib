@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.block.CommonBlock;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
@@ -75,7 +76,7 @@ public class TestMod implements IGuiHandler {
 
 	//	public TestBook book = new TestBook();
 
-	public static final boolean ENABLE = !false;
+	public static final boolean ENABLE = false;
 
 	static {
 		FluidRegistry.enableUniversalBucket();
@@ -207,7 +208,7 @@ public class TestMod implements IGuiHandler {
 			lis.remove(e.getEntity());
 			for (EntityLivingBase ent : lis)
 				for (Vec3d v : ParticleHelper.getVecsForLine(e.getEntity().posX, e.getEntity().posY + e.getEntity().height - .1, e.getEntity().posZ, ent.posX, ent.posY + ent.height - .1, ent.posZ, 3))
-					ParticleHelper.renderParticle(new CommonParticle(v.xCoord, v.yCoord, v.zCoord).setMaxAge2(10).setTexture(ParticleHelper.sparkleParticle));
+					LimeLib.proxy.renderParticle(new CommonParticle(v.xCoord, v.yCoord, v.zCoord).setMaxAge2(10).setTexture(ParticleHelper.sparkleParticle));
 		}
 	}
 

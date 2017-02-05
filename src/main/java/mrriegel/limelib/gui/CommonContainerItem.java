@@ -43,7 +43,7 @@ public abstract class CommonContainerItem extends CommonContainer {
 		ItemInvWrapper w = new ItemInvWrapper(stack, inv.getSizeInventory());
 		for (int i = 0; i < inv.getSizeInventory(); i++)
 			w.setStackInSlot(i, inv.getStackInSlot(i));
-		invPlayer.mainInventory[invPlayer.currentItem] = stack;
+		invPlayer.mainInventory.set(invPlayer.currentItem, stack);
 	}
 
 	protected void readFromStack() {

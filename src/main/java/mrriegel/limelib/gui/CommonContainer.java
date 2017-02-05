@@ -136,9 +136,6 @@ public abstract class CommonContainer extends Container {
 	protected void inventoryChanged() {
 	}
 
-	protected void onUpdate() {
-	}
-
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
 		ItemStack itemstack = null;
@@ -181,78 +178,100 @@ public abstract class CommonContainer extends Container {
 			}
 			if (!merged)
 				return null;
-			if (itemstack1.stackSize == 0) {
+			if (itemstack1.getCount() == 0) {
 				slot.putStack((ItemStack) null);
 			} else {
 				slot.onSlotChanged();
 			}
 
-			if (itemstack1.stackSize == itemstack.stackSize) {
+			if (itemstack1.getCount() == itemstack.getCount()) {
 				return null;
 			}
-			slot.onPickupFromSlot(playerIn, itemstack1);
+			slot.onTake(playerIn, itemstack1);
+			detectAndSendChanges();
 		}
 
 		return itemstack;
 	}
 
+	/**
+	 * @author lumien
+	 */
 	@Override
-	protected boolean mergeItemStack(ItemStack stack, int start, int end, boolean backwards) {
+	public boolean mergeItemStack(ItemStack stack, int startindex, int endindex, boolean reverse) {
 		boolean flag1 = false;
-		int k = (backwards ? end - 1 : start);
+		int k = startindex;
+
+		if (reverse) {
+			k = endindex - 1;
+		}
+
 		Slot slot;
 		ItemStack itemstack1;
 
 		if (stack.isStackable()) {
-			while (stack.stackSize > 0 && (!backwards && k < end || backwards && k >= start)) {
-				slot = inventorySlots.get(k);
+			while (stack.getCount() > 0 && (!reverse && k < endindex || reverse && k >= startindex)) {
+				slot = this.inventorySlots.get(k);
 				itemstack1 = slot.getStack();
-				if (!slot.isItemValid(stack)) {
-					k += (backwards ? -1 : 1);
-					continue;
-				}
-				if (itemstack1 != null && itemstack1.getItem() == stack.getItem() && (!stack.getHasSubtypes() || stack.getItemDamage() == itemstack1.getItemDamage()) && ItemStack.areItemStackTagsEqual(stack, itemstack1)) {
-					int l = itemstack1.stackSize + stack.stackSize;
+
+				if (!itemstack1.isEmpty() && itemstack1.getItem() == stack.getItem() && (!stack.getHasSubtypes() || stack.getItemDamage() == itemstack1.getItemDamage()) && ItemStack.areItemStackTagsEqual(stack, itemstack1) && slot.isItemValid(stack)) {
+					int l = itemstack1.getCount() + stack.getCount();
+
 					if (l <= stack.getMaxStackSize() && l <= slot.getSlotStackLimit()) {
-						stack.stackSize = 0;
-						itemstack1.stackSize = l;
-						//						inventory.markDirty();
+						stack.setCount(0);
+						itemstack1.setCount(l);
+						slot.onSlotChanged();
 						flag1 = true;
-					} else if (itemstack1.stackSize < stack.getMaxStackSize() && l < slot.getSlotStackLimit()) {
-						stack.stackSize -= stack.getMaxStackSize() - itemstack1.stackSize;
-						itemstack1.stackSize = stack.getMaxStackSize();
-						//						inventory.markDirty();
+					} else if (itemstack1.getCount() < stack.getMaxStackSize() && itemstack1.getCount() < slot.getSlotStackLimit()) {
+						stack.shrink(stack.getMaxStackSize() - itemstack1.getCount());
+						itemstack1.setCount(stack.getMaxStackSize());
+						slot.onSlotChanged();
 						flag1 = true;
 					}
 				}
-				k += (backwards ? -1 : 1);
+
+				if (reverse) {
+					--k;
+				} else {
+					++k;
+				}
 			}
 		}
-		if (stack.stackSize > 0) {
-			k = (backwards ? end - 1 : start);
-			while (!backwards && k < end || backwards && k >= start) {
-				slot = inventorySlots.get(k);
+
+		if (stack.getCount() > 0) {
+			if (reverse) {
+				k = endindex - 1;
+			} else {
+				k = startindex;
+			}
+
+			while (!reverse && k < endindex || reverse && k >= startindex) {
+				slot = this.inventorySlots.get(k);
 				itemstack1 = slot.getStack();
-				if (!slot.isItemValid(stack)) {
-					k += (backwards ? -1 : 1);
-					continue;
-				}
-				if (itemstack1 == null) {
-					int l = stack.stackSize;
-					if (l <= slot.getSlotStackLimit()) {
-						slot.putStack(stack.copy());
-						stack.stackSize = 0;
-						//						inventory.markDirty();
+
+				if (itemstack1.isEmpty() && slot.isItemValid(stack)) {
+					if (1 < stack.getCount()) {
+						ItemStack copy = stack.copy();
+						copy.setCount(1);
+						slot.putStack(copy);
+
+						stack.shrink(1);
 						flag1 = true;
 						break;
 					} else {
-						putStackInSlot(k, new ItemStack(stack.getItem(), slot.getSlotStackLimit(), stack.getItemDamage()));
-						stack.stackSize -= slot.getSlotStackLimit();
-						//						inventory.markDirty();
+						slot.putStack(stack.copy());
+						slot.onSlotChanged();
+						stack.setCount(0);
 						flag1 = true;
+						break;
 					}
 				}
-				k += (backwards ? -1 : 1);
+
+				if (reverse) {
+					--k;
+				} else {
+					++k;
+				}
 			}
 		}
 		return flag1;

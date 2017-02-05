@@ -42,8 +42,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
 		if (worldIn.getTileEntity(pos) instanceof CommonTile)
 			for (ItemStack stack : ((CommonTile) worldIn.getTileEntity(pos)).getDroppingItems())
-				if (stack != null)
-					spawnAsEntity(worldIn, pos, stack.copy());
+				spawnAsEntity(worldIn, pos, stack.copy());
 		worldIn.removeTileEntity(pos);
 	}
 
@@ -75,7 +74,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	protected abstract Class<? extends T> getTile();
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (worldIn.isRemote) {
 			return true;
 		} else {
@@ -90,14 +89,14 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	@Override
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 		List<ItemStack> lis = super.getDrops(world, pos, state, fortune);
-		ItemStack stack = null;
+		ItemStack stack = ItemStack.EMPTY;
 		if (WorldHelper.getTile(world, pos) instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
 			IDataKeeper tile = (IDataKeeper) WorldHelper.getTile(world, pos);
 			stack = lis.get(0).copy();
 			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
 			tile.writeToStack(stack);
 		}
-		return stack != null ? Lists.newArrayList(stack) : lis;
+		return !stack.isEmpty() ? Lists.newArrayList(stack) : lis;
 	}
 
 	@Override
@@ -121,7 +120,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
 		ItemStack stack = super.getPickBlock(state, target, world, pos, player);
-		if (player.isSneaking() && player.capabilities.isCreativeMode && world.getTileEntity(pos) instanceof IDataKeeper && stack != null) {
+		if (player.isSneaking() && player.capabilities.isCreativeMode && world.getTileEntity(pos) instanceof IDataKeeper && !stack.isEmpty()) {
 			IDataKeeper tile = (IDataKeeper) world.getTileEntity(pos);
 			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
 			tile.writeToStack(stack);

@@ -1,5 +1,6 @@
 package mrriegel.limelib;
 
+import mrriegel.limelib.particle.CommonParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
@@ -20,6 +21,7 @@ public class LimeClientProxy extends LimeCommonProxy {
 		return Minecraft.getMinecraft();
 	}
 
+	@Override
 	public Side getSide() {
 		return Side.CLIENT;
 	}
@@ -37,6 +39,11 @@ public class LimeClientProxy extends LimeCommonProxy {
 	@Override
 	public RayTraceResult getClientRayTrace() {
 		return Minecraft.getMinecraft().objectMouseOver;
+	}
+
+	@Override
+	public void renderParticle(CommonParticle par) {
+		Minecraft.getMinecraft().effectRenderer.addEffect(par);
 	}
 
 }

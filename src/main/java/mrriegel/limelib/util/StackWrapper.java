@@ -14,7 +14,7 @@ public class StackWrapper {
 
 	public StackWrapper(ItemStack stack, int size) {
 		super();
-		if (stack == null)
+		if (stack.isEmpty())
 			throw new NullPointerException();
 		this.stack = stack;
 		this.size = size;
@@ -25,7 +25,7 @@ public class StackWrapper {
 
 	public void readFromNBT(NBTTagCompound compound) {
 		NBTTagCompound c = compound.getCompoundTag("stack");
-		stack = ItemStack.loadItemStackFromNBT(c);
+		stack = new ItemStack(c);
 		size = compound.getInteger("size");
 	}
 
@@ -55,7 +55,7 @@ public class StackWrapper {
 	}
 
 	public void setStack(ItemStack stack) {
-		if (stack == null)
+		if (stack.isEmpty())
 			throw new NullPointerException();
 		this.stack = stack;
 	}
@@ -75,19 +75,19 @@ public class StackWrapper {
 	public static StackWrapper loadStackWrapperFromNBT(NBTTagCompound nbt) {
 		StackWrapper wrap = new StackWrapper();
 		wrap.readFromNBT(nbt);
-		return wrap.getStack() != null && wrap.getStack().getItem() != null ? wrap : null;
+		return !wrap.getStack().isEmpty() ? wrap : null;
 	}
 
 	public static List<ItemStack> toStackList(List<StackWrapper> list) {
 		List<ItemStack> lis = Lists.newArrayList();
 		for (StackWrapper s : list) {
-			if (s == null || s.getStack() == null)
+			if (s == null || s.getStack().isEmpty())
 				continue;
 			final int maxstacksize = s.getStack().getMaxStackSize();
 			int stacks = s.size / maxstacksize + (s.size % maxstacksize != 0 ? 1 : 0);
 			for (int i = 0; i < stacks; i++) {
 				ItemStack toAdd = s.getStack().copy();
-				toAdd.stackSize = (i < stacks - 1 ? maxstacksize : s.size % maxstacksize);
+				toAdd.setCount((i < stacks - 1 ? maxstacksize : s.size % maxstacksize));
 				lis.add(toAdd);
 			}
 		}
@@ -103,13 +103,13 @@ public class StackWrapper {
 			for (int i = 0; i < lis.size(); i++) {
 				ItemStack stack = lis.get(i).getStack().copy();
 				if (ItemHandlerHelper.canItemStacksStack(s, stack)) {
-					lis.get(i).setSize(lis.get(i).getSize() + s.stackSize);
+					lis.get(i).setSize(lis.get(i).getSize() + s.getCount());
 					added = true;
 					break;
 				}
 			}
 			if (!added)
-				lis.add(new StackWrapper(s, s.stackSize));
+				lis.add(new StackWrapper(s, s.getCount()));
 		}
 		return lis;
 	}

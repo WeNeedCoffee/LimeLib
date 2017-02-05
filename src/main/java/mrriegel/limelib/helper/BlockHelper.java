@@ -2,7 +2,6 @@ package mrriegel.limelib.helper;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -36,7 +35,7 @@ public class BlockHelper {
 				world.playEvent(2001, pos, Block.getStateId(state));
 			world.setBlockToAir(pos);
 		}
-		lis.removeAll(Collections.singleton(null));
+		lis.removeAll(Collections.singleton(ItemStack.EMPTY));
 		return lis;
 	}
 
@@ -51,7 +50,7 @@ public class BlockHelper {
 			 * player);
 			 */
 			StackHelper.getStackFromBlock(world, pos, player);
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				if (breakAnyway)
 					return breakBlockWithFortune(world, pos, 0, player, simulate, particle);
 				else
@@ -84,10 +83,6 @@ public class BlockHelper {
 		} catch (Exception e) {
 		}
 		return false;
-	}
-
-	public static List<BlockPos> getNeighbors(BlockPos p) {
-		return Lists.newArrayList(EnumFacing.VALUES).stream().map(f -> p.offset(f)).collect(Collectors.toList());
 	}
 
 }

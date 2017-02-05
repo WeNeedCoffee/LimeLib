@@ -117,7 +117,7 @@ public class NBTHelper {
 			else if (clazz.equals(BlockPos.class))
 				return (T) BlockPos.fromLong(((NBTTagLong) nbt).getLong());
 			else if (clazz.equals(ItemStack.class)) {
-				return (T) ItemStack.loadItemStackFromNBT((NBTTagCompound) nbt);
+				return (T) new ItemStack((NBTTagCompound) nbt);
 			} else
 				LimeLib.log.warn("Unacceptable Class.");
 		} catch (ClassCastException e) {
@@ -303,10 +303,10 @@ public class NBTHelper {
 	// itemstack
 	public static ItemStack getItemStack(NBTTagCompound nbt, String keyName) {
 		if (nbt == null || !nbt.hasKey(keyName)) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		NBTTagCompound res = (NBTTagCompound) nbt.getTag(keyName);
-		return ItemStack.loadItemStackFromNBT(res);
+		return new ItemStack(res);
 
 	}
 

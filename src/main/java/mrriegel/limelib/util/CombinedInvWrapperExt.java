@@ -74,4 +74,12 @@ public class CombinedInvWrapperExt implements IItemHandler {
 		slot = getSlotFromIndex(slot, index);
 		return handler.extractItem(slot, amount, simulate);
 	}
+
+	@Override
+	public int getSlotLimit(int slot) {
+		int index = getIndexForSlot(slot);
+		IItemHandler handler = getHandlerFromIndex(index);
+		int localSlot = getSlotFromIndex(slot, index);
+		return handler.getSlotLimit(localSlot);
+	}
 }

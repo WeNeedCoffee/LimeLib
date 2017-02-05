@@ -187,7 +187,7 @@ public class GuiBook extends CommonGuiScreen {
 
 	private void initSlots() {
 		for (int i = 0; i < slots.size(); i++) {
-			slots.get(i).stack = null;
+			slots.get(i).stack = ItemStack.EMPTY;
 		}
 		if (currentPage != 1)
 			return;
@@ -229,10 +229,10 @@ public class GuiBook extends CommonGuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (!Loader.isModLoaded("JEI"))
+		if (!Loader.isModLoaded("jei"))
 			return;
 		for (ItemSlot slot : slots) {
-			if (slot.stack != null && slot.isMouseOver(mouseX, mouseY) && (mouseButton == 0 || mouseButton == 1)) {
+			if (!slot.stack.isEmpty() && slot.isMouseOver(mouseX, mouseY) && (mouseButton == 0 || mouseButton == 1)) {
 				Internal.getRuntime().getRecipesGui().show(new Focus<ItemStack>(mouseButton == 0 ? Mode.OUTPUT : Mode.INPUT, slot.stack));
 				break;
 			}
