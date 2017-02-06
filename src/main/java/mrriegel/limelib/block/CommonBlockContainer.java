@@ -44,6 +44,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 			for (ItemStack stack : ((CommonTile) worldIn.getTileEntity(pos)).getDroppingItems())
 				spawnAsEntity(worldIn, pos, stack.copy());
 		worldIn.removeTileEntity(pos);
+		worldIn.updateComparatorOutputLevel(pos, this);
 	}
 
 	@Override

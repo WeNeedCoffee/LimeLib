@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 
 public class CommonTileInventory extends CommonTile implements IInventory {
 
-	private List<ItemStack> stacks;
+	protected NonNullList<ItemStack> stacks;
 	public final int SIZE, STACKLIMIT;
 
 	public CommonTileInventory(int size) {
@@ -36,7 +36,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 
 	@Override
 	public String getName() {
-		return null;
+		return "null";
 	}
 
 	@Override
@@ -158,13 +158,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 
 	@Override
 	public boolean isEmpty() {
-		for (ItemStack itemstack : stacks) {
-			if (!itemstack.isEmpty()) {
-				return false;
-			}
-		}
-
-		return true;
+		return !stacks.stream().anyMatch(s -> !s.isEmpty());
 	}
 
 }

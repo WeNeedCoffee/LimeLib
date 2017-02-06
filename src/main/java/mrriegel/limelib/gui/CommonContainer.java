@@ -138,17 +138,17 @@ public abstract class CommonContainer extends Container {
 
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-		ItemStack itemstack = null;
+		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.inventorySlots.get(index);
 		if (playerIn.world.isRemote)
-			return null;
+			return ItemStack.EMPTY;
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 
 			List<Area> ar = allowedSlots(itemstack1, slot.inventory, slot.getSlotIndex());
 			if (ar == null)
-				return null;
+				return ItemStack.EMPTY;
 			ar.removeAll(Collections.singleton(null));
 			boolean merged = false;
 			for (Area p : ar) {
@@ -167,7 +167,7 @@ public abstract class CommonContainer extends Container {
 						if (!getSlotFromInventory(p.inv, i).getHasStack() && getSlotFromInventory(p.inv, i) instanceof SlotGhost) {
 							getSlotFromInventory(p.inv, i).putStack(ItemHandlerHelper.copyStackWithSize(itemstack1, 1));
 							detectAndSendChanges();
-							return null;
+							return ItemStack.EMPTY;
 						}
 				}
 				if (this.mergeItemStack(itemstack1, minSlot.slotNumber, maxSlot.slotNumber + 1, false)) {
@@ -177,7 +177,7 @@ public abstract class CommonContainer extends Container {
 
 			}
 			if (!merged)
-				return null;
+				return ItemStack.EMPTY;
 			if (itemstack1.getCount() == 0) {
 				slot.putStack((ItemStack) null);
 			} else {
@@ -185,7 +185,7 @@ public abstract class CommonContainer extends Container {
 			}
 
 			if (itemstack1.getCount() == itemstack.getCount()) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 			slot.onTake(playerIn, itemstack1);
 			detectAndSendChanges();
