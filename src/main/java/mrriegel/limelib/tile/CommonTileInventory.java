@@ -161,4 +161,9 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 		return !stacks.stream().anyMatch(s -> !s.isEmpty());
 	}
 
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return isUsable(player);
+	}
+
 }

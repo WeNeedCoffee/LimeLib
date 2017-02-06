@@ -60,7 +60,7 @@ public class CommonTile extends TileEntity {
 		world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 8);
 	}
 
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsable(EntityPlayer player) {
 		return this.world.getTileEntity(this.pos) != this || isInvalid() ? false : player.getDistanceSq(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D) <= 64.0D;
 	}
 

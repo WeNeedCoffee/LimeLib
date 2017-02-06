@@ -60,7 +60,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 						lis.add(new BlockPos(x, y, z));
 		for (BlockPos p : lis) {
 			for (ItemStack s : BlockHelper.breakBlockWithFortune(world, p, 3, player, false, false))
-				if (ItemHandlerHelper.insertItem(InvHelper.getItemHandler(world.getTileEntity(pos.up()), EnumFacing.DOWN), s.copy(), false) != null)
+				if (ItemHandlerHelper.insertItemStacked(InvHelper.getItemHandler(world.getTileEntity(pos.up()), EnumFacing.DOWN), s.copy(), false) != null)
 					return;
 		}
 	}

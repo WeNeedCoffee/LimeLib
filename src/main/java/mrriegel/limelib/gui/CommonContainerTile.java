@@ -29,7 +29,7 @@ public abstract class CommonContainerTile<T extends CommonTile> extends CommonCo
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return tile != null && tile.isUsableByPlayer(playerIn);
+		return tile != null && tile.isUsable(playerIn);
 	}
 
 }
