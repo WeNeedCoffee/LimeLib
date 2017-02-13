@@ -30,6 +30,7 @@ minecraft {
 dependencies {
     //compile "net.darkhax.tesla:Tesla:1.10.2-1.2.1.49"
     deobfCompile "mezz.jei:jei_1.11.2:4.2.4.229"
+    deobfCompile "mcp.mobius.waila:Hwyla:1.8.10-B23_1.11"
 }
 
 processResources {
@@ -53,6 +54,9 @@ repositories {
     }
     maven {
         url "http://dvs1.progwml6.com/files/maven"
+    }
+    maven {
+        url "http://tehnut.info/maven"
     }
 }
 

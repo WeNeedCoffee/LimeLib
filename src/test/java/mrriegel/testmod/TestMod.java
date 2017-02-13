@@ -14,6 +14,8 @@ import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.particle.CommonParticle;
 import mrriegel.limelib.recipe.RecipeItemHandler;
+import mrriegel.limelib.recipe.ShapedRecipeExt;
+import mrriegel.limelib.recipe.ShapelessRecipeExt;
 import mrriegel.limelib.tile.CommonTileInventory;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -98,10 +100,12 @@ public class TestMod implements IGuiHandler {
 		alcoholBlock.setRegistryName("alcohol");
 		alcoholBlock.setUnlocalizedName(alcoholBlock.getRegistryName().toString());
 		ModelLoader.setCustomStateMapper(alcoholBlock, new StateMap.Builder().ignore(BlockFluidBase.LEVEL).build());
-		GameRegistry.register(alcoholBlock);
+		//		GameRegistry.register(alcoholBlock);
 		Part part = new Part();
 		part.setRegistryName("party");
 		GameRegistry.register(part);
+		GameRegistry.addRecipe(new ShapedRecipeExt(new ItemStack(Blocks.BEDROCK), " r ", " b ", " s ", 's', Blocks.STONE, 'r', Blocks.RED_FLOWER, 'b', Lists.newArrayList(Items.GUNPOWDER, Items.APPLE, Blocks.LEVER, new ItemStack(Items.BAKED_POTATO))));
+		GameRegistry.addRecipe(new ShapelessRecipeExt(new ItemStack(Blocks.OBSIDIAN), Items.BLAZE_POWDER, Lists.newArrayList(Blocks.HOPPER, Items.LAVA_BUCKET)));
 	}
 
 	@Mod.EventHandler
@@ -154,7 +158,6 @@ public class TestMod implements IGuiHandler {
 			ItemStack held = player.getHeldItemMainhand();
 			if (held != null)
 				held.canEditBlocks();
-
 			//			book.init();
 			//			if (!player.world.isRemote && !player.isSneaking()) {
 			//				if (held != null) {
@@ -162,7 +165,6 @@ public class TestMod implements IGuiHandler {
 			//				}
 			//			}
 			if (!player.world.isRemote) {
-
 				PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
 				R r = new R(Lists.newArrayList(new ItemStack(Blocks.GOLD_BLOCK), new ItemStack(Items.IRON_INGOT, 4)), true, Items.APPLE, Blocks.COAL_BLOCK, new ItemStack(Blocks.BOOKSHELF));
 				if (r.match(pmiw) && r.removeIngredients(pmiw, false)) {

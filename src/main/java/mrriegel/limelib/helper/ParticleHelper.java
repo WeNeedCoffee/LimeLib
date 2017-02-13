@@ -81,8 +81,8 @@ public class ParticleHelper {
 
 	}
 
-	public static final ResourceLocation roundParticle = new ResourceLocation(LimeLib.MODID + ":particle/roundParticle");
-	public static final ResourceLocation sparkleParticle = new ResourceLocation(LimeLib.MODID + ":particle/sparkleParticle");
-	public static final ResourceLocation squareParticle = new ResourceLocation(LimeLib.MODID + ":particle/squareParticle");
+	public static final ResourceLocation roundParticle = new ResourceLocation(LimeLib.MODID + ":particle/round_particle");
+	public static final ResourceLocation sparkleParticle = new ResourceLocation(LimeLib.MODID + ":particle/sparkle_particle");
+	public static final ResourceLocation squareParticle = new ResourceLocation(LimeLib.MODID + ":particle/square_particle");
 
 }

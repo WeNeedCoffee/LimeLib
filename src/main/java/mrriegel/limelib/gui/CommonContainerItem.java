@@ -1,6 +1,8 @@
 package mrriegel.limelib.gui;
 
-import mrriegel.limelib.util.ItemInvWrapper;
+import java.util.List;
+
+import mrriegel.limelib.helper.NBTStackHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
@@ -10,21 +12,22 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.google.common.collect.Lists;
+
 public abstract class CommonContainerItem extends CommonContainer {
 
 	protected ItemStack stack;
 
 	public CommonContainerItem(InventoryPlayer invPlayer, int num) {
 		super(invPlayer, Pair.<String, IInventory> of("inv", new InventoryBasic(null, false, num)));
-		stack = invPlayer.getCurrentItem();
+		setStack(getPlayer());
 		if (!stack.hasTagCompound())
 			stack.setTagCompound(new NBTTagCompound());
 		readFromStack();
 	}
 
-	@Override
-	public boolean canInteractWith(EntityPlayer playerIn) {
-		return stack.isItemEqual(playerIn.inventory.getCurrentItem());
+	protected void setStack(EntityPlayer player) {
+		stack = player.inventory.getCurrentItem();
 	}
 
 	@Override
@@ -40,17 +43,17 @@ public abstract class CommonContainerItem extends CommonContainer {
 
 	protected void writeToStack() {
 		IInventory inv = invs.get("inv");
-		ItemInvWrapper w = new ItemInvWrapper(stack, inv.getSizeInventory());
+		List<ItemStack> stacks = Lists.newArrayList();
 		for (int i = 0; i < inv.getSizeInventory(); i++)
-			w.setStackInSlot(i, inv.getStackInSlot(i));
-		invPlayer.mainInventory.set(invPlayer.currentItem, stack);
+			stacks.add(i, inv.getStackInSlot(i));
+		NBTStackHelper.setItemStackList(stack, "items", stacks);
 	}
 
 	protected void readFromStack() {
-		IInventory inv = new InventoryBasic(null, false, invs.get("inv").getSizeInventory());
-		ItemInvWrapper w = new ItemInvWrapper(stack, inv.getSizeInventory());
+		List<ItemStack> stacks = NBTStackHelper.getItemStackList(stack, "items");
+		IInventory inv = new InventoryBasic(null, false, stacks.size());
 		for (int i = 0; i < inv.getSizeInventory(); i++)
-			inv.setInventorySlotContents(i, w.getStackInSlot(i));
+			inv.setInventorySlotContents(i, stacks.get(i));
 		invs.put("inv", inv);
 	}
 

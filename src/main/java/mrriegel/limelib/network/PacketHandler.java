@@ -33,7 +33,6 @@ public class PacketHandler {
 		defaultsRegistered = true;
 		registerMessage(TileMessage.class, Side.SERVER);
 		registerMessage(TileGuiMessage.class, Side.SERVER);
-		registerMessage(WorldDataMessage.class, Side.CLIENT);
 		registerMessage(TileSyncMessage.class, Side.SERVER);
 		registerMessage(TileSyncMessage.class, Side.CLIENT);
 		registerMessage(TeleportMessage.class, Side.CLIENT);
