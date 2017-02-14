@@ -4,14 +4,13 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
 
-import mezz.jei.Internal;
-import mezz.jei.api.recipe.IFocus.Mode;
-import mezz.jei.gui.Focus;
 import mrriegel.limelib.gui.CommonGuiScreen;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.gui.button.GuiButtonSimple;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.helper.ColorHelper;
+import mrriegel.limelib.helper.CompatHelper;
+import mrriegel.limelib.jei.JEI;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.item.ItemStack;
@@ -93,7 +92,7 @@ public class GuiBook extends CommonGuiScreen {
 		buttonList.add(left = new GuiButtonSimple(0, guiLeft + 109, guiTop + 181, 9, 14, "<", Color.black.getRGB(), Color.gray.getRGB(), null));
 		buttonList.add(right = new GuiButtonSimple(1, guiLeft + 326, guiTop + 181, 9, 14, ">", Color.black.getRGB(), Color.gray.getRGB(), null));
 		for (int i = 0; i < Article.maxItems; i++)
-			slots.add(new ItemSlot(null, i, 0, guiTop + 8, 1, drawer, false, false, false, true));
+			slots.add(new ItemSlot(ItemStack.EMPTY, i, 0, guiTop + 8, 1, drawer, false, false, false, true));
 		elementList.addAll(slots);
 		for (int i = 0; i < book.chapters.size(); i++) {
 			List<String> tooltip = Lists.newArrayList(book.chapters.get(i).name);
@@ -229,11 +228,14 @@ public class GuiBook extends CommonGuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (!Loader.isModLoaded("jei"))
+		if (!CompatHelper.jeiLoaded)
 			return;
 		for (ItemSlot slot : slots) {
 			if (!slot.stack.isEmpty() && slot.isMouseOver(mouseX, mouseY) && (mouseButton == 0 || mouseButton == 1)) {
-				Internal.getRuntime().getRecipesGui().show(new Focus<ItemStack>(mouseButton == 0 ? Mode.OUTPUT : Mode.INPUT, slot.stack));
+				if (mouseButton == 0)
+					JEI.showRecipes(slot.stack);
+				else
+					JEI.showUsage(slot.stack);
 				break;
 			}
 		}

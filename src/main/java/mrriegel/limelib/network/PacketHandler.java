@@ -33,8 +33,7 @@ public class PacketHandler {
 		defaultsRegistered = true;
 		registerMessage(TileMessage.class, Side.SERVER);
 		registerMessage(TileGuiMessage.class, Side.SERVER);
-		registerMessage(TileSyncMessage.class, Side.SERVER);
-		registerMessage(TileSyncMessage.class, Side.CLIENT);
+		registerMessage(TileSyncMessage.class);
 		registerMessage(TeleportMessage.class, Side.CLIENT);
 		registerMessage(EnergySyncMessage.class, Side.CLIENT);
 
@@ -47,6 +46,11 @@ public class PacketHandler {
 		if (registered.get(side) == null)
 			registered.put(side, Sets.newHashSet());
 		registered.get(side).add(classMessage);
+	}
+
+	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage<?>> classMessage) {
+		registerMessage(classMessage, Side.CLIENT);
+		registerMessage(classMessage, Side.SERVER);
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, Side side) {

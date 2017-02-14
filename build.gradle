@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 Properties props = new Properties()
 props.load(new BufferedReader(new FileReader(file('../gradle.properties'))))
 
-version = "${props.get('mc_version')}-1.4.0"
+version = "${props.get('mc_version')}-1.4.1"
 group = "mrriegel.limelib"
 archivesBaseName = "limelib"
 
@@ -31,6 +31,7 @@ dependencies {
     //compile "net.darkhax.tesla:Tesla:1.10.2-1.2.1.49"
     deobfCompile "mezz.jei:jei_1.11.2:4.2.4.229"
     deobfCompile "mcp.mobius.waila:Hwyla:1.8.10-B23_1.11"
+    //deobfCompile "mcjty.theoneprobe:TheOneProbe:1.1x-1.4.1-51"
 }
 
 processResources {
@@ -57,6 +58,9 @@ repositories {
     }
     maven {
         url "http://tehnut.info/maven"
+    }
+    maven {
+        url "http://maven.tterrag.com"
     }
 }
 

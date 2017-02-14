@@ -91,8 +91,9 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 		List<ItemStack> lis = super.getDrops(world, pos, state, fortune);
 		ItemStack stack = ItemStack.EMPTY;
-		if (WorldHelper.getTile(world, pos) instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
-			IDataKeeper tile = (IDataKeeper) WorldHelper.getTile(world, pos);
+		TileEntity t = WorldHelper.getTile(world, pos);
+		if (t instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
+			IDataKeeper tile = (IDataKeeper) t;
 			stack = lis.get(0).copy();
 			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
 			tile.writeToStack(stack);

@@ -1,12 +1,10 @@
 package mrriegel.limelib.helper;
 
 import java.util.List;
-import java.util.Random;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -108,35 +106,6 @@ public class StackHelper {
 		for (int i : ints)
 			stacks.add(ItemHandlerHelper.copyStackWithSize(stack, i));
 		return stacks;
-	}
-
-	public static void spawnItemStack(World worldIn, BlockPos pos, ItemStack stack) {
-		spawnItemStack(worldIn, pos.getX() + .5, pos.getY() + .1, pos.getZ() + .5, stack);
-	}
-
-	public static void spawnItemStack(World worldIn, double x, double y, double z, ItemStack stack) {
-		Random RANDOM = worldIn.rand;
-		float f = RANDOM.nextFloat() * 0.8F + 0.1F;
-		float f1 = RANDOM.nextFloat() * 0.8F + 0.1F;
-		float f2 = RANDOM.nextFloat() * 0.8F + 0.1F;
-		if (!stack.isEmpty())
-			stack = stack.copy();
-		while (!stack.isEmpty() && stack.getCount() > 0) {
-			int i = RANDOM.nextInt(21) + 10;
-
-			if (i > stack.getCount()) {
-				i = stack.getCount();
-			}
-			stack.shrink(i);
-			EntityItem entityitem = new EntityItem(worldIn, x + f, y + f1, z + f2, ItemHandlerHelper.copyStackWithSize(stack, i));
-			if (stack.hasTagCompound()) {
-				entityitem.getEntityItem().setTagCompound(stack.getTagCompound().copy());
-			}
-			entityitem.motionX = RANDOM.nextGaussian() * 0.05000000074505806D;
-			entityitem.motionY = RANDOM.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
-			entityitem.motionZ = RANDOM.nextGaussian() * 0.05000000074505806D;
-			worldIn.spawnEntity(entityitem);
-		}
 	}
 
 	public static ItemStack getStackFromBlock(World world, BlockPos pos, EntityPlayer player) {

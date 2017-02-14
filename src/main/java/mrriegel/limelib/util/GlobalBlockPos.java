@@ -80,7 +80,8 @@ public class GlobalBlockPos {
 		this.dimension = dimension;
 	}
 
-	public World getWorld(@Nullable World world) {
+	@Deprecated
+	private World getWorld(@Nullable World world) {
 		return DimensionManager.getWorld(dimension);
 	}
 
@@ -88,7 +89,8 @@ public class GlobalBlockPos {
 		return getWorld(null);
 	}
 
-	public TileEntity getTile(@Nullable World world) {
+	@Deprecated
+	private TileEntity getTile(@Nullable World world) {
 		if (getWorld(world) == null)
 			return null;
 		return getWorld(world).getTileEntity(getPos());

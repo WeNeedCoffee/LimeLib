@@ -179,7 +179,7 @@ public abstract class CommonContainer extends Container {
 			if (!merged)
 				return ItemStack.EMPTY;
 			if (itemstack1.getCount() == 0) {
-				slot.putStack((ItemStack) null);
+				slot.putStack(ItemStack.EMPTY);
 			} else {
 				slot.onSlotChanged();
 			}

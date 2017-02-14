@@ -65,7 +65,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@Mod(modid = "lalal", name = "kohle", version = "${version}")
+//@Mod(modid = "lalal", name = "kohle", version = "${version}")
 public class TestMod implements IGuiHandler {
 
 	@Mod.Instance("lalal")
@@ -76,7 +76,7 @@ public class TestMod implements IGuiHandler {
 	public static Fluid alcohol;
 	public static Block alcoholBlock;
 
-	//	public TestBook book = new TestBook();
+//	public TestBook book = new TestBook();
 
 	public static final boolean ENABLE = false;
 
@@ -99,7 +99,8 @@ public class TestMod implements IGuiHandler {
 		alcoholBlock = new BlockFluidClassic(alcohol, Material.WATER);
 		alcoholBlock.setRegistryName("alcohol");
 		alcoholBlock.setUnlocalizedName(alcoholBlock.getRegistryName().toString());
-		ModelLoader.setCustomStateMapper(alcoholBlock, new StateMap.Builder().ignore(BlockFluidBase.LEVEL).build());
+		if (LimeLib.proxy.getSide().isClient())
+			ModelLoader.setCustomStateMapper(alcoholBlock, new StateMap.Builder().ignore(BlockFluidBase.LEVEL).build());
 		//		GameRegistry.register(alcoholBlock);
 		Part part = new Part();
 		part.setRegistryName("party");
@@ -160,7 +161,7 @@ public class TestMod implements IGuiHandler {
 				held.canEditBlocks();
 			//			book.init();
 			//			if (!player.world.isRemote && !player.isSneaking()) {
-			//				if (held != null) {
+			//				if (!held.isEmpty()) {
 			//					book.openGuiAt(held.getItem(), true);
 			//				}
 			//			}
