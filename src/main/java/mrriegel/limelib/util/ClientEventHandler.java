@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.util.Map;
 
 import mrriegel.limelib.Config;
+import mrriegel.limelib.datapart.CapabilityDataPart;
+import mrriegel.limelib.datapart.DataPart;
+import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.EnergyHelper;
@@ -19,6 +22,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -64,6 +69,21 @@ public class ClientEventHandler {
 			drawer.drawFrame((sr.getScaledWidth() - lenght) / 2 - 1, (sr.getScaledHeight() + 20 - 8) / 2 - 1, lenght + 2, 9, 1, ColorHelper.darker(Color.RED.getRGB(), .8));
 			GlStateManager.disableBlend();
 			GlStateManager.popMatrix();
+		}
+	}
+	
+	@SubscribeEvent
+	public static void tick(ClientTickEvent event){
+		Minecraft mc = Minecraft.getMinecraft();
+		if (event.phase == Phase.END) {
+			if (mc.world.hasCapability(CapabilityDataPart.DATAPART, null)) {
+				DataPartRegistry reg = mc.world.getCapability(CapabilityDataPart.DATAPART, null);
+				for (DataPart part : reg.partMap.values()) {
+					if (part != null  && part.getWorld().isBlockLoaded(part.getPos())) {
+						part.updateClient(mc.world);
+					}
+				}
+			}
 		}
 	}
 }

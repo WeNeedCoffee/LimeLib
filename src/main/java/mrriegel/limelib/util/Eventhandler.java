@@ -1,14 +1,26 @@
 package mrriegel.limelib.util;
 
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import mrriegel.limelib.Config;
+import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.datapart.CapabilityDataPart;
+import mrriegel.limelib.datapart.DataPart;
+import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.network.EnergySyncMessage;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
@@ -18,8 +30,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-import com.google.common.collect.Iterables;
-
 public class Eventhandler {
 
 	@SubscribeEvent
@@ -28,7 +38,7 @@ public class Eventhandler {
 			TileEntity tile = event.getWorld().getTileEntity(event.getPos());
 			if (tile instanceof IOwneable) {
 				IOwneable o = (IOwneable) tile;
-				if (!o.canAccess(event.getEntityPlayer().getName())) {
+				if (!o.canAccess(event.getEntityPlayer().getDisplayNameString())) {
 					// if (!event.getWorld().isRemote)
 					// event.getEntityPlayer().addChatComponentMessage(new
 					// TextComponentString("No permission!"));
@@ -46,7 +56,7 @@ public class Eventhandler {
 			TileEntity tile = event.getWorld().getTileEntity(event.getPos());
 			if (tile instanceof IOwneable) {
 				IOwneable o = (IOwneable) tile;
-				if (!o.canAccess(event.getEntityPlayer().getName())) {
+				if (!o.canAccess(event.getEntityPlayer().getDisplayNameString())) {
 					// if (!event.getWorld().isRemote)
 					// event.getEntityPlayer().addChatComponentMessage(new
 					// TextComponentString("No permission!"));
@@ -63,16 +73,24 @@ public class Eventhandler {
 		if (event.phase == Phase.END && event.side == Side.SERVER) {
 			try {
 				if (event.world.getTotalWorldTime() % 4 == 0) {
-					for (TileEntity tile : Iterables.filter(event.world.loadedTileEntityList, t -> t instanceof CommonTile)) {
-						if (tile instanceof CommonTile) {
-							if (((CommonTile) tile).needsSync()) {
-								((CommonTile) tile).sync();
-								((CommonTile) tile).setSyncDirty(false);
-							}
+					Iterator<TileEntity> it = event.world.loadedTileEntityList.stream().filter(t -> t instanceof CommonTile).collect(Collectors.toList()).iterator();
+					while (it.hasNext()) {
+						CommonTile tile = (CommonTile) it.next();
+						if (tile.needsSync()) {
+							tile.sync();
+							tile.setSyncDirty(false);
 						}
 					}
 				}
 			} catch (ConcurrentModificationException e) {
+			}
+			if (event.world.hasCapability(CapabilityDataPart.DATAPART, null)) {
+				DataPartRegistry reg = event.world.getCapability(CapabilityDataPart.DATAPART, null);
+				for (DataPart part : reg.partMap.values()) {
+					if (part != null && part.getWorld() == event.world && part.getWorld().isBlockLoaded(part.getPos())) {
+						part.updateServer(event.world);
+					}
+				}
 			}
 		}
 	}
@@ -86,4 +104,31 @@ public class Eventhandler {
 		}
 	}
 
+	@SubscribeEvent
+	public static void attachWorld(AttachCapabilitiesEvent.World event) {
+		event.addCapability(new ResourceLocation(LimeLib.MODID + ":datapart"), new ICapabilitySerializable<NBTTagCompound>() {
+
+			DataPartRegistry instance = CapabilityDataPart.DATAPART.getDefaultInstance();
+
+			@Override
+			public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+				return capability == CapabilityDataPart.DATAPART;
+			}
+
+			@Override
+			public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+				return CapabilityDataPart.DATAPART.cast(instance);
+			}
+
+			@Override
+			public NBTTagCompound serializeNBT() {
+				return (NBTTagCompound) CapabilityDataPart.DATAPART.getStorage().writeNBT(CapabilityDataPart.DATAPART, instance, null);
+			}
+
+			@Override
+			public void deserializeNBT(NBTTagCompound nbt) {
+				CapabilityDataPart.DATAPART.readNBT(instance, null, nbt);
+			}
+		});
+	}
 }

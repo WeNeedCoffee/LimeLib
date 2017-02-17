@@ -3,7 +3,9 @@ package mrriegel.limelib.gui;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
+import mrriegel.limelib.gui.slot.SlotFilter;
 import mrriegel.limelib.gui.slot.SlotGhost;
 import mrriegel.limelib.gui.slot.SlotOutput;
 import net.minecraft.entity.player.EntityPlayer;
@@ -80,7 +82,7 @@ public abstract class CommonContainer extends Container {
 		initSlots(invPlayer, x, y, 9, 3, 9);
 	}
 
-	protected void initSlots(IInventory inv, int x, int y, int width, int height, int startIndex, Class<? extends Slot> clazz) {
+	protected void initSlots(IInventory inv, int x, int y, int width, int height, int startIndex, Class<? extends Slot> clazz, Object... args) {
 		if (inv == null)
 			return;
 		for (int k = 0; k < height; ++k) {
@@ -88,31 +90,42 @@ public abstract class CommonContainer extends Container {
 				int id = i + k * width + startIndex;
 				if (id >= inv.getSizeInventory())
 					break;
+				Slot slot = null;
 				if (clazz == Slot.class) {
-					this.addSlotToContainer(new Slot(inv, id, x + i * 18, y + k * 18) {
+					slot = new Slot(inv, id, x + i * 18, y + k * 18) {
 						@Override
 						public void onSlotChanged() {
 							super.onSlotChanged();
 							inventoryChanged();
 						}
-					});
+					};
 				} else if (clazz == SlotGhost.class) {
-					this.addSlotToContainer(new SlotGhost(inv, id, x + i * 18, y + k * 18) {
+					slot = new SlotGhost(inv, id, x + i * 18, y + k * 18) {
 						@Override
 						public void onSlotChanged() {
 							super.onSlotChanged();
 							inventoryChanged();
 						}
-					});
+					};
 				} else if (clazz == SlotOutput.class) {
-					this.addSlotToContainer(new SlotOutput(inv, id, x + i * 18, y + k * 18) {
+					slot = new SlotOutput(inv, id, x + i * 18, y + k * 18) {
 						@Override
 						public void onSlotChanged() {
 							super.onSlotChanged();
 							inventoryChanged();
 						}
-					});
+					};
+				} else if (clazz == SlotFilter.class && args != null && args[0] instanceof Predicate) {
+					slot = new SlotFilter(inv, id, x + i * 18, y + k * 18, (Predicate<ItemStack>) args[0]) {
+						@Override
+						public void onSlotChanged() {
+							super.onSlotChanged();
+							inventoryChanged();
+						}
+					};
 				}
+				if (slot != null)
+					this.addSlotToContainer(slot);
 			}
 		}
 	}

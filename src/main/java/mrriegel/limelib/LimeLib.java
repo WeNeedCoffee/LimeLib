@@ -1,6 +1,6 @@
 package mrriegel.limelib;
 
-import mrriegel.limelib.datapart.DataPartSavedData;
+import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.util.ClientEventHandler;
 import mrriegel.limelib.util.Eventhandler;
@@ -34,13 +34,13 @@ public class LimeLib {
 	public void preInit(FMLPreInitializationEvent event) {
 		Config.init(event.getSuggestedConfigurationFile());
 		Utils.init();
+		CapabilityDataPart.register();
 	}
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		PacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(Eventhandler.class);
-		MinecraftForge.EVENT_BUS.register(DataPartSavedData.class);
 		if (event.getSide().isClient())
 			MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
 	}

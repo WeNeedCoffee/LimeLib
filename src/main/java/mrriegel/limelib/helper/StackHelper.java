@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -21,7 +22,6 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 
 public class StackHelper {
@@ -94,15 +94,15 @@ public class StackHelper {
 		return prefix + "#" + stack.getCount() + "/" + stack.getItemDamage();
 	}
 
-	public static List<ItemStack> split(ItemStack stack) {
+	public static NonNullList<ItemStack> split(ItemStack stack) {
 		return split(stack, 2);
 	}
 
-	public static List<ItemStack> split(ItemStack stack, int splits) {
+	public static NonNullList<ItemStack> split(ItemStack stack, int splits) {
 		if (stack.isEmpty())
 			return null;
 		List<Integer> ints = Utils.split(stack.getCount(), splits);
-		List<ItemStack> stacks = Lists.newArrayList();
+		NonNullList<ItemStack> stacks = NonNullList.create();
 		for (int i : ints)
 			stacks.add(ItemHandlerHelper.copyStackWithSize(stack, i));
 		return stacks;

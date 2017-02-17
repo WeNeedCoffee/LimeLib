@@ -1,42 +1,68 @@
 package mrriegel.limelib.datapart;
 
-import java.util.Map;
+import javax.annotation.Nonnull;
 
 import mrriegel.limelib.helper.NBTHelper;
+import mrriegel.limelib.network.DataPartSyncMessage;
+import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.util.GlobalBlockPos;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-import com.google.common.collect.Maps;
+public abstract class DataPart {
 
-@Deprecated
-public class DataPart {
+	GlobalBlockPos pos;
+	private String name = firstName();
 
-	public static Map<GlobalBlockPos, DataPart> partMap;
-
-	protected GlobalBlockPos pos;
-
-	public void update(World world) {
-
+	public void updateServer(World world) {
 	}
 
-	public void markDirty() {
-		DataPartSavedData.get(getWorld()).markDirty();
+	public void updateClient(World world) {
 	}
 
-	public void readFromNBT(NBTTagCompound compound) {
+	public void sync() {
+		if (!getWorld().isRemote)
+			PacketHandler.sendToAllAround(new DataPartSyncMessage(this), new TargetPoint(pos.getDimension(), getX(), getY(), getZ(), 12));
+	}
+
+	public final void readDataFromNBT(NBTTagCompound compound) {
 		pos = GlobalBlockPos.loadGlobalPosFromNBT(NBTHelper.getTag(compound, "gpos"));
+		name = NBTHelper.getString(compound, "naMe");
+		readFromNBT(compound);
 	}
 
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+	public final NBTTagCompound writeDataToNBT(NBTTagCompound compound) {
+		writeToNBT(compound);
 		compound.setString("class", getClass().getName());
+		compound.setString("naMe", name);
 		NBTTagCompound nbt = new NBTTagCompound();
 		pos.writeToNBT(nbt);
 		NBTHelper.setTag(compound, "gpos", nbt);
 		return compound;
 	}
 
+	public void readFromNBT(NBTTagCompound compound) {
+	}
+
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		return compound;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	protected abstract @Nonnull String firstName();
+
+	public void setName(String name) {
+		this.name = name;
+		sync();
+	}
+	public GlobalBlockPos getGlobalPos() {
+		return pos;
+	}
 	public World getWorld() {
 		return pos.getWorld();
 	}
@@ -55,57 +81,6 @@ public class DataPart {
 
 	public final int getZ() {
 		return pos.getPos().getZ();
-	}
-
-	//	public boolean onServer() {
-	//		return !world.isRemote;
-	//	}
-	//
-	//	public boolean onClient() {
-	//		return !onServer();
-	//	}
-
-	public static DataPart getDataPart(GlobalBlockPos pos) {
-		if (DataPart.partMap == null)
-			DataPart.partMap = Maps.newHashMap();
-		return DataPart.partMap.get(pos);
-	}
-
-	public static DataPart getDataPart(World world, BlockPos pos) {
-		return getDataPart(new GlobalBlockPos(pos, world));
-	}
-
-	public static boolean addDataPart(GlobalBlockPos pos, DataPart part, boolean force) {
-		if (DataPart.partMap == null)
-			DataPart.partMap = Maps.newHashMap();
-		part.pos = pos;
-		if (DataPart.partMap.get(pos) != null) {
-			if (force) {
-				DataPart.partMap.put(pos, part);
-				part.markDirty();
-				return true;
-			}
-			return false;
-		} else {
-			System.out.println("1 " + DataPart.partMap);
-			DataPart.partMap.put(pos, part);
-			System.out.println("2 " + DataPart.partMap.toString());
-			part.markDirty();
-			return true;
-		}
-	}
-
-	public static boolean addDataPart(World world, BlockPos pos, DataPart part, boolean force) {
-		return addDataPart(new GlobalBlockPos(pos, world), part, force);
-	}
-
-	public static void removeDataPart(GlobalBlockPos pos) {
-		if (DataPart.partMap == null)
-			DataPart.partMap = Maps.newHashMap();
-		if (DataPart.partMap.containsKey(pos)) {
-			DataPart.partMap.get(pos).markDirty();
-			DataPart.partMap.remove(pos);
-		}
 	}
 
 }

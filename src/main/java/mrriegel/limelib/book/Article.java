@@ -1,17 +1,14 @@
 package mrriegel.limelib.book;
 
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
-
-import com.google.common.collect.Lists;
 
 public class Article {
 	protected String text;
-	protected List<ItemStack> stacks = Lists.newArrayList();
+	protected NonNullList<ItemStack> stacks = NonNullList.create();
 	protected String name;
 	protected int index;
 

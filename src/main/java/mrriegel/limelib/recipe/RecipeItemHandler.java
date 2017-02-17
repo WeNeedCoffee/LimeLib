@@ -8,19 +8,18 @@ import mrriegel.limelib.util.FilterItem;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.IItemHandler;
-
-import com.google.common.collect.Lists;
 
 public class RecipeItemHandler extends AbstractRecipe<ItemStack, IItemHandler> {
 
-	public RecipeItemHandler(List<ItemStack> output, boolean order, Object... input) {
+	public RecipeItemHandler(NonNullList<ItemStack> output, boolean order, Object... input) {
 		super(output, order, input);
 	}
 
 	@Override
-	protected List<ItemStack> getIngredients(IItemHandler object) {
-		List<ItemStack> lis = Lists.newArrayList();
+	protected NonNullList<ItemStack> getIngredients(IItemHandler object) {
+		NonNullList<ItemStack> lis = NonNullList.create();
 		for (int i = 0; i < object.getSlots(); i++)
 			lis.add(object.getStackInSlot(i));
 		if (!order)

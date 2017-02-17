@@ -1,11 +1,15 @@
 package mrriegel.testmod;
 
 import java.awt.Color;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.block.CommonBlock;
+import mrriegel.limelib.datapart.DataPart;
+import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.ParticleHelper;
@@ -28,6 +32,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -65,7 +70,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-//@Mod(modid = "lalal", name = "kohle", version = "${version}")
+@Mod(modid = "lalal", name = "kohle", version = "${version}")
 public class TestMod implements IGuiHandler {
 
 	@Mod.Instance("lalal")
@@ -76,9 +81,9 @@ public class TestMod implements IGuiHandler {
 	public static Fluid alcohol;
 	public static Block alcoholBlock;
 
-//	public TestBook book = new TestBook();
+	//	public TestBook book = new TestBook();
 
-	public static final boolean ENABLE = false;
+	public static final boolean ENABLE = !false;
 
 	static {
 		FluidRegistry.enableUniversalBucket();
@@ -88,13 +93,13 @@ public class TestMod implements IGuiHandler {
 	public void preInit(FMLPreInitializationEvent event) {
 		if (!ENABLE)
 			return;
-		block.registerBlock();
-		block.initModel();
-		item.registerItem();
-		item.initModel();
+		//		block.registerBlock();
+		//		block.initModel();
+		//		item.registerItem();
+		//		item.initModel();
 
 		alcohol = new Fluid("alcohol", new ResourceLocation("lalal", "fluid/alcohol_still"), new ResourceLocation("lalal", "fluid/alcohol_flowing"));
-		FluidRegistry.registerFluid(alcohol);
+		//		FluidRegistry.registerFluid(alcohol);
 		FluidRegistry.addBucketForFluid(alcohol);
 		alcoholBlock = new BlockFluidClassic(alcohol, Material.WATER);
 		alcoholBlock.setRegistryName("alcohol");
@@ -104,9 +109,7 @@ public class TestMod implements IGuiHandler {
 		//		GameRegistry.register(alcoholBlock);
 		Part part = new Part();
 		part.setRegistryName("party");
-		GameRegistry.register(part);
-		GameRegistry.addRecipe(new ShapedRecipeExt(new ItemStack(Blocks.BEDROCK), " r ", " b ", " s ", 's', Blocks.STONE, 'r', Blocks.RED_FLOWER, 'b', Lists.newArrayList(Items.GUNPOWDER, Items.APPLE, Blocks.LEVER, new ItemStack(Items.BAKED_POTATO))));
-		GameRegistry.addRecipe(new ShapelessRecipeExt(new ItemStack(Blocks.OBSIDIAN), Items.BLAZE_POWDER, Lists.newArrayList(Blocks.HOPPER, Items.LAVA_BUCKET)));
+		//		GameRegistry.register(part);
 	}
 
 	@Mod.EventHandler
@@ -124,13 +127,13 @@ public class TestMod implements IGuiHandler {
 
 	class R extends RecipeItemHandler {
 
-		public R(List<ItemStack> output, boolean order, Object... input) {
+		public R(NonNullList<ItemStack> output, boolean order, Object... input) {
 			super(output, order, input);
 		}
 
 		@Override
-		protected List<ItemStack> getIngredients(IItemHandler object) {
-			List<ItemStack> hotbar = Lists.newArrayList();
+		protected NonNullList<ItemStack> getIngredients(IItemHandler object) {
+			NonNullList<ItemStack> hotbar = NonNullList.create();
 			for (int i = 0; i < 9; i++)
 				hotbar.add(((PlayerMainInvWrapper) object).getInventoryPlayer().getStackInSlot(i));
 			hotbar.removeAll(Collections.singleton(null));
@@ -167,7 +170,9 @@ public class TestMod implements IGuiHandler {
 			//			}
 			if (!player.world.isRemote) {
 				PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
-				R r = new R(Lists.newArrayList(new ItemStack(Blocks.GOLD_BLOCK), new ItemStack(Items.IRON_INGOT, 4)), true, Items.APPLE, Blocks.COAL_BLOCK, new ItemStack(Blocks.BOOKSHELF));
+				NonNullList<ItemStack> nnl = NonNullList.create();
+				nnl.addAll(Lists.newArrayList(new ItemStack(Blocks.GOLD_BLOCK), new ItemStack(Items.IRON_INGOT, 4)));
+				R r = new R(nnl, true, Items.APPLE, Blocks.COAL_BLOCK, new ItemStack(Blocks.BOOKSHELF));
 				if (r.match(pmiw) && r.removeIngredients(pmiw, false)) {
 					for (ItemStack s : r.getResult(pmiw))
 						ItemHandlerHelper.insertItemStacked(pmiw, s.copy(), false);
@@ -176,6 +181,22 @@ public class TestMod implements IGuiHandler {
 				//			if (!player.world.isRemote)
 				//				PacketHandler.sendTo(new TestMessage(player.getEntityData()), (EntityPlayerMP) player);
 
+			}
+			if ("".isEmpty()) {
+				BlockPos p = new BlockPos(-108, 72, 234);
+				DataPartRegistry reg = DataPartRegistry.get(player.world);
+				if (reg != null) {
+					Collection<DataPart> col = reg.getDataParts(player.world, p);
+					if (col.isEmpty()) {
+						TestPart part = new TestPart();
+						reg.addDataPart(player.world, p, part, false);
+						System.out.println(reg.getDataParts(player.world, p));
+					}else{
+						TestPart part=(TestPart) col.stream().collect(Collectors.toList()).get(0);
+						System.out.println("v: "+part.v);
+						part.v=7777-333;
+					}
+				}
 			}
 		}
 	}

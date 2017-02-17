@@ -36,7 +36,7 @@ public class PacketHandler {
 		registerMessage(TileSyncMessage.class);
 		registerMessage(TeleportMessage.class, Side.CLIENT);
 		registerMessage(EnergySyncMessage.class, Side.CLIENT);
-
+		registerMessage(DataPartSyncMessage.class, Side.CLIENT);
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage<?>> classMessage, Side side) {

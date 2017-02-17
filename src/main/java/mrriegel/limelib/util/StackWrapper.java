@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import com.google.common.collect.Lists;
@@ -78,8 +79,8 @@ public class StackWrapper {
 		return !wrap.getStack().isEmpty() ? wrap : null;
 	}
 
-	public static List<ItemStack> toStackList(List<StackWrapper> list) {
-		List<ItemStack> lis = Lists.newArrayList();
+	public static NonNullList<ItemStack> toStackList(List<StackWrapper> list) {
+		NonNullList<ItemStack> lis = NonNullList.create();
 		for (StackWrapper s : list) {
 			if (s == null || s.getStack().isEmpty())
 				continue;

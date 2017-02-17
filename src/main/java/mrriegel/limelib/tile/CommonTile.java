@@ -13,10 +13,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import com.google.common.collect.Lists;
 
 public class CommonTile extends TileEntity {
 
@@ -65,7 +64,7 @@ public class CommonTile extends TileEntity {
 	}
 
 	public List<ItemStack> getDroppingItems() {
-		return Lists.newArrayList();
+		return NonNullList.create();
 	}
 
 	public boolean openGUI(EntityPlayerMP player) {
