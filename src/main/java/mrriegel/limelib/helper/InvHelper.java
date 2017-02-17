@@ -1,11 +1,15 @@
 package mrriegel.limelib.helper;
 
+import java.util.List;
+
 import mrriegel.limelib.util.FilterItem;
+import mrriegel.limelib.util.StackWrapper;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fluids.FluidStack;
@@ -108,12 +112,20 @@ public class InvHelper {
 		return null;
 	}
 
+	public static void sort(IItemHandler inv) {
+		NonNullList<ItemStack> ex = StackHelper.inv2list(inv);
+		List<StackWrapper> wraps = StackWrapper.toWrapperList(ex);
+		NonNullList<ItemStack> lis = StackWrapper.toStackList(wraps);
+		InvHelper.clear(inv);
+		StackHelper.list2inv(lis, inv);
+	}
+
 	public static void clear(IItemHandler inv) {
 		for (int i = 0; i < inv.getSlots(); i++) {
 			if (inv.getStackInSlot(i).isEmpty())
 				continue;
 			if (inv instanceof IItemHandlerModifiable)
-				((IItemHandlerModifiable) inv).setStackInSlot(i, null);
+				((IItemHandlerModifiable) inv).setStackInSlot(i, ItemStack.EMPTY);
 			else
 				inv.extractItem(i, inv.getStackInSlot(i).getCount(), false);
 		}

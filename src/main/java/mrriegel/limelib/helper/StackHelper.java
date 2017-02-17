@@ -17,6 +17,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -129,6 +130,40 @@ public class StackHelper {
 			wrench |= stack.getUnlocalizedName().toLowerCase().contains(s);
 		}
 		return wrench;
+	}
+
+	public static void addStack(NonNullList<ItemStack> lis, ItemStack stack) {
+		int remain = stack.getCount();
+		for (int i = 0; i < lis.size(); i++) {
+			if (ItemHandlerHelper.canItemStacksStack(lis.get(i), stack)) {
+				int gather = lis.get(i).getMaxStackSize() - lis.get(i).getCount();
+				if (gather >= remain) {
+					lis.get(i).grow(remain);
+					return;
+				} else {
+					int diff = remain - gather;
+					lis.get(i).grow(diff);
+					remain = diff;
+				}
+			}
+		}
+		if (remain > 0)
+			lis.add(ItemHandlerHelper.copyStackWithSize(stack, remain));
+	}
+
+	public static NonNullList<ItemStack> inv2list(IItemHandler inv) {
+		NonNullList<ItemStack> lis = NonNullList.create();
+		for (int i = 0; i < inv.getSlots(); i++)
+			addStack(lis, inv.getStackInSlot(i));
+		return lis;
+	}
+
+	public static void list2inv(NonNullList<ItemStack> lis, IItemHandler inv) {
+		for (ItemStack stack : lis) {
+			ItemStack remain = ItemHandlerHelper.insertItemStacked(inv, stack, false);
+			if (!remain.isEmpty())
+				LimeLib.log.error(remain + " is lost.");
+		}
 	}
 
 }

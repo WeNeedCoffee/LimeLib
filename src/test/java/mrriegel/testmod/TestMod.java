@@ -10,23 +10,29 @@ import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.block.CommonBlock;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
+import mrriegel.limelib.datapart.RenderRegistry;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
+import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.ParticleHelper;
 import mrriegel.limelib.helper.RenderHelper2;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.particle.CommonParticle;
 import mrriegel.limelib.recipe.RecipeItemHandler;
-import mrriegel.limelib.recipe.ShapedRecipeExt;
-import mrriegel.limelib.recipe.ShapelessRecipeExt;
 import mrriegel.limelib.tile.CommonTileInventory;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.model.ModelBook;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -36,13 +42,17 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -57,7 +67,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
 import net.minecraftforge.fml.common.registry.RegistryBuilder;
@@ -119,6 +128,36 @@ public class TestMod implements IGuiHandler {
 		MinecraftForge.EVENT_BUS.register(this);
 		NetworkRegistry.INSTANCE.registerGuiHandler(mod, this);
 		PacketHandler.registerMessage(TestMessage.class, Side.CLIENT);
+		RenderRegistry.register(TestPart.class, new RenderRegistry.RenderDataPart<TestPart>() {
+			@Override
+			public void render(TestPart part, double x, double y, double z, float partialTicks) {
+				ItemStack inputStack = new ItemStack(Items.DIAMOND_PICKAXE);
+
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(x, y, z);
+				RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
+				GlStateManager.translate(0.5, 1.5, 0.5);
+				EntityItem entityitem = new EntityItem(part.getWorld(), 0.0D, 0.0D, 0.0D, inputStack);
+				entityitem.getEntityItem().setCount(1);
+				entityitem.hoverStart = 0.0F;
+				GlStateManager.pushMatrix();
+				GlStateManager.disableLighting();
+
+				float rotation = (float) (4720.0 * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL);
+
+				GlStateManager.rotate(rotation, 0.0F, 1.0F, 0);
+				GlStateManager.scale(0.5F, 0.5F, 0.5F);
+				GlStateManager.pushAttrib();
+				RenderHelper.enableStandardItemLighting();
+				itemRenderer.renderItem(entityitem.getEntityItem(), ItemCameraTransforms.TransformType.FIXED);
+				RenderHelper.disableStandardItemLighting();
+				GlStateManager.popAttrib();
+
+				GlStateManager.enableLighting();
+				GlStateManager.popMatrix();
+				GlStateManager.popMatrix();
+			}
+		});
 	}
 
 	@Mod.EventHandler
@@ -182,19 +221,27 @@ public class TestMod implements IGuiHandler {
 				//				PacketHandler.sendTo(new TestMessage(player.getEntityData()), (EntityPlayerMP) player);
 
 			}
+			DataPartRegistry r = DataPartRegistry.get(player.world);
+			if (r != null) {
+				System.out.println(r.getParts());
+			}
 			if ("".isEmpty()) {
 				BlockPos p = new BlockPos(-108, 72, 234);
 				DataPartRegistry reg = DataPartRegistry.get(player.world);
 				if (reg != null) {
-					Collection<DataPart> col = reg.getDataParts(player.world, p);
-					if (col.isEmpty()) {
+					DataPart dp= reg.getDataPart(p);
+					if (dp==null) {
 						TestPart part = new TestPart();
-						reg.addDataPart(player.world, p, part, false);
-						System.out.println(reg.getDataParts(player.world, p));
-					}else{
-						TestPart part=(TestPart) col.stream().collect(Collectors.toList()).get(0);
-						System.out.println("v: "+part.v);
-						part.v=7777-333;
+						if (!player.world.isRemote) {
+							reg.addDataPart(p, part, false);
+							player.sendMessage(new TextComponentString("start quarry"));
+						}
+					} else {
+						if (!player.world.isRemote) {
+							reg.removeDataPart(p);
+							player.sendMessage(new TextComponentString("stop"));
+						}
+						//						TestPart part = (TestPart) col.stream().collect(Collectors.toList()).get(0);
 					}
 				}
 			}

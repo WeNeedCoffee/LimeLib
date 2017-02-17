@@ -4,9 +4,10 @@ import java.awt.Color;
 import java.util.Map;
 
 import mrriegel.limelib.Config;
-import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
+import mrriegel.limelib.datapart.RenderRegistry;
+import mrriegel.limelib.datapart.RenderRegistry.RenderDataPart;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.EnergyHelper;
@@ -16,10 +17,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -71,19 +74,31 @@ public class ClientEventHandler {
 			GlStateManager.popMatrix();
 		}
 	}
-	
+
 	@SubscribeEvent
-	public static void tick(ClientTickEvent event){
+	public static void tick(ClientTickEvent event) {
 		Minecraft mc = Minecraft.getMinecraft();
-		if (event.phase == Phase.END) {
-			if (mc.world.hasCapability(CapabilityDataPart.DATAPART, null)) {
-				DataPartRegistry reg = mc.world.getCapability(CapabilityDataPart.DATAPART, null);
-				for (DataPart part : reg.partMap.values()) {
-					if (part != null  && part.getWorld().isBlockLoaded(part.getPos())) {
+		if (event.phase == Phase.END && mc.world != null && !mc.isGamePaused()) {
+			DataPartRegistry reg = DataPartRegistry.get(mc.world);
+			if (reg != null) {
+				for (DataPart part : reg.getParts()) {
+					if (part != null && part.getWorld().isBlockLoaded(part.getPos())) {
 						part.updateClient(mc.world);
 					}
 				}
 			}
 		}
 	}
+
+	@SubscribeEvent
+	public static void render(RenderWorldLastEvent event) {
+		DataPartRegistry reg = DataPartRegistry.get(Minecraft.getMinecraft().world);
+		if (reg != null)
+			for (DataPart p : reg.getParts()) {
+				RenderDataPart ren = RenderRegistry.map.get(p.getClass());
+				if (ren != null)
+					ren.render(p, p.getX() - TileEntityRendererDispatcher.staticPlayerX, p.getY() - TileEntityRendererDispatcher.staticPlayerY, p.getZ() - TileEntityRendererDispatcher.staticPlayerZ, event.getPartialTicks());
+			}
+	}
+
 }

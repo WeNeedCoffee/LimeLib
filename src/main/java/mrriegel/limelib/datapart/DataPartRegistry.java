@@ -1,89 +1,120 @@
 package mrriegel.limelib.datapart;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import mrriegel.limelib.util.GlobalBlockPos;
+import mrriegel.limelib.helper.NBTHelper;
+import mrriegel.limelib.network.DataPartSyncMessage;
+import mrriegel.limelib.network.PacketHandler;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 
-public class DataPartRegistry {
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
-	public Multimap<GlobalBlockPos, DataPart> partMap = HashMultimap.<GlobalBlockPos, DataPart> create();
+public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
+
+	private Map<BlockPos, DataPart> partMap = Maps.newHashMap();
+	public World world;
 
 	public static DataPartRegistry get(World world) {
-		if (world.hasCapability(CapabilityDataPart.DATAPART, null)) {
-			return world.getCapability(CapabilityDataPart.DATAPART, null);
+		if (world == null)
+			return null;
+		DataPartRegistry reg = world.hasCapability(CapabilityDataPart.DATAPART, null) ? world.getCapability(CapabilityDataPart.DATAPART, null) : null;
+		if (reg == null)
+			return null;
+		else {
+			if (reg.world == null)
+				reg.world = world;
+			for (DataPart part : reg.getParts())
+				if (part.world == null)
+					part.world = world;
+			return reg;
 		}
-		return null;
 	}
 
-	public Collection<DataPart> getDataParts(GlobalBlockPos pos) {
+	public DataPart getDataPart(BlockPos pos) {
 		return partMap.get(pos);
 	}
 
-	public Collection<DataPart> getDataParts(World world, BlockPos pos) {
-		return getDataParts(new GlobalBlockPos(pos, world));
-	}
-
-	public DataPart getDataPart(GlobalBlockPos pos, String name) {
-		for (DataPart d : getDataParts(pos))
-			if (d.getName().equals(name))
-				return d;
-		return null;
-	}
-
-	public DataPart getDataPart(World world, BlockPos pos, String name) {
-		for (DataPart d : getDataParts(world, pos))
-			if (d.getName().equals(name))
-				return d;
-		return null;
-	}
-
-	public boolean addDataPart(GlobalBlockPos pos, DataPart part, boolean force) {
+	public boolean addDataPart(BlockPos pos, DataPart part, boolean force) {
 		part.pos = pos;
-		if (partMap.get(pos) != null && partMap.get(pos).stream().anyMatch(p -> p.getName().equals(part.getName()))) {
+		part.world = world;
+		if (partMap.get(pos) != null) {
 			if (force) {
 				partMap.put(pos, part);
-				part.sync();
+				part.onAdded();
+				sync(pos);
 				return true;
 			}
 			return false;
 		} else {
 			partMap.put(pos, part);
-			part.sync();
+			part.onAdded();
+			sync(pos);
 			return true;
 		}
 	}
 
-	public boolean addDataPart(World world, BlockPos pos, DataPart part, boolean force) {
-		return addDataPart(new GlobalBlockPos(pos, world), part, force);
+	public void removeDataPart(BlockPos pos) {
+		if (partMap.containsKey(pos)) {
+			partMap.get(pos).onRemoved();
+			partMap.remove(pos);
+			sync(pos);
+		}
 	}
 
-	public boolean removeDataPart(GlobalBlockPos pos, String name) {
-		Collection<DataPart> col = getDataParts(pos);
-		boolean removed = false;
-		if (partMap.containsKey(pos)) {
-			Iterator<DataPart> it = col.iterator();
-			while (it.hasNext()) {
-				DataPart next = it.next();
-				if (next.getName().equals(name)) {
-					it.remove();
-					removed = true;
-					break;
+	public void clearWorld() {
+		partMap.clear();
+	}
+
+	public Collection<DataPart> getParts() {
+		return Collections.unmodifiableCollection(partMap.values());
+	}
+
+	public void sync(BlockPos pos) {
+		if (world != null && !world.isRemote)
+			PacketHandler.sendToAllAround(new DataPartSyncMessage(getDataPart(pos), pos), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 18));
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		List<NBTTagCompound> nbts = Lists.newArrayList();
+		for (DataPart entry : partMap.values())
+			nbts.add(entry.writeDataToNBT(new NBTTagCompound()));
+		return NBTHelper.setTagList(new NBTTagCompound(), "nbts", nbts);
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		clearWorld();
+		List<NBTTagCompound> nbts = NBTHelper.getTagList((NBTTagCompound) nbt, "nbts");
+		for (NBTTagCompound n : nbts) {
+			createPart(n);
+		}
+	}
+
+	public void createPart(NBTTagCompound n) {
+		try {
+			Class<?> clazz = Class.forName(n.getString("class"));
+			if (clazz != null && DataPart.class.isAssignableFrom(clazz)) {
+				DataPart part = (DataPart) ConstructorUtils.invokeConstructor(clazz);
+				if (part != null) {
+					part.readDataFromNBT(n);
+					partMap.put(part.pos, part);
+					part.onAdded();
+					sync(part.pos);
 				}
 			}
-			partMap.replaceValues(pos, col);
-		}
-		return removed;
-	}
-
-	public void removeAllDataParts(GlobalBlockPos pos) {
-		if (partMap.containsKey(pos)) {
-			partMap.removeAll(pos);
+		} catch (ReflectiveOperationException e) {
+			e.printStackTrace();
 		}
 	}
 

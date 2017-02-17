@@ -14,23 +14,21 @@ import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class Eventhandler {
+public class EventHandler {
 
 	@SubscribeEvent
 	public static void left(LeftClickBlock event) {
@@ -84,11 +82,13 @@ public class Eventhandler {
 				}
 			} catch (ConcurrentModificationException e) {
 			}
-			if (event.world.hasCapability(CapabilityDataPart.DATAPART, null)) {
-				DataPartRegistry reg = event.world.getCapability(CapabilityDataPart.DATAPART, null);
-				for (DataPart part : reg.partMap.values()) {
-					if (part != null && part.getWorld() == event.world && part.getWorld().isBlockLoaded(part.getPos())) {
+			DataPartRegistry reg = DataPartRegistry.get(event.world);
+			if (reg != null) {
+				for (DataPart part : reg.getParts()) {
+					if (part != null && part.getWorld().isBlockLoaded(part.getPos())) {
 						part.updateServer(event.world);
+						if (event.world.getTotalWorldTime() % 200 == 0)
+							reg.sync(part.getPos());
 					}
 				}
 			}
@@ -106,29 +106,16 @@ public class Eventhandler {
 
 	@SubscribeEvent
 	public static void attachWorld(AttachCapabilitiesEvent.World event) {
-		event.addCapability(new ResourceLocation(LimeLib.MODID + ":datapart"), new ICapabilitySerializable<NBTTagCompound>() {
+		event.addCapability(new ResourceLocation(LimeLib.MODID + ":datapart"), new CapabilityDataPart.CapaProvider(event.getWorld()));
+	}
 
-			DataPartRegistry instance = CapabilityDataPart.DATAPART.getDefaultInstance();
-
-			@Override
-			public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-				return capability == CapabilityDataPart.DATAPART;
-			}
-
-			@Override
-			public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-				return CapabilityDataPart.DATAPART.cast(instance);
-			}
-
-			@Override
-			public NBTTagCompound serializeNBT() {
-				return (NBTTagCompound) CapabilityDataPart.DATAPART.getStorage().writeNBT(CapabilityDataPart.DATAPART, instance, null);
-			}
-
-			@Override
-			public void deserializeNBT(NBTTagCompound nbt) {
-				CapabilityDataPart.DATAPART.readNBT(instance, null, nbt);
-			}
-		});
+	@SubscribeEvent
+	public static void login(PlayerLoggedInEvent event) {
+		if (!event.player.world.isRemote)
+			((IThreadListener) event.player.world).addScheduledTask(() -> {
+				DataPartRegistry reg = DataPartRegistry.get(event.player.world);
+				if (reg != null)
+					reg.getParts().forEach(p -> reg.sync(p.getPos()));
+			});
 	}
 }

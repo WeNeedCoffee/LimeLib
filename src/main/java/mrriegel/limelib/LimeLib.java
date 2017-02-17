@@ -3,7 +3,7 @@ package mrriegel.limelib;
 import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.util.ClientEventHandler;
-import mrriegel.limelib.util.Eventhandler;
+import mrriegel.limelib.util.EventHandler;
 import mrriegel.limelib.util.Utils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -40,7 +40,7 @@ public class LimeLib {
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		PacketHandler.init();
-		MinecraftForge.EVENT_BUS.register(Eventhandler.class);
+		MinecraftForge.EVENT_BUS.register(EventHandler.class);
 		if (event.getSide().isClient())
 			MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
 	}

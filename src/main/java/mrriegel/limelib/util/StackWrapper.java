@@ -17,7 +17,7 @@ public class StackWrapper {
 		super();
 		if (stack.isEmpty())
 			throw new NullPointerException();
-		this.stack = stack;
+		this.stack = stack.copy();
 		this.size = size;
 	}
 
@@ -58,7 +58,7 @@ public class StackWrapper {
 	public void setStack(ItemStack stack) {
 		if (stack.isEmpty())
 			throw new NullPointerException();
-		this.stack = stack;
+		this.stack = stack.copy();
 	}
 
 	public int getSize() {
@@ -88,7 +88,7 @@ public class StackWrapper {
 			int stacks = s.size / maxstacksize + (s.size % maxstacksize != 0 ? 1 : 0);
 			for (int i = 0; i < stacks; i++) {
 				ItemStack toAdd = s.getStack().copy();
-				toAdd.setCount((i < stacks - 1 ? maxstacksize : s.size % maxstacksize));
+				toAdd.setCount(s.size == maxstacksize ? maxstacksize : (i < stacks - 1 ? maxstacksize : s.size % maxstacksize));
 				lis.add(toAdd);
 			}
 		}
@@ -98,7 +98,7 @@ public class StackWrapper {
 	public static List<StackWrapper> toWrapperList(List<ItemStack> list) {
 		List<StackWrapper> lis = Lists.newArrayList();
 		for (ItemStack s : list) {
-			if (s == null)
+			if (s.isEmpty())
 				continue;
 			boolean added = false;
 			for (int i = 0; i < lis.size(); i++) {
