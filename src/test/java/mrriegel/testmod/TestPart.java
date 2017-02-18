@@ -46,12 +46,12 @@ public class TestPart extends DataPartWorker {
 
 	@Override
 	protected boolean workDone(World world, Side side) {
-		return posList.isEmpty() && started;
+		return posList.isEmpty() && started&&false;
 	}
 
 	@Override
 	protected boolean canWork(World world, Side side) {
-		return true;
+		return !true;
 	}
 
 	@Override

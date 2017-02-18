@@ -95,6 +95,7 @@ public class ClientEventHandler {
 		DataPartRegistry reg = DataPartRegistry.get(Minecraft.getMinecraft().world);
 		if (reg != null)
 			for (DataPart p : reg.getParts()) {
+				@SuppressWarnings("rawtypes")
 				RenderDataPart ren = RenderRegistry.map.get(p.getClass());
 				if (ren != null)
 					ren.render(p, p.getX() - TileEntityRendererDispatcher.staticPlayerX, p.getY() - TileEntityRendererDispatcher.staticPlayerY, p.getZ() - TileEntityRendererDispatcher.staticPlayerZ, event.getPartialTicks());

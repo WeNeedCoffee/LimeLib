@@ -4,22 +4,31 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.network.DataPartSyncMessage;
 import mrriegel.limelib.network.PacketHandler;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
+
+	public static final ResourceLocation LOCATION = new ResourceLocation(LimeLib.MODID + ":datapart");
+	public static final BiMap<String, Class<? extends DataPart>> PARTS = HashBiMap.create();
 
 	private Map<BlockPos, DataPart> partMap = Maps.newHashMap();
 	public World world;
@@ -40,11 +49,20 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		}
 	}
 
+	public static void register(String name, Class<? extends DataPart> clazz) {
+		DataPartRegistry.PARTS.put(name, clazz);
+	}
+
 	public DataPart getDataPart(BlockPos pos) {
 		return partMap.get(pos);
 	}
 
 	public boolean addDataPart(BlockPos pos, DataPart part, boolean force) {
+		Validate.notNull(part);
+		if (!PARTS.inverse().containsKey(part.getClass())) {
+			LimeLib.log.error(part.getClass() + " not registered.");
+			return false;
+		}
 		part.pos = pos;
 		part.world = world;
 		if (partMap.get(pos) != null) {
@@ -81,7 +99,7 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 
 	public void sync(BlockPos pos) {
 		if (world != null && !world.isRemote)
-			PacketHandler.sendToAllAround(new DataPartSyncMessage(getDataPart(pos), pos), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 18));
+			PacketHandler.sendToAllAround(new DataPartSyncMessage(getDataPart(pos), pos, partMap.values().stream().map(DataPart::getPos).collect(Collectors.toList())), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 18));
 	}
 
 	@Override
@@ -95,27 +113,29 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt) {
 		clearWorld();
-		List<NBTTagCompound> nbts = NBTHelper.getTagList((NBTTagCompound) nbt, "nbts");
+		List<NBTTagCompound> nbts = NBTHelper.getTagList(nbt, "nbts");
 		for (NBTTagCompound n : nbts) {
-			createPart(n);
+			createPart(world, n);
 		}
 	}
 
-	public void createPart(NBTTagCompound n) {
+	public void createPart(World world, NBTTagCompound n) {
 		try {
-			Class<?> clazz = Class.forName(n.getString("class"));
+			Class<?> clazz = DataPartRegistry.PARTS.get(n.getString("id"));
 			if (clazz != null && DataPart.class.isAssignableFrom(clazz)) {
 				DataPart part = (DataPart) ConstructorUtils.invokeConstructor(clazz);
 				if (part != null) {
 					part.readDataFromNBT(n);
 					partMap.put(part.pos, part);
+					part.setWorld(world);
 					part.onAdded();
 					sync(part.pos);
+					return;
 				}
 			}
 		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
 		}
+		LimeLib.log.error("Failed to create datapart " + n.getString("id"));
 	}
 
 }

@@ -1,8 +1,13 @@
 package mrriegel.limelib.network;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.helper.NBTHelper;
+import mrriegel.limelib.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -13,12 +18,13 @@ public class DataPartSyncMessage extends AbstractMessage<DataPartSyncMessage> {
 	public DataPartSyncMessage() {
 	}
 
-	public DataPartSyncMessage(DataPart part, BlockPos pos) {
+	public DataPartSyncMessage(DataPart part, BlockPos pos, List<BlockPos> parts) {
 		if (part == null) {
 			nbt.setBoolean("removed", true);
 			nbt.setLong("poS", pos.toLong());
 		} else
 			part.writeDataToNBT(nbt);
+		NBTHelper.setLongList(nbt, "poss", Utils.getLongList(parts));
 	}
 
 	@Override
@@ -34,13 +40,13 @@ public class DataPartSyncMessage extends AbstractMessage<DataPartSyncMessage> {
 					p.readDataFromNBT(nbt);
 					p.setWorld(player.world);
 				} else {
-					reg.createPart(nbt);
-					p = reg.getDataPart(pos);
-					if (p != null)
-						p.setWorld(player.world);
+					reg.createPart(player.world, nbt);
 				}
 			}
+			Collection<BlockPos> valids = Utils.getBlockPosList(NBTHelper.getLongList(nbt, "poss"));
+			Collection<BlockPos> clients = reg.getParts().stream().map(DataPart::getPos).collect(Collectors.toSet());
+			clients.removeAll(valids);
+			clients.forEach(p -> reg.removeDataPart(p));
 		}
 	}
-
 }

@@ -1,10 +1,8 @@
 package mrriegel.testmod;
 
 import java.awt.Color;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.block.CommonBlock;
@@ -13,7 +11,6 @@ import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.datapart.RenderRegistry;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.ColorHelper;
-import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.ParticleHelper;
 import mrriegel.limelib.helper.RenderHelper2;
 import mrriegel.limelib.item.CommonItem;
@@ -25,7 +22,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.model.ModelBook;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
@@ -42,8 +38,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -52,7 +46,6 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -128,6 +121,7 @@ public class TestMod implements IGuiHandler {
 		MinecraftForge.EVENT_BUS.register(this);
 		NetworkRegistry.INSTANCE.registerGuiHandler(mod, this);
 		PacketHandler.registerMessage(TestMessage.class, Side.CLIENT);
+		DataPartRegistry.register("theo", TestPart.class);
 		RenderRegistry.register(TestPart.class, new RenderRegistry.RenderDataPart<TestPart>() {
 			@Override
 			public void render(TestPart part, double x, double y, double z, float partialTicks) {
@@ -229,8 +223,8 @@ public class TestMod implements IGuiHandler {
 				BlockPos p = new BlockPos(-108, 72, 234);
 				DataPartRegistry reg = DataPartRegistry.get(player.world);
 				if (reg != null) {
-					DataPart dp= reg.getDataPart(p);
-					if (dp==null) {
+					DataPart dp = reg.getDataPart(p);
+					if (dp == null) {
 						TestPart part = new TestPart();
 						if (!player.world.isRemote) {
 							reg.addDataPart(p, part, false);

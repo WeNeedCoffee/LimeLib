@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public abstract class DataPart {
+public class DataPart {
 
 	protected BlockPos pos;
 	protected World world;
@@ -29,7 +29,7 @@ public abstract class DataPart {
 
 	public final NBTTagCompound writeDataToNBT(NBTTagCompound compound) {
 		writeToNBT(compound);
-		compound.setString("class", getClass().getName());
+		compound.setString("id", DataPartRegistry.PARTS.inverse().get(getClass()));
 		compound.setLong("poS", pos.toLong());
 		return compound;
 	}

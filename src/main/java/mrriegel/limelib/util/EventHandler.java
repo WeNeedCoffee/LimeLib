@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 
 import mrriegel.limelib.Config;
-import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
@@ -16,7 +15,6 @@ import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -106,7 +104,7 @@ public class EventHandler {
 
 	@SubscribeEvent
 	public static void attachWorld(AttachCapabilitiesEvent.World event) {
-		event.addCapability(new ResourceLocation(LimeLib.MODID + ":datapart"), new CapabilityDataPart.CapaProvider(event.getWorld()));
+		event.addCapability(DataPartRegistry.LOCATION, new CapabilityDataPart.CapaProvider(event.getWorld()));
 	}
 
 	@SubscribeEvent

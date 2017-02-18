@@ -40,20 +40,10 @@ public class CapabilityDataPart {
 
 	public static class CapaProvider implements ICapabilitySerializable<NBTTagCompound> {
 
-		World world;
+		DataPartRegistry instance = CapabilityDataPart.DATAPART.getDefaultInstance();
 
 		public CapaProvider(World world) {
-			super();
-			this.world = world;
-		}
-
-		DataPartRegistry instance;
-		{
-			instance = CapabilityDataPart.DATAPART.getDefaultInstance();
 			instance.world = world;
-//			System.out.println(instance.getParts().size()+" size:::");
-//			for(DataPart p:instance.getParts())
-//				p.world=world;
 		}
 
 		@Override
