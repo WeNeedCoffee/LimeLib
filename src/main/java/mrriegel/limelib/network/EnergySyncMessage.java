@@ -2,10 +2,10 @@ package mrriegel.limelib.network;
 
 import java.util.List;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.EnergyHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.WorldHelper;
-import mrriegel.limelib.util.ClientEventHandler;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,7 +16,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class EnergySyncMessage extends AbstractMessage<EnergySyncMessage> {
 
@@ -42,13 +41,13 @@ public class EnergySyncMessage extends AbstractMessage<EnergySyncMessage> {
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
 		List<BlockPos> lis1 = Utils.getBlockPosList(NBTHelper.getLongList(nbt, "lis1"));
 		List<Long> lis2 = NBTHelper.getLongList(nbt, "lis2"), lis3 = NBTHelper.getLongList(nbt, "lis3");
-		ClientEventHandler.energyTiles = Maps.newHashMap();
+		LimeLib.proxy.energyTiles().clear();
 		try {
 			for (int i = 0; i < lis1.size(); i++) {
-				ClientEventHandler.energyTiles.put(lis1.get(i), Pair.of(lis2.get(i), lis3.get(i)));
+				LimeLib.proxy.energyTiles().put(lis1.get(i), Pair.of(lis2.get(i), lis3.get(i)));
 			}
 		} catch (IndexOutOfBoundsException e) {
-			ClientEventHandler.energyTiles.clear();
+			LimeLib.proxy.energyTiles().clear();
 		}
 	}
 

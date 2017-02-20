@@ -1,7 +1,7 @@
 package mrriegel.limelib.network;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import mrriegel.limelib.datapart.DataPart;
@@ -43,8 +43,8 @@ public class DataPartSyncMessage extends AbstractMessage<DataPartSyncMessage> {
 					reg.createPart(player.world, nbt);
 				}
 			}
-			Collection<BlockPos> valids = Utils.getBlockPosList(NBTHelper.getLongList(nbt, "poss"));
-			Collection<BlockPos> clients = reg.getParts().stream().map(DataPart::getPos).collect(Collectors.toSet());
+			List<BlockPos> valids = Utils.getBlockPosList(NBTHelper.getLongList(nbt, "poss"));
+			Set<BlockPos> clients = reg.getParts().stream().map(DataPart::getPos).collect(Collectors.toSet());
 			clients.removeAll(valids);
 			clients.forEach(p -> reg.removeDataPart(p));
 		}

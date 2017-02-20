@@ -83,7 +83,7 @@ public class EventHandler {
 			DataPartRegistry reg = DataPartRegistry.get(event.world);
 			if (reg != null) {
 				for (DataPart part : reg.getParts()) {
-					if (part != null && part.getWorld().isBlockLoaded(part.getPos())) {
+					if (part != null && event.world.isBlockLoaded(part.getPos())) {
 						part.updateServer(event.world);
 						if (event.world.getTotalWorldTime() % 200 == 0)
 							reg.sync(part.getPos());

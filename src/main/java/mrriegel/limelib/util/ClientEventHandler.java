@@ -1,9 +1,9 @@
 package mrriegel.limelib.util;
 
 import java.awt.Color;
-import java.util.Map;
 
 import mrriegel.limelib.Config;
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.datapart.RenderRegistry;
@@ -28,13 +28,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.google.common.collect.Maps;
-
 public class ClientEventHandler {
-
-	public static Map<BlockPos, Pair<Long, Long>> energyTiles = Maps.newHashMap();
 
 	@SubscribeEvent
 	public static void onTextureStitch(TextureStitchEvent event) {
@@ -49,17 +43,17 @@ public class ClientEventHandler {
 		if (!Config.showEnergy || mc == null || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null)
 			return;
 		BlockPos p = mc.objectMouseOver.getBlockPos();
-		if (event.getType() == ElementType.TEXT && energyTiles.containsKey(p)) {
+		if (event.getType() == ElementType.TEXT && LimeLib.proxy.energyTiles().containsKey(p)) {
 			Energy energyType;
 			if ((energyType = EnergyHelper.isEnergyInterface(mc.world, p)) == null) {
-				energyTiles.remove(p);
+				LimeLib.proxy.energyTiles().remove(p);
 				return;
 			}
 			ScaledResolution sr = event.getResolution();
 			GlStateManager.pushMatrix();
 			GlStateManager.enableBlend();
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
-			long energy = energyTiles.get(p).getLeft(), max = energyTiles.get(p).getRight();
+			long energy = LimeLib.proxy.energyTiles().get(p).getLeft(), max = LimeLib.proxy.energyTiles().get(p).getRight();
 			String text = (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(energy) : energy) + "/" + (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(max) : max) + " " + energyType.unit;
 			int lenght = 90/*mc.fontRendererObj.getStringWidth(text)*/;
 			mc.fontRendererObj.drawString(text, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(text)) / 2, (sr.getScaledHeight() - 15 - mc.fontRendererObj.FONT_HEIGHT) / 2, GuiScreen.isShiftKeyDown() ? 0xffff00 : 0x80ffff00, true);
@@ -82,7 +76,7 @@ public class ClientEventHandler {
 			DataPartRegistry reg = DataPartRegistry.get(mc.world);
 			if (reg != null) {
 				for (DataPart part : reg.getParts()) {
-					if (part != null && part.getWorld().isBlockLoaded(part.getPos())) {
+					if (part != null && mc.world.isBlockLoaded(part.getPos())) {
 						part.updateClient(mc.world);
 					}
 				}

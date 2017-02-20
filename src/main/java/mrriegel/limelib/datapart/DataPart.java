@@ -22,6 +22,10 @@ public class DataPart {
 	public void onRemoved() {
 	}
 
+	public boolean clientValid() {
+		return true;
+	}
+
 	public final void readDataFromNBT(NBTTagCompound compound) {
 		pos = BlockPos.fromLong(NBTHelper.getLong(compound, "poS"));
 		readFromNBT(compound);

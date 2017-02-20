@@ -1,12 +1,19 @@
 package mrriegel.limelib;
 
+import java.util.Map;
+
 import mrriegel.limelib.particle.CommonParticle;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.google.common.collect.ImmutableMap;
 
 public class LimeCommonProxy {
 
@@ -35,6 +42,10 @@ public class LimeCommonProxy {
 	}
 
 	public void renderParticle(CommonParticle par) {
+	}
+
+	public Map<BlockPos, Pair<Long, Long>> energyTiles() {
+		return ImmutableMap.of();
 	}
 
 }

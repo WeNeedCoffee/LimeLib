@@ -63,6 +63,8 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 			LimeLib.log.error(part.getClass() + " not registered.");
 			return false;
 		}
+		if (world.isRemote && !part.clientValid())
+			return false;
 		part.pos = pos;
 		part.world = world;
 		if (partMap.get(pos) != null) {
@@ -98,7 +100,7 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public void sync(BlockPos pos) {
-		if (world != null && !world.isRemote)
+		if (world != null && !world.isRemote && (getDataPart(pos) == null || getDataPart(pos).clientValid()))
 			PacketHandler.sendToAllAround(new DataPartSyncMessage(getDataPart(pos), pos, partMap.values().stream().map(DataPart::getPos).collect(Collectors.toList())), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 18));
 	}
 
@@ -123,7 +125,7 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		try {
 			Class<?> clazz = DataPartRegistry.PARTS.get(n.getString("id"));
 			if (clazz != null && DataPart.class.isAssignableFrom(clazz)) {
-				DataPart part = (DataPart) ConstructorUtils.invokeConstructor(clazz);
+				DataPart part = ConstructorUtils.invokeConstructor((Class<? extends DataPart>) clazz);
 				if (part != null) {
 					part.readDataFromNBT(n);
 					partMap.put(part.pos, part);
