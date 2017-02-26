@@ -1,6 +1,7 @@
 package mrriegel.limelib.helper;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import mrriegel.limelib.util.FilterItem;
 import mrriegel.limelib.util.StackWrapper;
@@ -24,12 +25,15 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 public class InvHelper {
-	public static boolean hasItemHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
-		return getItemHandler(world, pos, side) != null;
+
+	public static boolean hasItemHandler(TileEntity tile, EnumFacing side) {
+		if (tile == null)
+			return false;
+		return tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side) || tile instanceof IInventory;
 	}
 
-	public static boolean hasItemHandler(TileEntity tile, EnumFacing facing) {
-		return getItemHandler(tile, facing) != null;
+	public static boolean hasItemHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
+		return hasItemHandler(WorldHelper.getTile(world, pos), side);
 	}
 
 	public static IItemHandler getItemHandler(TileEntity tile, EnumFacing side) {
@@ -88,28 +92,36 @@ public class InvHelper {
 	}
 
 	public static ItemStack extractItem(IItemHandler inv, FilterItem fil, int num, boolean simulate) {
-		if (inv == null || fil == null)
+		if (fil == null)
 			return null;
-		ItemStack extracted = null;
+		return extractItem(inv, (ItemStack s) -> fil.match(s), num, simulate);
+	}
+
+	public static ItemStack extractItem(IItemHandler inv, Predicate<ItemStack> pred, int num, boolean simulate) {
+		if (inv == null || pred == null)
+			return ItemStack.EMPTY;
+		ItemStack extracted = ItemStack.EMPTY;
 		int missing = num;
 		for (int i = 0; i < inv.getSlots(); i++) {
 			ItemStack slot = inv.getStackInSlot(i);
-			if (fil.match(slot)) {
+			if (pred.test(slot)) {
 				ItemStack ex = inv.extractItem(i, missing, simulate);
 				if (!ex.isEmpty()) {
-					if (extracted == null)
+					if (extracted.isEmpty())
 						extracted = ex.copy();
 					else {
 						if (!ItemHandlerHelper.canItemStacksStack(extracted, ex))
 							continue;
+						extracted.grow(ex.getCount());
 					}
 					missing -= ex.getCount();
-					if (missing == 0)
-						return ItemHandlerHelper.copyStackWithSize(slot, num);
+					if (missing == 0) {
+						return ItemHandlerHelper.copyStackWithSize(ex, num);
+					}
 				}
 			}
 		}
-		return null;
+		return extracted;
 	}
 
 	public static void sort(IItemHandler inv) {

@@ -64,8 +64,8 @@ public class GuiBook extends CommonGuiScreen {
 		drawer.drawColoredRectangle(111, 7, 222, ySize - 29, ColorHelper.brighter(0xffd39b, 0.22));
 
 		String pages = currentPage + "/" + maxPage;
-		drawString(fontRendererObj, pages, guiLeft + (218 - fontRendererObj.getStringWidth(pages) / 2), guiTop + 185, 14737632);
-		List<String> wrappedTextLines = fontRendererObj.listFormattedStringToWidth(currentText, 215);
+		drawString(fontRenderer, pages, guiLeft + (218 - fontRenderer.getStringWidth(pages) / 2), guiTop + 185, 14737632);
+		List<String> wrappedTextLines = fontRenderer.listFormattedStringToWidth(currentText, 215);
 		maxPage = wrappedTextLines.size() / maxLines;
 		if (wrappedTextLines.size() % maxLines != 0)
 			maxPage++;
@@ -74,16 +74,16 @@ public class GuiBook extends CommonGuiScreen {
 			if (index >= wrappedTextLines.size())
 				break;
 
-			fontRendererObj.drawString(wrappedTextLines.get(index), guiLeft + 113, guiTop + 9 + i * 10, 0x111111, !true);
+			fontRenderer.drawString(wrappedTextLines.get(index), guiLeft + 113, guiTop + 9 + i * 10, 0x111111, !true);
 		}
 	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		boolean uni = fontRendererObj.getUnicodeFlag();
-		fontRendererObj.setUnicodeFlag(unicode);
+		boolean uni = fontRenderer.getUnicodeFlag();
+		fontRenderer.setUnicodeFlag(unicode);
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		fontRendererObj.setUnicodeFlag(uni);
+		fontRenderer.setUnicodeFlag(uni);
 	}
 
 	@Override
@@ -192,7 +192,7 @@ public class GuiBook extends CommonGuiScreen {
 			return;
 		for (int i = 0; i < Math.min(currentArticle.stacks.size(), slots.size()); i++) {
 			slots.get(i).stack = currentArticle.stacks.get(i);
-			slots.get(i).x = guiLeft + 114 + (i * 17) + fontRendererObj.getStringWidth(TextFormatting.BOLD + currentArticle.name);
+			slots.get(i).x = guiLeft + 114 + (i * 17) + fontRenderer.getStringWidth(TextFormatting.BOLD + currentArticle.name);
 		}
 	}
 

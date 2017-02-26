@@ -14,30 +14,30 @@ public class MCLabel extends GuiComponent implements ITooltip {
 	public int color;
 
 	public MCLabel(int x, int y, String text, int color, GuiDrawer drawer) {
-		super(x, y, Minecraft.getMinecraft().fontRendererObj.getStringWidth(text), Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, drawer);
+		super(x, y, Minecraft.getMinecraft().fontRenderer.getStringWidth(text), Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT, drawer);
 		this.text = text;
 		this.color = color;
 	}
 
 	@Override
 	public void drawForeground(int mouseX, int mouseY) {
-		mc.fontRendererObj.drawString(text, x + getOffsetX(), y + getOffsetY(), color);
+		mc.fontRenderer.drawString(text, x + getOffsetX(), y + getOffsetY(), color);
 	}
 
 	@Override
 	public void drawBackground(int mouseX, int mouseY) {
-		drawer.drawFramedRectangle(x + getOffsetX() - 2, y + getOffsetY() - 2, mc.fontRendererObj.getStringWidth(text) + 4, mc.fontRendererObj.FONT_HEIGHT + 2);
+		drawer.drawFramedRectangle(x + getOffsetX() - 2, y + getOffsetY() - 2, mc.fontRenderer.getStringWidth(text) + 4, mc.fontRenderer.FONT_HEIGHT + 2);
 	}
 
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		width = mc.fontRendererObj.getStringWidth(text);
+		width = mc.fontRenderer.getStringWidth(text);
 	}
 
 	@Override
 	public void drawTooltip(int mouseX, int mouseY) {
 		ScaledResolution sr = new ScaledResolution(mc);
-		GuiUtils.drawHoveringText(Lists.newArrayList("Neuer", "Lahm", "Hummels", "Martinez", "Alaba", "Alonso", "Sanches", "Thiago", "Ribery", "Lewandowski", "Müller"), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRendererObj);
+		GuiUtils.drawHoveringText(Lists.newArrayList("Neuer", "Lahm", "Hummels", "Martinez", "Alaba", "Alonso", "Sanches", "Thiago", "Ribery", "Lewandowski", "Müller"), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
 	}
 }

@@ -46,7 +46,7 @@ public class TestGui extends CommonGuiContainer {
 		buttonList.add(new GuiButtonArrow(4, 10 + guiLeft, 50 + guiTop, Direction.UP));
 		elementList.add(s = new AbstractSlot.ItemSlot(new ItemStack(Items.COOKED_BEEF), 5, 5 + guiLeft, 60 + guiTop, 3200, drawer, false, true, true, true));
 		buttonList.add(new GuiButtonTooltip(5, guiLeft - 19, 78 + guiTop, 18, 22, "if", EnumDyeColor.PURPLE, Lists.newArrayList("horde", "maul")));
-		t = new GuiTextField(1, fontRendererObj, guiLeft + 130, guiTop + 77, 45, fontRendererObj.FONT_HEIGHT);
+		t = new GuiTextField(1, fontRenderer, guiLeft + 130, guiTop + 77, 45, fontRenderer.FONT_HEIGHT);
 		t.setEnableBackgroundDrawing(false);
 		t.setFocused(true);
 		t.setText(tile.k + "");
@@ -85,7 +85,7 @@ public class TestGui extends CommonGuiContainer {
 			// drawer.drawColoredRectangle(120, 61, 18, 36,
 			// ColorHelper.getRGB(EnumDyeColor.BLUE));
 			t.drawTextBox();
-			fontRendererObj.drawString("ZEuth", 3, 4, 0xff);
+			fontRenderer.drawString("ZEuth", 3, 4, 0xff);
 			drawer.drawStopSign(180, 12);
 			drawer.drawFlame(18, 18, 1.0f);
 			drawer.drawScrollbar(0, 0, 100, 1.00f, Direction.RIGHT);

@@ -40,7 +40,7 @@ public class WorldHelper {
 			int x = (chunkX << 4) + world.rand.nextInt(16);
 			int y = minY + world.rand.nextInt(diffBtwnMinMaxY);
 			int z = (chunkZ << 4) + world.rand.nextInt(16);
-			new WorldGenMinable(state, 5 + world.rand.nextInt(3), predicate).generate(world, world.rand, new BlockPos(x, y, z));
+			new WorldGenMinable(state, size, predicate).generate(world, world.rand, new BlockPos(x, y, z));
 		}
 	}
 

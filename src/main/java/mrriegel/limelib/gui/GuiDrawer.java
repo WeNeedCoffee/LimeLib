@@ -251,7 +251,7 @@ public class GuiDrawer {
 		}
 		FontRenderer font = stack.getItem().getFontRenderer(stack);
 		ScaledResolution sr = new ScaledResolution(mc);
-		GuiUtils.drawHoveringText(list, x, y, sr.getScaledWidth(), sr.getScaledHeight(), -1, (font == null ? mc.fontRendererObj : font));
+		GuiUtils.drawHoveringText(list, x, y, sr.getScaledWidth(), sr.getScaledHeight(), -1, (font == null ? mc.fontRenderer : font));
 	}
 
 	public static void openGui(GuiScreen screen) {

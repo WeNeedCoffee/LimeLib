@@ -37,10 +37,10 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 	@Override
 	public IMessage onMessage(final T message, final MessageContext ctx) {
 		Runnable run = () -> {
-			EntityPlayer player = (ctx.side.isClient() ? LimeLib.proxy.getPlayer(ctx) : ctx.getServerHandler().playerEntity);
+			EntityPlayer player = (ctx.side.isClient() ? LimeLib.proxy.getPlayer(ctx) : ctx.getServerHandler().player);
 			message.handleMessage(player, message.nbt, ctx.side);
 		};
-		IThreadListener listener = (ctx.side.isClient() ? LimeLib.proxy.getListener(ctx) : ctx.getServerHandler().playerEntity.getServerWorld());
+		IThreadListener listener = (ctx.side.isClient() ? LimeLib.proxy.getListener(ctx) : ctx.getServerHandler().player.getServerWorld());
 		listener.addScheduledTask(run);
 		return null;
 	}

@@ -81,7 +81,7 @@ public class TeleportationHelper {
 
 		newWorld.getChunkProvider().loadChunk(pos.getX() >> 4, pos.getZ() >> 4);
 
-		newWorld.theProfiler.startSection("placing");
+		newWorld.profiler.startSection("placing");
 		if (!(entity instanceof EntityPlayer)) {
 			NBTTagCompound entityNBT = new NBTTagCompound();
 			entity.isDead = false;
@@ -126,7 +126,7 @@ public class TeleportationHelper {
 			FMLCommonHandler.instance().firePlayerChangedDimensionEvent(player, oldWorld.provider.getDimension(), newWorld.provider.getDimension());
 		}
 		teleportToPosAndUpdate(entity, pos);
-		newWorld.theProfiler.endSection();
+		newWorld.profiler.endSection();
 		// if (!newWorld.loadedEntityList.contains(entity)) {
 		// System.out.println("no1");
 		newWorld.loadEntities(Sets.newHashSet(entity));

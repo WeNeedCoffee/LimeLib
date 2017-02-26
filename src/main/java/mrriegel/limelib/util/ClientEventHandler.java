@@ -1,6 +1,8 @@
 package mrriegel.limelib.util;
 
 import java.awt.Color;
+import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import mrriegel.limelib.Config;
 import mrriegel.limelib.LimeLib;
@@ -55,13 +57,13 @@ public class ClientEventHandler {
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
 			long energy = LimeLib.proxy.energyTiles().get(p).getLeft(), max = LimeLib.proxy.energyTiles().get(p).getRight();
 			String text = (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(energy) : energy) + "/" + (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(max) : max) + " " + energyType.unit;
-			int lenght = 90/*mc.fontRendererObj.getStringWidth(text)*/;
-			mc.fontRendererObj.drawString(text, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(text)) / 2, (sr.getScaledHeight() - 15 - mc.fontRendererObj.FONT_HEIGHT) / 2, GuiScreen.isShiftKeyDown() ? 0xffff00 : 0x80ffff00, true);
-			boolean before = mc.fontRendererObj.getUnicodeFlag();
-			mc.fontRendererObj.setUnicodeFlag(true);
+			int lenght = 90/*mc.fontRenderer.getStringWidth(text)*/;
+			mc.fontRenderer.drawString(text, (sr.getScaledWidth() - mc.fontRenderer.getStringWidth(text)) / 2, (sr.getScaledHeight() - 15 - mc.fontRenderer.FONT_HEIGHT) / 2, GuiScreen.isShiftKeyDown() ? 0xffff00 : 0x80ffff00, true);
+			boolean before = mc.fontRenderer.getUnicodeFlag();
+			mc.fontRenderer.setUnicodeFlag(true);
 			String config = "Can be disabled in LimeLib config.";
-			mc.fontRendererObj.drawString(config, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(config)) / 2, (sr.getScaledHeight() + 40 - mc.fontRendererObj.FONT_HEIGHT) / 2, 0x40ffff00, true);
-			mc.fontRendererObj.setUnicodeFlag(before);
+			mc.fontRenderer.drawString(config, (sr.getScaledWidth() - mc.fontRenderer.getStringWidth(config)) / 2, (sr.getScaledHeight() + 40 - mc.fontRenderer.FONT_HEIGHT) / 2, 0x40ffff00, true);
+			mc.fontRenderer.setUnicodeFlag(before);
 			drawer.drawEnergyBarH((sr.getScaledWidth() - lenght) / 2, (sr.getScaledHeight() + 20 - 8) / 2, lenght, (float) ((double) energy / (double) max));
 			drawer.drawFrame((sr.getScaledWidth() - lenght) / 2 - 1, (sr.getScaledHeight() + 20 - 8) / 2 - 1, lenght + 2, 9, 1, ColorHelper.darker(Color.RED.getRGB(), .8));
 			GlStateManager.disableBlend();
@@ -75,10 +77,10 @@ public class ClientEventHandler {
 		if (event.phase == Phase.END && mc.world != null && !mc.isGamePaused()) {
 			DataPartRegistry reg = DataPartRegistry.get(mc.world);
 			if (reg != null) {
-				for (DataPart part : reg.getParts()) {
-					if (part != null && mc.world.isBlockLoaded(part.getPos())) {
-						part.updateClient(mc.world);
-					}
+				Iterator<DataPart> it = reg.getParts().stream().filter(p -> p != null && mc.world.isBlockLoaded(p.getPos())).collect(Collectors.toList()).iterator();
+				while (it.hasNext()) {
+					DataPart part = it.next();
+					part.updateClient(mc.world);
 				}
 			}
 		}
@@ -87,13 +89,16 @@ public class ClientEventHandler {
 	@SubscribeEvent
 	public static void render(RenderWorldLastEvent event) {
 		DataPartRegistry reg = DataPartRegistry.get(Minecraft.getMinecraft().world);
-		if (reg != null)
-			for (DataPart p : reg.getParts()) {
+		if (reg != null) {
+			Iterator<DataPart> it = reg.getParts().stream().filter(p -> p != null).collect(Collectors.toList()).iterator();
+			while (it.hasNext()) {
+				DataPart p = it.next();
 				@SuppressWarnings("rawtypes")
 				RenderDataPart ren = RenderRegistry.map.get(p.getClass());
 				if (ren != null)
 					ren.render(p, p.getX() - TileEntityRendererDispatcher.staticPlayerX, p.getY() - TileEntityRendererDispatcher.staticPlayerY, p.getZ() - TileEntityRendererDispatcher.staticPlayerZ, event.getPartialTicks());
 			}
+		}
 	}
 
 }

@@ -18,11 +18,11 @@ import com.google.common.collect.ImmutableMap;
 public class LimeCommonProxy {
 
 	public EntityPlayer getPlayer(MessageContext ctx) {
-		return ctx.getServerHandler().playerEntity;
+		return ctx.getServerHandler().player;
 	}
 
 	public IThreadListener getListener(MessageContext ctx) {
-		return ctx.getServerHandler().playerEntity.getServerWorld();
+		return ctx.getServerHandler().player.getServerWorld();
 	}
 
 	public Side getSide() {

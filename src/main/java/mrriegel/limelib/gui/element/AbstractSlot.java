@@ -50,7 +50,7 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 				if (!GuiScreen.isShiftKeyDown())
 					GuiDrawer.renderToolTip(stack, mouseX, mouseY);
 				else
-					GuiUtils.drawHoveringText(Lists.newArrayList("Amount: " + amount), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRendererObj);
+					GuiUtils.drawHoveringText(Lists.newArrayList("Amount: " + amount), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
 				stack.setTagCompound(n);
 				GlStateManager.popMatrix();
 				GlStateManager.enableLighting();
@@ -70,10 +70,10 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 					if (smallFont) {
 						GlStateManager.pushMatrix();
 						GlStateManager.scale(.5f, .5f, .5f);
-						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, stack, x * 2 + 16, y * 2 + 16, num);
+						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRenderer, stack, x * 2 + 16, y * 2 + 16, num);
 						GlStateManager.popMatrix();
 					} else
-						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, stack, x, y, num);
+						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRenderer, stack, x, y, num);
 			}
 			if (square && isMouseOver(mouseX, mouseY)) {
 				// GlStateManager.disableLighting();
@@ -108,9 +108,9 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 				GlStateManager.disableLighting();
 				ScaledResolution sr = new ScaledResolution(mc);
 				if (!GuiScreen.isShiftKeyDown())
-					GuiUtils.drawHoveringText(Lists.newArrayList(fluid.getLocalizedName(new FluidStack(fluid, 1))), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRendererObj);
+					GuiUtils.drawHoveringText(Lists.newArrayList(fluid.getLocalizedName(new FluidStack(fluid, 1))), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
 				else
-					GuiUtils.drawHoveringText(Lists.newArrayList("Amount: " + amount + " mB"), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRendererObj);
+					GuiUtils.drawHoveringText(Lists.newArrayList("Amount: " + amount + " mB"), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
 				GlStateManager.popMatrix();
 				GlStateManager.enableLighting();
 			}
@@ -144,10 +144,10 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 					if (smallFont) {
 						GlStateManager.pushMatrix();
 						GlStateManager.scale(.5f, .5f, .5f);
-						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, new ItemStack(Items.CHAINMAIL_BOOTS), x * 2 + 16, y * 2 + 16, num);
+						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRenderer, new ItemStack(Items.CHAINMAIL_BOOTS), x * 2 + 16, y * 2 + 16, num);
 						GlStateManager.popMatrix();
 					} else
-						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRendererObj, new ItemStack(Items.CHAINMAIL_BOOTS), x, y, num);
+						mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRenderer, new ItemStack(Items.CHAINMAIL_BOOTS), x, y, num);
 				}
 			}
 			if (square && isMouseOver(mouseX, mouseY)) {

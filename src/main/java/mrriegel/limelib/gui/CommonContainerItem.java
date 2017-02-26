@@ -29,6 +29,10 @@ public abstract class CommonContainerItem extends CommonContainer {
 	protected void setStack(EntityPlayer player) {
 		stack = player.inventory.getCurrentItem();
 	}
+	
+	protected IInventory getItemInventory(){
+		return invs.get("inv");
+	}
 
 	@Override
 	protected void inventoryChanged() {
@@ -41,20 +45,22 @@ public abstract class CommonContainerItem extends CommonContainer {
 		inventoryChanged();
 	}
 
-	protected void writeToStack() {
-		IInventory inv = invs.get("inv");
+	public void writeToStack() {
+		IInventory inv = getItemInventory();
 		List<ItemStack> stacks = Lists.newArrayList();
 		for (int i = 0; i < inv.getSizeInventory(); i++)
 			stacks.add(i, inv.getStackInSlot(i));
 		NBTStackHelper.setItemStackList(stack, "items", stacks);
 	}
 
-	protected void readFromStack() {
+	public void readFromStack() {
 		List<ItemStack> stacks = NBTStackHelper.getItemStackList(stack, "items");
-		IInventory inv = new InventoryBasic(null, false, stacks.size());
-		for (int i = 0; i < inv.getSizeInventory(); i++)
+		IInventory inv = getItemInventory();
+		inv.clear();
+		for (int i = 0; i < Math.min(inv.getSizeInventory(), stacks.size()); i++)
 			inv.setInventorySlotContents(i, stacks.get(i));
 		invs.put("inv", inv);
+		detectAndSendChanges();
 	}
 
 }

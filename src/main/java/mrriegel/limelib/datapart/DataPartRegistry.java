@@ -57,6 +57,15 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		return partMap.get(pos);
 	}
 
+	public BlockPos nextPos(BlockPos pos) {
+		while (pos.getY() < world.getHeight()-1) {
+			if (getDataPart(pos) == null)
+				return pos;
+			pos = pos.up();
+		}
+		return null;
+	}
+
 	public boolean addDataPart(BlockPos pos, DataPart part, boolean force) {
 		Validate.notNull(part);
 		if (!PARTS.inverse().containsKey(part.getClass())) {

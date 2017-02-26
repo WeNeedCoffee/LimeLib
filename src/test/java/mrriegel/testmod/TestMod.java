@@ -79,7 +79,7 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@Mod(modid = "lalal", name = "kohle", version = "${version}")
+//@Mod(modid = "lalal", name = "kohle", version = "${version}")
 public class TestMod implements IGuiHandler {
 
 	@Mod.Instance("lalal")
