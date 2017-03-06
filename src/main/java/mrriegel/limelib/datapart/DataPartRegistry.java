@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import mrriegel.limelib.LimeLib;
@@ -11,6 +12,7 @@ import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.network.DataPartSyncMessage;
 import mrriegel.limelib.network.PacketHandler;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -24,6 +26,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 
@@ -58,12 +61,17 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public BlockPos nextPos(BlockPos pos) {
-		while (pos.getY() < world.getHeight()-1) {
-			if (getDataPart(pos) == null)
-				return pos;
-			pos = pos.up();
+		Set<BlockPos> set = Sets.newHashSet();
+		int count = 0;
+		while (getDataPart(pos) != null) {
+			count++;
+			if (count > 1000)
+				return null;
+			set.add(pos);
+			while (set.contains(pos))
+				pos = pos.offset(EnumFacing.VALUES[world.rand.nextInt(6)]);
 		}
-		return null;
+		return pos;
 	}
 
 	public boolean addDataPart(BlockPos pos, DataPart part, boolean force) {
@@ -126,11 +134,11 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		clearWorld();
 		List<NBTTagCompound> nbts = NBTHelper.getTagList(nbt, "nbts");
 		for (NBTTagCompound n : nbts) {
-			createPart(world, n);
+			createPart(n);
 		}
 	}
 
-	public void createPart(World world, NBTTagCompound n) {
+	public void createPart(NBTTagCompound n) {
 		try {
 			Class<?> clazz = DataPartRegistry.PARTS.get(n.getString("id"));
 			if (clazz != null && DataPart.class.isAssignableFrom(clazz)) {

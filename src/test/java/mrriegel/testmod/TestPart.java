@@ -13,7 +13,6 @@ import mrriegel.limelib.util.Utils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.google.common.collect.Lists;
@@ -65,7 +64,7 @@ public class TestPart extends DataPartWorker {
 				BlockPos pos = posList.poll();
 				while (world.isAirBlock(pos) && !posList.isEmpty())
 					pos = posList.poll();
-				BlockHelper.breakBlockWithFortune(world, pos, 0, Utils.getFakePlayer((WorldServer) world), false, !true);
+				BlockHelper.breakBlock(world, pos, world.getBlockState(pos), null, false, 0, true, true);
 			}
 		}
 

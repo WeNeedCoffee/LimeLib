@@ -1,5 +1,6 @@
 package mrriegel.limelib.util;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
@@ -93,6 +94,10 @@ public class StackWrapper {
 			}
 		}
 		return lis;
+	}
+	
+	public static NonNullList<ItemStack> toStackList(StackWrapper wrap) {
+		return toStackList(Collections.singletonList(wrap));
 	}
 
 	public static List<StackWrapper> toWrapperList(List<ItemStack> list) {

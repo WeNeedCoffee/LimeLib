@@ -17,26 +17,34 @@ import com.google.common.collect.Lists;
 public abstract class CommonContainerItem extends CommonContainer {
 
 	protected ItemStack stack;
+	boolean inited = false;
 
 	public CommonContainerItem(InventoryPlayer invPlayer, int num) {
 		super(invPlayer, Pair.<String, IInventory> of("inv", new InventoryBasic(null, false, num)));
-		setStack(getPlayer());
-		if (!stack.hasTagCompound())
-			stack.setTagCompound(new NBTTagCompound());
-		readFromStack();
+		inited = true;
 	}
 
 	protected void setStack(EntityPlayer player) {
 		stack = player.inventory.getCurrentItem();
 	}
-	
-	protected IInventory getItemInventory(){
+
+	protected IInventory getItemInventory() {
 		return invs.get("inv");
 	}
 
 	@Override
 	protected void inventoryChanged() {
-		writeToStack();
+		if (inited)
+			writeToStack();
+	}
+
+	@Override
+	protected void modifyInvs() {
+		setStack(getPlayer());
+		if (!stack.hasTagCompound())
+			stack.setTagCompound(new NBTTagCompound());
+		readFromStack();
+		super.modifyInvs();
 	}
 
 	@Override

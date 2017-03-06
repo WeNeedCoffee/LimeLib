@@ -6,38 +6,43 @@ import java.util.Set;
 import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTool;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-public class CommonItemTool extends ItemTool {
+public class CommonItemTool extends CommonItem {
 
 	protected Set<String> toolClasses;
 	protected final Set<Block> effectiveBlocks;
+	protected Item.ToolMaterial toolMaterial;
 
 	public CommonItemTool(String name, ToolMaterial material, String... toolClasses) {
-		super(0F, 0F, material, null);
-		setRegistryName(name);
+		super(name);
+		toolMaterial = material;
 		this.toolClasses = toolClasses != null ? Sets.newHashSet(toolClasses) : Collections.EMPTY_SET;
 		effectiveBlocks = effectives(this.toolClasses);
-		setUnlocalizedName(getRegistryName().toString());
+		setMaxStackSize(1);
+		setMaxDamage(material.getMaxUses());
 	}
 
 	private static Set<Block> effectives(Set<String> toolClasses) {
@@ -54,6 +59,32 @@ public class CommonItemTool extends ItemTool {
 	@Override
 	public Set<String> getToolClasses(ItemStack stack) {
 		return toolClasses;
+	}
+
+	@Override
+	public int getItemEnchantability(ItemStack stack) {
+		return toolMaterial.getEnchantability();
+	}
+
+	public Item.ToolMaterial getToolMaterial() {
+		return this.toolMaterial;
+	}
+
+	public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+		stack.damageItem(2, attacker);
+		return true;
+	}
+
+	public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
+		if (!worldIn.isRemote && (double) state.getBlockHardness(worldIn, pos) != 0.0D) {
+			stack.damageItem(1, entityLiving);
+		}
+		return true;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public boolean isFull3D() {
+		return true;
 	}
 
 	protected final double getBaseDamage(ItemStack stack) {
@@ -86,6 +117,7 @@ public class CommonItemTool extends ItemTool {
 		return efficiencyOnProperMaterial;
 	};
 
+	@Override
 	public float getStrVsBlock(ItemStack stack, IBlockState state) {
 		if (toolClasses.contains("pickaxe"))
 			return getDigSpeed(stack, Items.DIAMOND_PICKAXE.getStrVsBlock(stack, state));
@@ -93,9 +125,9 @@ public class CommonItemTool extends ItemTool {
 			return getDigSpeed(stack, Items.DIAMOND_AXE.getStrVsBlock(stack, state));
 		for (String type : getToolClasses(stack)) {
 			if (state.getBlock().isToolEffective(type, state))
-				return getDigSpeed(stack, efficiencyOnProperMaterial);
+				return getDigSpeed(stack, toolMaterial.getEfficiencyOnProperMaterial());
 		}
-		return this.effectiveBlocks.contains(state.getBlock()) ? getDigSpeed(stack, efficiencyOnProperMaterial) : 1.0F;
+		return this.effectiveBlocks.contains(state.getBlock()) ? getDigSpeed(stack, toolMaterial.getEfficiencyOnProperMaterial()) : 1.0F;
 	}
 
 	@Override
@@ -103,6 +135,7 @@ public class CommonItemTool extends ItemTool {
 		return getToolClasses(stack).contains(toolClass) ? toolMaterial.getHarvestLevel() : super.getHarvestLevel(stack, toolClass, player, blockState);
 	}
 
+	@Override
 	public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
 		boolean sup = super.getIsRepairable(toRepair, repair);
 		if (!sup) {
@@ -131,6 +164,7 @@ public class CommonItemTool extends ItemTool {
 		//		return state.getBlock().getMaterial(state).isToolNotRequired();
 	}
 
+	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (!player.getHeldItem(hand).getItem().getToolClasses(player.getHeldItem(hand)).contains("shovel"))
 			return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);

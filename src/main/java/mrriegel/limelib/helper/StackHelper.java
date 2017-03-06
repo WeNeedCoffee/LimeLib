@@ -23,6 +23,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 
 public class StackHelper {
@@ -34,6 +35,12 @@ public class StackHelper {
 			if (Ints.contains(OreDictionary.getOreIDs(b), i))
 				return true;
 		return false;
+	}
+
+	public static boolean equalOreDictExact(ItemStack a, ItemStack b) {
+		if (a.isEmpty() || b.isEmpty())
+			return false;
+		return Sets.newHashSet(OreDictionary.getOreIDs(a)).equals(Sets.newHashSet(OreDictionary.getOreIDs(b)));
 	}
 
 	public static boolean isOre(ItemStack stack) {
@@ -50,7 +57,7 @@ public class StackHelper {
 	public static boolean match(ItemStack stack, Object o) {
 		if (stack.isEmpty())
 			return false;
-		if (o instanceof Item || (o instanceof ItemStack) && ((ItemStack) o).getItemDamage() == OreDictionary.WILDCARD_VALUE)
+		if (o instanceof Item || (o instanceof ItemStack && ((ItemStack) o).getItemDamage() == OreDictionary.WILDCARD_VALUE))
 			return stack.getItem() == o;
 		if (o instanceof Block)
 			return stack.getItem() == Item.getItemFromBlock((Block) o);

@@ -40,7 +40,7 @@ public class DataPartSyncMessage extends AbstractMessage<DataPartSyncMessage> {
 					p.readDataFromNBT(nbt);
 					p.setWorld(player.world);
 				} else {
-					reg.createPart(player.world, nbt);
+					reg.createPart(nbt);
 				}
 			}
 			List<BlockPos> valids = Utils.getBlockPosList(NBTHelper.getLongList(nbt, "poss"));
