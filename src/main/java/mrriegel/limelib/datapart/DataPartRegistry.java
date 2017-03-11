@@ -144,11 +144,9 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 			if (clazz != null && DataPart.class.isAssignableFrom(clazz)) {
 				DataPart part = ConstructorUtils.invokeConstructor((Class<? extends DataPart>) clazz);
 				if (part != null) {
-					part.readDataFromNBT(n);
-					partMap.put(part.pos, part);
 					part.setWorld(world);
-					part.onAdded();
-					sync(part.pos);
+					part.readDataFromNBT(n);
+					addDataPart(part.pos, part, true);
 					return;
 				}
 			}

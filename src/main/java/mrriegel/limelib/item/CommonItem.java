@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class CommonItem extends Item {
 
 	public CommonItem(String name) {
+		super();
 		setRegistryName(name);
 		setUnlocalizedName(getRegistryName().toString());
 	}

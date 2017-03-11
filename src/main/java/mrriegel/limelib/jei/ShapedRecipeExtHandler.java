@@ -1,11 +1,11 @@
 package mrriegel.limelib.jei;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IStackHelper;
@@ -13,10 +13,9 @@ import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.recipe.ShapedRecipeExt;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
-public class ShapedRecipeExtHandler implements IRecipeHandler<ShapedRecipeExt>, IShapedCraftingRecipeWrapper {
+public class ShapedRecipeExtHandler extends BlankRecipeWrapper implements IRecipeHandler<ShapedRecipeExt>, IShapedCraftingRecipeWrapper {
 	private IJeiHelpers jeiHelpers;
 	private ShapedRecipeExt recipe;
 
@@ -36,8 +35,9 @@ public class ShapedRecipeExtHandler implements IRecipeHandler<ShapedRecipeExt>, 
 
 	@Override
 	public IRecipeWrapper getRecipeWrapper(ShapedRecipeExt recipe) {
-		this.recipe = recipe;
-		return this;
+		ShapedRecipeExtHandler wrap = new ShapedRecipeExtHandler(jeiHelpers);
+		wrap.recipe = recipe;
+		return wrap;
 	}
 
 	@Override
@@ -76,20 +76,6 @@ public class ShapedRecipeExtHandler implements IRecipeHandler<ShapedRecipeExt>, 
 		ingredients.setInputLists(ItemStack.class, inputs);
 		ingredients.setOutput(ItemStack.class, recipeOutput);
 
-	}
-
-	@Override
-	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-	}
-
-	@Override
-	public List<String> getTooltipStrings(int mouseX, int mouseY) {
-		return Collections.emptyList();
-	}
-
-	@Override
-	public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
-		return false;
 	}
 
 	@Override

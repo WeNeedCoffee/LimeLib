@@ -1,20 +1,19 @@
 package mrriegel.limelib.jei;
 
-import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.recipe.ShapelessRecipeExt;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
-public class ShapelessRecipeExtHandler implements IRecipeHandler<ShapelessRecipeExt>, IRecipeWrapper {
+public class ShapelessRecipeExtHandler extends BlankRecipeWrapper implements IRecipeHandler<ShapelessRecipeExt> {
 	private IJeiHelpers jeiHelpers;
 	private ShapelessRecipeExt recipe;
 
@@ -34,8 +33,9 @@ public class ShapelessRecipeExtHandler implements IRecipeHandler<ShapelessRecipe
 
 	@Override
 	public IRecipeWrapper getRecipeWrapper(ShapelessRecipeExt recipe) {
-		this.recipe = recipe;
-		return this;
+		ShapelessRecipeExtHandler wrap=new ShapelessRecipeExtHandler(jeiHelpers);
+		wrap.recipe=recipe;
+		return wrap;
 	}
 
 	@Override
@@ -78,20 +78,6 @@ public class ShapelessRecipeExtHandler implements IRecipeHandler<ShapelessRecipe
 			ingredients.setOutput(ItemStack.class, recipeOutput);
 		}
 
-	}
-
-	@Override
-	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-	}
-
-	@Override
-	public List<String> getTooltipStrings(int mouseX, int mouseY) {
-		return Collections.emptyList();
-	}
-
-	@Override
-	public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
-		return false;
 	}
 
 }

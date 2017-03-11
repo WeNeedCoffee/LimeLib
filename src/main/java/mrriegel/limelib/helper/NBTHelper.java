@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 
 import com.google.common.collect.Lists;
@@ -580,8 +581,8 @@ public class NBTHelper {
 	}
 
 	// Stacklist
-	public static List<ItemStack> getItemStackList(NBTTagCompound nbt, String keyName) {
-		List<ItemStack> lis = Lists.newArrayList();
+	public static NonNullList<ItemStack> getItemStackList(NBTTagCompound nbt, String keyName) {
+		NonNullList<ItemStack> lis = NonNullList.create();
 		int size = getInt(nbt, keyName + SIZE);
 		for (int i = 0; i < size; i++)
 			if (hasTag(nbt, keyName + ":" + i))

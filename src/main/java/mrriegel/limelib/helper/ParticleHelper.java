@@ -3,6 +3,7 @@ package mrriegel.limelib.helper;
 import java.util.List;
 
 import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.util.Utils;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -78,7 +79,14 @@ public class ParticleHelper {
 			return new Vec3d(vec.xCoord, vec.yCoord, 0);
 		}
 		return null;
+	}
 
+	public static List<Vec3d> getVecsForBlock(BlockPos pos, int amount) {
+		List<Vec3d> lis = Lists.newArrayList();
+		for (int i = 0; i < amount; i++) {
+			lis.add(new Vec3d(pos.getX() + Utils.getRandomNumber(0., 1.), pos.getY() + Utils.getRandomNumber(0., 1.), pos.getZ() + Utils.getRandomNumber(0., 1.)));
+		}
+		return lis;
 	}
 
 	public static final ResourceLocation roundParticle = new ResourceLocation(LimeLib.MODID + ":particle/round_particle");

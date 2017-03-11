@@ -1,7 +1,9 @@
 package mrriegel.limelib.datapart;
 
 import mrriegel.limelib.helper.NBTHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -9,6 +11,7 @@ public class DataPart {
 
 	protected BlockPos pos;
 	protected World world;
+	public int ticksExisted;
 
 	public void updateServer(World world) {
 	}
@@ -20,6 +23,12 @@ public class DataPart {
 	}
 
 	public void onRemoved() {
+	}
+
+	public void onRightClicked(EntityPlayer player, EnumHand hand) {
+	}
+
+	public void onLeftClicked(EntityPlayer player, EnumHand hand) {
 	}
 
 	public boolean clientValid() {
@@ -43,6 +52,12 @@ public class DataPart {
 
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		return compound;
+	}
+
+	protected final DataPartRegistry getRegistry() {
+		DataPartRegistry d = DataPartRegistry.get(world);
+		assert d != null;
+		return d;
 	}
 
 	public World getWorld() {

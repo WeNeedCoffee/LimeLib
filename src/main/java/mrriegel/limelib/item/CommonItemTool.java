@@ -34,7 +34,7 @@ public class CommonItemTool extends CommonItem {
 
 	protected Set<String> toolClasses;
 	protected final Set<Block> effectiveBlocks;
-	protected Item.ToolMaterial toolMaterial;
+	protected final Item.ToolMaterial toolMaterial;
 
 	public CommonItemTool(String name, ToolMaterial material, String... toolClasses) {
 		super(name);
@@ -119,15 +119,16 @@ public class CommonItemTool extends CommonItem {
 
 	@Override
 	public float getStrVsBlock(ItemStack stack, IBlockState state) {
+		float result = 1.0F;
 		if (toolClasses.contains("pickaxe"))
-			return getDigSpeed(stack, Items.DIAMOND_PICKAXE.getStrVsBlock(stack, state));
+			result = getDigSpeed(stack, Items.DIAMOND_PICKAXE.getStrVsBlock(stack, state));
 		if (toolClasses.contains("axe"))
-			return getDigSpeed(stack, Items.DIAMOND_AXE.getStrVsBlock(stack, state));
+			result = Math.max(result, getDigSpeed(stack, Items.DIAMOND_AXE.getStrVsBlock(stack, state)));
 		for (String type : getToolClasses(stack)) {
 			if (state.getBlock().isToolEffective(type, state))
-				return getDigSpeed(stack, toolMaterial.getEfficiencyOnProperMaterial());
+				result = Math.max(result, getDigSpeed(stack, toolMaterial.getEfficiencyOnProperMaterial()));
 		}
-		return this.effectiveBlocks.contains(state.getBlock()) ? getDigSpeed(stack, toolMaterial.getEfficiencyOnProperMaterial()) : 1.0F;
+		return Math.max(result, this.effectiveBlocks.contains(state.getBlock()) ? getDigSpeed(stack, toolMaterial.getEfficiencyOnProperMaterial()) : 1.0F);
 	}
 
 	@Override

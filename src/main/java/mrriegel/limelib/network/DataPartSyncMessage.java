@@ -37,8 +37,8 @@ public class DataPartSyncMessage extends AbstractMessage<DataPartSyncMessage> {
 			else {
 				DataPart p = reg.getDataPart(pos);
 				if (p != null) {
-					p.readDataFromNBT(nbt);
 					p.setWorld(player.world);
+					p.readDataFromNBT(nbt);
 				} else {
 					reg.createPart(nbt);
 				}

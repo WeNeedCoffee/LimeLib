@@ -13,23 +13,27 @@ public abstract class DataPartWorker extends DataPart {
 
 	@Override
 	public void updateServer(World world) {
+		if (world.getTotalWorldTime() % everyXtick(Side.SERVER) != 0)
+			return;
 		if (canWork(world, Side.SERVER))
 			work(world, Side.SERVER);
 		if (workDone(world, Side.SERVER)) {
-			DataPartRegistry reg = DataPartRegistry.get(world);
-			if (reg != null)
-				reg.removeDataPart(pos);
+			getRegistry().removeDataPart(pos);
 		}
 	}
 
 	@Override
 	public void updateClient(World world) {
+		if (world.getTotalWorldTime() % everyXtick(Side.CLIENT) != 0)
+			return;
 		if (canWork(world, Side.CLIENT))
 			work(world, Side.CLIENT);
 		if (workDone(world, Side.CLIENT)) {
-			DataPartRegistry reg = DataPartRegistry.get(world);
-			if (reg != null)
-				reg.removeDataPart(pos);
+			getRegistry().removeDataPart(pos);
 		}
+	}
+
+	protected int everyXtick(Side side) {
+		return 1;
 	}
 }

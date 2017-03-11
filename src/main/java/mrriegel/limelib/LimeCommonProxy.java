@@ -4,6 +4,7 @@ import java.util.Map;
 
 import mrriegel.limelib.particle.CommonParticle;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -27,6 +28,10 @@ public class LimeCommonProxy {
 
 	public Side getSide() {
 		return Side.SERVER;
+	}
+	
+	public double getReachDistance(EntityPlayer player){
+		return ((EntityPlayerMP)player).interactionManager.getBlockReachDistance();
 	}
 
 	public World getClientWorld() {

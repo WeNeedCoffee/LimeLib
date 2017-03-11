@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -205,5 +206,17 @@ public class Utils {
 
 	public static String fromASCII(String ascii) {
 		return new String(Base64.getDecoder().decode(ascii.getBytes()));
+	}
+
+	public static int getRandomNumber(int min, int max) {
+		if (max < min)
+			throw new IllegalArgumentException();
+		return new Random().nextInt((max - min) + 1) + min;
+	}
+
+	public static double getRandomNumber(double min, double max) {
+		if (max < min)
+			throw new IllegalArgumentException();
+		return min + (max - min) * new Random().nextDouble();
 	}
 }

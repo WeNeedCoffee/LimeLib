@@ -18,16 +18,16 @@ public class CommonParticle extends Particle {
 	protected double flouncing = 0;
 	protected int visibleRange = 32;
 
-	public CommonParticle(double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn) {
-		super(LimeLib.proxy.getClientWorld(), xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
-		this.motionX = xSpeedIn;
-		this.motionY = ySpeedIn;
-		this.motionZ = zSpeedIn;
+	public CommonParticle(double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
+		super(LimeLib.proxy.getClientWorld(), xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed);
+		this.motionX = xSpeed;
+		this.motionY = ySpeed;
+		this.motionZ = zSpeed;
 		setTexture(ParticleHelper.roundParticle);
 	}
 
-	public CommonParticle(double posXIn, double posYIn, double posZIn) {
-		this(posXIn, posYIn, posZIn, 0, 0, 0);
+	public CommonParticle(double xCoord, double yCoord, double zCoord) {
+		this(xCoord, yCoord, zCoord, 0, 0, 0);
 	}
 
 	@Override

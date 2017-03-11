@@ -37,6 +37,8 @@ public class PacketHandler {
 		registerMessage(TeleportMessage.class, Side.CLIENT);
 		registerMessage(EnergySyncMessage.class, Side.CLIENT);
 		registerMessage(DataPartSyncMessage.class, Side.CLIENT);
+		registerMessage(OpenGuiMessage.class, Side.SERVER);
+		registerMessage(PlayerClickMessage.class, Side.SERVER);
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage<?>> classMessage, Side side) {
