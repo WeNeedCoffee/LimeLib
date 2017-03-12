@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 
 import mrriegel.limelib.Config;
-import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
@@ -17,8 +16,6 @@ import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -108,6 +105,10 @@ public class EventHandler {
 			if (Config.showEnergy && event.player.world.getTotalWorldTime() % 20 == 0) {
 				PacketHandler.sendTo(new EnergySyncMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
 			}
+//			for (IInventory inv : event.player.openContainer.inventorySlots.stream().map(s -> s.inventory).distinct().collect(Collectors.toList())) {
+//				Predicate<ItemStack> pred = s -> s.getItem() == Item.getItemFromBlock(Blocks.COBBLESTONE) || s.getItem() == Item.getItemFromBlock(Blocks.DIRT) || s.getItem() == Item.getItemFromBlock(Blocks.STONE);
+//				InvHelper.extractItem(new InvWrapper(inv), pred, 32, false);
+//			}
 		}
 	}
 
@@ -133,44 +134,29 @@ public class EventHandler {
 		boolean left = event instanceof LeftClickBlock || event instanceof LeftClickEmpty;
 		boolean right = event instanceof RightClickBlock || event instanceof RightClickEmpty || event instanceof RightClickItem;
 		if (left || right) {
-			DataPartRegistry reg = DataPartRegistry.get(event.getWorld());
-			if (reg != null) {
-				Vec3d eye = event.getEntityPlayer().getPositionVector().addVector(0, event.getEntityPlayer().eyeHeight, 0);
-				Vec3d look = event.getEntityPlayer().getLookVec();
-				Vec3d vec = eye.add(look);
-				DataPart part = null;
-				while (vec.distanceTo(eye) < LimeLib.proxy.getReachDistance(event.getEntityPlayer())) {
-					BlockPos p = new BlockPos(vec);
-					if (!event.getWorld().isAirBlock(p))
-						break;
-					if ((part = reg.getDataPart(p)) != null)
-						break;
-					look = look.scale(1.2);
-					vec = eye.add(look);
-				}
-				if (part != null) {
-					if (event.getWorld().isRemote) {
-						if (System.currentTimeMillis() - lastClick > (left ? 150 : 40)) {
-							PacketHandler.sendToServer(new PlayerClickMessage(part.getPos(), event.getHand(), left));
-							if (left)
-								part.onLeftClicked(event.getEntityPlayer(), event.getHand());
-							else {
-								part.onRightClicked(event.getEntityPlayer(), event.getHand());
-								event.getEntityPlayer().swingArm(event.getHand());
-							}
-							lastClick = System.currentTimeMillis();
+			DataPart part = DataPart.rayTrace(event.getEntityPlayer());
+			if (part != null) {
+				if (event.getWorld().isRemote) {
+					if (System.currentTimeMillis() - lastClick > (left ? 150 : 40)) {
+						PacketHandler.sendToServer(new PlayerClickMessage(part.getPos(), event.getHand(), left));
+						if (left)
+							part.onLeftClicked(event.getEntityPlayer(), event.getHand());
+						else {
+							part.onRightClicked(event.getEntityPlayer(), event.getHand());
+							event.getEntityPlayer().swingArm(event.getHand());
 						}
+						lastClick = System.currentTimeMillis();
 					}
-					if (event.isCancelable())
-						event.setCanceled(true);
-					event.setResult(Result.DENY);
-					if (event instanceof LeftClickBlock) {
-						((LeftClickBlock) event).setUseBlock(Result.DENY);
-						((LeftClickBlock) event).setUseItem(Result.DENY);
-					} else if (event instanceof RightClickBlock) {
-						((RightClickBlock) event).setUseBlock(Result.DENY);
-						((RightClickBlock) event).setUseItem(Result.DENY);
-					}
+				}
+				if (event.isCancelable())
+					event.setCanceled(true);
+				event.setResult(Result.DENY);
+				if (event instanceof LeftClickBlock) {
+					((LeftClickBlock) event).setUseBlock(Result.DENY);
+					((LeftClickBlock) event).setUseItem(Result.DENY);
+				} else if (event instanceof RightClickBlock) {
+					((RightClickBlock) event).setUseBlock(Result.DENY);
+					((RightClickBlock) event).setUseItem(Result.DENY);
 				}
 			}
 		}
