@@ -41,8 +41,9 @@ public class LimeLib {
 	public void init(FMLInitializationEvent event) {
 		PacketHandler.init();
 		MinecraftForge.EVENT_BUS.register(EventHandler.class);
-		if (event.getSide().isClient())
+		if (event.getSide().isClient()) {
 			MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
+		}
 	}
 
 }

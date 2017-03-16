@@ -1,15 +1,22 @@
 package mrriegel.limelib.datapart;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
+
+import com.google.common.collect.Lists;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTHelper;
+import mrriegel.limelib.util.Utils;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class DataPart {
@@ -41,8 +48,19 @@ public class DataPart {
 	}
 
 	public AxisAlignedBB getHighlightBox() {
-		return new AxisAlignedBB(pos);
+		return Block.FULL_BLOCK_AABB;
 	}
+
+//	public List<String> getWailaTooltip() {
+//		List<String> lis = Lists.newArrayList();
+//		lis.add(TextFormatting.WHITE + getClass().getSimpleName());
+//		addTooltip(lis);
+//		lis.add(TextFormatting.BLUE.toString() + TextFormatting.ITALIC + Utils.getCurrentModID());
+//		return lis;
+//	}
+//
+//	protected void addTooltip(List<String> lis) {
+//	}
 
 	public final void readDataFromNBT(NBTTagCompound compound) {
 		pos = BlockPos.fromLong(NBTHelper.getLong(compound, "poS"));

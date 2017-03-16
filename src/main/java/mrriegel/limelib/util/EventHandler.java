@@ -16,6 +16,7 @@ import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
+import net.minecraft.world.World;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -113,8 +114,8 @@ public class EventHandler {
 	}
 
 	@SubscribeEvent
-	public static void attachWorld(AttachCapabilitiesEvent.World event) {
-		event.addCapability(DataPartRegistry.LOCATION, new CapabilityDataPart.CapaProvider(event.getWorld()));
+	public static void attachWorld(AttachCapabilitiesEvent<World>event) {
+		event.addCapability(DataPartRegistry.LOCATION, new CapabilityDataPart.CapaProvider(event.getObject()));
 	}
 
 	@SubscribeEvent

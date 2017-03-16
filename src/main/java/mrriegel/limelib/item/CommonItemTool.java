@@ -1,6 +1,7 @@
 package mrriegel.limelib.item;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import mrriegel.limelib.helper.StackHelper;
@@ -27,6 +28,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -88,21 +90,25 @@ public class CommonItemTool extends CommonItem {
 	}
 
 	protected final double getBaseDamage(ItemStack stack) {
+		List<Double> lis = Lists.newArrayList();
 		if (getToolClasses(stack).contains("axe"))
-			return 5.0f;
-		else if (getToolClasses(stack).contains("shovel"))
-			return 1.5f;
-		else if (getToolClasses(stack).contains("pickaxe"))
-			return 1.0f;
-		return 0f;
+			lis.add(5.0);
+		if (getToolClasses(stack).contains("shovel"))
+			lis.add(1.5);
+		if (getToolClasses(stack).contains("pickaxe"))
+			lis.add(1.);
+		return Math.round(lis.stream().mapToDouble(Double::doubleValue).sum() / lis.size() * 10.0) / 10.0;
 	}
 
 	protected final double getBaseSpeed(ItemStack stack) {
+		List<Double> lis = Lists.newArrayList();
+		if (getToolClasses(stack).contains("axe"))
+			lis.add(-3.);
+		if (getToolClasses(stack).contains("shovel"))
+			lis.add(-3.);
 		if (getToolClasses(stack).contains("pickaxe"))
-			return -2.8f;
-		else if (getToolClasses(stack).contains("shovel") || getToolClasses(stack).contains("axe"))
-			return -3.0f;
-		return 0f;
+			lis.add(-2.8);
+		return Math.round(lis.stream().mapToDouble(Double::doubleValue).sum() / lis.size() * 10.0) / 10.0;
 	}
 
 	protected double getAttackDamage(ItemStack stack) {

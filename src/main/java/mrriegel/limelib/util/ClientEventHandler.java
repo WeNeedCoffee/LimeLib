@@ -21,8 +21,6 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -108,20 +106,18 @@ public class ClientEventHandler {
 
 	@SubscribeEvent
 	public static void draw(DrawBlockHighlightEvent event) {
-		//		if("".isEmpty())return;
 		DataPart part = DataPart.rayTrace(event.getPlayer());
-		if (part != null && part.clientValid() && part.getHighlightBox() != null) {
+		if (part != null && part.getHighlightBox() != null) {
 			GlStateManager.enableBlend();
 			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			GlStateManager.glLineWidth(2.0F);
 			GlStateManager.disableTexture2D();
 			GlStateManager.depthMask(false);
 			BlockPos blockpos = part.getPos();
-			EntityPlayer player = event.getPlayer();
-			double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * event.getPartialTicks();
-			double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * event.getPartialTicks();
-			double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * event.getPartialTicks();
-			RenderGlobal.drawSelectionBoundingBox(new AxisAlignedBB(blockpos).contract(.1).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
+			double d0 = TileEntityRendererDispatcher.staticPlayerX;
+			double d1 = TileEntityRendererDispatcher.staticPlayerY;
+			double d2 = TileEntityRendererDispatcher.staticPlayerZ;
+			RenderGlobal.drawSelectionBoundingBox(part.getHighlightBox().offset(blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
 			GlStateManager.depthMask(true);
 			GlStateManager.enableTexture2D();
 			GlStateManager.disableBlend();

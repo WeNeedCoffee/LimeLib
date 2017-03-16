@@ -19,10 +19,12 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 
@@ -140,22 +142,11 @@ public class StackHelper {
 	}
 
 	public static void addStack(NonNullList<ItemStack> lis, ItemStack stack) {
-		int remain = stack.getCount();
-		for (int i = 0; i < lis.size(); i++) {
-			if (ItemHandlerHelper.canItemStacksStack(lis.get(i), stack)) {
-				int gather = lis.get(i).getMaxStackSize() - lis.get(i).getCount();
-				if (gather >= remain) {
-					lis.get(i).grow(remain);
-					return;
-				} else {
-					int diff = remain - gather;
-					lis.get(i).grow(diff);
-					remain = diff;
-				}
-			}
-		}
-		if (remain > 0)
-			lis.add(ItemHandlerHelper.copyStackWithSize(stack, remain));
+		if(stack.isEmpty())
+			return;
+		IItemHandler inv=new ItemStackHandler(lis);
+		lis.add(ItemHandlerHelper.insertItemStacked(inv, stack, false));
+		Iterables.removeIf(lis, ItemStack::isEmpty);
 	}
 
 	public static NonNullList<ItemStack> inv2list(IItemHandler inv) {
