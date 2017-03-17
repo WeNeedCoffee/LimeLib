@@ -35,16 +35,6 @@ public class JEI extends BlankModPlugin {
 		return runtime;
 	}
 
-	public static void toStackList(List<Object> lis) {
-		for (int i = 0; i < lis.size(); i++) {
-			Object o = lis.get(i);
-			if (o instanceof Item)
-				lis.set(i, new ItemStack((Item) o, 1, OreDictionary.WILDCARD_VALUE));
-			if (o instanceof Block)
-				lis.set(i, new ItemStack((Block) o, 1, OreDictionary.WILDCARD_VALUE));
-		}
-	}
-
 	public static void showRecipes(ItemStack stack) {
 		showRecipes((Object) stack);
 	}

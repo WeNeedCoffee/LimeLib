@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import mrriegel.limelib.jei.JEI;
+import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
@@ -34,7 +34,7 @@ public class ShapelessRecipeExt implements IRecipe {
 			} else if (in instanceof String) {
 				input.add(OreDictionary.getOres((String) in));
 			} else if (in instanceof List) {
-				JEI.toStackList((List<Object>) in);
+				StackHelper.toStackList((List<Object>) in);
 				input.add(in);
 			} else {
 				throw new RuntimeException("wrong input");

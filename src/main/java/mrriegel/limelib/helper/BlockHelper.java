@@ -99,19 +99,21 @@ public class BlockHelper {
 			Class<? extends Block> clazz = state.getBlock().getClass();
 			Set<Class<? extends Block>> clazzes = Sets.newHashSet(clazz);
 			while (m == null) {
-				try {
-					if (methodMap.containsKey(clazz))
-						m = methodMap.get(clazz);
-					else
-						m = ReflectionHelper.findMethod(clazz, null, new String[] { "func_180643_i", "getSilkTouchDrop" }, IBlockState.class);
-				} catch (Exception e) {
-					clazz = (Class<? extends Block>) clazz.getSuperclass();
-					if (clazz != null)
-						clazzes.add(clazz);
-					else
-						break;
-				}
+				if (methodMap.containsKey(clazz))
+					m = methodMap.get(clazz);
+				else
+					try {
+						m=ReflectionHelper.findMethod((Class<? super Block>)clazz, state.getBlock(), new String[] { "func_180643_i", "getSilkTouchDrop" }, IBlockState.class);
+//						m = findMethod(clazz, new String[] { "func_180643_i", "getSilkTouchDrop" }, IBlockState.class);
+					} catch (Exception e) {
+						clazz = (Class<? extends Block>) clazz.getSuperclass();
+						if (clazz != null)
+							clazzes.add(clazz);
+						else
+							break;
+					}
 			}
+			//			m.setAccessible(true);
 			for (Class<? extends Block> c : clazzes)
 				methodMap.put(c, m);
 			ItemStack silked = ItemStack.EMPTY;
@@ -125,6 +127,20 @@ public class BlockHelper {
 		ForgeEventFactory.fireBlockHarvesting(tmp, world, pos, state, 0, 1.0f, true, player);
 		return tmp.isEmpty() ? ItemStack.EMPTY : tmp.get(0);
 	}
+
+//	private static <E> Method findMethod(Class<? extends E> clazz, String[] methodNames, Class<?>... methodTypes) {
+//		Exception failed = null;
+//		for (String methodName : methodNames) {
+//			try {
+//				Method m = clazz.getDeclaredMethod(methodName, methodTypes);
+//				m.setAccessible(true);
+//				return m;
+//			} catch (Exception e) {
+//				failed = e;
+//			}
+//		}
+//		throw new UnableToFindMethodException(methodNames, failed);
+//	}
 
 	public static boolean isOre(World world, BlockPos pos) {
 		IBlockState state = world.getBlockState(pos);
