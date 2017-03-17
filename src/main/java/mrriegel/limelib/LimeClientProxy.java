@@ -34,7 +34,7 @@ public class LimeClientProxy extends LimeCommonProxy {
 	public Side getSide() {
 		return Side.CLIENT;
 	}
-	
+
 	@Override
 	public double getReachDistance(EntityPlayer player) {
 		return Minecraft.getMinecraft().playerController.getBlockReachDistance();

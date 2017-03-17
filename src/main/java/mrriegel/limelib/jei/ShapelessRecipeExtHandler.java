@@ -33,8 +33,8 @@ public class ShapelessRecipeExtHandler extends BlankRecipeWrapper implements IRe
 
 	@Override
 	public IRecipeWrapper getRecipeWrapper(ShapelessRecipeExt recipe) {
-		ShapelessRecipeExtHandler wrap=new ShapelessRecipeExtHandler(jeiHelpers);
-		wrap.recipe=recipe;
+		ShapelessRecipeExtHandler wrap = new ShapelessRecipeExtHandler(jeiHelpers);
+		wrap.recipe = recipe;
 		return wrap;
 	}
 

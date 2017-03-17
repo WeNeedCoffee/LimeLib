@@ -72,18 +72,21 @@ public class CommonItemTool extends CommonItem {
 		return this.toolMaterial;
 	}
 
+	@Override
 	public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
 		stack.damageItem(2, attacker);
 		return true;
 	}
 
+	@Override
 	public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
-		if (!worldIn.isRemote && (double) state.getBlockHardness(worldIn, pos) != 0.0D) {
+		if (!worldIn.isRemote && state.getBlockHardness(worldIn, pos) != 0.0D) {
 			stack.damageItem(1, entityLiving);
 		}
 		return true;
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean isFull3D() {
 		return true;

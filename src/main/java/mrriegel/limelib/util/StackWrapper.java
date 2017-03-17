@@ -95,7 +95,7 @@ public class StackWrapper {
 		}
 		return lis;
 	}
-	
+
 	public static NonNullList<ItemStack> toStackList(StackWrapper wrap) {
 		return toStackList(Collections.singletonList(wrap));
 	}

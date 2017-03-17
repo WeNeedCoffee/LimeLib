@@ -106,15 +106,15 @@ public class EventHandler {
 			if (Config.showEnergy && event.player.world.getTotalWorldTime() % 20 == 0) {
 				PacketHandler.sendTo(new EnergySyncMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
 			}
-//			for (IInventory inv : event.player.openContainer.inventorySlots.stream().map(s -> s.inventory).distinct().collect(Collectors.toList())) {
-//				Predicate<ItemStack> pred = s -> s.getItem() == Item.getItemFromBlock(Blocks.COBBLESTONE) || s.getItem() == Item.getItemFromBlock(Blocks.DIRT) || s.getItem() == Item.getItemFromBlock(Blocks.STONE);
-//				InvHelper.extractItem(new InvWrapper(inv), pred, 32, false);
-//			}
+			//			for (IInventory inv : event.player.openContainer.inventorySlots.stream().map(s -> s.inventory).distinct().collect(Collectors.toList())) {
+			//				Predicate<ItemStack> pred = s -> s.getItem() == Item.getItemFromBlock(Blocks.COBBLESTONE) || s.getItem() == Item.getItemFromBlock(Blocks.DIRT) || s.getItem() == Item.getItemFromBlock(Blocks.STONE);
+			//				InvHelper.extractItem(new InvWrapper(inv), pred, 32, false);
+			//			}
 		}
 	}
 
 	@SubscribeEvent
-	public static void attachWorld(AttachCapabilitiesEvent<World>event) {
+	public static void attachWorld(AttachCapabilitiesEvent<World> event) {
 		event.addCapability(DataPartRegistry.LOCATION, new CapabilityDataPart.CapaProvider(event.getObject()));
 	}
 
@@ -134,7 +134,7 @@ public class EventHandler {
 	public static void interact(PlayerInteractEvent event) {
 		boolean left = event instanceof LeftClickBlock || event instanceof LeftClickEmpty;
 		boolean right = event instanceof RightClickBlock || event instanceof RightClickEmpty || event instanceof RightClickItem;
-		if (left || right) {
+		if ((left || right) && !event.isCanceled()) {
 			DataPart part = DataPart.rayTrace(event.getEntityPlayer());
 			if (part != null) {
 				if (event.getWorld().isRemote) {

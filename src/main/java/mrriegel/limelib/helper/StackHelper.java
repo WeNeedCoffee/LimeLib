@@ -142,9 +142,9 @@ public class StackHelper {
 	}
 
 	public static void addStack(NonNullList<ItemStack> lis, ItemStack stack) {
-		if(stack.isEmpty())
+		if (stack.isEmpty())
 			return;
-		IItemHandler inv=new ItemStackHandler(lis);
+		IItemHandler inv = new ItemStackHandler(lis);
 		lis.add(ItemHandlerHelper.insertItemStacked(inv, stack, false));
 		Iterables.removeIf(lis, ItemStack::isEmpty);
 	}

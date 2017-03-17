@@ -33,7 +33,7 @@ public class SlotGhost extends Slot {
 
 	@Override
 	public ItemStack decrStackSize(int amount) {
-		this.putStack(null);
-		return null;
+		this.putStack(ItemStack.EMPTY);
+		return ItemStack.EMPTY;
 	}
 }

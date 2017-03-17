@@ -29,9 +29,9 @@ public class LimeCommonProxy {
 	public Side getSide() {
 		return Side.SERVER;
 	}
-	
-	public double getReachDistance(EntityPlayer player){
-		return ((EntityPlayerMP)player).interactionManager.getBlockReachDistance();
+
+	public double getReachDistance(EntityPlayer player) {
+		return ((EntityPlayerMP) player).interactionManager.getBlockReachDistance();
 	}
 
 	public World getClientWorld() {
