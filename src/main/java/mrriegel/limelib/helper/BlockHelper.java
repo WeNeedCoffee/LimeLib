@@ -103,8 +103,8 @@ public class BlockHelper {
 					m = methodMap.get(clazz);
 				else
 					try {
-						m=ReflectionHelper.findMethod((Class<? super Block>)clazz, state.getBlock(), new String[] { "func_180643_i", "getSilkTouchDrop" }, IBlockState.class);
-//						m = findMethod(clazz, new String[] { "func_180643_i", "getSilkTouchDrop" }, IBlockState.class);
+						m = ReflectionHelper.findMethod((Class<? super Block>) clazz, state.getBlock(), new String[] { "func_180643_i", "getSilkTouchDrop" }, IBlockState.class);
+						//						m = findMethod(clazz, new String[] { "func_180643_i", "getSilkTouchDrop" }, IBlockState.class);
 					} catch (Exception e) {
 						clazz = (Class<? extends Block>) clazz.getSuperclass();
 						if (clazz != null)
@@ -128,19 +128,19 @@ public class BlockHelper {
 		return tmp.isEmpty() ? ItemStack.EMPTY : tmp.get(0);
 	}
 
-//	private static <E> Method findMethod(Class<? extends E> clazz, String[] methodNames, Class<?>... methodTypes) {
-//		Exception failed = null;
-//		for (String methodName : methodNames) {
-//			try {
-//				Method m = clazz.getDeclaredMethod(methodName, methodTypes);
-//				m.setAccessible(true);
-//				return m;
-//			} catch (Exception e) {
-//				failed = e;
-//			}
-//		}
-//		throw new UnableToFindMethodException(methodNames, failed);
-//	}
+	//	private static <E> Method findMethod(Class<? extends E> clazz, String[] methodNames, Class<?>... methodTypes) {
+	//		Exception failed = null;
+	//		for (String methodName : methodNames) {
+	//			try {
+	//				Method m = clazz.getDeclaredMethod(methodName, methodTypes);
+	//				m.setAccessible(true);
+	//				return m;
+	//			} catch (Exception e) {
+	//				failed = e;
+	//			}
+	//		}
+	//		throw new UnableToFindMethodException(methodNames, failed);
+	//	}
 
 	public static boolean isOre(World world, BlockPos pos) {
 		IBlockState state = world.getBlockState(pos);
@@ -168,12 +168,16 @@ public class BlockHelper {
 		}
 		IBlockState state = world.getBlockState(pos);
 		state = state.getBlock().getActualState(state, world, pos);
+		if (state.getBlockHardness(world, pos) < 0)
+			return false;
 		return (!reallyEffective && state.getBlock().getHarvestTool(state) == null) || tool.getItem().getToolClasses(tool).contains(state.getBlock().getHarvestTool(state));
 	}
 
 	public static boolean canToolHarvestBlock(IBlockAccess world, BlockPos pos, @Nonnull ItemStack stack) {
 		IBlockState state = world.getBlockState(pos);
 		state = state.getBlock().getActualState(state, world, pos);
+		if (world instanceof World && state.getBlockHardness((World) world, pos) < 0)
+			return false;
 		String tool = state.getBlock().getHarvestTool(state);
 		if (state.getBlock().getMaterial(state).isToolNotRequired())
 			return true;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.InventoryCrafting;
@@ -15,8 +16,13 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.RecipeSorter.Category;
 
 public class ShapelessRecipeExt implements IRecipe {
+	static {
+		RecipeSorter.register(LimeLib.MODID + ":shapelessExt", ShapelessRecipeExt.class, Category.SHAPELESS, "after:minecraft:shapeless");
+	}
 
 	@Nonnull
 	protected ItemStack output = ItemStack.EMPTY;

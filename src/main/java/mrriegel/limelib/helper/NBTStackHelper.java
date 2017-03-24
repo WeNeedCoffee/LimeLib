@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.NonNullList;
 
 public class NBTStackHelper {
 
@@ -257,7 +258,7 @@ public class NBTStackHelper {
 	}
 
 	// Stacklist
-	public static List<ItemStack> getItemStackList(ItemStack stack, String keyName) {
+	public static NonNullList<ItemStack> getItemStackList(ItemStack stack, String keyName) {
 		return NBTHelper.getItemStackList(stack.getTagCompound(), keyName);
 	}
 

@@ -4,12 +4,12 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.gui.CommonGuiScreen;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.gui.button.GuiButtonSimple;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.helper.ColorHelper;
-import mrriegel.limelib.helper.CompatHelper;
 import mrriegel.limelib.jei.JEI;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.client.gui.GuiButton;
@@ -228,7 +228,7 @@ public class GuiBook extends CommonGuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (!CompatHelper.jeiLoaded)
+		if (!LimeLib.jeiLoaded)
 			return;
 		for (ItemSlot slot : slots) {
 			if (!slot.stack.isEmpty() && slot.isMouseOver(mouseX, mouseY) && (mouseButton == 0 || mouseButton == 1)) {

@@ -6,6 +6,7 @@ import mrriegel.limelib.util.ClientEventHandler;
 import mrriegel.limelib.util.EventHandler;
 import mrriegel.limelib.util.Utils;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -21,7 +22,7 @@ public class LimeLib {
 	@Instance(LimeLib.MODID)
 	public static LimeLib INSTANCE;
 
-	public static final String VERSION = "1.5.0";
+	public static final String VERSION = "1.5.1";
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
 
@@ -35,7 +36,12 @@ public class LimeLib {
 		Config.init(event.getSuggestedConfigurationFile());
 		Utils.init();
 		CapabilityDataPart.register();
+		wailaLoaded = Loader.isModLoaded("waila");
+		jeiLoaded = Loader.isModLoaded("jei");
+		teslaLoaded = Loader.isModLoaded("tesla");
 	}
+
+	public static boolean wailaLoaded, jeiLoaded, teslaLoaded;
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {

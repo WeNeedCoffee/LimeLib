@@ -1,15 +1,33 @@
 package mrriegel.limelib.helper;
 
+import java.util.Set;
+
+import mrriegel.limelib.LimeLib;
+import net.darkhax.tesla.api.ITeslaConsumer;
+import net.darkhax.tesla.api.ITeslaHolder;
+import net.darkhax.tesla.api.ITeslaProducer;
+import net.darkhax.tesla.capability.TeslaCapabilities;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.common.Optional;
+import cofh.api.energy.IEnergyContainerItem;
 import cofh.api.energy.IEnergyHandler;
+import cofh.api.energy.IEnergyProvider;
+import cofh.api.energy.IEnergyReceiver;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 
 public class EnergyHelper {
 
 	public enum Energy {
-		RF("RF"), FORGE("FU"), TESLA("Tesla");
+		RF("RF"), //
+		FORGE("FU"), //
+		TESLA("Tesla");
 
 		public String unit;
 
@@ -18,59 +36,140 @@ public class EnergyHelper {
 		}
 	}
 
-	public static Energy isEnergyInterface(World world, BlockPos pos) {
-		TileEntity tile = world.getTileEntity(pos);
-		if (tile == null)
+	public static Energy isEnergyContainer(ICapabilityProvider container, EnumFacing side, Energy... energys) {
+		if (container == null)
 			return null;
-		if (tile instanceof IEnergyHandler) {
-			return Energy.RF;
-		} else if (tile.hasCapability(CapabilityEnergy.ENERGY, null)) {
+		Set<Energy> set = Sets.newHashSet(energys);
+		if (set.contains(Energy.FORGE) && container.hasCapability(CapabilityEnergy.ENERGY, side))
 			return Energy.FORGE;
-		}
-		//		else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
-		//			return Energy.TESLA;
-		//		}
+		if (set.contains(Energy.TESLA) && LimeLib.teslaLoaded && container.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, side))
+			return Energy.TESLA;
+		if (set.contains(Energy.RF) && container instanceof TileEntity && container instanceof IEnergyHandler)
+			return Energy.RF;
+		if (set.contains(Energy.RF) && container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
+			return Energy.RF;
 		return null;
 	}
 
-	public static long getEnergy(World world, BlockPos pos) {
-		TileEntity tile = world.getTileEntity(pos);
-		if (tile == null)
-			return 0;
-		if (tile instanceof IEnergyHandler) {
-			try {
-				return ((IEnergyHandler) tile).getEnergyStored(null);
+	public static Energy isEnergyContainer(ICapabilityProvider container, EnumFacing side) {
+		return isEnergyContainer(container, side, Energy.values());
+	}
 
-			} catch (Exception e) {
-				return 0;
-			}
-		} else if (tile.hasCapability(CapabilityEnergy.ENERGY, null)) {
-			return tile.getCapability(CapabilityEnergy.ENERGY, null).getEnergyStored();
-		}
-		//		else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
-		//			return tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getStoredPower();
-		//		}
+	public static long getEnergy(ICapabilityProvider container, EnumFacing side) {
+		if (container == null)
+			return 0;
+		if (container.hasCapability(CapabilityEnergy.ENERGY, side))
+			return container.getCapability(CapabilityEnergy.ENERGY, side).getEnergyStored();
+		if (LimeLib.teslaLoaded && container.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, side))
+			return container.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, side).getStoredPower();
+		if (container instanceof TileEntity && container instanceof IEnergyHandler)
+			return ((IEnergyHandler) container).getEnergyStored(side);
+		if (container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
+			return ((IEnergyContainerItem) ((ItemStack) container).getItem()).getEnergyStored((ItemStack) container);
 		return 0;
 	}
 
-	public static long getMaxEnergy(World world, BlockPos pos) {
-		TileEntity tile = world.getTileEntity(pos);
-		if (tile == null)
+	public static long getMaxEnergy(ICapabilityProvider container, EnumFacing side) {
+		if (container == null)
 			return 0;
-		if (tile instanceof IEnergyHandler) {
-			try {
-				return ((IEnergyHandler) tile).getMaxEnergyStored(null);
-
-			} catch (Exception e) {
-				return 0;
-			}
-		} else if (tile.hasCapability(CapabilityEnergy.ENERGY, null)) {
-			return tile.getCapability(CapabilityEnergy.ENERGY, null).getMaxEnergyStored();
-		}
-		//		else if (Loader.isModLoaded("tesla") && tile.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, null)) {
-		//			return tile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, null).getCapacity();
-		//		}
+		if (container.hasCapability(CapabilityEnergy.ENERGY, side))
+			return container.getCapability(CapabilityEnergy.ENERGY, side).getMaxEnergyStored();
+		if (LimeLib.teslaLoaded && container.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, side))
+			return container.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, side).getCapacity();
+		if (container instanceof TileEntity && container instanceof IEnergyHandler)
+			return ((IEnergyHandler) container).getMaxEnergyStored(side);
+		if (container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
+			return ((IEnergyContainerItem) ((ItemStack) container).getItem()).getMaxEnergyStored((ItemStack) container);
 		return 0;
+	}
+
+	public static long receiveEnergy(ICapabilityProvider container, EnumFacing side, int maxReceive, boolean simulate) {
+		if (container == null)
+			return 0;
+		if (container.hasCapability(CapabilityEnergy.ENERGY, side))
+			return container.getCapability(CapabilityEnergy.ENERGY, side).receiveEnergy(maxReceive, simulate);
+		if (LimeLib.teslaLoaded && container.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, side))
+			return container.getCapability(TeslaCapabilities.CAPABILITY_CONSUMER, side).givePower(maxReceive, simulate);
+		if (container instanceof TileEntity && container instanceof IEnergyReceiver)
+			return ((IEnergyReceiver) container).receiveEnergy(side, maxReceive, simulate);
+		if (container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
+			return ((IEnergyContainerItem) ((ItemStack) container).getItem()).receiveEnergy((ItemStack) container, maxReceive, simulate);
+		return 0;
+	}
+
+	public static long extractEnergy(ICapabilityProvider container, EnumFacing side, int maxExtract, boolean simulate) {
+		if (container == null)
+			return 0;
+		if (container.hasCapability(CapabilityEnergy.ENERGY, side))
+			return container.getCapability(CapabilityEnergy.ENERGY, side).extractEnergy(maxExtract, simulate);
+		if (LimeLib.teslaLoaded && container.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, side))
+			return container.getCapability(TeslaCapabilities.CAPABILITY_PRODUCER, side).takePower(maxExtract, simulate);
+		if (container instanceof TileEntity && container instanceof IEnergyProvider)
+			return ((IEnergyProvider) container).extractEnergy(side, maxExtract, simulate);
+		if (container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
+			return ((IEnergyContainerItem) ((ItemStack) container).getItem()).extractEnergy((ItemStack) container, maxExtract, simulate);
+		return 0;
+	}
+
+	@Optional.InterfaceList(value = { @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaHolder", modid = "tesla"), @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaConsumer", modid = "tesla"), @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaProducer", modid = "tesla") })
+	public static class ItemEnergyWrapper implements IEnergyStorage, ITeslaHolder, ITeslaConsumer, ITeslaProducer {
+		ItemStack stack;
+
+		public ItemEnergyWrapper(ItemStack stack) {
+			this.stack = stack;
+			Preconditions.checkArgument(stack.getItem() instanceof IEnergyContainerItem);
+		}
+
+		@Override
+		public int receiveEnergy(int maxReceive, boolean simulate) {
+			return ((IEnergyContainerItem) stack.getItem()).receiveEnergy(stack, maxReceive, simulate);
+		}
+
+		@Override
+		public int extractEnergy(int maxExtract, boolean simulate) {
+			return ((IEnergyContainerItem) stack.getItem()).extractEnergy(stack, maxExtract, simulate);
+		}
+
+		@Override
+		public int getEnergyStored() {
+			return ((IEnergyContainerItem) stack.getItem()).getEnergyStored(stack);
+		}
+
+		@Override
+		public int getMaxEnergyStored() {
+			return ((IEnergyContainerItem) stack.getItem()).getMaxEnergyStored(stack);
+		}
+
+		@Override
+		public boolean canExtract() {
+			return true;
+		}
+
+		@Override
+		public boolean canReceive() {
+			return true;
+		}
+
+		@Override
+		public long takePower(long power, boolean simulated) {
+			return extractEnergy((int) (power % Integer.MAX_VALUE), simulated);
+		}
+
+		@Override
+		public long givePower(long power, boolean simulated) {
+			return receiveEnergy((int) (power % Integer.MAX_VALUE), simulated);
+		}
+
+		@Override
+		public long getStoredPower() {
+			return getEnergyStored();
+		}
+
+		@Override
+		public long getCapacity() {
+			return getMaxEnergyStored();
+		}
+
 	}
 
 }

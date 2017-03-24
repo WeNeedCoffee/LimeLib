@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.InventoryCrafting;
@@ -16,10 +17,15 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.RecipeSorter.Category;
 
 public class ShapedRecipeExt implements IRecipe {
 	public static final int MAX_CRAFT_GRID_WIDTH = 3;
 	public static final int MAX_CRAFT_GRID_HEIGHT = 3;
+	static {
+		RecipeSorter.register(LimeLib.MODID + ":shapedExt", ShapedRecipeExt.class, Category.SHAPED, "after:minecraft:shaped before:minecraft:shapeless");
+	}
 
 	@Nonnull
 	protected ItemStack output = ItemStack.EMPTY;

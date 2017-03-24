@@ -59,6 +59,7 @@ public abstract class CommonContainerItem extends CommonContainer {
 		for (int i = 0; i < inv.getSizeInventory(); i++)
 			stacks.add(i, inv.getStackInSlot(i));
 		NBTStackHelper.setItemStackList(stack, "items", stacks);
+		detectAndSendChanges();
 	}
 
 	public void readFromStack() {

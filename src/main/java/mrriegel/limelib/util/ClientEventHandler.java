@@ -49,7 +49,7 @@ public class ClientEventHandler {
 		BlockPos p = mc.objectMouseOver.getBlockPos();
 		if (event.getType() == ElementType.TEXT && LimeLib.proxy.energyTiles().containsKey(p)) {
 			Energy energyType;
-			if ((energyType = EnergyHelper.isEnergyInterface(mc.world, p)) == null) {
+			if ((energyType = EnergyHelper.isEnergyContainer(mc.world.getTileEntity(p), null)) == null) {
 				LimeLib.proxy.energyTiles().remove(p);
 				return;
 			}

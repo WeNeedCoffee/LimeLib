@@ -26,10 +26,10 @@ public class EnergySyncMessage extends AbstractMessage<EnergySyncMessage> {
 		List<BlockPos> lis1 = Lists.newArrayList();
 		List<Long> lis2 = Lists.newArrayList(), lis3 = Lists.newArrayList();
 		for (BlockPos p : WorldHelper.getCuboid(new BlockPos(player), 6)) {
-			if (EnergyHelper.isEnergyInterface(player.world, p) != null) {
+			if (EnergyHelper.isEnergyContainer(player.world.getTileEntity(p), null) != null) {
 				lis1.add(p);
-				lis2.add(EnergyHelper.getEnergy(player.world, p));
-				lis3.add(EnergyHelper.getMaxEnergy(player.world, p));
+				lis2.add(EnergyHelper.getEnergy(player.world.getTileEntity(p), null));
+				lis3.add(EnergyHelper.getMaxEnergy(player.world.getTileEntity(p), null));
 			}
 		}
 		NBTHelper.setLongList(nbt, "lis1", Utils.getLongList(lis1));
