@@ -70,7 +70,6 @@ public class CommonGuiScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		drawer = new GuiDrawer(guiLeft, guiTop, xSize, ySize, zLevel);
 		if (panel != null)
 			panel.onUpdate();
 		int i = this.guiLeft;

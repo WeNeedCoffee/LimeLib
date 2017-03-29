@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.util.math.MathHelper;
 
 public class ColorHelper {
 
@@ -16,8 +17,8 @@ public class ColorHelper {
 	}
 
 	public static int getRGB(int color, int alpha) {
-		alpha %= 255;
-		Color c = new Color(color);
+		alpha = MathHelper.clamp(alpha, 0, 255);
+		Color c = new Color(color, true);
 		return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha).getRGB();
 	}
 
@@ -27,26 +28,26 @@ public class ColorHelper {
 
 	public static int getRed(int color) {
 		return ((0xFF000000 | color) >> 16) & 0xFF;
-		// return new Color(color).getRed();
+		//		 return new Color(color,true).getRed();
 	}
 
 	public static int getGreen(int color) {
 		return ((0xFF000000 | color) >> 8) & 0xFF;
-		// return new Color(color).getGreen();
+		//		 return new Color(color,true).getGreen();
 	}
 
 	public static int getBlue(int color) {
 		return ((0xFF000000 | color) >> 0) & 0xFF;
-		// return new Color(color).getBlue();
+		//		 return new Color(color,true).getBlue();
 	}
 
 	public static int getAlpha(int color) {
-		return ((0xFF000000 | color) >> 24) & 0xFF;
-		// return new Color(color).getAlpha();
+		return ((color) >> 24) & 0xFF;
+		//		 return new Color(color,true).getAlpha();
 	}
 
 	public static int getRainbow(int frequence) {
-		if (frequence == 0l)
+		if (frequence == 0)
 			frequence = 1;
 		return Color.getHSBColor(((System.currentTimeMillis() / frequence) % 360l) / 360f, 1, 1).getRGB();
 	}

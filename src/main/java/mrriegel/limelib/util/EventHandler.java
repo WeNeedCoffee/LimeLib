@@ -25,6 +25,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBloc
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickEmpty;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -130,13 +131,13 @@ public class EventHandler {
 
 	private static long lastClick = System.currentTimeMillis();
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void interact(PlayerInteractEvent event) {
 		boolean left = event instanceof LeftClickBlock || event instanceof LeftClickEmpty;
 		boolean right = event instanceof RightClickBlock || event instanceof RightClickEmpty || event instanceof RightClickItem;
 		if ((left || right) && !event.isCanceled()) {
 			DataPart part = DataPart.rayTrace(event.getEntityPlayer());
-			if (part != null) {
+			if (part != null && !event.getEntityPlayer().isSneaking()) {
 				if (event.getWorld().isRemote) {
 					if (System.currentTimeMillis() - lastClick > (left ? 150 : 40)) {
 						PacketHandler.sendToServer(new PlayerClickMessage(part.getPos(), event.getHand(), left));

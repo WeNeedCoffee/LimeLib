@@ -86,6 +86,8 @@ public class ClientEventHandler {
 					part.ticksExisted++;
 				}
 			}
+			if (mc.player != null && mc.player.ticksExisted % 2 == 0)
+				rayTrace = DataPart.rayTrace(mc.player);
 		}
 	}
 
@@ -104,9 +106,11 @@ public class ClientEventHandler {
 		}
 	}
 
+	public static DataPart rayTrace = null;
+
 	@SubscribeEvent
 	public static void draw(DrawBlockHighlightEvent event) {
-		DataPart part = DataPart.rayTrace(event.getPlayer());
+		DataPart part = rayTrace;
 		if (part != null && part.getHighlightBox() != null) {
 			GlStateManager.enableBlend();
 			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);

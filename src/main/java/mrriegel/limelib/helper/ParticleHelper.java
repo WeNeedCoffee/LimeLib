@@ -38,7 +38,9 @@ public class ParticleHelper {
 		List<Vec3d> lis = Lists.newArrayList();
 		int amount = (int) (2 * Math.PI * radius * frequence);
 		double degree = 360 / (double) amount;
-		for (double i = 0; i < 360; i += degree) {
+		double add = (LimeLib.proxy.getClientWorld().getTotalWorldTime() / ((int) radius + 1)) % 360;
+		add = 0;
+		for (double i = 0 + add; i < 360 + add; i += degree) {
 			Vec3d foo = null;
 			double value = i * (Math.PI / 180D);
 			switch (axis) {
@@ -68,7 +70,9 @@ public class ParticleHelper {
 		List<Vec3d> lis = ParticleHelper.getVecsForCircle(0, 0, 0, force, frequence, axis);
 		if (reverse)
 			lis = Lists.reverse(lis);
+		//		System.out.println(lis.size()+" ");
 		int index = ((int) ((System.currentTimeMillis() % Integer.MAX_VALUE) * speed)) % lis.size();
+		//		System.out.println("index "+index);
 		Vec3d vec = lis.get(index);
 		switch (axis) {
 		case Y:

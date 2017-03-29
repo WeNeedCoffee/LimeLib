@@ -110,7 +110,7 @@ public class DataPart {
 		if (reg == null)
 			return null;
 		Vec3d eye = player.getPositionVector().addVector(0, player.eyeHeight, 0);
-		Vec3d look = player.getLookVec();
+		Vec3d look = player.getLookVec().scale(.5);
 		Vec3d vec = eye.add(look);
 		DataPart part = null;
 		while (vec.distanceTo(eye) < LimeLib.proxy.getReachDistance(player)) {
@@ -119,7 +119,7 @@ public class DataPart {
 				break;
 			if ((part = reg.getDataPart(p)) != null)
 				break;
-			look = look.scale(1.3);
+			look = look.add(player.getLookVec().scale(.15));
 			vec = eye.add(look);
 		}
 		return part;

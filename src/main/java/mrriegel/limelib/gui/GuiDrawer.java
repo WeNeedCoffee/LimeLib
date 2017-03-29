@@ -241,6 +241,13 @@ public class GuiDrawer {
 	}
 
 	public static void renderToolTip(ItemStack stack, int x, int y) {
+		List<String> list = getTooltip(stack);
+		FontRenderer font = stack.getItem().getFontRenderer(stack);
+		ScaledResolution sr = new ScaledResolution(mc);
+		GuiUtils.drawHoveringText(list, x, y, sr.getScaledWidth(), sr.getScaledHeight(), -1, (font == null ? mc.fontRenderer : font));
+	}
+
+	public static List<String> getTooltip(ItemStack stack) {
 		List<String> list = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips);
 		for (int i = 0; i < list.size(); ++i) {
 			if (i == 0) {
@@ -249,9 +256,7 @@ public class GuiDrawer {
 				list.set(i, TextFormatting.GRAY + list.get(i));
 			}
 		}
-		FontRenderer font = stack.getItem().getFontRenderer(stack);
-		ScaledResolution sr = new ScaledResolution(mc);
-		GuiUtils.drawHoveringText(list, x, y, sr.getScaledWidth(), sr.getScaledHeight(), -1, (font == null ? mc.fontRenderer : font));
+		return list;
 	}
 
 	public static void openGui(GuiScreen screen) {

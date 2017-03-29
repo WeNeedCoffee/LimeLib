@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.input.Keyboard;
 
 import com.google.common.collect.Maps;
 
@@ -63,6 +64,11 @@ public class LimeClientProxy extends LimeCommonProxy {
 	@Override
 	public Map<BlockPos, Pair<Long, Long>> energyTiles() {
 		return energyTiles;
+	}
+
+	@Override
+	public boolean isKeyDown(int key) {
+		return Keyboard.isKeyDown(key);
 	}
 
 }

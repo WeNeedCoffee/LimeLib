@@ -1,22 +1,29 @@
 package mrriegel.limelib.particle;
 
-import java.util.Random;
-
-import javax.vecmath.Tuple4f;
+import java.awt.Color;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.ParticleHelper;
+import mrriegel.limelib.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
+
+import org.lwjgl.util.vector.Vector4f;
 
 public class CommonParticle extends Particle {
 
 	protected double flouncing = 0;
-	protected int visibleRange = 32;
+	protected int visibleRange = 32, brightness = -1;
+	protected boolean depth = true, smoothEnd = true;
+	protected IColorCall colors;
 
 	public CommonParticle(double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
 		super(LimeLib.proxy.getClientWorld(), xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed);
@@ -24,6 +31,7 @@ public class CommonParticle extends Particle {
 		this.motionY = ySpeed;
 		this.motionZ = zSpeed;
 		setTexture(ParticleHelper.roundParticle);
+		colors = (CommonParticle par) -> new Vector4f(par.particleRed, par.particleGreen, par.particleBlue, par.particleAlpha);
 	}
 
 	public CommonParticle(double xCoord, double yCoord, double zCoord) {
@@ -46,6 +54,12 @@ public class CommonParticle extends Particle {
 			this.motionX *= 0.699999988079071D;
 			this.motionZ *= 0.699999988079071D;
 		}
+		if (smoothEnd) {
+			float percent = (float) particleAge / (float) particleMaxAge;
+			if (percent > .7F) {
+				particleAlpha /= (2F - percent);
+			}
+		}
 		if (this.particleAge++ >= this.particleMaxAge) {
 			this.setExpired();
 		}
@@ -53,13 +67,35 @@ public class CommonParticle extends Particle {
 
 	@Override
 	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		Tuple4f color = getColor();
+		Vector4f color = colors.getColor(this);
 		this.particleRed = color.x;
 		this.particleGreen = color.y;
 		this.particleBlue = color.z;
 		this.particleAlpha = color.w;
-		if (entityIn.getDistance(posX, posY, posZ) <= visibleRange)
-			super.renderParticle(worldRendererIn, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
+		if (entityIn.getDistance(posX, posY, posZ) <= visibleRange) {
+			if (depth)
+				super.renderParticle(worldRendererIn, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
+			else {
+				Tessellator.getInstance().draw();
+				GlStateManager.pushMatrix();
+				GlStateManager.disableDepth();
+				worldRendererIn.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+				super.renderParticle(worldRendererIn, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
+				Tessellator.getInstance().draw();
+				GlStateManager.enableDepth();
+				GlStateManager.popMatrix();
+				worldRendererIn.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+			}
+		}
+	}
+
+	@Override
+	public int getBrightnessForRender(float p_189214_1_) {
+		if (brightness < 0)
+			return super.getBrightnessForRender(p_189214_1_);
+		int i = MathHelper.clamp(brightness, 0, 15);
+		int j = i;
+		return i << 20 | j << 4;
 	}
 
 	@Override
@@ -73,22 +109,19 @@ public class CommonParticle extends Particle {
 	}
 
 	public CommonParticle setColor(int color, int diff) {
+		diff = MathHelper.clamp(diff, 0, 255);
 		if (diff > 0) {
-			color += new Random().nextInt(diff) - (diff / 2f);
-
+			int red = MathHelper.clamp(ColorHelper.getRed(color) + Utils.getRandomNumber(-diff, diff), 0, 255);
+			int green = MathHelper.clamp(ColorHelper.getGreen(color) + Utils.getRandomNumber(-diff, diff), 0, 255);
+			int blue = MathHelper.clamp(ColorHelper.getBlue(color) + Utils.getRandomNumber(-diff, diff), 0, 255);
+			color = new Color(red, green, blue, ColorHelper.getAlpha(color)).getRGB();
 		}
-		color &= 0xffffff;
 		this.particleRed = ColorHelper.getRed(color) / 255f;
 		this.particleGreen = ColorHelper.getGreen(color) / 255f;
 		this.particleBlue = ColorHelper.getBlue(color) / 255f;
 		this.particleAlpha = ColorHelper.getAlpha(color) / 255f;
+		//		System.out.println(""+particleAlpha);
 		return this;
-	}
-
-	@SuppressWarnings("serial")
-	protected Tuple4f getColor() {
-		return new Tuple4f(particleRed, particleGreen, particleBlue, particleAlpha) {
-		};
 	}
 
 	public CommonParticle setFlouncing(double flouncing) {
@@ -126,9 +159,28 @@ public class CommonParticle extends Particle {
 		return this;
 	}
 
-	// public CommonParticle disableDepth() {
-	// this.depth = false;
-	// return this;
-	// }
+	public CommonParticle setBrightness(int brightness) {
+		this.brightness = brightness;
+		return this;
+	}
+
+	public CommonParticle setDepth(boolean depth) {
+		this.depth = depth;
+		return this;
+	}
+
+	public CommonParticle setSmoothEnd(boolean smoothEnd) {
+		this.smoothEnd = smoothEnd;
+		return this;
+	}
+
+	public CommonParticle setColors(IColorCall colors) {
+		this.colors = colors;
+		return this;
+	}
+
+	public static interface IColorCall {
+		public Vector4f getColor(CommonParticle par);
+	}
 
 }

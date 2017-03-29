@@ -17,9 +17,12 @@ import com.google.common.collect.Sets;
 public class PacketHandler {
 
 	public static SimpleNetworkWrapper wrapper;
-	public static int index = 0;
+	private static int index = 0;
 	private static boolean defaultsRegistered = false;
 	private static Map<Side, Set<Class<? extends AbstractMessage<?>>>> registered = Maps.newHashMap();
+
+	private PacketHandler() {
+	}
 
 	public static void init() {
 		if (wrapper == null)

@@ -1,5 +1,7 @@
 package mrriegel.limelib.gui.element;
 
+import java.util.List;
+
 import mrriegel.limelib.gui.GuiDrawer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -12,13 +14,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 import com.google.common.collect.Lists;
 
 public abstract class AbstractSlot extends GuiElement implements ITooltip {
 	public int amount;
-	public boolean number, square, smallFont, toolTip;
+	public boolean number, square, smallFont, toolTip, editable;
 
 	public AbstractSlot(int id, int x, int y, int amount, GuiDrawer drawer, boolean number, boolean square, boolean smallFont, boolean toolTip) {
 		super(id, x, y, 16, 16, drawer);
@@ -27,6 +30,10 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 		this.square = square;
 		this.smallFont = smallFont;
 		this.toolTip = toolTip;
+	}
+
+	protected List<String> getTooltip(boolean shift) {
+		return null;
 	}
 
 	public static class ItemSlot extends AbstractSlot {
@@ -47,14 +54,18 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 				GlStateManager.disableLighting();
 				ScaledResolution sr = new ScaledResolution(mc);
 				NBTTagCompound n = stack.hasTagCompound() ? stack.getTagCompound().copy() : null;
-				if (!GuiScreen.isShiftKeyDown())
-					GuiDrawer.renderToolTip(stack, mouseX, mouseY);
-				else
-					GuiUtils.drawHoveringText(Lists.newArrayList("Amount: " + amount), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
+				List<String> tips = getTooltip(GuiScreen.isShiftKeyDown());
+				if (tips != null)
+					GuiUtils.drawHoveringText(tips, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
 				stack.setTagCompound(n);
 				GlStateManager.popMatrix();
 				GlStateManager.enableLighting();
 			}
+		}
+
+		@Override
+		protected List<String> getTooltip(boolean shift) {
+			return shift ? Lists.newArrayList("Amount: " + amount) : GuiDrawer.getTooltip(stack);
 		}
 
 		@Override
@@ -89,6 +100,12 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 			GlStateManager.popMatrix();
 		}
 
+		@Override
+		public void onClick(int button) {
+			if (editable)
+				stack = mc.player.inventory.getItemStack();
+		}
+
 	}
 
 	public static class FluidSlot extends AbstractSlot {
@@ -107,13 +124,17 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();
 				ScaledResolution sr = new ScaledResolution(mc);
-				if (!GuiScreen.isShiftKeyDown())
-					GuiUtils.drawHoveringText(Lists.newArrayList(fluid.getLocalizedName(new FluidStack(fluid, 1))), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
-				else
-					GuiUtils.drawHoveringText(Lists.newArrayList("Amount: " + amount + " mB"), mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
+				List<String> tips = getTooltip(GuiScreen.isShiftKeyDown());
+				if (tips != null)
+					GuiUtils.drawHoveringText(tips, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
 				GlStateManager.popMatrix();
 				GlStateManager.enableLighting();
 			}
+		}
+
+		@Override
+		protected List<String> getTooltip(boolean shift) {
+			return shift ? Lists.newArrayList("Amount: " + amount + " mB") : Lists.newArrayList(fluid.getLocalizedName(new FluidStack(fluid, 1)));
 		}
 
 		@Override
@@ -160,6 +181,17 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 				GlStateManager.colorMask(true, true, true, true);
 				// GlStateManager.enableLighting();
 				// GlStateManager.enableDepth();
+			}
+		}
+
+		@Override
+		public void onClick(int button) {
+			if (editable) {
+				FluidStack s = FluidUtil.getFluidContained(mc.player.inventory.getItemStack());
+				if (s != null && s.getFluid() != null)
+					fluid = s.getFluid();
+				else
+					fluid = null;
 			}
 		}
 

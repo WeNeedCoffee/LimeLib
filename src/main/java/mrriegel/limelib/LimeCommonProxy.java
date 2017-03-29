@@ -52,5 +52,10 @@ public class LimeCommonProxy {
 	public Map<BlockPos, Pair<Long, Long>> energyTiles() {
 		return ImmutableMap.of();
 	}
+	
+	
+	public boolean isKeyDown(int key){
+		throw new UnsupportedOperationException();
+	}
 
 }

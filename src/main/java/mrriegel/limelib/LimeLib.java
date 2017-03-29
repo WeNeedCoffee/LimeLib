@@ -40,7 +40,7 @@ public class LimeLib {
 		jeiLoaded = Loader.isModLoaded("jei");
 		teslaLoaded = Loader.isModLoaded("tesla");
 	}
-
+	
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded;
 
 	@Mod.EventHandler
