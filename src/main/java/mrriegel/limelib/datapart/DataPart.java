@@ -115,7 +115,7 @@ public class DataPart {
 		DataPart part = null;
 		while (vec.distanceTo(eye) < LimeLib.proxy.getReachDistance(player)) {
 			BlockPos p = new BlockPos(vec);
-			if (!player.world.isAirBlock(p))
+			if (player.world.getBlockState(p).getCollisionBoundingBox(player.world, p)!=null)
 				break;
 			if ((part = reg.getDataPart(p)) != null)
 				break;

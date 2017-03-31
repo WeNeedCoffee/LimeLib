@@ -95,7 +95,7 @@ public class ClientEventHandler {
 	public static void render(RenderWorldLastEvent event) {
 		DataPartRegistry reg = DataPartRegistry.get(Minecraft.getMinecraft().world);
 		if (reg != null) {
-			Iterator<DataPart> it = reg.getParts().stream().filter(p -> p != null).collect(Collectors.toList()).iterator();
+			Iterator<DataPart> it = reg.getParts().stream().filter(p -> p != null && Minecraft.getMinecraft().player.getDistance(p.getX(), p.getY(), p.getZ()) < 64).collect(Collectors.toList()).iterator();
 			while (it.hasNext()) {
 				DataPart p = it.next();
 				@SuppressWarnings("rawtypes")

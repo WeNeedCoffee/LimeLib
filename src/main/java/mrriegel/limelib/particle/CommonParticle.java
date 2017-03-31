@@ -1,11 +1,11 @@
 package mrriegel.limelib.particle;
 
 import java.awt.Color;
+import java.util.Random;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.ParticleHelper;
-import mrriegel.limelib.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
@@ -110,17 +110,17 @@ public class CommonParticle extends Particle {
 
 	public CommonParticle setColor(int color, int diff) {
 		diff = MathHelper.clamp(diff, 0, 255);
+		Random random = new Random();
 		if (diff > 0) {
-			int red = MathHelper.clamp(ColorHelper.getRed(color) + Utils.getRandomNumber(-diff, diff), 0, 255);
-			int green = MathHelper.clamp(ColorHelper.getGreen(color) + Utils.getRandomNumber(-diff, diff), 0, 255);
-			int blue = MathHelper.clamp(ColorHelper.getBlue(color) + Utils.getRandomNumber(-diff, diff), 0, 255);
+			int red = MathHelper.clamp(ColorHelper.getRed(color) + MathHelper.getInt(random, -diff, diff), 0, 255);
+			int green = MathHelper.clamp(ColorHelper.getGreen(color) + MathHelper.getInt(random, -diff, diff), 0, 255);
+			int blue = MathHelper.clamp(ColorHelper.getBlue(color) + MathHelper.getInt(random, -diff, diff), 0, 255);
 			color = new Color(red, green, blue, ColorHelper.getAlpha(color)).getRGB();
 		}
 		this.particleRed = ColorHelper.getRed(color) / 255f;
 		this.particleGreen = ColorHelper.getGreen(color) / 255f;
 		this.particleBlue = ColorHelper.getBlue(color) / 255f;
 		this.particleAlpha = ColorHelper.getAlpha(color) / 255f;
-		//		System.out.println(""+particleAlpha);
 		return this;
 	}
 

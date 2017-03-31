@@ -22,7 +22,7 @@ public class LimeLib {
 	@Instance(LimeLib.MODID)
 	public static LimeLib INSTANCE;
 
-	public static final String VERSION = "1.5.1";
+	public static final String VERSION = "1.5.2";
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
 
@@ -40,7 +40,7 @@ public class LimeLib {
 		jeiLoaded = Loader.isModLoaded("jei");
 		teslaLoaded = Loader.isModLoaded("tesla");
 	}
-	
+
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded;
 
 	@Mod.EventHandler
