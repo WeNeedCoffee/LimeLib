@@ -11,6 +11,8 @@ import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.network.DataPartSyncMessage;
 import mrriegel.limelib.network.PacketHandler;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -18,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -88,14 +91,14 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 			if (force) {
 				partMap.put(pos, part);
 				part.onAdded();
-				sync(pos);
+				sync(pos, true);
 				return true;
 			}
 			return false;
 		} else {
 			partMap.put(pos, part);
 			part.onAdded();
-			sync(pos);
+			sync(pos, true);
 			return true;
 		}
 	}
@@ -104,7 +107,7 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		if (partMap.containsKey(pos)) {
 			partMap.get(pos).onRemoved();
 			partMap.remove(pos);
-			sync(pos);
+			sync(pos, true);
 		}
 	}
 
@@ -116,9 +119,19 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		return Collections.unmodifiableCollection(partMap.values());
 	}
 
+	public void sync(BlockPos pos, boolean toAllPlayers) {
+		if (world != null && !world.isRemote && (getDataPart(pos) == null || getDataPart(pos).clientValid())) {
+			IMessage message = new DataPartSyncMessage(getDataPart(pos), pos, partMap.values().stream().map(DataPart::getPos).collect(Collectors.toList()));
+			if (toAllPlayers)
+				for (EntityPlayer player : world.playerEntities)
+					PacketHandler.sendTo(message, (EntityPlayerMP) player);
+			else
+				PacketHandler.sendToAllAround(message, new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 18));
+		}
+	}
+
 	public void sync(BlockPos pos) {
-		if (world != null && !world.isRemote && (getDataPart(pos) == null || getDataPart(pos).clientValid()))
-			PacketHandler.sendToAllAround(new DataPartSyncMessage(getDataPart(pos), pos, partMap.values().stream().map(DataPart::getPos).collect(Collectors.toList())), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 18));
+		sync(pos, false);
 	}
 
 	@Override

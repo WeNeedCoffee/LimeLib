@@ -95,7 +95,7 @@ public class EventHandler {
 					part.updateServer(event.world);
 					part.ticksExisted++;
 					if (event.world.getTotalWorldTime() % 200 == 0)
-						reg.sync(part.getPos());
+						reg.sync(part.getPos(), false);
 				}
 			}
 		}
@@ -125,7 +125,7 @@ public class EventHandler {
 			((IThreadListener) event.player.world).addScheduledTask(() -> {
 				DataPartRegistry reg = DataPartRegistry.get(event.player.world);
 				if (reg != null)
-					reg.getParts().forEach(p -> reg.sync(p.getPos()));
+					reg.getParts().forEach(p -> reg.sync(p.getPos(), true));
 			});
 	}
 
