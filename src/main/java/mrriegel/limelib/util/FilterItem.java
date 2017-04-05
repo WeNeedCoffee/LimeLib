@@ -16,7 +16,7 @@ public class FilterItem {
 	}
 
 	public FilterItem(String s) {
-		this(OreDictionary.getOres(s).isEmpty() ? null : OreDictionary.getOres(s).get(0), false, true, false);
+		this(OreDictionary.getOres(s).isEmpty() ? ItemStack.EMPTY : OreDictionary.getOres(s).get(0), false, true, false);
 	}
 
 	public FilterItem(Item i) {

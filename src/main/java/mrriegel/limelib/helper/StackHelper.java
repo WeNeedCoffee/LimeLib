@@ -1,5 +1,6 @@
 package mrriegel.limelib.helper;
 
+import java.util.Arrays;
 import java.util.List;
 
 import mrriegel.limelib.LimeLib;
@@ -59,13 +60,15 @@ public class StackHelper {
 	public static boolean match(ItemStack stack, Object o) {
 		if (stack.isEmpty())
 			return false;
-		if (o instanceof Item || (o instanceof ItemStack && ((ItemStack) o).getItemDamage() == OreDictionary.WILDCARD_VALUE))
+		if (o instanceof Item)
 			return stack.getItem() == o;
 		if (o instanceof Block)
 			return stack.getItem() == Item.getItemFromBlock((Block) o);
 		if (o instanceof String)
 			return Ints.contains(OreDictionary.getOreIDs(stack), OreDictionary.getOreID((String) o));
 		if (o instanceof ItemStack) {
+			if (((ItemStack) o).getItemDamage() == OreDictionary.WILDCARD_VALUE)
+				return stack.getItem() == ((ItemStack) o).getItem();
 			return stack.isItemEqual((ItemStack) o);
 		}
 		return false;
@@ -131,14 +134,14 @@ public class StackHelper {
 	public static boolean isWrench(ItemStack stack) {
 		if (stack.isEmpty() || stack.getItem() instanceof ItemBlock)
 			return false;
-		boolean wrench = false;
 		for (String s : new String[] { "wrench", "scrench", "screwdriver" }) {
-			wrench |= stack.getItem().getClass().getSimpleName().toLowerCase().contains(s);
-			for (Class<?> c : stack.getItem().getClass().getInterfaces())
-				wrench |= c.getSimpleName().toLowerCase().contains(s);
-			wrench |= stack.getUnlocalizedName().toLowerCase().contains(s);
+			boolean flag = stack.getItem().getClass().getSimpleName().toLowerCase().contains(s)//
+					|| stack.getUnlocalizedName().toLowerCase().contains(s)//
+					|| Arrays.stream(stack.getItem().getClass().getInterfaces()).anyMatch(c -> c.getSimpleName().toLowerCase().contains(s));
+			if (flag)
+				return true;
 		}
-		return wrench;
+		return false;
 	}
 
 	public static void addStack(NonNullList<ItemStack> lis, ItemStack stack) {
@@ -153,6 +156,7 @@ public class StackHelper {
 		NonNullList<ItemStack> lis = NonNullList.create();
 		for (int i = 0; i < inv.getSlots(); i++)
 			addStack(lis, inv.getStackInSlot(i));
+		Iterables.removeIf(lis, ItemStack::isEmpty);
 		return lis;
 	}
 

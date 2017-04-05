@@ -2,6 +2,7 @@ package mrriegel.limelib.util;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import mrriegel.limelib.Config;
@@ -32,6 +33,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
+
+import com.google.common.collect.Maps;
 
 public class EventHandler {
 
@@ -129,27 +132,36 @@ public class EventHandler {
 			});
 	}
 
-	private static long lastClick = System.currentTimeMillis();
+	private static Map<Side, Map<String, Long>> lastClicks = null;
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void interact(PlayerInteractEvent event) {
 		boolean left = event instanceof LeftClickBlock || event instanceof LeftClickEmpty;
 		boolean right = event instanceof RightClickBlock || event instanceof RightClickEmpty || event instanceof RightClickItem;
+		boolean server = event instanceof RightClickBlock || event instanceof LeftClickBlock || event instanceof RightClickItem;
 		if ((left || right) && !event.isCanceled()) {
 			DataPart part = DataPart.rayTrace(event.getEntityPlayer());
-			if (part != null && !event.getEntityPlayer().isSneaking()) {
-				if (event.getWorld().isRemote) {
-					if (System.currentTimeMillis() - lastClick > (left ? 150 : 40)) {
-						PacketHandler.sendToServer(new PlayerClickMessage(part.getPos(), event.getHand(), left));
-						if (left)
-							part.onLeftClicked(event.getEntityPlayer(), event.getHand());
-						else {
-							part.onRightClicked(event.getEntityPlayer(), event.getHand());
-							event.getEntityPlayer().swingArm(event.getHand());
-						}
-						lastClick = System.currentTimeMillis();
-					}
+			Side side = event.getSide();
+			if (part != null && part.clientValid() && !event.getEntityPlayer().isSneaking()) {
+				if (lastClicks == null) {
+					lastClicks = Maps.newTreeMap();
+					lastClicks.put(Side.SERVER, Maps.newTreeMap());
+					lastClicks.put(Side.CLIENT, Maps.newTreeMap());
 				}
+				boolean touch = false;
+				if (!lastClicks.get(side).containsKey(event.getEntityPlayer().getDisplayNameString()) || System.currentTimeMillis() - lastClicks.get(side).get(event.getEntityPlayer().getDisplayNameString()) > (left ? 150 : 40)) {
+					if (left)
+						touch = part.onLeftClicked(event.getEntityPlayer(), event.getHand());
+					else {
+						touch = part.onRightClicked(event.getEntityPlayer(), event.getHand());
+						event.getEntityPlayer().swingArm(event.getHand());
+					}
+					if (!server && event.getWorld().isRemote)
+						PacketHandler.sendToServer(new PlayerClickMessage(part.getPos(), event.getHand(), left));
+					lastClicks.get(side).put(event.getEntityPlayer().getDisplayNameString(), System.currentTimeMillis());
+				}
+				if (!touch)
+					return;
 				if (event.isCancelable())
 					event.setCanceled(true);
 				event.setResult(Result.DENY);

@@ -128,7 +128,7 @@ public class ParticleHelper {
 
 	public static List<Vec3d> getVecsForBlock(BlockPos pos, int amount) {
 		List<Vec3d> lis = Lists.newArrayList();
-		Random random = new Random(pos.hashCode());
+		Random random = new Random();
 		for (int i = 0; i < amount; i++) {
 			lis.add(new Vec3d(pos.getX() + MathHelper.nextDouble(random, 0., 1.), pos.getY() + MathHelper.nextDouble(random, 0., 1.), pos.getZ() + MathHelper.nextDouble(random, 0., 1.)));
 		}

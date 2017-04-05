@@ -15,19 +15,24 @@ import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.EnergyHelper;
 import mrriegel.limelib.helper.EnergyHelper.Energy;
 import mrriegel.limelib.helper.ParticleHelper;
+import mrriegel.limelib.network.PacketHandler;
+import mrriegel.limelib.network.PlayerClickMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -102,6 +107,32 @@ public class ClientEventHandler {
 				RenderDataPart ren = RenderRegistry.map.get(p.getClass());
 				if (ren != null)
 					ren.render(p, p.getX() - TileEntityRendererDispatcher.staticPlayerX, p.getY() - TileEntityRendererDispatcher.staticPlayerY, p.getZ() - TileEntityRendererDispatcher.staticPlayerZ, event.getPartialTicks());
+			}
+		}
+	}
+
+	//	@SubscribeEvent
+	public static void click(MouseEvent event) {
+		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.inGameHasFocus && !mc.isGamePaused() && event.isButtonstate() && !event.isCanceled()) {
+			if (event.getButton() == 0 || event.getButton() == 1) {
+				DataPart part = DataPart.rayTrace(mc.player);
+				if (part != null && !mc.player.isSneaking()) {
+					boolean touch = false;
+					EnumHand hand = EnumHand.MAIN_HAND;
+					PacketHandler.sendToServer(new PlayerClickMessage(part.getPos(), hand, event.getButton() == 0));
+					if (event.getButton() == 0) {
+						touch = part.onLeftClicked(mc.player, hand);
+					} else {
+						touch = part.onRightClicked(mc.player, hand);
+					}
+					mc.player.swingArm(hand);
+					if (!touch)
+						return;
+					if (event.isCancelable())
+						event.setCanceled(true);
+					event.setResult(Result.DENY);
+				}
 			}
 		}
 	}

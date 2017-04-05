@@ -31,10 +31,12 @@ public class DataPart {
 	public void onRemoved() {
 	}
 
-	public void onRightClicked(EntityPlayer player, EnumHand hand) {
+	public boolean onRightClicked(EntityPlayer player, EnumHand hand) {
+		return false;
 	}
 
-	public void onLeftClicked(EntityPlayer player, EnumHand hand) {
+	public boolean onLeftClicked(EntityPlayer player, EnumHand hand) {
+		return false;
 	}
 
 	public boolean clientValid() {
@@ -44,17 +46,6 @@ public class DataPart {
 	public AxisAlignedBB getHighlightBox() {
 		return Block.FULL_BLOCK_AABB;
 	}
-
-	//	public List<String> getWailaTooltip() {
-	//		List<String> lis = Lists.newArrayList();
-	//		lis.add(TextFormatting.WHITE + getClass().getSimpleName());
-	//		addTooltip(lis);
-	//		lis.add(TextFormatting.BLUE.toString() + TextFormatting.ITALIC + Utils.getCurrentModID());
-	//		return lis;
-	//	}
-	//
-	//	protected void addTooltip(List<String> lis) {
-	//	}
 
 	public final void readDataFromNBT(NBTTagCompound compound) {
 		pos = BlockPos.fromLong(NBTHelper.getLong(compound, "poS"));
@@ -115,7 +106,7 @@ public class DataPart {
 		DataPart part = null;
 		while (vec.distanceTo(eye) < LimeLib.proxy.getReachDistance(player)) {
 			BlockPos p = new BlockPos(vec);
-			if (player.world.getBlockState(p).getCollisionBoundingBox(player.world, p)!=null)
+			if (player.world.getBlockState(p).getCollisionBoundingBox(player.world, p) != null)
 				break;
 			if ((part = reg.getDataPart(p)) != null)
 				break;

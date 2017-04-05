@@ -111,12 +111,13 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	}
 
 	@Override
-	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
-		List<ItemStack> lis = getDrops(worldIn, pos, state, 0);
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+		List<ItemStack> lis = getDrops(world, pos, state, 0);
 		if (!player.capabilities.isCreativeMode && lis.size() == 1) {
-			worldIn.setBlockToAir(pos);
-			spawnAsEntity(worldIn, pos, lis.get(0));
+			world.setBlockToAir(pos);
+			spawnAsEntity(world, pos, lis.get(0));
 		}
+		return true;
 	}
 
 	@Override
