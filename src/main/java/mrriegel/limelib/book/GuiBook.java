@@ -13,7 +13,6 @@ import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.jei.JEI;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
@@ -231,7 +230,7 @@ public class GuiBook extends CommonGuiScreen {
 		if (!LimeLib.jeiLoaded)
 			return;
 		for (ItemSlot slot : slots) {
-			if (slot.stack!=null && slot.isMouseOver(mouseX, mouseY) && (mouseButton == 0 || mouseButton == 1)) {
+			if (slot.stack != null && slot.isMouseOver(mouseX, mouseY) && (mouseButton == 0 || mouseButton == 1)) {
 				if (mouseButton == 0)
 					JEI.showRecipes(slot.stack);
 				else

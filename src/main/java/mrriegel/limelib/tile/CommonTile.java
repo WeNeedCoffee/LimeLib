@@ -63,8 +63,9 @@ public class CommonTile extends TileEntity {
 	public boolean isUsable(EntityPlayer player) {
 		return this.world.getTileEntity(this.pos) != this || isInvalid() ? false : player.getDistanceSq(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D) <= 64.0D;
 	}
+
 	@Deprecated
-	public boolean isUsableByPlayer(EntityPlayer playerIn){
+	public boolean isUsableByPlayer(EntityPlayer playerIn) {
 		return isUsable(playerIn);
 	}
 

@@ -112,7 +112,7 @@ public class Utils {
 
 	public static FakePlayer getFakePlayerWithItem(WorldServer world, ItemStack stack) {
 		FakePlayer player = getFakePlayer(world);
-		player.inventory.mainInventory[(player.inventory.currentItem = 0)]= stack;
+		player.inventory.mainInventory[(player.inventory.currentItem = 0)] = stack;
 		return player;
 	}
 

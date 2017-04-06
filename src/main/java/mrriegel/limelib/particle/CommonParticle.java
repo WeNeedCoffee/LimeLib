@@ -103,10 +103,9 @@ public class CommonParticle extends Particle {
 		return 1;
 	}
 
-//	@Override
-	public boolean shouldDisableDepth() {
-		return this.isTransparent();
-//		return true;
+	@Override
+	public boolean isTransparent() {
+		return true;
 	}
 
 	public CommonParticle setColor(int color, int diff) {

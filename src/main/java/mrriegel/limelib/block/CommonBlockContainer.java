@@ -118,7 +118,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 			worldIn.setBlockToAir(pos);
 			spawnAsEntity(worldIn, pos, lis.get(0));
 		}
-}
+	}
 
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {

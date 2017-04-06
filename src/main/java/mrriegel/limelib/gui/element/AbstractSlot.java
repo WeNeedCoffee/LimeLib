@@ -49,7 +49,7 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 		public void drawTooltip(int mouseX, int mouseY) {
 			if (!visible)
 				return;
-			if (toolTip && stack!=null) {
+			if (toolTip && stack != null) {
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();
 				ScaledResolution sr = new ScaledResolution(mc);
@@ -73,7 +73,7 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 			if (!visible)
 				return;
 			GlStateManager.pushMatrix();
-			if (stack!=null) {
+			if (stack != null) {
 				RenderHelper.enableGUIStandardItemLighting();
 				mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x, y);
 				String num = amount < 1000 ? String.valueOf(amount) : amount < 1000000 ? amount / 1000 + "K" : amount / 1000000 + "M";

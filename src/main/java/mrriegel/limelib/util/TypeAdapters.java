@@ -73,7 +73,7 @@ public class TypeAdapters {
 		@Override
 		public ItemStack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			ItemStack stack = StackHelper.stringToStack(json.getAsJsonObject().get("ITEMSTACK").getAsString());
-			if (stack!=null)
+			if (stack != null)
 				stack.setTagCompound((NBTTagCompound) context.deserialize(json.getAsJsonObject().get("NBT"), NBTTagCompound.class));
 			return stack;
 		}

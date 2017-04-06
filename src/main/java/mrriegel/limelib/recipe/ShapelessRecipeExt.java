@@ -74,7 +74,7 @@ public class ShapelessRecipeExt implements IRecipe {
 		for (int x = 0; x < var1.getSizeInventory(); x++) {
 			ItemStack slot = var1.getStackInSlot(x);
 
-			if (slot!=null) {
+			if (slot != null) {
 				boolean inRecipe = false;
 				Iterator<Object> req = required.iterator();
 

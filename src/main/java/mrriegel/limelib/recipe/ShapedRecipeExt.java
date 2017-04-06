@@ -175,7 +175,7 @@ public class ShapedRecipeExt implements IRecipe {
 					if (!matched) {
 						return false;
 					}
-				} else if (target == null && slot!=null) {
+				} else if (target == null && slot != null) {
 					return false;
 				}
 			}

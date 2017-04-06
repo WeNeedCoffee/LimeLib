@@ -5,7 +5,6 @@ import java.util.Random;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.particle.CommonParticle;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;

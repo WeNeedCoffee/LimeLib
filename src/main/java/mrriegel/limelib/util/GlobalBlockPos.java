@@ -81,6 +81,7 @@ public class GlobalBlockPos {
 	public World getWorld() {
 		return DimensionManager.getWorld(dimension);
 	}
+
 	@Deprecated
 	public World getWorld(World world) {
 		return getWorld();
@@ -91,6 +92,7 @@ public class GlobalBlockPos {
 			return null;
 		return getWorld().getTileEntity(getPos());
 	}
+
 	@Deprecated
 	public TileEntity getTile(World world) {
 		return getTile();

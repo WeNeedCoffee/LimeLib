@@ -270,7 +270,7 @@ public abstract class CommonContainer extends Container {
 			}
 		}
 		return flag1;
-}
+	}
 
 	private final boolean hasGhost(Area area) {
 		for (int i = area.min; i <= area.max; i++)

@@ -24,7 +24,7 @@ public class Article {
 	public Article(String name, ItemStack... stacks) {
 		this(name);
 		for (ItemStack stack : stacks)
-			if (stack!=null && this.stacks.size() < maxItems)
+			if (stack != null && this.stacks.size() < maxItems)
 				this.stacks.add(stack);
 	}
 

@@ -57,7 +57,7 @@ public class BlockHelper {
 		if (silk && state.getBlock().canSilkHarvest(world, pos, state, player)) {
 			lis = Lists.newArrayList();
 			ItemStack drop = getSilkDrop(world, pos, player);
-			if (drop!=null)
+			if (drop != null)
 				lis.add(drop);
 		} else
 			lis = getFortuneDrops(world, pos, player, fortune);
@@ -83,7 +83,7 @@ public class BlockHelper {
 		Iterator<ItemStack> it = lis.iterator();
 		while (it.hasNext()) {
 			ItemStack s = it.next();
-			if (s==null)
+			if (s == null)
 				it.remove();
 		}
 		return lis;
@@ -121,7 +121,7 @@ public class BlockHelper {
 				silked = (ItemStack) m.invoke(state.getBlock(), state);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			}
-			if (silked!=null)
+			if (silked != null)
 				tmp.add(silked);
 		}
 		ForgeEventFactory.fireBlockHarvesting(tmp, world, pos, state, 0, 1.0f, true, player);
@@ -150,7 +150,7 @@ public class BlockHelper {
 			ItemStack stack = null;
 			try {
 				stack = getSilkDrop(world, pos, world.isRemote ? LimeLib.proxy.getClientPlayer() : Utils.getFakePlayer((WorldServer) world));
-				if (stack==null)
+				if (stack == null)
 					stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, null);
 				return StackHelper.isOre(stack);
 			} catch (Exception e) {
@@ -181,7 +181,7 @@ public class BlockHelper {
 		String tool = state.getBlock().getHarvestTool(state);
 		if (state.getBlock().getMaterial(state).isToolNotRequired())
 			return true;
-		if (stack==null)
+		if (stack == null)
 			return false;
 		return stack.getItem().getHarvestLevel(stack, tool, null, null) >= state.getBlock().getHarvestLevel(state);
 	}
