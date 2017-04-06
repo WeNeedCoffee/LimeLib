@@ -17,7 +17,7 @@ public class TileSyncMessage extends AbstractMessage<TileSyncMessage> {
 
 	@Override
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
-		if (side == Side.CLIENT) {
+		if (side.isClient()) {
 			if (player.world.getTileEntity(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos"))) instanceof CommonTile) {
 				PacketHandler.sendToServer(new TileSyncMessage(nbt));
 			}

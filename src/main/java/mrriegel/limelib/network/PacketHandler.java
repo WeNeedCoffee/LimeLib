@@ -17,9 +17,12 @@ import com.google.common.collect.Sets;
 public class PacketHandler {
 
 	public static SimpleNetworkWrapper wrapper;
-	public static int index = 0;
+	private static int index = 0;
 	private static boolean defaultsRegistered = false;
 	private static Map<Side, Set<Class<? extends AbstractMessage<?>>>> registered = Maps.newHashMap();
+
+	private PacketHandler() {
+	}
 
 	public static void init() {
 		if (wrapper == null)
@@ -33,12 +36,12 @@ public class PacketHandler {
 		defaultsRegistered = true;
 		registerMessage(TileMessage.class, Side.SERVER);
 		registerMessage(TileGuiMessage.class, Side.SERVER);
-		registerMessage(WorldDataMessage.class, Side.CLIENT);
-		registerMessage(TileSyncMessage.class, Side.SERVER);
-		registerMessage(TileSyncMessage.class, Side.CLIENT);
+		registerMessage(TileSyncMessage.class);
 		registerMessage(TeleportMessage.class, Side.CLIENT);
 		registerMessage(EnergySyncMessage.class, Side.CLIENT);
-
+		registerMessage(DataPartSyncMessage.class, Side.CLIENT);
+		registerMessage(OpenGuiMessage.class, Side.SERVER);
+		registerMessage(PlayerClickMessage.class, Side.SERVER);
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage<?>> classMessage, Side side) {
@@ -48,6 +51,11 @@ public class PacketHandler {
 		if (registered.get(side) == null)
 			registered.put(side, Sets.newHashSet());
 		registered.get(side).add(classMessage);
+	}
+
+	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage<?>> classMessage) {
+		registerMessage(classMessage, Side.CLIENT);
+		registerMessage(classMessage, Side.SERVER);
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, Side side) {

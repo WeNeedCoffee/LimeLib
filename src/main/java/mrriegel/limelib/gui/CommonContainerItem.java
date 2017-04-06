@@ -1,6 +1,8 @@
 package mrriegel.limelib.gui;
 
-import mrriegel.limelib.util.ItemInvWrapper;
+import java.util.List;
+
+import mrriegel.limelib.helper.NBTStackHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
@@ -10,26 +12,39 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.google.common.collect.Lists;
+
 public abstract class CommonContainerItem extends CommonContainer {
 
 	protected ItemStack stack;
+	boolean inited = false;
 
 	public CommonContainerItem(InventoryPlayer invPlayer, int num) {
 		super(invPlayer, Pair.<String, IInventory> of("inv", new InventoryBasic(null, false, num)));
-		stack = invPlayer.getCurrentItem();
-		if (!stack.hasTagCompound())
-			stack.setTagCompound(new NBTTagCompound());
-		readFromStack();
+		inited = true;
 	}
 
-	@Override
-	public boolean canInteractWith(EntityPlayer playerIn) {
-		return stack.isItemEqual(playerIn.inventory.getCurrentItem());
+	protected void setStack(EntityPlayer player) {
+		stack = player.inventory.getCurrentItem();
+	}
+
+	protected IInventory getItemInventory() {
+		return invs.get("inv");
 	}
 
 	@Override
 	protected void inventoryChanged() {
-		writeToStack();
+		if (inited)
+			writeToStack();
+	}
+
+	@Override
+	protected void modifyInvs() {
+		setStack(getPlayer());
+		if (!stack.hasTagCompound())
+			stack.setTagCompound(new NBTTagCompound());
+		readFromStack();
+		super.modifyInvs();
 	}
 
 	@Override
@@ -38,20 +53,23 @@ public abstract class CommonContainerItem extends CommonContainer {
 		inventoryChanged();
 	}
 
-	protected void writeToStack() {
-		IInventory inv = invs.get("inv");
-		ItemInvWrapper w = new ItemInvWrapper(stack, inv.getSizeInventory());
+	public void writeToStack() {
+		IInventory inv = getItemInventory();
+		List<ItemStack> stacks = Lists.newArrayList();
 		for (int i = 0; i < inv.getSizeInventory(); i++)
-			w.setStackInSlot(i, inv.getStackInSlot(i));
-		invPlayer.mainInventory[invPlayer.currentItem] = stack;
+			stacks.add(i, inv.getStackInSlot(i));
+		NBTStackHelper.setItemStackList(stack, "items", stacks);
+		detectAndSendChanges();
 	}
 
-	protected void readFromStack() {
-		IInventory inv = new InventoryBasic(null, false, invs.get("inv").getSizeInventory());
-		ItemInvWrapper w = new ItemInvWrapper(stack, inv.getSizeInventory());
-		for (int i = 0; i < inv.getSizeInventory(); i++)
-			inv.setInventorySlotContents(i, w.getStackInSlot(i));
+	public void readFromStack() {
+		List<ItemStack> stacks = NBTStackHelper.getItemStackList(stack, "items");
+		IInventory inv = getItemInventory();
+		inv.clear();
+		for (int i = 0; i < Math.min(inv.getSizeInventory(), stacks.size()); i++)
+			inv.setInventorySlotContents(i, stacks.get(i));
 		invs.put("inv", inv);
+		detectAndSendChanges();
 	}
 
 }

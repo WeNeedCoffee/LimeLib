@@ -33,7 +33,7 @@ public class CommonGuiContainer extends GuiContainer {
 				((ITooltip) panel).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
 		}
 		for (GuiElement e : elementList)
-			if (e.isMouseOver(mouseX, mouseY) && e instanceof ITooltip)
+			if (e.isMouseOver(mouseX, mouseY) && e instanceof ITooltip && e.isVisible())
 				((ITooltip) e).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
 		for (GuiButton e : buttonList)
 			if (e instanceof ITooltip)
@@ -46,7 +46,8 @@ public class CommonGuiContainer extends GuiContainer {
 		if (panel != null)
 			panel.drawBackground(mouseX, mouseY);
 		for (GuiElement e : elementList)
-			e.draw(mouseX, mouseY);
+			if (e.isVisible())
+				e.draw(mouseX, mouseY);
 	}
 
 	@Override
@@ -59,7 +60,6 @@ public class CommonGuiContainer extends GuiContainer {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		drawer = new GuiDrawer(guiLeft, guiTop, xSize, ySize, zLevel);
 		if (panel != null)
 			panel.onUpdate();
 		super.drawScreen(mouseX, mouseY, partialTicks);
@@ -75,7 +75,7 @@ public class CommonGuiContainer extends GuiContainer {
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 		for (GuiElement e : elementList)
-			if (e.isMouseOver(mouseX, mouseY)) {
+			if (e.isMouseOver(mouseX, mouseY) && e.isVisible()) {
 				e.onClick(mouseButton);
 				if (mouseButton == 0)
 					elementClicked(e);
@@ -86,7 +86,7 @@ public class CommonGuiContainer extends GuiContainer {
 	protected void mouseReleased(int mouseX, int mouseY, int state) {
 		super.mouseReleased(mouseX, mouseY, state);
 		for (GuiElement e : elementList)
-			if (e.isMouseOver(mouseX, mouseY))
+			if (e.isMouseOver(mouseX, mouseY) && e.isVisible())
 				e.onRelease(state);
 	}
 
@@ -96,7 +96,7 @@ public class CommonGuiContainer extends GuiContainer {
 		int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
 		int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
 		for (GuiElement e : elementList)
-			if (e.isMouseOver(mouseX, mouseY))
+			if (e.isMouseOver(mouseX, mouseY) && e.isVisible())
 				e.onScrolled(Mouse.getEventDWheel());
 	}
 

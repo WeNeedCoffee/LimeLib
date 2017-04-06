@@ -110,6 +110,12 @@ public class Utils {
 		return FakePlayerFactory.get(world, new GameProfile(UUID.fromString("672ec311-27a5-449e-925c-69a55980d378"), LimeLib.MODID + "_FakePlayer"));
 	}
 
+	public static FakePlayer getFakePlayerWithItem(WorldServer world, ItemStack stack) {
+		FakePlayer player = getFakePlayer(world);
+		player.inventory.mainInventory[(player.inventory.currentItem = 0)]= stack;
+		return player;
+	}
+
 	public static RayTraceResult rayTrace(Entity entity, double distance) {
 		Vec3d vec3d = entity.getPositionEyes(0);
 		Vec3d vec3d1 = entity.getLook(0);

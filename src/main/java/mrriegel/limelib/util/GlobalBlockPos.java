@@ -1,7 +1,5 @@
 package mrriegel.limelib.util;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -80,26 +78,26 @@ public class GlobalBlockPos {
 		this.dimension = dimension;
 	}
 
-	public World getWorld(@Nullable World world) {
+	public World getWorld() {
 		return DimensionManager.getWorld(dimension);
 	}
-
-	public World getWorld() {
-		return getWorld(null);
-	}
-
-	public TileEntity getTile(@Nullable World world) {
-		if (getWorld(world) == null)
-			return null;
-		return getWorld(world).getTileEntity(getPos());
+	@Deprecated
+	public World getWorld(World world) {
+		return getWorld();
 	}
 
 	public TileEntity getTile() {
-		return getTile(null);
+		if (getWorld() == null)
+			return null;
+		return getWorld().getTileEntity(getPos());
+	}
+	@Deprecated
+	public TileEntity getTile(World world) {
+		return getTile();
 	}
 
-	public IBlockState getBlockState(@Nullable World world) {
-		return getWorld(world).getBlockState(getPos());
+	public IBlockState getBlockState() {
+		return getWorld().getBlockState(getPos());
 	}
 
 	public void readFromNBT(NBTTagCompound compound) {

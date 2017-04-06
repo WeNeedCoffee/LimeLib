@@ -9,7 +9,7 @@ import net.minecraft.nbt.NBTTagList;
 public class NBTStackHelper {
 
 	public static void initNBTTagCompound(ItemStack stack) {
-		if (stack.getTagCompound() == null) {
+		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
 	}

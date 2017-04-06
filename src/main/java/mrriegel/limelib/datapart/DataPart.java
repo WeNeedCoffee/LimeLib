@@ -1,111 +1,118 @@
 package mrriegel.limelib.datapart;
 
-import java.util.Map;
+import javax.annotation.Nullable;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTHelper;
-import mrriegel.limelib.util.GlobalBlockPos;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import com.google.common.collect.Maps;
-
-@Deprecated
 public class DataPart {
 
-	public static Map<GlobalBlockPos, DataPart> partMap;
+	protected BlockPos pos;
+	protected World world;
+	public int ticksExisted;
 
-	protected GlobalBlockPos pos;
-
-	public void update(World world) {
-
+	public void updateServer(World world) {
 	}
 
-	public void markDirty() {
-		DataPartSavedData.get(getWorld()).markDirty();
+	public void updateClient(World world) {
 	}
 
-	public void readFromNBT(NBTTagCompound compound) {
-		pos = GlobalBlockPos.loadGlobalPosFromNBT(NBTHelper.getTag(compound, "gpos"));
+	public void onAdded() {
 	}
 
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		compound.setString("class", getClass().getName());
-		NBTTagCompound nbt = new NBTTagCompound();
-		pos.writeToNBT(nbt);
-		NBTHelper.setTag(compound, "gpos", nbt);
+	public void onRemoved() {
+	}
+
+	public boolean onRightClicked(EntityPlayer player, EnumHand hand) {
+		return false;
+	}
+
+	public boolean onLeftClicked(EntityPlayer player, EnumHand hand) {
+		return false;
+	}
+
+	public boolean clientValid() {
+		return true;
+	}
+
+	public AxisAlignedBB getHighlightBox() {
+		return Block.FULL_BLOCK_AABB;
+	}
+
+	public final void readDataFromNBT(NBTTagCompound compound) {
+		pos = BlockPos.fromLong(NBTHelper.getLong(compound, "poS"));
+		readFromNBT(compound);
+	}
+
+	public final NBTTagCompound writeDataToNBT(NBTTagCompound compound) {
+		writeToNBT(compound);
+		compound.setString("id", DataPartRegistry.PARTS.inverse().get(getClass()));
+		compound.setLong("poS", pos.toLong());
 		return compound;
 	}
 
+	public void readFromNBT(NBTTagCompound compound) {
+	}
+
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		return compound;
+	}
+
+	protected final DataPartRegistry getRegistry() {
+		DataPartRegistry d = DataPartRegistry.get(world);
+		assert d != null;
+		return d;
+	}
+
 	public World getWorld() {
-		return pos.getWorld();
+		return world;
+	}
+
+	public void setWorld(World world) {
+		this.world = world;
 	}
 
 	public BlockPos getPos() {
-		return pos.getPos();
+		return pos;
 	}
 
 	public final int getX() {
-		return pos.getPos().getX();
+		return pos.getX();
 	}
 
 	public final int getY() {
-		return pos.getPos().getY();
+		return pos.getY();
 	}
 
 	public final int getZ() {
-		return pos.getPos().getZ();
+		return pos.getZ();
 	}
 
-	//	public boolean onServer() {
-	//		return !world.isRemote;
-	//	}
-	//
-	//	public boolean onClient() {
-	//		return !onServer();
-	//	}
-
-	public static DataPart getDataPart(GlobalBlockPos pos) {
-		if (DataPart.partMap == null)
-			DataPart.partMap = Maps.newHashMap();
-		return DataPart.partMap.get(pos);
-	}
-
-	public static DataPart getDataPart(World world, BlockPos pos) {
-		return getDataPart(new GlobalBlockPos(pos, world));
-	}
-
-	public static boolean addDataPart(GlobalBlockPos pos, DataPart part, boolean force) {
-		if (DataPart.partMap == null)
-			DataPart.partMap = Maps.newHashMap();
-		part.pos = pos;
-		if (DataPart.partMap.get(pos) != null) {
-			if (force) {
-				DataPart.partMap.put(pos, part);
-				part.markDirty();
-				return true;
-			}
-			return false;
-		} else {
-			System.out.println("1 " + DataPart.partMap);
-			DataPart.partMap.put(pos, part);
-			System.out.println("2 " + DataPart.partMap.toString());
-			part.markDirty();
-			return true;
+	public static @Nullable DataPart rayTrace(EntityPlayer player) {
+		DataPartRegistry reg = DataPartRegistry.get(player.world);
+		if (reg == null)
+			return null;
+		Vec3d eye = player.getPositionVector().addVector(0, player.eyeHeight, 0);
+		Vec3d look = player.getLookVec().scale(.5);
+		Vec3d vec = eye.add(look);
+		DataPart part = null;
+		while (vec.distanceTo(eye) < LimeLib.proxy.getReachDistance(player)) {
+			BlockPos p = new BlockPos(vec);
+			if (player.world.getBlockState(p).getCollisionBoundingBox(player.world, p) != null)
+				break;
+			if ((part = reg.getDataPart(p)) != null)
+				break;
+			look = look.add(player.getLookVec().scale(.15));
+			vec = eye.add(look);
 		}
+		return part;
 	}
-
-	public static boolean addDataPart(World world, BlockPos pos, DataPart part, boolean force) {
-		return addDataPart(new GlobalBlockPos(pos, world), part, force);
-	}
-
-	public static void removeDataPart(GlobalBlockPos pos) {
-		if (DataPart.partMap == null)
-			DataPart.partMap = Maps.newHashMap();
-		if (DataPart.partMap.containsKey(pos)) {
-			DataPart.partMap.get(pos).markDirty();
-			DataPart.partMap.remove(pos);
-		}
-	}
-
 }

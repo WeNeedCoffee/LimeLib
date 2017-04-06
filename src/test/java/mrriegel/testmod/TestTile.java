@@ -3,6 +3,7 @@ package mrriegel.testmod;
 import java.util.Iterator;
 import java.util.List;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.BlockHelper;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
@@ -22,8 +23,6 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import com.google.common.collect.Lists;
 
@@ -37,7 +36,6 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 
 	@Override
 	public boolean openGUI(EntityPlayerMP player) {
-		player.openGui(TestMod.mod, 0, world, getPos().getX(), getPos().getY(), getPos().getZ());
 		return true;
 	}
 
@@ -57,11 +55,11 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 				for (int z = pos.getZ() - range; z <= pos.getZ() + range; z++)
 					if (!BlockHelper.isOre(world, new BlockPos(x, y, z)))
 						lis.add(new BlockPos(x, y, z));
-		for (BlockPos p : lis) {
-			for (ItemStack s : BlockHelper.breakBlockWithFortune(world, p, 3, player, false, false))
-				if (ItemHandlerHelper.insertItem(InvHelper.getItemHandler(world.getTileEntity(pos.up()), EnumFacing.DOWN), s.copy(), false) != null)
-					return;
-		}
+//		for (BlockPos p : lis) {
+//			for (ItemStack s : BlockHelper.breakBlockWithFortune(world, p, 3, player, false, false,true))
+//				if (ItemHandlerHelper.insertItemStacked(InvHelper.getItemHandler(world.getTileEntity(pos.up()), EnumFacing.DOWN), s.copy(), false) != null)
+//					return;
+//		}
 	}
 
 	List<BlockPos> lis = null;
@@ -88,15 +86,15 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 					whil: while (it.hasNext()) {
 						BlockPos p = it.next();
 						if (world.getTileEntity(p) == null && BlockHelper.isBlockBreakable(world, p) && !BlockHelper.isOre(world, p)) {
-							List<ItemStack> drops = BlockHelper.breakBlockWithFortune(world, p, 0, null, false, false);
-							drops.clear();
-							for (ItemStack drop : drops)
-								if (drop != null)
-									ItemHandlerHelper.insertItemStacked(new PlayerMainInvWrapper(player.inventory), drop.copy(), false);
+//							List<ItemStack> drops = BlockHelper.breakBlockWithFortune(world, p, 0, null, false, false,true);
+//							drops.clear();
+//							for (ItemStack drop : drops)
+//								if (drop != null)
+//									ItemHandlerHelper.insertItemStacked(new PlayerMainInvWrapper(player.inventory), drop.copy(), false);
 							break whil;
 						} else {
 							for (Vec3d vec : ParticleHelper.getVecsForLine(p, pos, .6))
-								ParticleHelper.renderParticle(new CommonParticle(vec.xCoord, vec.yCoord, vec.zCoord).setMaxAge2(1));
+								LimeLib.proxy.renderParticle(new CommonParticle(vec.xCoord, vec.yCoord, vec.zCoord).setMaxAge2(1));
 						}
 						it.remove();
 					}

@@ -74,4 +74,5 @@ public class CombinedInvWrapperExt implements IItemHandler {
 		slot = getSlotFromIndex(slot, index);
 		return handler.extractItem(slot, amount, simulate);
 	}
+
 }

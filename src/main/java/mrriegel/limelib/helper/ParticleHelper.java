@@ -1,6 +1,7 @@
 package mrriegel.limelib.helper;
 
 import java.util.List;
+import java.util.Random;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.particle.CommonParticle;
@@ -8,15 +9,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 import com.google.common.collect.Lists;
 
 public class ParticleHelper {
-
-	public static void renderParticle(CommonParticle par) {
-		Minecraft.getMinecraft().effectRenderer.addEffect(par);
-	}
 
 	public static List<Vec3d> getVecsForLine(BlockPos pos1, BlockPos pos2, double frequence) {
 		return getVecsForLine(pos1.getX() + .5, pos1.getY() + .5, pos1.getZ() + .5, pos2.getX() + .5, pos2.getY() + .5, pos2.getZ() + .5, frequence);
@@ -43,7 +41,9 @@ public class ParticleHelper {
 		List<Vec3d> lis = Lists.newArrayList();
 		int amount = (int) (2 * Math.PI * radius * frequence);
 		double degree = 360 / (double) amount;
-		for (double i = 0; i < 360; i += degree) {
+		double add = (LimeLib.proxy.getClientWorld().getTotalWorldTime() / ((int) radius + 1)) % 360;
+		add = 0;
+		for (double i = 0 + add; i < 360 + add; i += degree) {
 			Vec3d foo = null;
 			double value = i * (Math.PI / 180D);
 			switch (axis) {
@@ -62,6 +62,46 @@ public class ParticleHelper {
 		return lis;
 	}
 
+	public static List<Vec3d> getVecsForSquare(double x1, double y1, double z1, double radius, double frequence, EnumFacing.Axis axis) {
+		List<Vec3d> lis = Lists.newArrayList();
+		switch (axis) {
+		case Y: {
+			Vec3d a = new Vec3d(x1 + radius, y1, z1 + radius);
+			Vec3d b = new Vec3d(x1 - radius, y1, z1 + radius);
+			Vec3d c = new Vec3d(x1 - radius, y1, z1 - radius);
+			Vec3d d = new Vec3d(x1 + radius, y1, z1 - radius);
+			lis.addAll(getVecsForLine(a.xCoord, a.yCoord, a.zCoord, b.xCoord, b.yCoord, b.zCoord, frequence));
+			lis.addAll(getVecsForLine(b.xCoord, b.yCoord, b.zCoord, c.xCoord, c.yCoord, c.zCoord, frequence));
+			lis.addAll(getVecsForLine(c.xCoord, c.yCoord, c.zCoord, d.xCoord, d.yCoord, d.zCoord, frequence));
+			lis.addAll(getVecsForLine(d.xCoord, d.yCoord, d.zCoord, a.xCoord, a.yCoord, a.zCoord, frequence));
+			break;
+		}
+		case X: {
+			Vec3d a = new Vec3d(x1, y1 + radius, z1 + radius);
+			Vec3d b = new Vec3d(x1, y1 - radius, z1 + radius);
+			Vec3d c = new Vec3d(x1, y1 - radius, z1 - radius);
+			Vec3d d = new Vec3d(x1, y1 + radius, z1 - radius);
+			lis.addAll(getVecsForLine(a.xCoord, a.yCoord, a.zCoord, b.xCoord, b.yCoord, b.zCoord, frequence));
+			lis.addAll(getVecsForLine(b.xCoord, b.yCoord, b.zCoord, c.xCoord, c.yCoord, c.zCoord, frequence));
+			lis.addAll(getVecsForLine(c.xCoord, c.yCoord, c.zCoord, d.xCoord, d.yCoord, d.zCoord, frequence));
+			lis.addAll(getVecsForLine(d.xCoord, d.yCoord, d.zCoord, a.xCoord, a.yCoord, a.zCoord, frequence));
+			break;
+		}
+		case Z: {
+			Vec3d a = new Vec3d(x1 + radius, y1 + radius, z1);
+			Vec3d b = new Vec3d(x1 - radius, y1 + radius, z1);
+			Vec3d c = new Vec3d(x1 - radius, y1 - radius, z1);
+			Vec3d d = new Vec3d(x1 + radius, y1 - radius, z1);
+			lis.addAll(getVecsForLine(a.xCoord, a.yCoord, a.zCoord, b.xCoord, b.yCoord, b.zCoord, frequence));
+			lis.addAll(getVecsForLine(b.xCoord, b.yCoord, b.zCoord, c.xCoord, c.yCoord, c.zCoord, frequence));
+			lis.addAll(getVecsForLine(c.xCoord, c.yCoord, c.zCoord, d.xCoord, d.yCoord, d.zCoord, frequence));
+			lis.addAll(getVecsForLine(d.xCoord, d.yCoord, d.zCoord, a.xCoord, a.yCoord, a.zCoord, frequence));
+			break;
+		}
+		}
+		return lis;
+	}
+
 	public static List<Vec3d> getVecsForExplosion(double force, double frequence, EnumFacing.Axis axis) {
 		List<Vec3d> lis = Lists.newArrayList();
 		for (Vec3d vec : ParticleHelper.getVecsForCircle(0, 0, 0, force, frequence, axis))
@@ -73,7 +113,9 @@ public class ParticleHelper {
 		List<Vec3d> lis = ParticleHelper.getVecsForCircle(0, 0, 0, force, frequence, axis);
 		if (reverse)
 			lis = Lists.reverse(lis);
+		//		System.out.println(lis.size()+" ");
 		int index = ((int) ((System.currentTimeMillis() % Integer.MAX_VALUE) * speed)) % lis.size();
+		//		System.out.println("index "+index);
 		Vec3d vec = lis.get(index);
 		switch (axis) {
 		case Y:
@@ -84,11 +126,23 @@ public class ParticleHelper {
 			return new Vec3d(vec.xCoord, vec.yCoord, 0);
 		}
 		return null;
-
 	}
 
-	public static final ResourceLocation roundParticle = new ResourceLocation(LimeLib.MODID + ":particle/roundParticle");
-	public static final ResourceLocation sparkleParticle = new ResourceLocation(LimeLib.MODID + ":particle/sparkleParticle");
-	public static final ResourceLocation squareParticle = new ResourceLocation(LimeLib.MODID + ":particle/squareParticle");
+	public static List<Vec3d> getVecsForBlock(BlockPos pos, int amount) {
+		List<Vec3d> lis = Lists.newArrayList();
+		Random random = new Random();
+		for (int i = 0; i < amount; i++) {
+			lis.add(new Vec3d(pos.getX() + MathHelper.nextDouble(random, 0., 1.), pos.getY() + MathHelper.nextDouble(random, 0., 1.), pos.getZ() + MathHelper.nextDouble(random, 0., 1.)));
+		}
+		return lis;
+	}
+
+	public static void renderParticle(CommonParticle par) {
+		LimeLib.proxy.renderParticle(par);
+	}
+
+	public static final ResourceLocation roundParticle = new ResourceLocation(LimeLib.MODID + ":particle/round_particle");
+	public static final ResourceLocation sparkleParticle = new ResourceLocation(LimeLib.MODID + ":particle/sparkle_particle");
+	public static final ResourceLocation squareParticle = new ResourceLocation(LimeLib.MODID + ":particle/square_particle");
 
 }

@@ -17,7 +17,7 @@ public class SlotGhost extends Slot {
 
 		if (holding != null) {
 			holding = holding.copy();
-			holding.stackSize = 1;
+			holding.stackSize=1;
 		}
 		this.putStack(holding);
 		return false;
@@ -26,7 +26,7 @@ public class SlotGhost extends Slot {
 	@Override
 	public boolean isItemValid(ItemStack stack) {
 		ItemStack copy = stack.copy();
-		copy.stackSize = 1;
+		copy.stackSize=1;
 		this.putStack(copy);
 		return false;
 	}

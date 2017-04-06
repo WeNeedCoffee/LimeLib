@@ -1,6 +1,10 @@
 package mrriegel.limelib.helper;
 
+import java.util.List;
+import java.util.function.Predicate;
+
 import mrriegel.limelib.util.FilterItem;
+import mrriegel.limelib.util.StackWrapper;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -20,12 +24,15 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 public class InvHelper {
-	public static boolean hasItemHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
-		return getItemHandler(world, pos, side) != null;
+
+	public static boolean hasItemHandler(TileEntity tile, EnumFacing side) {
+		if (tile == null)
+			return false;
+		return tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side) || tile instanceof IInventory;
 	}
 
-	public static boolean hasItemHandler(TileEntity tile, EnumFacing facing) {
-		return getItemHandler(tile, facing) != null;
+	public static boolean hasItemHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
+		return hasItemHandler(WorldHelper.getTile(world, pos), side);
 	}
 
 	public static IItemHandler getItemHandler(TileEntity tile, EnumFacing side) {
@@ -52,16 +59,16 @@ public class InvHelper {
 	}
 
 	public static int canInsert(IItemHandler inv, ItemStack stack) {
-		if (inv == null || stack == null)
+		if (inv == null || stack==null)
 			return 0;
 		ItemStack s = ItemHandlerHelper.insertItemStacked(inv, stack, true);
-		int rest = s == null ? 0 : s.stackSize;
+		int rest = s.stackSize;
 		return stack.stackSize - rest;
 
 	}
 
 	public static boolean contains(IItemHandler inv, ItemStack stack) {
-		if (inv == null || stack == null)
+		if (inv == null || stack==null)
 			return false;
 		for (int i = 0; i < inv.getSlots(); i++) {
 			if (ItemHandlerHelper.canItemStacksStack(inv.getStackInSlot(i), stack)) {
@@ -84,33 +91,49 @@ public class InvHelper {
 	}
 
 	public static ItemStack extractItem(IItemHandler inv, FilterItem fil, int num, boolean simulate) {
-		if (inv == null || fil == null)
+		if (fil == null)
+			return null;
+		return extractItem(inv, (ItemStack s) -> fil.match(s), num, simulate);
+	}
+
+	public static ItemStack extractItem(IItemHandler inv, Predicate<ItemStack> pred, int num, boolean simulate) {
+		if (inv == null || pred == null)
 			return null;
 		ItemStack extracted = null;
 		int missing = num;
 		for (int i = 0; i < inv.getSlots(); i++) {
 			ItemStack slot = inv.getStackInSlot(i);
-			if (fil.match(slot)) {
+			if (pred.test(slot)) {
 				ItemStack ex = inv.extractItem(i, missing, simulate);
-				if (ex != null) {
-					if (extracted == null)
+				if (ex!=null) {
+					if (extracted==null)
 						extracted = ex.copy();
 					else {
 						if (!ItemHandlerHelper.canItemStacksStack(extracted, ex))
 							continue;
+						extracted.stackSize+=ex.stackSize;
 					}
 					missing -= ex.stackSize;
-					if (missing == 0)
-						return ItemHandlerHelper.copyStackWithSize(slot, num);
+					if (missing == 0) {
+						return ItemHandlerHelper.copyStackWithSize(ex, num);
+					}
 				}
 			}
 		}
-		return null;
+		return extracted;
+	}
+
+	public static void sort(IItemHandler inv) {
+		List<ItemStack> ex = StackHelper.inv2list(inv);
+		List<StackWrapper> wraps = StackWrapper.toWrapperList(ex);
+		List<ItemStack> lis = StackWrapper.toStackList(wraps);
+		InvHelper.clear(inv);
+		StackHelper.list2inv(lis, inv);
 	}
 
 	public static void clear(IItemHandler inv) {
 		for (int i = 0; i < inv.getSlots(); i++) {
-			if (inv.getStackInSlot(i) == null)
+			if (inv.getStackInSlot(i)==null)
 				continue;
 			if (inv instanceof IItemHandlerModifiable)
 				((IItemHandlerModifiable) inv).setStackInSlot(i, null);

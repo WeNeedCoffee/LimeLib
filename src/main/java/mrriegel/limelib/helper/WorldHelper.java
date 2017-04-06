@@ -3,6 +3,7 @@ package mrriegel.limelib.helper;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -12,6 +13,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLiving.SpawnPlacementType;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -38,7 +40,7 @@ public class WorldHelper {
 			int x = (chunkX << 4) + world.rand.nextInt(16);
 			int y = minY + world.rand.nextInt(diffBtwnMinMaxY);
 			int z = (chunkZ << 4) + world.rand.nextInt(16);
-			new WorldGenMinable(state, 5 + world.rand.nextInt(3), predicate).generate(world, world.rand, new BlockPos(x, y, z));
+			new WorldGenMinable(state, size, predicate).generate(world, world.rand, new BlockPos(x, y, z));
 		}
 	}
 
@@ -145,6 +147,10 @@ public class WorldHelper {
 
 	public static TileEntity getTile(IBlockAccess world, BlockPos pos) {
 		return world instanceof ChunkCache ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : world.getTileEntity(pos);
+	}
+
+	public static List<BlockPos> getNeighbors(BlockPos p) {
+		return Lists.newArrayList(EnumFacing.VALUES).stream().map(f -> p.offset(f)).collect(Collectors.toList());
 	}
 
 }

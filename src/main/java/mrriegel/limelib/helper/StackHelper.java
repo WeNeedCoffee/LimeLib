@@ -1,14 +1,11 @@
 package mrriegel.limelib.helper;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-
-import javax.annotation.Nullable;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -20,12 +17,16 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 
 public class StackHelper {
@@ -37,6 +38,12 @@ public class StackHelper {
 			if (Ints.contains(OreDictionary.getOreIDs(b), i))
 				return true;
 		return false;
+	}
+
+	public static boolean equalOreDictExact(ItemStack a, ItemStack b) {
+		if (a == null || b == null)
+			return false;
+		return Sets.newHashSet(OreDictionary.getOreIDs(a)).equals(Sets.newHashSet(OreDictionary.getOreIDs(b)));
 	}
 
 	public static boolean isOre(ItemStack stack) {
@@ -51,15 +58,17 @@ public class StackHelper {
 	}
 
 	public static boolean match(ItemStack stack, Object o) {
-		if (stack == null || stack.getItem() == null)
+		if (stack == null)
 			return false;
-		if (o instanceof Item || (o instanceof ItemStack) && ((ItemStack) o).getItemDamage() == OreDictionary.WILDCARD_VALUE)
+		if (o instanceof Item)
 			return stack.getItem() == o;
 		if (o instanceof Block)
 			return stack.getItem() == Item.getItemFromBlock((Block) o);
 		if (o instanceof String)
 			return Ints.contains(OreDictionary.getOreIDs(stack), OreDictionary.getOreID((String) o));
 		if (o instanceof ItemStack) {
+			if (((ItemStack) o).getItemDamage() == OreDictionary.WILDCARD_VALUE)
+				return stack.getItem() == ((ItemStack) o).getItem();
 			return stack.isItemEqual((ItemStack) o);
 		}
 		return false;
@@ -112,37 +121,6 @@ public class StackHelper {
 		return stacks;
 	}
 
-	public static void spawnItemStack(World worldIn, BlockPos pos, ItemStack stack) {
-		spawnItemStack(worldIn, pos.getX() + .5, pos.getY() + .1, pos.getZ() + .5, stack);
-	}
-
-	public static void spawnItemStack(World worldIn, double x, double y, double z, ItemStack stack) {
-		// if (stack != null)
-		// return;
-		Random RANDOM = worldIn.rand;
-		float f = RANDOM.nextFloat() * 0.8F + 0.1F;
-		float f1 = RANDOM.nextFloat() * 0.8F + 0.1F;
-		float f2 = RANDOM.nextFloat() * 0.8F + 0.1F;
-		if (stack != null)
-			stack = stack.copy();
-		while (stack != null && stack.stackSize > 0) {
-			int i = RANDOM.nextInt(21) + 10;
-
-			if (i > stack.stackSize) {
-				i = stack.stackSize;
-			}
-			stack.stackSize -= i;
-			EntityItem entityitem = new EntityItem(worldIn, x + f, y + f1, z + f2, ItemHandlerHelper.copyStackWithSize(stack, i));
-			if (stack.hasTagCompound()) {
-				entityitem.getEntityItem().setTagCompound(stack.getTagCompound().copy());
-			}
-			entityitem.motionX = RANDOM.nextGaussian() * 0.05000000074505806D;
-			entityitem.motionY = RANDOM.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
-			entityitem.motionZ = RANDOM.nextGaussian() * 0.05000000074505806D;
-			worldIn.spawnEntity(entityitem);
-		}
-	}
-
 	public static ItemStack getStackFromBlock(World world, BlockPos pos, EntityPlayer player) {
 		if (!world.isRemote) {
 			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), new RayTraceResult(Vec3d.ZERO, EnumFacing.UP), world, pos, FakePlayerFactory.getMinecraft((WorldServer) world
@@ -156,18 +134,57 @@ public class StackHelper {
 	public static boolean isWrench(ItemStack stack) {
 		if (stack == null || stack.getItem() instanceof ItemBlock)
 			return false;
-		boolean wrench = false;
 		for (String s : new String[] { "wrench", "scrench", "screwdriver" }) {
-			wrench |= stack.getItem().getClass().getSimpleName().toLowerCase().contains(s);
-			for (Class<?> c : stack.getItem().getClass().getInterfaces())
-				wrench |= c.getSimpleName().toLowerCase().contains(s);
-			wrench |= stack.getUnlocalizedName().toLowerCase().contains(s);
+			boolean flag = stack.getItem().getClass().getSimpleName().toLowerCase().contains(s)//
+					|| stack.getUnlocalizedName().toLowerCase().contains(s)//
+					|| Arrays.stream(stack.getItem().getClass().getInterfaces()).anyMatch(c -> c.getSimpleName().toLowerCase().contains(s));
+			if (flag)
+				return true;
 		}
-		return wrench;
+		return false;
 	}
 
-	public static int getSize(@Nullable ItemStack stack) {
-		return stack == null ? 0 : stack.stackSize;
+	public static void addStack(List<ItemStack> lis, ItemStack stack) {
+		if (stack == null)
+			return;
+		ItemStack[] ar = lis.toArray(new ItemStack[lis.size()]);
+		IItemHandler inv = new ItemStackHandler(ar);
+		ItemStack remain = ItemHandlerHelper.insertItemStacked(inv, stack, false);
+		lis.clear();
+		lis.addAll(Lists.newArrayList(ar));
+		if (remain != null)
+			lis.add(remain);
+		Iterables.removeIf(lis, s -> s == null);
+	}
+
+	public static List<ItemStack> inv2list(IItemHandler inv) {
+		List<ItemStack> lis = Lists.newArrayList();
+		for (int i = 0; i < inv.getSlots(); i++)
+			addStack(lis, inv.getStackInSlot(i));
+		Iterables.removeIf(lis, s -> s == null);
+		return lis;
+	}
+
+	public static void list2inv(List<ItemStack> lis, IItemHandler inv) {
+		for (ItemStack stack : lis) {
+			ItemStack remain = ItemHandlerHelper.insertItemStacked(inv, stack, false);
+			if (remain != null)
+				LimeLib.log.error(remain + " is lost.");
+		}
+	}
+
+	public static void toStackList(List<Object> lis) {
+		for (int i = 0; i < lis.size(); i++) {
+			Object o = lis.get(i);
+			if (o instanceof Item)
+				lis.set(i, new ItemStack((Item) o, 1, OreDictionary.WILDCARD_VALUE));
+			if (o instanceof Block)
+				lis.set(i, new ItemStack((Block) o, 1, OreDictionary.WILDCARD_VALUE));
+		}
+	}
+
+	public static void spawnItemStack(World worldIn, BlockPos pos, ItemStack itemStack) {
+		Block.spawnAsEntity(worldIn, pos, itemStack);
 	}
 
 }

@@ -587,7 +587,7 @@ public class NBTHelper {
 			if (hasTag(nbt, keyName + ":" + i))
 				lis.add(getItemStack(nbt, keyName + ":" + i));
 			else
-				lis.add(getItemStack(nbt, keyName + "-" + i));
+				lis.add(getItemStack(nbt, keyName + ":" + i));
 		return lis;
 	}
 

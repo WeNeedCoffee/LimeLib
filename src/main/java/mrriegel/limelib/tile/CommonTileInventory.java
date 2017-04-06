@@ -1,5 +1,6 @@
 package mrriegel.limelib.tile;
 
+import java.util.Arrays;
 import java.util.List;
 
 import mrriegel.limelib.LimeLib;
@@ -20,7 +21,7 @@ import com.google.common.collect.Lists;
 
 public class CommonTileInventory extends CommonTile implements IInventory {
 
-	private ItemStack[] stacks;
+	protected ItemStack[] stacks;
 	public final int SIZE, STACKLIMIT;
 
 	public CommonTileInventory(int size) {
@@ -30,12 +31,14 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	public CommonTileInventory(int size, int limit) {
 		SIZE = size;
 		STACKLIMIT = limit;
-		stacks = new ItemStack[SIZE];
+		ItemStack[] ar = new ItemStack[SIZE];
+		Arrays.fill(ar, null);
+		stacks = ar;
 	}
 
 	@Override
 	public String getName() {
-		return null;
+		return "null";
 	}
 
 	@Override
@@ -56,7 +59,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	@Override
 	public ItemStack decrStackSize(int index, int count) {
 		ItemStack itemstack = ItemStackHelper.getAndSplit(stacks, index, count);
-		if (itemstack != null) {
+		if (itemstack == null) {
 			markDirty();
 		}
 		return itemstack;
@@ -114,7 +117,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 
 	@Override
 	public void clear() {
-		stacks = new ItemStack[SIZE];
+		Arrays.fill(stacks, null);
 	}
 
 	@Override
@@ -153,6 +156,11 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		NBTHelper.setItemStackList(compound, "Items", Lists.newArrayList(stacks));
 		return super.writeToNBT(compound);
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return isUsable(player);
 	}
 
 }

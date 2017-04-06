@@ -30,7 +30,7 @@ public class GuiButtonSimple extends GuiButtonTooltip {
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
 		if (this.visible) {
-			FontRenderer fontrenderer = mc.fontRendererObj;
+			FontRenderer fontRendererObj = mc.fontRendererObj;
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			GlStateManager.enableBlend();
@@ -44,7 +44,7 @@ public class GuiButtonSimple extends GuiButtonTooltip {
 			int stringColor = brightness < 127 ? 0xE0E0E0 : 0x1F1F1F;
 			if (!enabled)
 				stringColor = ColorHelper.darker(stringColor, 0.2);
-			this.drawCenteredString(fontrenderer, hovered ? displayString : fontrenderer.trimStringToWidth(displayString, width - 4), this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, stringColor);
+			this.drawCenteredString(fontRendererObj, hovered ? displayString : fontRendererObj.trimStringToWidth(displayString, width - 4), this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, stringColor);
 		}
 	}
 

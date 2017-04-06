@@ -45,6 +45,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 				if (stack != null)
 					spawnAsEntity(worldIn, pos, stack.copy());
 		worldIn.removeTileEntity(pos);
+		worldIn.updateComparatorOutputLevel(pos, this);
 	}
 
 	@Override
@@ -75,7 +76,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	protected abstract Class<? extends T> getTile();
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack stack, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (worldIn.isRemote) {
 			return true;
 		} else {
@@ -91,8 +92,9 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 		List<ItemStack> lis = super.getDrops(world, pos, state, fortune);
 		ItemStack stack = null;
-		if (WorldHelper.getTile(world, pos) instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
-			IDataKeeper tile = (IDataKeeper) WorldHelper.getTile(world, pos);
+		TileEntity t = WorldHelper.getTile(world, pos);
+		if (t instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
+			IDataKeeper tile = (IDataKeeper) t;
 			stack = lis.get(0).copy();
 			NBTStackHelper.setBoolean(stack, "idatakeeper", true);
 			tile.writeToStack(stack);
@@ -116,7 +118,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 			worldIn.setBlockToAir(pos);
 			spawnAsEntity(worldIn, pos, lis.get(0));
 		}
-	}
+}
 
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {

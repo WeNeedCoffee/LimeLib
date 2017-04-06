@@ -4,14 +4,13 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
 
-import mezz.jei.Internal;
-import mezz.jei.api.recipe.IFocus.Mode;
-import mezz.jei.gui.Focus;
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.gui.CommonGuiScreen;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.gui.button.GuiButtonSimple;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.helper.ColorHelper;
+import mrriegel.limelib.jei.JEI;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.item.ItemStack;
@@ -229,11 +228,14 @@ public class GuiBook extends CommonGuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (!Loader.isModLoaded("JEI"))
+		if (!LimeLib.jeiLoaded)
 			return;
 		for (ItemSlot slot : slots) {
-			if (slot.stack != null && slot.isMouseOver(mouseX, mouseY) && (mouseButton == 0 || mouseButton == 1)) {
-				Internal.getRuntime().getRecipesGui().show(new Focus<ItemStack>(mouseButton == 0 ? Mode.OUTPUT : Mode.INPUT, slot.stack));
+			if (slot.stack!=null && slot.isMouseOver(mouseX, mouseY) && (mouseButton == 0 || mouseButton == 1)) {
+				if (mouseButton == 0)
+					JEI.showRecipes(slot.stack);
+				else
+					JEI.showUsage(slot.stack);
 				break;
 			}
 		}
