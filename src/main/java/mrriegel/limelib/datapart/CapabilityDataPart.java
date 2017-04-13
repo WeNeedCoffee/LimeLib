@@ -53,7 +53,7 @@ public class CapabilityDataPart {
 
 		@Override
 		public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-			return CapabilityDataPart.DATAPART.cast(instance);
+			return hasCapability(capability, facing) ? CapabilityDataPart.DATAPART.cast(instance) : null;
 		}
 
 		@Override
