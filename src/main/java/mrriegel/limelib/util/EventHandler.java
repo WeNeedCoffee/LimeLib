@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import mrriegel.limelib.Config;
 import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
@@ -107,13 +106,9 @@ public class EventHandler {
 	@SubscribeEvent
 	public static void playerTick(PlayerTickEvent event) {
 		if (event.phase == Phase.END && event.side == Side.SERVER) {
-			if (Config.showEnergy && event.player.world.getTotalWorldTime() % 20 == 0) {
+			if (event.player.world.getTotalWorldTime() % (event.player.isSneaking() ? 8 : 20) == 0) {
 				PacketHandler.sendTo(new EnergySyncMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
 			}
-			//			for (IInventory inv : event.player.openContainer.inventorySlots.stream().map(s -> s.inventory).distinct().collect(Collectors.toList())) {
-			//				Predicate<ItemStack> pred = s -> s.getItem() == Item.getItemFromBlock(Blocks.COBBLESTONE) || s.getItem() == Item.getItemFromBlock(Blocks.DIRT) || s.getItem() == Item.getItemFromBlock(Blocks.STONE);
-			//				InvHelper.extractItem(new InvWrapper(inv), pred, 32, false);
-			//			}
 		}
 	}
 

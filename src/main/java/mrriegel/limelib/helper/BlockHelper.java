@@ -128,20 +128,6 @@ public class BlockHelper {
 		return tmp.isEmpty() ? null : tmp.get(0);
 	}
 
-	//	private static <E> Method findMethod(Class<? extends E> clazz, String[] methodNames, Class<?>... methodTypes) {
-	//		Exception failed = null;
-	//		for (String methodName : methodNames) {
-	//			try {
-	//				Method m = clazz.getDeclaredMethod(methodName, methodTypes);
-	//				m.setAccessible(true);
-	//				return m;
-	//			} catch (Exception e) {
-	//				failed = e;
-	//			}
-	//		}
-	//		throw new UnableToFindMethodException(methodNames, failed);
-	//	}
-
 	public static boolean isOre(World world, BlockPos pos) {
 		IBlockState state = world.getBlockState(pos);
 		if (!state.getBlock().isFullCube(state))

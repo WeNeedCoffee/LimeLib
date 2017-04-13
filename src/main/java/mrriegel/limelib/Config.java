@@ -8,13 +8,14 @@ public class Config {
 
 	private static Configuration config;
 
-	public static boolean showEnergy;
+	public static boolean showEnergy, energyConfigHint;
 
 	public static void init(File file) {
 		config = new Configuration(file);
 		config.load();
 
 		showEnergy = config.getBoolean("showEnergy", Configuration.CATEGORY_CLIENT, true, "");
+		energyConfigHint = config.getBoolean("energyConfigHint", Configuration.CATEGORY_CLIENT, true, "");
 
 		if (config.hasChanged())
 			config.save();

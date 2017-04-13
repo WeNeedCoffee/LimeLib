@@ -49,7 +49,7 @@ public class ClientEventHandler {
 	@SubscribeEvent
 	public static void renderEnergy(Post event) {
 		Minecraft mc = Minecraft.getMinecraft();
-		if (!Config.showEnergy || mc == null || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null)
+		if (!Config.showEnergy || mc == null || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null || LimeLib.proxy.energyTiles().isEmpty())
 			return;
 		BlockPos p = mc.objectMouseOver.getBlockPos();
 		if (event.getType() == ElementType.TEXT && LimeLib.proxy.energyTiles().containsKey(p)) {
@@ -66,11 +66,13 @@ public class ClientEventHandler {
 			String text = (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(energy) : energy) + "/" + (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(max) : max) + " " + energyType.unit;
 			int lenght = 90/*mc.fontRendererObj.getStringWidth(text)*/;
 			mc.fontRendererObj.drawString(text, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(text)) / 2, (sr.getScaledHeight() - 15 - mc.fontRendererObj.FONT_HEIGHT) / 2, GuiScreen.isShiftKeyDown() ? 0xffff00 : 0x80ffff00, true);
-			boolean before = mc.fontRendererObj.getUnicodeFlag();
-			mc.fontRendererObj.setUnicodeFlag(true);
-			String config = "Can be disabled in LimeLib config.";
-			mc.fontRendererObj.drawString(config, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(config)) / 2, (sr.getScaledHeight() + 40 - mc.fontRendererObj.FONT_HEIGHT) / 2, 0x40ffff00, true);
-			mc.fontRendererObj.setUnicodeFlag(before);
+			if (Config.energyConfigHint) {
+				boolean before = mc.fontRendererObj.getUnicodeFlag();
+				mc.fontRendererObj.setUnicodeFlag(true);
+				String config = "Can be disabled in LimeLib config.";
+				mc.fontRendererObj.drawString(config, (sr.getScaledWidth() - mc.fontRendererObj.getStringWidth(config)) / 2, (sr.getScaledHeight() + 40 - mc.fontRendererObj.FONT_HEIGHT) / 2, 0x40ffff00, true);
+				mc.fontRendererObj.setUnicodeFlag(before);
+			}
 			drawer.drawEnergyBarH((sr.getScaledWidth() - lenght) / 2, (sr.getScaledHeight() + 20 - 8) / 2, lenght, (float) ((double) energy / (double) max));
 			drawer.drawFrame((sr.getScaledWidth() - lenght) / 2 - 1, (sr.getScaledHeight() + 20 - 8) / 2 - 1, lenght + 2, 9, 1, ColorHelper.darker(Color.RED.getRGB(), .8));
 			GlStateManager.disableBlend();
