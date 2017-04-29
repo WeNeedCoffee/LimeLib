@@ -3,7 +3,6 @@ package mrriegel.limelib.gui;
 import java.io.IOException;
 import java.util.List;
 
-import mrriegel.limelib.gui.component.MCPanel;
 import mrriegel.limelib.gui.element.GuiElement;
 import mrriegel.limelib.gui.element.ITooltip;
 import net.minecraft.client.gui.GuiButton;
@@ -25,15 +24,9 @@ public class CommonGuiScreen extends GuiScreen {
 	protected int guiTop;
 
 	protected GuiDrawer drawer;
-	protected MCPanel panel;
 	protected List<GuiElement> elementList = Lists.newArrayList();
 
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		if (panel != null) {
-			panel.drawForeground(mouseX, mouseY);
-			if (panel instanceof ITooltip && panel.isMouseOver(mouseX, mouseY))
-				((ITooltip) panel).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
-		}
 		for (GuiElement e : elementList)
 			if (e.isMouseOver(mouseX, mouseY) && e instanceof ITooltip && e.isVisible())
 				((ITooltip) e).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
@@ -44,8 +37,6 @@ public class CommonGuiScreen extends GuiScreen {
 	}
 
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		if (panel != null)
-			panel.drawBackground(mouseX, mouseY);
 		for (GuiElement e : elementList)
 			if (e.isVisible())
 				e.draw(mouseX, mouseY);
@@ -71,8 +62,6 @@ public class CommonGuiScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		if (panel != null)
-			panel.onUpdate();
 		int i = this.guiLeft;
 		int j = this.guiTop;
 		this.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);

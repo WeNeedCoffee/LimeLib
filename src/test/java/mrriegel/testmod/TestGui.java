@@ -9,7 +9,6 @@ import mrriegel.limelib.gui.CommonContainerTileInventory;
 import mrriegel.limelib.gui.CommonGuiContainer;
 import mrriegel.limelib.gui.GuiDrawer.Direction;
 import mrriegel.limelib.gui.button.GuiButtonArrow;
-import mrriegel.limelib.gui.button.GuiButtonColor;
 import mrriegel.limelib.gui.button.GuiButtonTooltip;
 import mrriegel.limelib.gui.element.AbstractSlot;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
@@ -24,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import com.google.common.collect.Lists;
 
@@ -42,7 +42,7 @@ public class TestGui extends CommonGuiContainer {
 	public void initGui() {
 		super.initGui();
 		tile = (TestTile) ((CommonContainerTileInventory<?>) inventorySlots).getTile();
-		buttonList.add(new GuiButtonColor(3, 11 + guiLeft, 17 + guiTop, 33, 22, "DUMB", EnumDyeColor.WHITE));
+		buttonList.add(new GuiButtonExt(3, 11 + guiLeft, 17 + guiTop, 33, 22, "DUMB"));
 		buttonList.add(new GuiButtonArrow(4, 10 + guiLeft, 50 + guiTop, Direction.UP));
 		elementList.add(s = new AbstractSlot.ItemSlot(new ItemStack(Items.COOKED_BEEF), 5, 5 + guiLeft, 60 + guiTop, 3200, drawer, false, true, true, true));
 		buttonList.add(new GuiButtonTooltip(5, guiLeft - 19, 78 + guiTop, 18, 22, "if", EnumDyeColor.PURPLE, Lists.newArrayList("horde", "maul")));
