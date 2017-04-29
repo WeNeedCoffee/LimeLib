@@ -2,15 +2,15 @@ package mrriegel.limelib.gui.slot;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 
-public class SlotImmutable extends Slot {
+public class SlotImmutable extends CommonSlot {
 
 	ItemStack stack;
 
 	public SlotImmutable(int index, int xPosition, int yPosition, ItemStack stack) {
-		super(null, index, xPosition, yPosition);
+		super(new InventoryBasic("Null", false, 0), index, xPosition, yPosition);
 		this.stack = stack;
 	}
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import mrriegel.limelib.gui.slot.CommonSlot;
 import mrriegel.limelib.gui.slot.SlotFilter;
 import mrriegel.limelib.gui.slot.SlotGhost;
 import mrriegel.limelib.gui.slot.SlotOutput;
@@ -14,7 +15,9 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.SlotItemHandler;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -31,8 +34,9 @@ public abstract class CommonContainer extends Container {
 		this.invs = Maps.newHashMap();
 		if (invs != null)
 			for (Pair<String, IInventory> e : invs) {
-				if (e != null)
+				if (e != null) {
 					this.invs.put(e.getLeft(), e.getRight());
+				}
 			}
 		modifyInvs();
 		initSlots();
@@ -54,14 +58,18 @@ public abstract class CommonContainer extends Container {
 
 	protected abstract List<Area> allowedSlots(ItemStack stack, IInventory inv, int index);
 
+	protected List<Area> allowedSlots(ItemStack stack, IItemHandler inv, int index) {
+		return null;
+	};
+
 	protected Area getAreaForEntireInv(IInventory inv) {
 		return getAreaForInv(inv, 0, inv.getSizeInventory());
 	}
 
-	protected Area getAreaForInv(IInventory inv, int start, int total) {
+	protected Area getAreaForInv(Object inv, int start, int total) {
 		List<Integer> l = Lists.newArrayList();
 		for (Slot s : inventorySlots)
-			if (s.inventory == inv && s.getSlotIndex() >= start && s.getSlotIndex() < total + start)
+			if (sameInventory(inv, s) && s.getSlotIndex() >= start && s.getSlotIndex() < total + start)
 				l.add(s.getSlotIndex());
 		if (l.isEmpty())
 			return null;
@@ -69,10 +77,18 @@ public abstract class CommonContainer extends Container {
 		return new Area(inv, l.get(0), l.get(l.size() - 1));
 	}
 
-	protected List<Slot> getSlotsFor(IInventory inv) {
+	protected Area getAreaForInv(IInventory inv, int start, int total) {
+		return getAreaForInv((Object) inv, start, total);
+	}
+
+	protected Area getAreaForInv(IItemHandler inv, int start, int total) {
+		return getAreaForInv((Object) inv, start, total);
+	}
+
+	protected List<Slot> getSlotsFor(Object inv) {
 		List<Slot> slots = Lists.newArrayList();
 		for (Slot s : inventorySlots)
-			if (s.inventory == inv)
+			if (sameInventory(inv, s))
 				slots.add(s);
 		return slots;
 	}
@@ -138,12 +154,60 @@ public abstract class CommonContainer extends Container {
 		initSlots(inv, x, y, width, height, 0);
 	}
 
-	protected void initSlots(String name, int x, int y, int width, int height, int startIndex) {
-		initSlots(invs.get(name), x, y, width, height, startIndex);
+	protected void initSlots(IItemHandler inv, int x, int y, int width, int height, int startIndex, Class<? extends Slot> clazz, Object... args) {
+		if (inv == null)
+			return;
+		for (int k = 0; k < height; ++k) {
+			for (int i = 0; i < width; ++i) {
+				int id = i + k * width + startIndex;
+				if (id >= inv.getSlots())
+					break;
+				Slot slot = null;
+				if (clazz == Slot.class) {
+					slot = new CommonSlot(inv, id, x + i * 18, y + k * 18) {
+						@Override
+						public void onSlotChanged() {
+							super.onSlotChanged();
+							inventoryChanged();
+						}
+					};
+				} else if (clazz == SlotGhost.class) {
+					slot = new SlotGhost(inv, id, x + i * 18, y + k * 18) {
+						@Override
+						public void onSlotChanged() {
+							super.onSlotChanged();
+							inventoryChanged();
+						}
+					};
+				} else if (clazz == SlotOutput.class) {
+					slot = new SlotOutput(inv, id, x + i * 18, y + k * 18) {
+						@Override
+						public void onSlotChanged() {
+							super.onSlotChanged();
+							inventoryChanged();
+						}
+					};
+				} else if (clazz == SlotFilter.class && args != null && args[0] instanceof Predicate) {
+					slot = new SlotFilter(inv, id, x + i * 18, y + k * 18, (Predicate<ItemStack>) args[0]) {
+						@Override
+						public void onSlotChanged() {
+							super.onSlotChanged();
+							inventoryChanged();
+						}
+					};
+				}
+				if (slot != null)
+					this.addSlotToContainer(slot);
+			}
+		}
 	}
 
-	protected void initSlots(String name, int x, int y, int width, int height) {
-		initSlots(name, x, y, width, height, 0);
+	protected void initSlots(IItemHandler inv, int x, int y, int width, int height, int startIndex) {
+		initSlots(inv, x, y, width, height, startIndex, Slot.class);
+	}
+
+	protected void initSlots(IItemHandler inv, int x, int y, int width, int height) {
+		initSlots(inv, x, y, width, height, 0);
 	}
 
 	protected void inventoryChanged() {
@@ -159,7 +223,8 @@ public abstract class CommonContainer extends Container {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 
-			List<Area> ar = allowedSlots(itemstack1, slot.inventory, slot.getSlotIndex());
+			Object inv = getInv(slot);
+			List<Area> ar = inv instanceof IInventory ? allowedSlots(itemstack1, (IInventory) inv, slot.getSlotIndex()) : inv instanceof IItemHandler ? allowedSlots(itemstack1, (IInventory) inv, index) : null;
 			if (ar == null)
 				return ItemStack.EMPTY;
 			ar.removeAll(Collections.singleton(null));
@@ -167,18 +232,18 @@ public abstract class CommonContainer extends Container {
 			for (Area p : ar) {
 				//				if (slot.inventory == p.inv)
 				//					continue;
-				Slot minSlot = getSlotFromInventory(p.inv, p.min);
+				Slot minSlot = getSlotFromInv(p.inv, p.min);
 				// while (minSlot == null && p.min < p.inv.getSizeInventory())
 				// minSlot = getSlotFromInventory(p.inv, ++p.min);
-				Slot maxSlot = getSlotFromInventory(p.inv, p.max);
+				Slot maxSlot = getSlotFromInv(p.inv, p.max);
 				// while (maxSlot == null && p.max > 0)
 				// minSlot = getSlotFromInventory(p.inv, --p.max);
 				if (minSlot == null || maxSlot == null)
 					continue;
 				if (hasGhost(p)) {
 					for (int i = p.min; i <= p.max; i++)
-						if (!getSlotFromInventory(p.inv, i).getHasStack() && getSlotFromInventory(p.inv, i) instanceof SlotGhost) {
-							getSlotFromInventory(p.inv, i).putStack(ItemHandlerHelper.copyStackWithSize(itemstack1, 1));
+						if (!getSlotFromInv(p.inv, i).getHasStack() && getSlotFromInv(p.inv, i) instanceof SlotGhost) {
+							getSlotFromInv(p.inv, i).putStack(ItemHandlerHelper.copyStackWithSize(itemstack1, 1));
 							detectAndSendChanges();
 							return ItemStack.EMPTY;
 						}
@@ -290,23 +355,59 @@ public abstract class CommonContainer extends Container {
 		return flag1;
 	}
 
+	public Slot getSlotFromInv(Object inv, int slotIn) {
+		if (inv instanceof IInventory)
+			return getSlotFromInventory((IInventory) inv, slotIn);
+		if (!(inv instanceof IItemHandler))
+			return null;
+		for (int i = 0; i < this.inventorySlots.size(); ++i) {
+			Slot slot = this.inventorySlots.get(i);
+			if (slot.getSlotIndex() == slotIn)
+				if ((slot instanceof SlotItemHandler && ((SlotItemHandler) slot).getItemHandler() == inv) || (slot instanceof CommonSlot && ((CommonSlot) slot).getItemHandler() == inv)) {
+					return slot;
+				}
+		}
+
+		return null;
+	}
+
 	private final boolean hasGhost(Area area) {
 		for (int i = area.min; i <= area.max; i++)
-			if (getSlotFromInventory(area.inv, i) instanceof SlotGhost)
+			if (getSlotFromInv(area.inv, i) instanceof SlotGhost)
 				return true;
 		return false;
 	}
 
 	protected static class Area {
-		IInventory inv;
+		Object inv;
 		int min, max;
 
-		public Area(IInventory inv, int min, int max) {
+		public Area(Object inv, int min, int max) {
 			super();
 			this.inv = inv;
 			this.min = min;
 			this.max = max;
 		}
+
+		public Area(IInventory inv, int min, int max) {
+			this((Object) inv, min, max);
+		}
+
+		public Area(IItemHandler inv, int min, int max) {
+			this((Object) inv, min, max);
+		}
+	}
+
+	public static boolean sameInventory(Object inv, Slot slot) {
+		return inv == getInv(slot);
+	}
+
+	public static Object getInv(Slot slot) {
+		if (slot instanceof SlotItemHandler)
+			return ((SlotItemHandler) slot).getItemHandler();
+		if (slot instanceof CommonSlot && ((CommonSlot) slot).isItemHandler())
+			return ((CommonSlot) slot).getItemHandler();
+		return slot.inventory;
 	}
 
 }

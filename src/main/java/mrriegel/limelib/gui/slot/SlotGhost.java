@@ -2,12 +2,17 @@ package mrriegel.limelib.gui.slot;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 
 /** credit: mcjty */
-public class SlotGhost extends Slot {
+public class SlotGhost extends CommonSlot {
+
 	public SlotGhost(IInventory inventoryIn, int index, int xPosition, int yPosition) {
+		super(inventoryIn, index, xPosition, yPosition);
+	}
+
+	public SlotGhost(IItemHandler inventoryIn, int index, int xPosition, int yPosition) {
 		super(inventoryIn, index, xPosition, yPosition);
 	}
 
