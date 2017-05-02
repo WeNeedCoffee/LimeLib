@@ -13,8 +13,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.RecipeSorter.Category;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class Serious {
 	public static void init() {
@@ -32,7 +32,6 @@ public class Serious {
 						oa[i] = OreDictionary.getOreNames()[new Random().nextInt(OreDictionary.getOreNames().length)];
 					}
 					return oa;
-					//				return super.getInput();
 				}
 
 				@Override

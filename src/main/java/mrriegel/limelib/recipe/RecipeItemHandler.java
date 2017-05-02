@@ -37,10 +37,9 @@ public class RecipeItemHandler extends AbstractRecipe<ItemStack, IItemHandler> {
 				f = new FilterItem((Block) o);
 			if (o instanceof String)
 				f = new FilterItem((String) o);
-			if (o instanceof ItemStack) {
+			if (o instanceof ItemStack)
 				f = new FilterItem((ItemStack) o);
-			}
-			if (InvHelper.extractItem(object, f, 1, simulate) == null)
+			if (InvHelper.extractItem(object, f, 1, simulate).isEmpty())
 				return false;
 		}
 		return true;

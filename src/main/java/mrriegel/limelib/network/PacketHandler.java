@@ -69,27 +69,32 @@ public class PacketHandler {
 
 	public static void sendToAll(IMessage message) {
 		init();
-		wrapper.sendToAll(message);
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).sendMessage)
+			wrapper.sendToAll(message);
 	}
 
 	public static void sendTo(IMessage message, EntityPlayerMP player) {
 		init();
-		wrapper.sendTo(message, player);
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).sendMessage)
+			wrapper.sendTo(message, player);
 	}
 
 	public static void sendToAllAround(IMessage message, NetworkRegistry.TargetPoint point) {
 		init();
-		wrapper.sendToAllAround(message, point);
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).sendMessage)
+			wrapper.sendToAllAround(message, point);
 	}
 
 	public static void sendToDimension(IMessage message, int dimensionId) {
 		init();
-		wrapper.sendToDimension(message, dimensionId);
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).sendMessage)
+			wrapper.sendToDimension(message, dimensionId);
 	}
 
 	public static void sendToServer(IMessage message) {
 		init();
-		wrapper.sendToServer(message);
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).sendMessage)
+			wrapper.sendToServer(message);
 	}
 
 }

@@ -33,7 +33,7 @@ public class CommonTile extends TileEntity {
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(this.pos, 1, serializeNBT());
+		return new SPacketUpdateTileEntity(this.pos, 1337, serializeNBT());
 	}
 
 	@Override
@@ -46,12 +46,11 @@ public class CommonTile extends TileEntity {
 	}
 
 	public void markForSync() {
-		if (onServer())
-			syncDirty = true;
+		this.syncDirty = true;
 	}
 
-	public void setSyncDirty(boolean syncDirty) {
-		this.syncDirty = syncDirty;
+	public void unmarkForSync() {
+		this.syncDirty = false;
 	}
 
 	public void sync() {
@@ -72,9 +71,11 @@ public class CommonTile extends TileEntity {
 	}
 
 	public final void sendOpenGUI() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setLong("pos", pos.toLong());
-		PacketHandler.sendToServer(new TileGuiMessage(nbt));
+		if (world.isRemote) {
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setLong("pos", pos.toLong());
+			PacketHandler.sendToServer(new TileGuiMessage(nbt));
+		}
 	}
 
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt) {

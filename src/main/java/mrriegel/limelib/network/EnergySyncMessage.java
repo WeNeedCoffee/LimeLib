@@ -32,6 +32,8 @@ public class EnergySyncMessage extends AbstractMessage<EnergySyncMessage> {
 				lis3.add(EnergyHelper.getMaxEnergy(player.world.getTileEntity(p), null));
 			}
 		}
+		if (lis1.isEmpty())
+			sendMessage = false;
 		NBTHelper.setLongList(nbt, "lis1", Utils.getLongList(lis1));
 		NBTHelper.setLongList(nbt, "lis2", lis2);
 		NBTHelper.setLongList(nbt, "lis3", lis3);

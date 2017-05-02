@@ -43,7 +43,7 @@ public class EventHandler {
 			TileEntity tile = event.getWorld().getTileEntity(event.getPos());
 			if (tile instanceof IOwneable) {
 				IOwneable o = (IOwneable) tile;
-				if (!o.canAccess(event.getEntityPlayer().getDisplayNameString())) {
+				if (!o.canAccess(event.getEntityPlayer())) {
 					// if (!event.getWorld().isRemote)
 					// event.getEntityPlayer().addChatComponentMessage(new
 					// TextComponentString("No permission!"));
@@ -61,7 +61,7 @@ public class EventHandler {
 			TileEntity tile = event.getWorld().getTileEntity(event.getPos());
 			if (tile instanceof IOwneable) {
 				IOwneable o = (IOwneable) tile;
-				if (!o.canAccess(event.getEntityPlayer().getDisplayNameString())) {
+				if (!o.canAccess(event.getEntityPlayer())) {
 					// if (!event.getWorld().isRemote)
 					// event.getEntityPlayer().addChatComponentMessage(new
 					// TextComponentString("No permission!"));
@@ -83,7 +83,7 @@ public class EventHandler {
 						CommonTile tile = (CommonTile) it.next();
 						if (tile.needsSync()) {
 							tile.sync();
-							tile.setSyncDirty(false);
+							tile.unmarkForSync();
 						}
 					}
 				}

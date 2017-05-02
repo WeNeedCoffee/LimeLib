@@ -133,7 +133,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 	}
 
 	@Override
-	public boolean canAccess(String name) {
+	public boolean canAccess(EntityPlayer player) {
 		return true;
 	}
 

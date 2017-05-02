@@ -93,7 +93,7 @@ public class InvHelper {
 
 	public static ItemStack extractItem(IItemHandler inv, FilterItem fil, int num, boolean simulate) {
 		if (fil == null)
-			return null;
+			return ItemStack.EMPTY;
 		return extractItem(inv, (ItemStack s) -> fil.match(s), num, simulate);
 	}
 
@@ -143,12 +143,14 @@ public class InvHelper {
 		}
 	}
 
-	public static boolean hasFluidHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
-		return getFluidHandler(world, pos, side) != null;
+	public static boolean hasFluidHandler(TileEntity tile, EnumFacing side) {
+		if (tile == null)
+			return false;
+		return tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side);
 	}
 
-	public static boolean hasFluidHandler(TileEntity tile, EnumFacing facing) {
-		return getFluidHandler(tile, facing) != null;
+	public static boolean hasFluidHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
+		return hasFluidHandler(WorldHelper.getTile(world, pos), side);
 	}
 
 	public static IFluidHandler getFluidHandler(TileEntity tile, EnumFacing side) {
@@ -162,24 +164,6 @@ public class InvHelper {
 	public static IFluidHandler getFluidHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
 		return getFluidHandler(WorldHelper.getTile(world, pos), side);
 	}
-
-	// public static FluidStack insert(TileEntity tile, FluidStack stack,
-	// EnumFacing side) {
-	// if (tile == null)
-	// return stack;
-	// IFluidHandler inv = getFluidHandler(tile, side);
-	// inv.fill(stack, true);
-	// return ItemHandlerHelper.insertItemStacked(inv, stack, false);
-	// }
-	//
-	// public static int canInsert(IItemHandler inv, FluidStack stack) {
-	// if (inv == null || stack == null)
-	// return 0;
-	// ItemStack s = ItemHandlerHelper.insertItemStacked(inv, stack, true);
-	// int rest = s == null ? 0 : s.stackSize;
-	// return stack.stackSize - rest;
-	//
-	// }
 
 	public static boolean contains(IFluidHandler inv, FluidStack stack) {
 		if (inv == null || stack == null)
@@ -203,32 +187,6 @@ public class InvHelper {
 		}
 		return amount;
 	}
-
-	// public static FluidStack extractItem(IFluidHandler inv, FilterItem fil,
-	// int num, boolean simulate) {
-	// if (inv == null || fil == null)
-	// return null;
-	// ItemStack extracted = null;
-	// int missing = num;
-	// for (int i = 0; i < inv.getSlots(); i++) {
-	// ItemStack slot = inv.getStackInSlot(i);
-	// if (fil.match(slot)) {
-	// ItemStack ex = inv.extractItem(i, missing, simulate);
-	// if (ex != null) {
-	// if (extracted == null)
-	// extracted = ex.copy();
-	// else {
-	// if (!ItemHandlerHelper.canItemStacksStack(extracted, ex))
-	// continue;
-	// }
-	// missing -= ex.stackSize;
-	// if (missing == 0)
-	// return ItemHandlerHelper.copyStackWithSize(slot, num);
-	// }
-	// }
-	// }
-	// return null;
-	// }
 
 	public static void clear(IFluidHandler inv) {
 		if (inv == null)

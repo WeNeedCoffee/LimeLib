@@ -96,11 +96,11 @@ public class Utils {
 	}
 
 	public static String formatNumber(long value) {
-		if (value < 1000)
+		if (Math.abs(value) < 1000)
 			return String.valueOf(value);
-		else if (value < 1000000)
+		else if (Math.abs(value) < 1000000)
 			return String.valueOf((int) (Math.round(value) / 1000D)) + "K";
-		else if (value < 1000000000)
+		else if (Math.abs(value) < 1000000000)
 			return String.valueOf((int) (Math.round(value / 1000) / 1000D)) + "M";
 		else
 			return String.valueOf((int) (Math.round(value / 1000000) / 1000D)) + "G";

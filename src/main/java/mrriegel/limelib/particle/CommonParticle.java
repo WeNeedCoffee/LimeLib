@@ -124,6 +124,10 @@ public class CommonParticle extends Particle {
 		return this;
 	}
 
+	public CommonParticle setColor(int color, int alpha, int diff) {
+		return setColor(ColorHelper.getRGB(color, alpha), diff);
+	}
+
 	public CommonParticle setFlouncing(double flouncing) {
 		this.flouncing = flouncing;
 		return this;
