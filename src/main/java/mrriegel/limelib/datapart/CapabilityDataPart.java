@@ -1,7 +1,5 @@
 package mrriegel.limelib.datapart;
 
-import java.util.concurrent.Callable;
-
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -30,12 +28,7 @@ public class CapabilityDataPart {
 					instance.deserializeNBT((NBTTagCompound) nbt);
 				}
 			}
-		}, new Callable<DataPartRegistry>() {
-			@Override
-			public DataPartRegistry call() throws Exception {
-				return new DataPartRegistry();
-			}
-		});
+		}, () -> new DataPartRegistry());
 	}
 
 	public static class CapaProvider implements ICapabilitySerializable<NBTTagCompound> {

@@ -1,6 +1,5 @@
 package mrriegel.testmod;
 
-import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,9 +10,7 @@ import mrriegel.limelib.block.CommonBlock;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.datapart.RenderRegistry;
-import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.ParticleHelper;
-import mrriegel.limelib.helper.RenderHelper2;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.particle.CommonParticle;
@@ -51,7 +48,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
@@ -77,7 +73,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 //@Mod(modid = "lalal", name = "kohle", version = "${version}")
 public class TestMod implements IGuiHandler {
@@ -306,14 +301,6 @@ public class TestMod implements IGuiHandler {
 				}
 			}
 		}
-	}
-
-	// @SubscribeEvent
-	public void r(RenderWorldLastEvent e) {
-		if (Minecraft.getMinecraft().player.getHeldItemMainhand() == null)
-			return;
-		for (TileEntity t : Minecraft.getMinecraft().world.loadedTileEntityList)
-			RenderHelper2.renderBlockOverlays(e, Minecraft.getMinecraft().player, Sets.newHashSet(t.getPos()), ColorHelper.getRGB(Color.CYAN.getRGB(), 144), Color.orange.getRGB());
 	}
 
 	@SubscribeEvent

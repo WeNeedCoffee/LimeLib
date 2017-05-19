@@ -10,11 +10,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.util.TypeAdapters.ItemLizer;
 import mrriegel.limelib.util.TypeAdapters.ItemStackLizer;
 import mrriegel.limelib.util.TypeAdapters.NBTLizer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -57,6 +59,7 @@ public class Utils {
 	private static void registerDefaultAdapters() {
 		GSONBUILDER = new GsonBuilder().setPrettyPrinting().//
 				registerTypeAdapter(NBTTagCompound.class, new NBTLizer()).//
+				registerTypeAdapter(Item.class, new ItemLizer()).//
 				registerTypeAdapter(ItemStack.class, new ItemStackLizer());
 	}
 
@@ -107,7 +110,10 @@ public class Utils {
 	}
 
 	public static FakePlayer getFakePlayer(WorldServer world) {
-		return FakePlayerFactory.get(world, new GameProfile(UUID.fromString("672ec311-27a5-449e-925c-69a55980d378"), LimeLib.MODID + "_FakePlayer"));
+		UUID uu = UUID.fromString("672ec311-27a5-449e-925c-69a55980d378");
+		while (world.getEntityFromUuid(uu) != null)
+			uu = UUID.randomUUID();
+		return FakePlayerFactory.get(world, new GameProfile(uu, LimeLib.MODID + "_fake_player"));
 	}
 
 	public static FakePlayer getFakePlayerWithItem(WorldServer world, ItemStack stack) {

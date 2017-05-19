@@ -12,6 +12,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -40,8 +42,9 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 
 	@Override
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-		if (worldIn.getTileEntity(pos) instanceof CommonTile)
-			for (ItemStack stack : ((CommonTile) worldIn.getTileEntity(pos)).getDroppingItems())
+		TileEntity t = worldIn.getTileEntity(pos);
+		if (t instanceof CommonTile)
+			for (ItemStack stack : ((CommonTile) t).getDroppingItems())
 				spawnAsEntity(worldIn, pos, stack.copy());
 		worldIn.removeTileEntity(pos);
 		worldIn.updateComparatorOutputLevel(pos, this);
@@ -106,7 +109,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		if (worldIn.getTileEntity(pos) instanceof IDataKeeper && NBTStackHelper.getBoolean(stack, "idatakeeper")) {
 			IDataKeeper tile = (IDataKeeper) worldIn.getTileEntity(pos);
 			tile.readFromStack(stack);
-			worldIn.getTileEntity(pos).markDirty();
+			((TileEntity) tile).markDirty();
 		}
 	}
 
@@ -141,5 +144,18 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		super.addInformation(stack, player, tooltip, advanced);
 		if (clearRecipe && NBTStackHelper.getBoolean(stack, "ClEaR"))
 			tooltip.add(TextFormatting.YELLOW + "Clear content");
+	}
+
+	@Override
+	public boolean hasComparatorInputOverride(IBlockState state) {
+		return IInventory.class.isAssignableFrom(getTile());
+	}
+
+	@Override
+	public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
+		TileEntity t = worldIn.getTileEntity(pos);
+		if (t instanceof IInventory)
+			return Container.calcRedstoneFromInventory((IInventory) t);
+		return 0;
 	}
 }

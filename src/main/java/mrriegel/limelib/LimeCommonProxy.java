@@ -9,7 +9,6 @@ import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -17,14 +16,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.ImmutableMap;
 
 public class LimeCommonProxy {
-
-	public EntityPlayer getPlayer(MessageContext ctx) {
-		return ctx.getServerHandler().player;
-	}
-
-	public IThreadListener getListener(MessageContext ctx) {
-		return ctx.getServerHandler().player.getServerWorld();
-	}
 
 	public Side getSide() {
 		return Side.SERVER;
@@ -35,15 +26,19 @@ public class LimeCommonProxy {
 	}
 
 	public World getClientWorld() {
-		throw new IllegalStateException();
+		throw new UnsupportedOperationException();
 	}
 
 	public EntityPlayer getClientPlayer() {
-		throw new IllegalStateException();
+		throw new UnsupportedOperationException();
 	}
 
 	public RayTraceResult getClientRayTrace() {
-		throw new IllegalStateException();
+		throw new UnsupportedOperationException();
+	}
+
+	public IThreadListener getClientListener() {
+		throw new UnsupportedOperationException();
 	}
 
 	public void renderParticle(CommonParticle par) {
@@ -51,10 +46,6 @@ public class LimeCommonProxy {
 
 	public Map<BlockPos, Pair<Long, Long>> energyTiles() {
 		return ImmutableMap.of();
-	}
-
-	public boolean isKeyDown(int key) {
-		throw new UnsupportedOperationException();
 	}
 
 }

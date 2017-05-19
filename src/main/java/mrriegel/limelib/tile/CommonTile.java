@@ -11,9 +11,11 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -23,7 +25,7 @@ public class CommonTile extends TileEntity {
 
 	@Override
 	public NBTTagCompound getUpdateTag() {
-		return writeToNBT(new NBTTagCompound());
+		return serializeNBT();
 	}
 
 	@Override
@@ -55,7 +57,13 @@ public class CommonTile extends TileEntity {
 
 	public void sync() {
 		markDirty();
-		world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 8);
+		if (onServer())
+			for (EntityPlayerMP player : world.getEntitiesWithinAABB(EntityPlayerMP.class, new AxisAlignedBB(pos.add(-11, -11, -11), pos.add(11, 11, 11)))) {
+				Packet<?> p = getUpdatePacket();
+				if (p != null)
+					player.connection.sendPacket(p);
+			}
+		//		world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 8);
 	}
 
 	public boolean isUsable(EntityPlayer player) {

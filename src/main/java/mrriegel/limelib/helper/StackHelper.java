@@ -25,7 +25,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 
@@ -83,10 +83,10 @@ public class StackHelper {
 		int meta = 0;
 		String[] ar = string.split("[#/]");
 		if (ar.length < 1)
-			return null;
+			return ItemStack.EMPTY;
 		item = Item.getByNameOrId(ar[0]);
 		if (item == null)
-			return null;
+			return ItemStack.EMPTY;
 		if (ar.length >= 2 && StringUtils.isNumeric(ar[1]))
 			amount = Integer.valueOf(ar[1]);
 		if (ar.length >= 3 && StringUtils.isNumeric(ar[2]))
@@ -134,14 +134,10 @@ public class StackHelper {
 	public static boolean isWrench(ItemStack stack) {
 		if (stack.isEmpty() || stack.getItem() instanceof ItemBlock)
 			return false;
-		for (String s : new String[] { "wrench", "scrench", "screwdriver" }) {
-			boolean flag = stack.getItem().getClass().getSimpleName().toLowerCase().contains(s)//
-					|| stack.getUnlocalizedName().toLowerCase().contains(s)//
-					|| Arrays.stream(stack.getItem().getClass().getInterfaces()).anyMatch(c -> c.getSimpleName().toLowerCase().contains(s));
-			if (flag)
-				return true;
-		}
-		return false;
+		return Lists.newArrayList("wrench", "scrench", "screwdriver").stream().//
+				anyMatch(s -> stack.getItem().getClass().getSimpleName().toLowerCase().contains(s)//
+						|| stack.getUnlocalizedName().toLowerCase().contains(s)//
+						|| Arrays.stream(stack.getItem().getClass().getInterfaces()).anyMatch(c -> c.getSimpleName().toLowerCase().contains(s)));
 	}
 
 	public static void addStack(NonNullList<ItemStack> lis, ItemStack stack) {
@@ -149,14 +145,12 @@ public class StackHelper {
 			return;
 		IItemHandler inv = new ItemStackHandler(lis);
 		lis.add(ItemHandlerHelper.insertItemStacked(inv, stack, false));
-		Iterables.removeIf(lis, ItemStack::isEmpty);
 	}
 
 	public static NonNullList<ItemStack> inv2list(IItemHandler inv) {
 		NonNullList<ItemStack> lis = NonNullList.create();
 		for (int i = 0; i < inv.getSlots(); i++)
 			addStack(lis, inv.getStackInSlot(i));
-		Iterables.removeIf(lis, ItemStack::isEmpty);
 		return lis;
 	}
 
@@ -168,6 +162,7 @@ public class StackHelper {
 		}
 	}
 
+	/** for jei */
 	public static void toStackList(List<Object> lis) {
 		for (int i = 0; i < lis.size(); i++) {
 			Object o = lis.get(i);

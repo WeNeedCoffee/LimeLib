@@ -36,7 +36,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 
 	@Override
 	public String getName() {
-		return "null";
+		return "Null";
 	}
 
 	@Override

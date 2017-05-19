@@ -13,6 +13,7 @@ import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.PlayerClickMessage;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IOwneable;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
@@ -40,6 +41,9 @@ public class EventHandler {
 	@SubscribeEvent
 	public static void left(LeftClickBlock event) {
 		if (event.getEntityPlayer() != null) {
+			IBlockState state = event.getWorld().getBlockState(event.getPos());
+			if (!state.getBlock().hasTileEntity(state))
+				return;
 			TileEntity tile = event.getWorld().getTileEntity(event.getPos());
 			if (tile instanceof IOwneable) {
 				IOwneable o = (IOwneable) tile;
@@ -58,6 +62,9 @@ public class EventHandler {
 	@SubscribeEvent
 	public static void right(RightClickBlock event) {
 		if (event.getEntityPlayer() != null) {
+			IBlockState state = event.getWorld().getBlockState(event.getPos());
+			if (!state.getBlock().hasTileEntity(state))
+				return;
 			TileEntity tile = event.getWorld().getTileEntity(event.getPos());
 			if (tile instanceof IOwneable) {
 				IOwneable o = (IOwneable) tile;

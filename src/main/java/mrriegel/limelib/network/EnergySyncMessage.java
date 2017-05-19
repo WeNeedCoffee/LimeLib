@@ -5,7 +5,6 @@ import java.util.List;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.EnergyHelper;
 import mrriegel.limelib.helper.NBTHelper;
-import mrriegel.limelib.helper.WorldHelper;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -25,7 +24,8 @@ public class EnergySyncMessage extends AbstractMessage<EnergySyncMessage> {
 	public EnergySyncMessage(EntityPlayerMP player) {
 		List<BlockPos> lis1 = Lists.newArrayList();
 		List<Long> lis2 = Lists.newArrayList(), lis3 = Lists.newArrayList();
-		for (BlockPos p : WorldHelper.getCuboid(new BlockPos(player), 6)) {
+		BlockPos playerPos = new BlockPos(player);
+		for (BlockPos p : BlockPos.getAllInBox(playerPos.add(-6, -6, -6), playerPos.add(6, 6, 6))) {
 			if (EnergyHelper.isEnergyContainer(player.world.getTileEntity(p), null) != null) {
 				lis1.add(p);
 				lis2.add(EnergyHelper.getEnergy(player.world.getTileEntity(p), null));
@@ -33,7 +33,7 @@ public class EnergySyncMessage extends AbstractMessage<EnergySyncMessage> {
 			}
 		}
 		if (lis1.isEmpty())
-			sendMessage = false;
+			shouldSend = false;
 		NBTHelper.setLongList(nbt, "lis1", Utils.getLongList(lis1));
 		NBTHelper.setLongList(nbt, "lis2", lis2);
 		NBTHelper.setLongList(nbt, "lis3", lis3);

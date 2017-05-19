@@ -69,31 +69,31 @@ public class PacketHandler {
 
 	public static void sendToAll(IMessage message) {
 		init();
-		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).sendMessage)
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).shouldSend)
 			wrapper.sendToAll(message);
 	}
 
 	public static void sendTo(IMessage message, EntityPlayerMP player) {
 		init();
-		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).sendMessage)
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).shouldSend)
 			wrapper.sendTo(message, player);
 	}
 
 	public static void sendToAllAround(IMessage message, NetworkRegistry.TargetPoint point) {
 		init();
-		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).sendMessage)
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).shouldSend)
 			wrapper.sendToAllAround(message, point);
 	}
 
 	public static void sendToDimension(IMessage message, int dimensionId) {
 		init();
-		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).sendMessage)
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).shouldSend)
 			wrapper.sendToDimension(message, dimensionId);
 	}
 
 	public static void sendToServer(IMessage message) {
 		init();
-		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).sendMessage)
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).shouldSend)
 			wrapper.sendToServer(message);
 	}
 
