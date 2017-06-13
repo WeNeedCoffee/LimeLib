@@ -4,7 +4,6 @@ import java.util.List;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTStackHelper;
-import mrriegel.limelib.helper.WorldHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
 import net.minecraft.block.material.Material;
@@ -91,10 +90,19 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	}
 
 	@Override
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		if (worldIn.getTileEntity(pos) instanceof IDataKeeper && NBTStackHelper.getBoolean(stack, "idatakeeper")) {
+			IDataKeeper tile = (IDataKeeper) worldIn.getTileEntity(pos);
+			tile.readFromStack(stack);
+			((TileEntity) tile).markDirty();
+		}
+	}
+
+	@Override
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 		List<ItemStack> lis = super.getDrops(world, pos, state, fortune);
 		ItemStack stack = ItemStack.EMPTY;
-		TileEntity t = WorldHelper.getTile(world, pos);
+		TileEntity t = world.getTileEntity(pos);
 		if (t instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
 			IDataKeeper tile = (IDataKeeper) t;
 			stack = lis.get(0).copy();
@@ -102,15 +110,6 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 			tile.writeToStack(stack);
 		}
 		return !stack.isEmpty() ? Lists.newArrayList(stack) : lis;
-	}
-
-	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-		if (worldIn.getTileEntity(pos) instanceof IDataKeeper && NBTStackHelper.getBoolean(stack, "idatakeeper")) {
-			IDataKeeper tile = (IDataKeeper) worldIn.getTileEntity(pos);
-			tile.readFromStack(stack);
-			((TileEntity) tile).markDirty();
-		}
 	}
 
 	@Override

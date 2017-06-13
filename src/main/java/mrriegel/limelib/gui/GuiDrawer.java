@@ -237,7 +237,8 @@ public class GuiDrawer {
 	}
 
 	public static int getMouseY() {
-		return new ScaledResolution(mc).getScaledHeight() - Mouse.getY() * new ScaledResolution(mc).getScaledHeight() / mc.displayHeight - 1;
+		ScaledResolution sr = new ScaledResolution(mc);
+		return sr.getScaledHeight() - Mouse.getY() * sr.getScaledHeight() / mc.displayHeight - 1;
 	}
 
 	public static void renderToolTip(ItemStack stack, int x, int y) {

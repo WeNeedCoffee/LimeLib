@@ -33,7 +33,7 @@ public class InvHelper {
 	}
 
 	public static boolean hasItemHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
-		return hasItemHandler(WorldHelper.getTile(world, pos), side);
+		return hasItemHandler(world.getTileEntity(pos), side);
 	}
 
 	public static IItemHandler getItemHandler(TileEntity tile, EnumFacing side) {
@@ -49,7 +49,7 @@ public class InvHelper {
 	}
 
 	public static IItemHandler getItemHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
-		return getItemHandler(WorldHelper.getTile(world, pos), side);
+		return getItemHandler(world.getTileEntity(pos), side);
 	}
 
 	public static ItemStack insert(TileEntity tile, ItemStack stack, EnumFacing side) {
@@ -150,7 +150,7 @@ public class InvHelper {
 	}
 
 	public static boolean hasFluidHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
-		return hasFluidHandler(WorldHelper.getTile(world, pos), side);
+		return hasFluidHandler(world.getTileEntity(pos), side);
 	}
 
 	public static IFluidHandler getFluidHandler(TileEntity tile, EnumFacing side) {
@@ -162,7 +162,7 @@ public class InvHelper {
 	}
 
 	public static IFluidHandler getFluidHandler(IBlockAccess world, BlockPos pos, EnumFacing side) {
-		return getFluidHandler(WorldHelper.getTile(world, pos), side);
+		return getFluidHandler(world.getTileEntity(pos), side);
 	}
 
 	public static boolean contains(IFluidHandler inv, FluidStack stack) {

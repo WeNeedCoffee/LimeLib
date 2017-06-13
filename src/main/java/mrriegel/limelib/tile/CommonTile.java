@@ -35,12 +35,20 @@ public class CommonTile extends TileEntity {
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(this.pos, 1337, serializeNBT());
+		return new SPacketUpdateTileEntity(this.pos, 1337, writeToSyncNBT(new NBTTagCompound()));
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.getNbtCompound());
+		readFromSyncNBT(pkt.getNbtCompound());
+	}
+
+	public void readFromSyncNBT(NBTTagCompound compound) {
+		readFromNBT(compound);
+	}
+
+	public NBTTagCompound writeToSyncNBT(NBTTagCompound compound) {
+		return writeToNBT(compound);
 	}
 
 	public boolean needsSync() {

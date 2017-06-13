@@ -27,7 +27,7 @@ public class LimeLib {
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
 
-	public static final Logger log = LogManager.getLogger(NAME);
+	public static final Logger log = LogManager.getLogger(LimeLib.NAME);
 
 	@SidedProxy(clientSide = "mrriegel.limelib.LimeClientProxy", serverSide = "mrriegel.limelib.LimeCommonProxy")
 	public static LimeCommonProxy proxy;
@@ -53,4 +53,5 @@ public class LimeLib {
 		}
 		Serious.init();
 	}
+
 }
