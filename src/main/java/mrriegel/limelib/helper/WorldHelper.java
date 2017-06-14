@@ -47,6 +47,10 @@ public class WorldHelper {
 		}
 	}
 
+	public static void addOreSpawn(IBlockState state, World world, int veinPerChunk, int size, int chunkX, int chunkZ, int minY, int maxY, java.util.function.Predicate<IBlockState> predicate) {
+		addOreSpawn(state, world, veinPerChunk, size, chunkX, chunkZ, minY, maxY, (Predicate<IBlockState>) b -> predicate.test(b));
+	}
+
 	public static double getDistance(BlockPos a, BlockPos b) {
 		return Math.sqrt(a.distanceSq(b));
 	}

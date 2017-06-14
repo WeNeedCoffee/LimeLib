@@ -1,11 +1,16 @@
 package mrriegel.limelib;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+
 import mrriegel.limelib.datapart.CapabilityDataPart;
+import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.util.ClientEventHandler;
 import mrriegel.limelib.util.EventHandler;
 import mrriegel.limelib.util.Serious;
 import mrriegel.limelib.util.Utils;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -40,6 +45,17 @@ public class LimeLib {
 		wailaLoaded = Loader.isModLoaded("waila");
 		jeiLoaded = Loader.isModLoaded("jei");
 		teslaLoaded = Loader.isModLoaded("tesla");
+		NBTTagCompound n=NBTHelper.set(new NBTTagCompound(), "kaki", 444.5F);
+		System.out.println(NBTHelper.get(n, "kaki",Float.class));
+		System.out.println(NBTHelper.get(n, "kaki",Short.class));
+		System.out.println(NBTHelper.get(n, "kaki",String.class));
+		System.out.println(NBTHelper.get(n, "kaki",NBTTagCompound.class));
+		try {
+			Thread.sleep(132232);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded;
