@@ -9,25 +9,25 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class PlayerClickMessage extends AbstractMessage<PlayerClickMessage> {
+public class PlayerClickMessage extends AbstractMessage {
 
 	public PlayerClickMessage() {
 		super();
 	}
 
 	public PlayerClickMessage(BlockPos pos, EnumHand hand, boolean left) {
-		NBTHelper.setLong(nbt, "pos", pos.toLong());
-		NBTHelper.setBoolean(nbt, "left", left);
-		NBTHelper.setBoolean(nbt, "mainhand", hand == EnumHand.MAIN_HAND);
+		NBTHelper.set(nbt, "pos", pos);
+		NBTHelper.set(nbt, "left", left);
+		NBTHelper.set(nbt, "mainhand", hand == EnumHand.MAIN_HAND);
 	}
 
 	@Override
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
 		DataPartRegistry reg = DataPartRegistry.get(player.world);
-		DataPart part = reg.getDataPart(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos")));
-		EnumHand hand = NBTHelper.getBoolean(nbt, "mainhand") ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND;
+		DataPart part = reg.getDataPart(NBTHelper.get(nbt, "pos", BlockPos.class));
+		EnumHand hand = NBTHelper.get(nbt, "mainhand", Boolean.class) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND;
 		if (part != null) {
-			if (NBTHelper.getBoolean(nbt, "left"))
+			if (NBTHelper.get(nbt, "left", Boolean.class))
 				part.onLeftClicked(player, hand);
 			else
 				part.onRightClicked(player, hand);

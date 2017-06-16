@@ -2,6 +2,8 @@ package mrriegel.limelib.tile;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,8 +18,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
-
-import com.google.common.collect.Lists;
 
 public class CommonTileInventory extends CommonTile implements IInventory {
 
@@ -131,6 +131,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 		return super.hasCapability(capability, facing);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
@@ -144,7 +145,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		List<ItemStack> lis = NBTHelper.getItemStackList(compound, "Items");
+		List<ItemStack> lis = NBTHelper.getList(compound, "Items", ItemStack.class);
 		for (int i = 0; i < lis.size(); i++) {
 			stacks.set(i, lis.get(i));
 		}
@@ -152,7 +153,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		NBTHelper.setItemStackList(compound, "Items", Lists.newArrayList(stacks));
+		NBTHelper.setList(compound, "Items", Lists.newArrayList(stacks));
 		return super.writeToNBT(compound);
 	}
 

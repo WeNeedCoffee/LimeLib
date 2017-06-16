@@ -5,11 +5,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.gui.CommonContainerTileInventory;
 import mrriegel.limelib.gui.CommonGuiContainer;
 import mrriegel.limelib.gui.GuiDrawer.Direction;
 import mrriegel.limelib.gui.button.GuiButtonArrow;
-import mrriegel.limelib.gui.button.GuiButtonTooltip;
 import mrriegel.limelib.gui.element.AbstractSlot;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.helper.ColorHelper;
@@ -24,8 +25,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
-
-import com.google.common.collect.Lists;
 
 public class TestGui extends CommonGuiContainer {
 
@@ -45,7 +44,7 @@ public class TestGui extends CommonGuiContainer {
 		buttonList.add(new GuiButtonExt(3, 11 + guiLeft, 17 + guiTop, 33, 22, "DUMB"));
 		buttonList.add(new GuiButtonArrow(4, 10 + guiLeft, 50 + guiTop, Direction.UP));
 		elementList.add(s = new AbstractSlot.ItemSlot(new ItemStack(Items.COOKED_BEEF), 5, 5 + guiLeft, 60 + guiTop, 3200, drawer, false, true, true, true));
-		buttonList.add(new GuiButtonTooltip(5, guiLeft - 19, 78 + guiTop, 18, 22, "if", EnumDyeColor.PURPLE, Lists.newArrayList("horde", "maul")));
+//		buttonList.add(new GuiButtonTooltip(5, guiLeft - 19, 78 + guiTop, 18, 22, "if", EnumDyeColor.PURPLE, Lists.newArrayList("horde", "maul")));
 		t = new GuiTextField(1, fontRenderer, guiLeft + 130, guiTop + 77, 45, fontRenderer.FONT_HEIGHT);
 		t.setEnableBackgroundDrawing(false);
 		t.setFocused(true);
@@ -111,7 +110,7 @@ public class TestGui extends CommonGuiContainer {
 					tile.k = 999;
 				}
 				NBTTagCompound nbt = new NBTTagCompound();
-				NBTHelper.setInt(nbt, "k", tile.k);
+//				NBTHelper.setInt(nbt, "k", tile.k);
 				tile.sendMessage(nbt);
 			} else
 				super.keyTyped(typedChar, keyCode);

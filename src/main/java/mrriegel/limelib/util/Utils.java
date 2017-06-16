@@ -9,6 +9,17 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
+import com.mojang.authlib.GameProfile;
+
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.TypeAdapters.ItemLizer;
 import mrriegel.limelib.util.TypeAdapters.ItemStackLizer;
@@ -31,17 +42,6 @@ import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
-import com.google.gson.TypeAdapter;
-import com.mojang.authlib.GameProfile;
 
 public class Utils {
 
@@ -74,7 +74,7 @@ public class Utils {
 		return mc == null || (mc instanceof InjectedModContainer && ((InjectedModContainer) mc).wrappedContainer instanceof FMLContainer) ? "minecraft" : mc.getModId().toLowerCase();
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static List<Enum> getEnums(Class<? extends Enum> clazz) {
 		List<Enum> lis = Lists.newArrayList();
 		EnumSet enums = EnumSet.allOf(clazz);
@@ -125,7 +125,7 @@ public class Utils {
 	public static RayTraceResult rayTrace(Entity entity, double distance) {
 		Vec3d vec3d = entity.getPositionEyes(0);
 		Vec3d vec3d1 = entity.getLook(0);
-		Vec3d vec3d2 = vec3d.addVector(vec3d1.xCoord * distance, vec3d1.yCoord * distance, vec3d1.zCoord * distance);
+		Vec3d vec3d2 = vec3d.addVector(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
 		return entity.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
 	}
 

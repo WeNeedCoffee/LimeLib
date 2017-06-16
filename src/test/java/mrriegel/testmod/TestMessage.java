@@ -8,7 +8,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class TestMessage extends AbstractMessage<TestMessage> {
+public class TestMessage extends AbstractMessage {
 
 	public TestMessage() {
 		super();

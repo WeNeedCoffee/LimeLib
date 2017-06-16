@@ -3,6 +3,11 @@ package mrriegel.limelib.gui;
 import java.io.IOException;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.gui.element.GuiElement;
 import mrriegel.limelib.gui.element.ITooltip;
 import net.minecraft.client.gui.GuiButton;
@@ -10,11 +15,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import com.google.common.collect.Lists;
 
 public class CommonGuiScreen extends GuiScreen {
 

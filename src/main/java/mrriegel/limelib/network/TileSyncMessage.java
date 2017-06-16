@@ -7,7 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class TileSyncMessage extends AbstractMessage<TileSyncMessage> {
+public class TileSyncMessage extends AbstractMessage {
 	public TileSyncMessage() {
 	}
 
@@ -17,13 +17,14 @@ public class TileSyncMessage extends AbstractMessage<TileSyncMessage> {
 
 	@Override
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
+		BlockPos pos = NBTHelper.get(nbt, "pos", BlockPos.class);
 		if (side.isClient()) {
-			if (player.world.getTileEntity(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos"))) instanceof CommonTile) {
+			if (player.world.getTileEntity(pos) instanceof CommonTile) {
 				PacketHandler.sendToServer(new TileSyncMessage(nbt));
 			}
 		} else {
-			if (player.world.getTileEntity(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos"))) instanceof CommonTile) {
-				((CommonTile) player.world.getTileEntity(BlockPos.fromLong(NBTHelper.getLong(nbt, "pos")))).sync();
+			if (player.world.getTileEntity(pos) instanceof CommonTile) {
+				((CommonTile) player.world.getTileEntity(pos)).sync();
 			}
 		}
 	}

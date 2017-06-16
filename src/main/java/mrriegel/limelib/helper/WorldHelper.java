@@ -8,6 +8,10 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockMatcher;
@@ -26,10 +30,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEntitySpawner;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.feature.WorldGenMinable;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class WorldHelper {
 
@@ -133,8 +133,8 @@ public class WorldHelper {
 		Chunk chunk = world.getChunkFromBlockCoords(pos);
 		List<BlockPos> lis = Lists.newLinkedList();
 		for (int y = world.getActualHeight() - 1; y > 0; y--)
-			for (int x = chunk.xPosition * 16; x < chunk.xPosition * 16 + 16; x++)
-				for (int z = chunk.zPosition * 16; z < chunk.zPosition * 16 + 16; z++)
+			for (int x = chunk.x * 16; x < chunk.x * 16 + 16; x++)
+				for (int z = chunk.z * 16; z < chunk.z * 16 + 16; z++)
 					lis.add(new BlockPos(x, y, z));
 		return lis;
 	}

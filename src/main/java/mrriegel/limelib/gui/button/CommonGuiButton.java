@@ -3,6 +3,10 @@ package mrriegel.limelib.gui.button;
 import java.awt.Color;
 import java.util.List;
 
+import org.lwjgl.input.Mouse;
+
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.gui.element.ITooltip;
 import mrriegel.limelib.helper.ColorHelper;
@@ -12,10 +16,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
-
-import org.lwjgl.input.Mouse;
-
-import com.google.common.collect.Lists;
 
 public class CommonGuiButton extends GuiButtonExt implements ITooltip {
 
@@ -42,23 +42,23 @@ public class CommonGuiButton extends GuiButtonExt implements ITooltip {
 	}
 
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partial) {
 		if (this.visible) {
-			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			int k = this.getHoverState(this.hovered);
 			if (design == Design.NORMAL)
-				GuiUtils.drawContinuousTexturedBox(BUTTON_TEXTURES, this.xPosition, this.yPosition, 0, 46 + k * 20, this.width, this.height, 200, 20, 2, 3, 2, 2, this.zLevel);
+				GuiUtils.drawContinuousTexturedBox(BUTTON_TEXTURES, this.x, this.y, 0, 46 + k * 20, this.width, this.height, 200, 20, 2, 3, 2, 2, this.zLevel);
 			else if (design == Design.SIMPLE) {
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.enableBlend();
 				GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-				drawer.drawFrame(xPosition, yPosition, width - 1, height - 1, 1, frameColor);
-				drawer.drawColoredRectangle(xPosition + 1, yPosition + 1, width - 2, height - 2, hovered && !Mouse.isButtonDown(0) ? ColorHelper.brighter(buttonColor, 0.10) : buttonColor);
+				drawer.drawFrame(x, y, width - 1, height - 1, 1, frameColor);
+				drawer.drawColoredRectangle(x + 1, y + 1, width - 2, height - 2, hovered && !Mouse.isButtonDown(0) ? ColorHelper.brighter(buttonColor, 0.10) : buttonColor);
 			} else if (design == Design.NONE)
-				;//NO-OP
+				;// NO-OP
 			if (overlayColor != Integer.MAX_VALUE)
-				drawRect(xPosition + 0, yPosition + 0, xPosition + width - 0, yPosition + height - 0, ColorHelper.getRGB(overlayColor, 140 + (k == 2 ? 60 : 0)));
+				drawRect(x + 0, y + 0, x + width - 0, y + height - 0, ColorHelper.getRGB(overlayColor, 140 + (k == 2 ? 60 : 0)));
 			this.mouseDragged(mc, mouseX, mouseY);
 			int color = 14737632;
 			if (packedFGColour != 0) {
@@ -73,12 +73,12 @@ public class CommonGuiButton extends GuiButtonExt implements ITooltip {
 			int ellipsisWidth = mc.fontRenderer.getStringWidth("...");
 			if (strWidth > width - 6 && strWidth > ellipsisWidth)
 				buttonText = mc.fontRenderer.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
-			int xS = this.xPosition + this.width / 2;
-			this.drawCenteredString(mc.fontRenderer, buttonText, xS, this.yPosition + (this.height - 8) / 2, color);
+			int xS = this.x + this.width / 2;
+			this.drawCenteredString(mc.fontRenderer, buttonText, xS, this.y + (this.height - 8) / 2, color);
 			if (!stack.isEmpty()) {
-				int yp = Math.max(yPosition, yPosition + (Math.max(height - 16, 0) / 2));
-				int xp = Math.max(xPosition, xPosition + (Math.max(width - 16, 0) / 2));
-				//				xp=xPosition+1;
+				int yp = Math.max(y, y + (Math.max(height - 16, 0) / 2));
+				int xp = Math.max(x, x + (Math.max(width - 16, 0) / 2));
+				// xp=xPosition+1;
 				drawer.drawItemStack(stack, xp, yp);
 			}
 		}

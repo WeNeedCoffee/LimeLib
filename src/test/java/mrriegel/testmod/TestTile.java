@@ -47,7 +47,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 		sync();
 		int range = 8;
 		if (NBTHelper.hasTag(nbt, "k"))
-			k = NBTHelper.getInt(nbt, "k");
+			k = NBTHelper.get(nbt, "k",Integer.class);
 		if (!InvHelper.hasItemHandler(world.getTileEntity(pos.up()), EnumFacing.DOWN))
 			return;
 		List<BlockPos> lis = Lists.newArrayList();
@@ -94,8 +94,8 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 //									ItemHandlerHelper.insertItemStacked(new PlayerMainInvWrapper(player.inventory), drop.copy(), false);
 							break whil;
 						} else {
-							for (Vec3d vec : ParticleHelper.getVecsForLine(p, pos, .6))
-								LimeLib.proxy.renderParticle(new CommonParticle(vec.xCoord, vec.yCoord, vec.zCoord).setMaxAge2(1));
+//							for (Vec3d vec : ParticleHelper.getVecsForLine(p, pos, .6))
+//								LimeLib.proxy.renderParticle(new CommonParticle(vec.xCoord, vec.yCoord, vec.zCoord).setMaxAge2(1));
 						}
 						it.remove();
 					}
@@ -108,23 +108,23 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		k = NBTHelper.getInt(compound, "k");
+		k = NBTHelper.get(compound, "k",Integer.class);
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		NBTHelper.setInt(compound, "k", k);
+		NBTHelper.set(compound, "k", k);
 		return super.writeToNBT(compound);
 	}
 
 	@Override
 	public void writeToStack(ItemStack stack) {
-		NBTStackHelper.setInt(stack, "k", k);
+		NBTStackHelper.set(stack, "k", k);
 	}
 
 	@Override
 	public void readFromStack(ItemStack stack) {
-		k = NBTStackHelper.getInt(stack, "k");
+		k = NBTStackHelper.get(stack, "k",Integer.class);
 	}
 
 	@Override

@@ -3,12 +3,12 @@ package mrriegel.limelib.book;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class Chapter {
 

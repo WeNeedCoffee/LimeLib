@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class OpenGuiMessage extends AbstractMessage<OpenGuiMessage> {
+public class OpenGuiMessage extends AbstractMessage {
 
 	public OpenGuiMessage() {
 	}

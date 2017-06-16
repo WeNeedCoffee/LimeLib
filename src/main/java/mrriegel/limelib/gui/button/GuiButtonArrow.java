@@ -40,9 +40,9 @@ public class GuiButtonArrow extends GuiButtonExt {
 	}
 
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partial) {
 		if (this.visible) {
-			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			int k = this.getHoverState(this.hovered);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableBlend();
@@ -52,7 +52,7 @@ public class GuiButtonArrow extends GuiButtonExt {
 			int ty = dir == Direction.UP || dir == Direction.LEFT || dir == Direction.RIGHT ? 0 : 10;
 
 			mc.getTextureManager().bindTexture(GuiDrawer.COMMON_TEXTURES);
-			drawTexturedModalRect(xPosition, yPosition, tx, ty + k * 20, width, height);
+			drawTexturedModalRect(x, y, tx, ty + k * 20, width, height);
 			// GuiUtils.drawContinuousTexturedBox(xPosition, yPosition, 0, 0,
 			// 18, 18, 18, 18, 1, zLevel);
 			this.mouseDragged(mc, mouseX, mouseY);

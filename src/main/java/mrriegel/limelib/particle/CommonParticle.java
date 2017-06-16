@@ -3,20 +3,20 @@ package mrriegel.limelib.particle;
 import java.awt.Color;
 import java.util.Random;
 
+import org.lwjgl.util.vector.Vector4f;
+
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.ParticleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-
-import org.lwjgl.util.vector.Vector4f;
 
 public class CommonParticle extends Particle {
 
@@ -66,7 +66,7 @@ public class CommonParticle extends Particle {
 	}
 
 	@Override
-	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+	public void renderParticle(BufferBuilder worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
 		Vector4f color = colors.getColor(this);
 		this.particleRed = color.x;
 		this.particleGreen = color.y;

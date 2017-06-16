@@ -2,6 +2,10 @@ package mrriegel.limelib.gui;
 
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.helper.NBTStackHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -10,17 +14,14 @@ import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.google.common.collect.Lists;
-
 public abstract class CommonContainerItem extends CommonContainer {
 
 	protected ItemStack stack;
 	boolean inited = false;
 
+	@SuppressWarnings("unchecked")
 	public CommonContainerItem(InventoryPlayer invPlayer, int num) {
-		super(invPlayer, Pair.<String, IInventory> of("inv", new InventoryBasic(null, false, num)));
+		super(invPlayer, Pair.<String, IInventory>of("inv", new InventoryBasic(null, false, num)));
 		inited = true;
 	}
 
@@ -58,12 +59,12 @@ public abstract class CommonContainerItem extends CommonContainer {
 		List<ItemStack> stacks = Lists.newArrayList();
 		for (int i = 0; i < inv.getSizeInventory(); i++)
 			stacks.add(i, inv.getStackInSlot(i));
-		NBTStackHelper.setItemStackList(stack, "items", stacks);
+		NBTStackHelper.setList(stack, "items", stacks);
 		detectAndSendChanges();
 	}
 
 	public void readFromStack() {
-		List<ItemStack> stacks = NBTStackHelper.getItemStackList(stack, "items");
+		List<ItemStack> stacks = NBTStackHelper.getList(stack, "items", ItemStack.class);
 		IInventory inv = getItemInventory();
 		inv.clear();
 		for (int i = 0; i < Math.min(inv.getSizeInventory(), stacks.size()); i++)

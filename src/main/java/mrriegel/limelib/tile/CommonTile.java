@@ -71,7 +71,8 @@ public class CommonTile extends TileEntity {
 				if (p != null)
 					player.connection.sendPacket(p);
 			}
-		//		world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 8);
+		// world.notifyBlockUpdate(pos, world.getBlockState(pos),
+		// world.getBlockState(pos), 8);
 	}
 
 	public boolean isUsable(EntityPlayer player) {

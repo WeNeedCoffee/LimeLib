@@ -8,7 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class TileGuiMessage extends AbstractMessage<TileGuiMessage> {
+public class TileGuiMessage extends AbstractMessage {
 
 	public TileGuiMessage() {
 		super();

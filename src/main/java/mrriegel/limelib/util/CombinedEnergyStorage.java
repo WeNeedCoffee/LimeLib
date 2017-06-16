@@ -54,37 +54,37 @@ public class CombinedEnergyStorage implements IEnergyStorage {
 		return i;
 	}
 
-	//	private static int getCapacity(EnergyStorage... storages) {
-	//		int i = 0;
-	//		for (EnergyStorage e : storages)
-	//			i += e.getMaxEnergyStored();
-	//		return i;
-	//	}
+	// private static int getCapacity(EnergyStorage... storages) {
+	// int i = 0;
+	// for (EnergyStorage e : storages)
+	// i += e.getMaxEnergyStored();
+	// return i;
+	// }
 	//
-	//	private static int getReceive(EnergyStorageExt... storages) {
-	//		int i = 0;
-	//		for (EnergyStorageExt e : storages)
-	//			i += e.getMaxReceive();
-	//		return i;
-	//	}
+	// private static int getReceive(EnergyStorageExt... storages) {
+	// int i = 0;
+	// for (EnergyStorageExt e : storages)
+	// i += e.getMaxReceive();
+	// return i;
+	// }
 	//
-	//	private static int getExtract(EnergyStorageExt... storages) {
-	//		int i = 0;
-	//		for (EnergyStorageExt e : storages)
-	//			i += e.getMaxExtract();
-	//		return i;
-	//	}
+	// private static int getExtract(EnergyStorageExt... storages) {
+	// int i = 0;
+	// for (EnergyStorageExt e : storages)
+	// i += e.getMaxExtract();
+	// return i;
+	// }
 
 	@Override
 	public boolean canExtract() {
 		return extractEnergy(1, true) > 0;
-		//		return getExtract(storages) > 0;
+		// return getExtract(storages) > 0;
 	}
 
 	@Override
 	public boolean canReceive() {
 		return receiveEnergy(1, true) > 0;
-		//		return getReceive(storages) > 0;
+		// return getReceive(storages) > 0;
 	}
 
 }

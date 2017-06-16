@@ -1,5 +1,7 @@
 package mrriegel.limelib.gui.slot;
 
+import org.apache.commons.lang3.Validate;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
@@ -8,8 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.SlotItemHandler;
-
-import org.apache.commons.lang3.Validate;
 
 public class CommonSlot extends Slot {
 

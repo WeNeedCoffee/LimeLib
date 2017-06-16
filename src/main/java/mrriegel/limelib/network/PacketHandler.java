@@ -3,6 +3,9 @@ package mrriegel.limelib.network;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import mrriegel.limelib.LimeLib;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -11,15 +14,12 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 public class PacketHandler {
 
 	public static SimpleNetworkWrapper wrapper;
 	private static int index = 0;
 	private static boolean defaultsRegistered = false;
-	private static Map<Side, Set<Class<? extends AbstractMessage<?>>>> registered = Maps.newHashMap();
+	private static Map<Side, Set<Class<? extends AbstractMessage>>> registered = Maps.newHashMap();
 
 	private PacketHandler() {
 	}
@@ -44,7 +44,8 @@ public class PacketHandler {
 		registerMessage(PlayerClickMessage.class, Side.SERVER);
 	}
 
-	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage<?>> classMessage, Side side) {
+	@SuppressWarnings("unchecked")
+	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage> classMessage, Side side) {
 		Class<? extends IMessageHandler<REQ, REPLY>> c1 = (Class<? extends IMessageHandler<REQ, REPLY>>) classMessage;
 		Class<REQ> c2 = (Class<REQ>) classMessage;
 		registerMessage(c1, c2, side);
@@ -53,7 +54,7 @@ public class PacketHandler {
 		registered.get(side).add(classMessage);
 	}
 
-	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage<?>> classMessage) {
+	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage> classMessage) {
 		registerMessage(classMessage, Side.CLIENT);
 		registerMessage(classMessage, Side.SERVER);
 	}
@@ -63,37 +64,37 @@ public class PacketHandler {
 		wrapper.registerMessage(messageHandler, requestMessageType, index++, side);
 	}
 
-	public static boolean isRegistered(Class<? extends AbstractMessage<?>> classMessage, Side side) {
+	public static boolean isRegistered(Class<? extends AbstractMessage> classMessage, Side side) {
 		return registered.get(side).contains(classMessage);
 	}
 
 	public static void sendToAll(IMessage message) {
 		init();
-		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).shouldSend)
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage) message).shouldSend)
 			wrapper.sendToAll(message);
 	}
 
 	public static void sendTo(IMessage message, EntityPlayerMP player) {
 		init();
-		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).shouldSend)
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage) message).shouldSend)
 			wrapper.sendTo(message, player);
 	}
 
 	public static void sendToAllAround(IMessage message, NetworkRegistry.TargetPoint point) {
 		init();
-		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).shouldSend)
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage) message).shouldSend)
 			wrapper.sendToAllAround(message, point);
 	}
 
 	public static void sendToDimension(IMessage message, int dimensionId) {
 		init();
-		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).shouldSend)
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage) message).shouldSend)
 			wrapper.sendToDimension(message, dimensionId);
 	}
 
 	public static void sendToServer(IMessage message) {
 		init();
-		if (!(message instanceof AbstractMessage) || ((AbstractMessage<?>) message).shouldSend)
+		if (!(message instanceof AbstractMessage) || ((AbstractMessage) message).shouldSend)
 			wrapper.sendToServer(message);
 	}
 

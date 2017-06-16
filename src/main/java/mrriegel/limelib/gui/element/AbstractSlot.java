@@ -2,6 +2,8 @@ package mrriegel.limelib.gui.element;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.gui.GuiDrawer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -16,8 +18,6 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fml.client.config.GuiUtils;
-
-import com.google.common.collect.Lists;
 
 public abstract class AbstractSlot extends GuiElement implements ITooltip {
 	public int amount;

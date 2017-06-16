@@ -3,7 +3,6 @@ package mrriegel.limelib.datapart;
 import javax.annotation.Nullable;
 
 import mrriegel.limelib.LimeLib;
-import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -48,7 +47,7 @@ public class DataPart {
 	}
 
 	public final void readDataFromNBT(NBTTagCompound compound) {
-		pos = BlockPos.fromLong(NBTHelper.getLong(compound, "poS"));
+		pos = BlockPos.fromLong(compound.getLong("poS"));
 		readFromNBT(compound);
 	}
 

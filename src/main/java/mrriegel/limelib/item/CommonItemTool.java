@@ -4,6 +4,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+
 import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -27,17 +32,13 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-
 public class CommonItemTool extends CommonItem {
 
 	protected Set<String> toolClasses;
 	protected final Set<Block> effectiveBlocks;
 	protected final Item.ToolMaterial toolMaterial;
 
+	@SuppressWarnings("unchecked")
 	public CommonItemTool(String name, ToolMaterial material, String... toolClasses) {
 		super(name);
 		toolMaterial = material;
@@ -171,7 +172,7 @@ public class CommonItemTool extends CommonItem {
 		if (toolClasses.contains("shovel"))
 			return Items.DIAMOND_SHOVEL.canHarvestBlock(state, stack);
 		return super.canHarvestBlock(state, stack);
-		//		return state.getBlock().getMaterial(state).isToolNotRequired();
+		// return state.getBlock().getMaterial(state).isToolNotRequired();
 	}
 
 	@Override

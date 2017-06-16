@@ -14,12 +14,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
 
+@Deprecated
 public class ShapedRecipeExt implements IRecipe {
 	public static final int MAX_CRAFT_GRID_WIDTH = 3;
 	public static final int MAX_CRAFT_GRID_HEIGHT = 3;
@@ -110,7 +112,7 @@ public class ShapedRecipeExt implements IRecipe {
 		return output.copy();
 	}
 
-	@Override
+	// @Override
 	public int getRecipeSize() {
 		return input.length;
 	}
@@ -205,5 +207,28 @@ public class ShapedRecipeExt implements IRecipe {
 
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public IRecipe setRegistryName(ResourceLocation name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResourceLocation getRegistryName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Class<IRecipe> getRegistryType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean canFit(int width, int height) {
+		return width >= this.width && height >= this.height;
 	}
 }

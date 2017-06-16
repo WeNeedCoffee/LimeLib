@@ -2,13 +2,6 @@ package mrriegel.limelib.util;
 
 import java.lang.reflect.Type;
 
-import mrriegel.limelib.helper.NBTHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
-import net.minecraft.nbt.NBTTagCompound;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -16,6 +9,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
+import mrriegel.limelib.helper.NBTHelper;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class TypeAdapters {
 
@@ -77,12 +77,12 @@ public class TypeAdapters {
 
 		@Override
 		public NBTTagCompound serialize(NBTTagCompound t, JsonSerializationContext context) {
-			return NBTHelper.setTag(new NBTTagCompound(), "nnbbtt", t);
+			return NBTHelper.set(new NBTTagCompound(), "nnbbtt", t);
 		}
 
 		@Override
 		public NBTTagCompound deserialize(NBTTagCompound nbt, JsonDeserializationContext context) {
-			return NBTHelper.getTag(nbt, "nnbbtt");
+			return NBTHelper.get(nbt, "nnbbtt", NBTTagCompound.class);
 		}
 
 	}

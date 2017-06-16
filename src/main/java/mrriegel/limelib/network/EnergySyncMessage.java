@@ -2,6 +2,10 @@ package mrriegel.limelib.network;
 
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.EnergyHelper;
 import mrriegel.limelib.helper.NBTHelper;
@@ -12,11 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.google.common.collect.Lists;
-
-public class EnergySyncMessage extends AbstractMessage<EnergySyncMessage> {
+public class EnergySyncMessage extends AbstractMessage {
 
 	public EnergySyncMessage() {
 	}
@@ -34,15 +34,15 @@ public class EnergySyncMessage extends AbstractMessage<EnergySyncMessage> {
 		}
 		if (lis1.isEmpty())
 			shouldSend = false;
-		NBTHelper.setLongList(nbt, "lis1", Utils.getLongList(lis1));
-		NBTHelper.setLongList(nbt, "lis2", lis2);
-		NBTHelper.setLongList(nbt, "lis3", lis3);
+		NBTHelper.setList(nbt, "lis1", Utils.getLongList(lis1));
+		NBTHelper.setList(nbt, "lis2", lis2);
+		NBTHelper.setList(nbt, "lis3", lis3);
 	}
 
 	@Override
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
-		List<BlockPos> lis1 = Utils.getBlockPosList(NBTHelper.getLongList(nbt, "lis1"));
-		List<Long> lis2 = NBTHelper.getLongList(nbt, "lis2"), lis3 = NBTHelper.getLongList(nbt, "lis3");
+		List<BlockPos> lis1 = Utils.getBlockPosList(NBTHelper.getList(nbt, "lis1", Long.class));
+		List<Long> lis2 = NBTHelper.getList(nbt, "lis2", Long.class), lis3 = NBTHelper.getList(nbt, "lis3", Long.class);
 		LimeLib.proxy.energyTiles().clear();
 		try {
 			for (int i = 0; i < lis1.size(); i++) {

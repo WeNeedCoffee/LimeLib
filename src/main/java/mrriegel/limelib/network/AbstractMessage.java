@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
-public abstract class AbstractMessage<T extends AbstractMessage<T>> implements IMessage, IMessageHandler<T, IMessage> {
+public abstract class AbstractMessage implements IMessage, IMessageHandler<AbstractMessage, IMessage> {
 
 	protected NBTTagCompound nbt = new NBTTagCompound();
 	public boolean shouldSend = true;
@@ -36,7 +36,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
 	public abstract void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side);
 
 	@Override
-	public IMessage onMessage(final T message, final MessageContext ctx) {
+	public IMessage onMessage(final AbstractMessage message, final MessageContext ctx) {
 		Runnable run = () -> {
 			EntityPlayer player = (ctx.side.isClient() ? LimeLib.proxy.getClientPlayer() : ctx.getServerHandler().player);
 			message.handleMessage(player, message.nbt, ctx.side);

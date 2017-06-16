@@ -3,12 +3,12 @@ package mrriegel.limelib.util;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemHandlerHelper;
-
-import com.google.common.collect.Lists;
 
 public class StackWrapper {
 	ItemStack stack;

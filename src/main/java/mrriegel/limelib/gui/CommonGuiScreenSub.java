@@ -2,10 +2,10 @@ package mrriegel.limelib.gui;
 
 import java.io.IOException;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-
-import org.lwjgl.input.Keyboard;
 
 public abstract class CommonGuiScreenSub extends CommonGuiScreen {
 

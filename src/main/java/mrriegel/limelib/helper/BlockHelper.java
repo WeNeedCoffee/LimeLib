@@ -9,6 +9,10 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
@@ -28,10 +32,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class BlockHelper {
 
@@ -89,32 +89,33 @@ public class BlockHelper {
 		return lis;
 	}
 
-	private static Map<Class<? extends Block>, Method> methodMap = Maps.newHashMap();
+	private static Map<Class<?>, Method> methodMap = Maps.newHashMap();
 
 	public static ItemStack getSilkDrop(World world, BlockPos pos, EntityPlayer player) {
 		IBlockState state = world.getBlockState(pos);
 		NonNullList<ItemStack> tmp = NonNullList.create();
 		if (state.getBlock().canSilkHarvest(world, pos, state, player)) {
 			Method m = null;
-			Class<? extends Block> clazz = state.getBlock().getClass();
-			Set<Class<? extends Block>> clazzes = Sets.newHashSet(clazz);
+			Class<?> clazz = state.getBlock().getClass();
+			Set<Class<?>> clazzes = Sets.newHashSet(clazz);
 			while (m == null) {
 				if (methodMap.containsKey(clazz))
 					m = methodMap.get(clazz);
 				else
 					try {
-						m = ReflectionHelper.findMethod((Class<? super Block>) clazz, state.getBlock(), new String[] { "func_180643_i", "getSilkTouchDrop" }, IBlockState.class);
-						//						m = findMethod(clazz, new String[] { "func_180643_i", "getSilkTouchDrop" }, IBlockState.class);
+						m = ReflectionHelper.findMethod(clazz, "getSilkTouchDrop", "func_180643_i", IBlockState.class);
+						// m = findMethod(clazz, new String[] { "func_180643_i",
+						// "getSilkTouchDrop" }, IBlockState.class);
 					} catch (Exception e) {
-						clazz = (Class<? extends Block>) clazz.getSuperclass();
+						clazz = clazz.getSuperclass();
 						if (clazz != null)
 							clazzes.add(clazz);
 						else
 							break;
 					}
 			}
-			//			m.setAccessible(true);
-			for (Class<? extends Block> c : clazzes)
+			// m.setAccessible(true);
+			for (Class<?> c : clazzes)
 				methodMap.put(c, m);
 			ItemStack silked = ItemStack.EMPTY;
 			try {

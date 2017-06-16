@@ -112,17 +112,17 @@ public class BarrelItemHandler implements IItemHandlerModifiable, INBTSerializab
 	@Override
 	public NBTTagCompound serializeNBT() {
 		NBTTagCompound nbt = new NBTTagCompound();
-		NBTHelper.setInt(nbt, "amount", amount);
-		NBTHelper.setBoolean(nbt, "locked", locked);
-		NBTHelper.setItemStack(nbt, "stack", stack);
+		NBTHelper.set(nbt, "amount", amount);
+		NBTHelper.set(nbt, "locked", locked);
+		NBTHelper.set(nbt, "stack", stack);
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt) {
-		amount = NBTHelper.getInt(nbt, "amount");
-		locked = NBTHelper.getBoolean(nbt, "locked");
-		stack = NBTHelper.getItemStack(nbt, "stack");
+		amount = NBTHelper.get(nbt, "amount", Integer.class);
+		locked = NBTHelper.get(nbt, "locked", Boolean.class);
+		stack = NBTHelper.get(nbt, "stack", ItemStack.class);
 	}
 
 }

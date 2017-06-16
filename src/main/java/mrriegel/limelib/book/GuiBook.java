@@ -4,10 +4,15 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
 
+import org.lwjgl.input.Mouse;
+
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.gui.CommonGuiScreen;
 import mrriegel.limelib.gui.GuiDrawer;
-import mrriegel.limelib.gui.button.GuiButtonSimple;
+import mrriegel.limelib.gui.button.CommonGuiButton;
+import mrriegel.limelib.gui.button.CommonGuiButton.Design;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.jei.JEI;
@@ -19,15 +24,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
-import org.lwjgl.input.Mouse;
-
-import com.google.common.collect.Lists;
-
 public class GuiBook extends CommonGuiScreen {
 
 	protected Book book;
 
-	protected GuiButtonSimple left, right;
+	protected CommonGuiButton left, right;
 
 	private static final int maxLines = 17;
 	private static final int maxSubChapters = 11;
@@ -89,8 +90,8 @@ public class GuiBook extends CommonGuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.add(left = new GuiButtonSimple(0, guiLeft + 109, guiTop + 181, 9, 14, "<", Color.black.getRGB(), Color.gray.getRGB(), null));
-		buttonList.add(right = new GuiButtonSimple(1, guiLeft + 326, guiTop + 181, 9, 14, ">", Color.black.getRGB(), Color.gray.getRGB(), null));
+		buttonList.add(left = new CommonGuiButton(0, guiLeft + 109, guiTop + 181, 9, 14, "<").setDesign(Design.SIMPLE));
+		buttonList.add(right = new CommonGuiButton(1, guiLeft + 326, guiTop + 181, 9, 14, ">").setDesign(Design.SIMPLE));
 		for (int i = 0; i < Article.maxItems; i++)
 			slots.add(new ItemSlot(ItemStack.EMPTY, i, 0, guiTop + 8, 1, drawer, false, false, false, true));
 		elementList.addAll(slots);
@@ -100,10 +101,10 @@ public class GuiBook extends CommonGuiScreen {
 				tooltip.add(TextFormatting.GRAY + "  " + c.name);
 			/** clear tooltip */
 			tooltip.clear();
-			buttonList.add(new GuiButtonSimple(i + 100, guiLeft + 7, guiTop + 7 + i * 18, 46, 15, book.chapters.get(i).name, tooltip));
+			buttonList.add(new CommonGuiButton(i + 100, guiLeft + 7, guiTop + 7 + i * 18, 46, 15, book.chapters.get(i).name).setTooltip(tooltip).setDesign(Design.SIMPLE));
 		}
 		for (int i = 0; i < maxSubChapters; i++) {
-			GuiButtonSimple b = new GuiButtonSimple(i + 1000, guiLeft + 59, guiTop + 7 + i * 17, 46, 14, "", Color.DARK_GRAY.getRGB(), Color.GRAY.getRGB(), null);
+			CommonGuiButton b = new CommonGuiButton(i + 1000, guiLeft + 59, guiTop + 7 + i * 17, 46, 14, "").setDesign(Design.SIMPLE);
 			b.visible = false;
 			articleButtons.add(b);
 		}
@@ -214,7 +215,7 @@ public class GuiBook extends CommonGuiScreen {
 		int mouseY = GuiDrawer.getMouseY();
 		if (currentChapter != null) {
 			GuiButton first = articleButtons.get(0), last = articleButtons.get(articleButtons.size() - 1);
-			if (isPointInRegion(first.xPosition, first.yPosition, first.width, last.yPosition + last.height - first.yPosition, guiLeft + mouseX, guiTop + mouseY)) {
+			if (isPointInRegion(first.x, first.y, first.width, last.y + last.height - first.y, guiLeft + mouseX, guiTop + mouseY)) {
 				int m = Mouse.getEventDWheel();
 				if (m > 0)
 					articlePos = Math.max(0, articlePos - 1);

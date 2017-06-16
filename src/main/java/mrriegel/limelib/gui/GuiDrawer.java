@@ -2,19 +2,23 @@ package mrriegel.limelib.gui;
 
 import java.util.List;
 
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
 import mrriegel.limelib.LimeLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -23,9 +27,6 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
-
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 public class GuiDrawer {
 
@@ -68,9 +69,9 @@ public class GuiDrawer {
 		int height = dir.isHorizontal() ? 10 : length;
 		drawFramedRectangle(x, y, width, height);
 		if (!dir.isHorizontal())
-			new GuiButtonExt(0, x + guiLeft + 1, y + guiTop + 1 + (int) (percent * (length - 10)), 8, 8, "").drawButton(mc, getMouseX(), getMouseY());
+			new GuiButtonExt(0, x + guiLeft + 1, y + guiTop + 1 + (int) (percent * (length - 10)), 8, 8, "").drawButton(mc, getMouseX(), getMouseY(), mc.getTickLength());
 		else
-			new GuiButtonExt(0, x + guiLeft + 1 + (int) (percent * (length - 10)), y + guiTop + 1, 8, 8, "").drawButton(mc, getMouseX(), getMouseY());
+			new GuiButtonExt(0, x + guiLeft + 1 + (int) (percent * (length - 10)), y + guiTop + 1, 8, 8, "").drawButton(mc, getMouseX(), getMouseY(), mc.getTickLength());
 	}
 
 	public void drawTextfield(int x, int y, int width) {
@@ -79,7 +80,7 @@ public class GuiDrawer {
 
 	public void drawTextfield(GuiTextField textfield) {
 		if (!textfield.getEnableBackgroundDrawing())
-			drawTextfield(textfield.xPosition - guiLeft - 2, textfield.yPosition - guiTop - 2, textfield.width + 9);
+			drawTextfield(textfield.x - guiLeft - 2, textfield.y - guiTop - 2, textfield.width + 9);
 	}
 
 	public void drawFramedRectangle(int x, int y, int width, int height) {
@@ -171,7 +172,7 @@ public class GuiDrawer {
 				double maxV = icon.getMaxV();
 
 				Tessellator tessellator = Tessellator.getInstance();
-				VertexBuffer tes = tessellator.getBuffer();
+				BufferBuilder tes = tessellator.getBuffer();
 				tes.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 				tes.pos(drawX, drawY + drawHeight, 0).tex(minU, minV + (maxV - minV) * drawHeight / 16F).endVertex();
 				tes.pos(drawX + drawWidth, drawY + drawHeight, 0).tex(minU + (maxU - minU) * drawWidth / 16F, minV + (maxV - minV) * drawHeight / 16F).endVertex();
@@ -249,7 +250,7 @@ public class GuiDrawer {
 	}
 
 	public static List<String> getTooltip(ItemStack stack) {
-		List<String> list = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips);
+		List<String> list = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 		for (int i = 0; i < list.size(); ++i) {
 			if (i == 0) {
 				list.set(i, stack.getRarity().rarityColor + list.get(i));

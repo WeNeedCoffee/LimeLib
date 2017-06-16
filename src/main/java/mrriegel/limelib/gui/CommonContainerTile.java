@@ -1,11 +1,11 @@
 package mrriegel.limelib.gui;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import mrriegel.limelib.tile.CommonTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
-
-import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class CommonContainerTile<T extends CommonTile> extends CommonContainer {
 

@@ -3,6 +3,12 @@ package mrriegel.limelib.helper;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.primitives.Ints;
+
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
@@ -22,12 +28,6 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.oredict.OreDictionary;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.primitives.Ints;
 
 public class StackHelper {
 
@@ -125,7 +125,7 @@ public class StackHelper {
 		if (!world.isRemote) {
 			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), new RayTraceResult(Vec3d.ZERO, EnumFacing.UP), world, pos, FakePlayerFactory.getMinecraft((WorldServer) world
 			// DimensionManager.getWorld(0)
-					));
+			));
 		} else {
 			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), LimeLib.proxy.getClientRayTrace(), world, pos, player);
 		}

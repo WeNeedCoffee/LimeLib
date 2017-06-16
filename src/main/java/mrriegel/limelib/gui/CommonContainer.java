@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import mrriegel.limelib.gui.slot.CommonSlot;
 import mrriegel.limelib.gui.slot.SlotFilter;
 import mrriegel.limelib.gui.slot.SlotGhost;
@@ -19,17 +24,12 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.SlotItemHandler;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 public abstract class CommonContainer extends Container {
 
 	protected InventoryPlayer invPlayer;
 	protected Map<String, IInventory> invs;
 
-	public CommonContainer(InventoryPlayer invPlayer, Pair<String, IInventory>... invs) {
+	public CommonContainer(InventoryPlayer invPlayer, @SuppressWarnings("unchecked") Pair<String, IInventory>... invs) {
 		this.invPlayer = invPlayer;
 		this.invs = Maps.newHashMap();
 		if (invs != null)
@@ -98,6 +98,7 @@ public abstract class CommonContainer extends Container {
 		initSlots(invPlayer, x, y, 9, 3, 9);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void initSlots(IInventory inv, int x, int y, int width, int height, int startIndex, Class<? extends Slot> clazz, Object... args) {
 		if (inv == null)
 			return;
@@ -154,6 +155,7 @@ public abstract class CommonContainer extends Container {
 		initSlots(inv, x, y, width, height, 0);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void initSlots(IItemHandler inv, int x, int y, int width, int height, int startIndex, Class<? extends Slot> clazz, Object... args) {
 		if (inv == null)
 			return;
@@ -230,8 +232,8 @@ public abstract class CommonContainer extends Container {
 			ar.removeAll(Collections.singleton(null));
 			boolean merged = false;
 			for (Area p : ar) {
-				//				if (slot.inventory == p.inv)
-				//					continue;
+				// if (slot.inventory == p.inv)
+				// continue;
 				Slot minSlot = getSlotFromInv(p.inv, p.min);
 				// while (minSlot == null && p.min < p.inv.getSizeInventory())
 				// minSlot = getSlotFromInventory(p.inv, ++p.min);

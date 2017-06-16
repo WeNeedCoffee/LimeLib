@@ -3,16 +3,16 @@ package mrriegel.limelib.gui;
 import java.io.IOException;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.gui.element.GuiElement;
 import mrriegel.limelib.gui.element.ITooltip;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import com.google.common.collect.Lists;
 
 public class CommonGuiContainer extends GuiContainer {
 

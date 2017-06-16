@@ -2,15 +2,15 @@ package mrriegel.limelib.book;
 
 import java.util.List;
 
-import mrriegel.limelib.gui.GuiDrawer;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
+
+import mrriegel.limelib.gui.GuiDrawer;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 public abstract class Book {
 
@@ -29,9 +29,9 @@ public abstract class Book {
 			return null;
 		for (Chapter c : chapters) {
 			if (c.implMap.get(impl) != null) {
-				return ImmutablePair.<Integer, Integer> of(c.index, c.implMap.get(impl).index);
+				return ImmutablePair.<Integer, Integer>of(c.index, c.implMap.get(impl).index);
 			} else if (impl instanceof Item && Block.getBlockFromItem((Item) impl) != null && c.implMap.get(Block.getBlockFromItem((Item) impl)) != null) {
-				return ImmutablePair.<Integer, Integer> of(c.index, c.implMap.get(Block.getBlockFromItem((Item) impl)).index);
+				return ImmutablePair.<Integer, Integer>of(c.index, c.implMap.get(Block.getBlockFromItem((Item) impl)).index);
 			}
 		}
 		return null;

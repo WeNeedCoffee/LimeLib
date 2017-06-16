@@ -205,7 +205,7 @@ public class TestMod implements IGuiHandler {
 				RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
 				GlStateManager.translate(0.5, 1.5, 0.5);
 				EntityItem entityitem = new EntityItem(part.getWorld(), 0.0D, 0.0D, 0.0D, inputStack);
-				entityitem.getEntityItem().setCount(1);
+				entityitem.getItem().setCount(1);
 				entityitem.hoverStart = 0.0F;
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();
@@ -216,7 +216,7 @@ public class TestMod implements IGuiHandler {
 				GlStateManager.scale(0.5F, 0.5F, 0.5F);
 				GlStateManager.pushAttrib();
 				RenderHelper.enableStandardItemLighting();
-				itemRenderer.renderItem(entityitem.getEntityItem(), ItemCameraTransforms.TransformType.FIXED);
+				itemRenderer.renderItem(entityitem.getItem(), ItemCameraTransforms.TransformType.FIXED);
 				RenderHelper.disableStandardItemLighting();
 				GlStateManager.popAttrib();
 
@@ -310,9 +310,9 @@ public class TestMod implements IGuiHandler {
 			int range = 8;
 			List<EntityLivingBase> lis = e.getEntity().world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)), input -> e.getEntity().getClass().equals(input.getClass()));
 			lis.remove(e.getEntity());
-			for (EntityLivingBase ent : lis)
-				for (Vec3d v : ParticleHelper.getVecsForLine(e.getEntity().posX, e.getEntity().posY + e.getEntity().height - .1, e.getEntity().posZ, ent.posX, ent.posY + ent.height - .1, ent.posZ, 3))
-					LimeLib.proxy.renderParticle(new CommonParticle(v.xCoord, v.yCoord, v.zCoord).setMaxAge2(10).setTexture(ParticleHelper.sparkleParticle));
+//			for (EntityLivingBase ent : lis)
+//				for (Vec3d v : ParticleHelper.getVecsForLine(e.getEntity().posX, e.getEntity().posY + e.getEntity().height - .1, e.getEntity().posZ, ent.posX, ent.posY + ent.height - .1, ent.posZ, 3))
+//					LimeLib.proxy.renderParticle(new CommonParticle(v.xCoord, v.yCoord, v.zCoord).setMaxAge2(10).setTexture(ParticleHelper.sparkleParticle));
 		}
 	}
 

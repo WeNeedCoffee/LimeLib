@@ -13,12 +13,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
 
+@Deprecated
 public class ShapelessRecipeExt implements IRecipe {
 	static {
 		RecipeSorter.register(LimeLib.MODID + ":shapelessExt", ShapelessRecipeExt.class, Category.SHAPELESS, "after:minecraft:shapeless");
@@ -48,7 +50,7 @@ public class ShapelessRecipeExt implements IRecipe {
 		}
 	}
 
-	@Override
+	// @Override
 	public int getRecipeSize() {
 		return input.size();
 	}
@@ -118,5 +120,29 @@ public class ShapelessRecipeExt implements IRecipe {
 	@Nonnull
 	public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
 		return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+	}
+
+	@Override
+	public IRecipe setRegistryName(ResourceLocation name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResourceLocation getRegistryName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Class<IRecipe> getRegistryType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean canFit(int width, int height) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

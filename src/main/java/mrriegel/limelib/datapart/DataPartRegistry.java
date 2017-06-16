@@ -7,6 +7,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.network.DataPartSyncMessage;
@@ -21,15 +30,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 
@@ -139,18 +139,19 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		List<NBTTagCompound> nbts = Lists.newArrayList();
 		for (DataPart entry : partMap.values())
 			nbts.add(entry.writeDataToNBT(new NBTTagCompound()));
-		return NBTHelper.setTagList(new NBTTagCompound(), "nbts", nbts);
+		return NBTHelper.setList(new NBTTagCompound(), "nbts", nbts);
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt) {
 		clearWorld();
-		List<NBTTagCompound> nbts = NBTHelper.getTagList(nbt, "nbts");
+		List<NBTTagCompound> nbts = NBTHelper.getList(nbt, "nbts", NBTTagCompound.class);
 		for (NBTTagCompound n : nbts) {
 			createPart(n);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void createPart(NBTTagCompound n) {
 		try {
 			Class<?> clazz = DataPartRegistry.PARTS.get(n.getString("id"));

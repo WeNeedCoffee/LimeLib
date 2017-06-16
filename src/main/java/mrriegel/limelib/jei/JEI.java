@@ -2,25 +2,27 @@ package mrriegel.limelib.jei;
 
 import java.util.List;
 
-import mezz.jei.api.BlankModPlugin;
+import com.google.common.collect.Lists;
+
 import mezz.jei.api.IJeiRuntime;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IFocus.Mode;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.google.common.collect.Lists;
-
 @JEIPlugin
-public class JEI extends BlankModPlugin {
+public class JEI implements IModPlugin {
 
 	private static IJeiRuntime runtime;
 
 	@Override
 	public void register(IModRegistry registry) {
-		registry.addRecipeHandlers(new ShapedRecipeExtHandler(registry.getJeiHelpers()));
-		registry.addRecipeHandlers(new ShapelessRecipeExtHandler(registry.getJeiHelpers()));
+		// registry.addRecipeHandlers(new
+		// ShapedRecipeExtHandler(registry.getJeiHelpers()));
+		// registry.addRecipeHandlers(new
+		// ShapelessRecipeExtHandler(registry.getJeiHelpers()));
 	}
 
 	@Override

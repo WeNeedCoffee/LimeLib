@@ -64,7 +64,7 @@ public class ClientEventHandler {
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
 			long energy = LimeLib.proxy.energyTiles().get(p).getLeft(), max = LimeLib.proxy.energyTiles().get(p).getRight();
 			String text = (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(energy) : energy) + "/" + (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(max) : max) + " " + energyType.unit;
-			int lenght = 90/*mc.fontRenderer.getStringWidth(text)*/;
+			int lenght = 90/* mc.fontRenderer.getStringWidth(text) */;
 			mc.fontRenderer.drawString(text, (sr.getScaledWidth() - mc.fontRenderer.getStringWidth(text)) / 2, (sr.getScaledHeight() - 15 - mc.fontRenderer.FONT_HEIGHT) / 2, GuiScreen.isShiftKeyDown() ? 0xffff00 : 0x80ffff00, true);
 			if (Config.energyConfigHint) {
 				boolean before = mc.fontRenderer.getUnicodeFlag();
@@ -98,6 +98,7 @@ public class ClientEventHandler {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@SubscribeEvent
 	public static void render(RenderWorldLastEvent event) {
 		DataPartRegistry reg = DataPartRegistry.get(Minecraft.getMinecraft().world);
@@ -113,7 +114,7 @@ public class ClientEventHandler {
 		}
 	}
 
-	//	@SubscribeEvent
+	// @SubscribeEvent
 	public static void click(MouseEvent event) {
 		Minecraft mc = Minecraft.getMinecraft();
 		if (mc.inGameHasFocus && !mc.isGamePaused() && event.isButtonstate() && !event.isCanceled()) {
@@ -154,7 +155,7 @@ public class ClientEventHandler {
 			double d0 = TileEntityRendererDispatcher.staticPlayerX;
 			double d1 = TileEntityRendererDispatcher.staticPlayerY;
 			double d2 = TileEntityRendererDispatcher.staticPlayerZ;
-			RenderGlobal.drawSelectionBoundingBox(part.getHighlightBox().offset(blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
+			RenderGlobal.drawSelectionBoundingBox(part.getHighlightBox().offset(blockpos).grow(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
 			GlStateManager.depthMask(true);
 			GlStateManager.enableTexture2D();
 			GlStateManager.disableBlend();

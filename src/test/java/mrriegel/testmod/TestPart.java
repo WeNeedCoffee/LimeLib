@@ -24,14 +24,14 @@ public class TestPart extends DataPartWorker {
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
-		posList = Lists.newLinkedList(Utils.getBlockPosList(NBTHelper.getLongList(compound, "poss")));
+		posList = Lists.newLinkedList(Utils.getBlockPosList(NBTHelper.getList(compound, "poss",Long.class)));
 		started = compound.getBoolean("started");
 		super.readFromNBT(compound);
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		NBTHelper.setLongList(compound, "poss", Utils.getLongList(posList));
+		NBTHelper.setList(compound, "poss", Utils.getLongList(posList));
 		compound.setBoolean("started", started);
 		return super.writeToNBT(compound);
 	}

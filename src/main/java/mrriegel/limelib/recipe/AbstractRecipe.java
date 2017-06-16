@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.item.ItemStack;
-
-import com.google.common.collect.Lists;
 
 /**
  * @param <S>

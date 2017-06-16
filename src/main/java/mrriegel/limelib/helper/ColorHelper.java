@@ -9,7 +9,7 @@ import net.minecraft.util.math.MathHelper;
 public class ColorHelper {
 
 	public static int getRGB(EnumDyeColor color) {
-		return color.getMapColor().colorValue | 0xFF000000;
+		return color.getColorValue() | 0xFF000000;
 	}
 
 	public static int getRGB(EnumDyeColor color, int alpha) {
@@ -28,22 +28,22 @@ public class ColorHelper {
 
 	public static int getRed(int color) {
 		return ((0xFF000000 | color) >> 16) & 0xFF;
-		//		 return new Color(color,true).getRed();
+		// return new Color(color,true).getRed();
 	}
 
 	public static int getGreen(int color) {
 		return ((0xFF000000 | color) >> 8) & 0xFF;
-		//		 return new Color(color,true).getGreen();
+		// return new Color(color,true).getGreen();
 	}
 
 	public static int getBlue(int color) {
 		return ((0xFF000000 | color) >> 0) & 0xFF;
-		//		 return new Color(color,true).getBlue();
+		// return new Color(color,true).getBlue();
 	}
 
 	public static int getAlpha(int color) {
 		return ((color) >> 24) & 0xFF;
-		//		 return new Color(color,true).getAlpha();
+		// return new Color(color,true).getAlpha();
 	}
 
 	public static int getRainbow(int frequence) {
