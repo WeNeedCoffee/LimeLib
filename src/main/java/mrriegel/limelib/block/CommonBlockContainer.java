@@ -1,6 +1,9 @@
 package mrriegel.limelib.block;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import com.google.common.collect.Lists;
 
@@ -72,7 +75,14 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	}
 
 	@Override
-	public abstract TileEntity createTileEntity(World world, IBlockState state);
+	public TileEntity createTileEntity(World world, IBlockState state) {
+		try {
+			return ConstructorUtils.invokeConstructor(getTile());
+		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	protected abstract Class<? extends T> getTile();
 

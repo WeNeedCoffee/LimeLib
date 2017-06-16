@@ -35,6 +35,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class BlockHelper {
 
+	@SuppressWarnings("deprecation")
 	public static boolean isBlockBreakable(World world, BlockPos pos) {
 		IBlockState state = world.getBlockState(pos);
 		return !world.isAirBlock(pos) && !state.getBlock().getMaterial(state).isLiquid() && state.getBlock().getBlockHardness(state, world, pos) > -1F;
@@ -129,6 +130,7 @@ public class BlockHelper {
 		return tmp.isEmpty() ? ItemStack.EMPTY : tmp.get(0);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static boolean isOre(World world, BlockPos pos) {
 		IBlockState state = world.getBlockState(pos);
 		if (!state.getBlock().isFullCube(state))
@@ -149,6 +151,7 @@ public class BlockHelper {
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static boolean isToolEffective(ItemStack tool, World world, BlockPos pos, boolean reallyEffective) {
 		if (ForgeHooks.isToolEffective(world, pos, tool)) {
 			return true;
@@ -160,6 +163,7 @@ public class BlockHelper {
 		return (!reallyEffective && state.getBlock().getHarvestTool(state) == null) || tool.getItem().getToolClasses(tool).contains(state.getBlock().getHarvestTool(state));
 	}
 
+	@SuppressWarnings("deprecation")
 	public static boolean canToolHarvestBlock(IBlockAccess world, BlockPos pos, @Nonnull ItemStack stack) {
 		IBlockState state = world.getBlockState(pos);
 		state = state.getBlock().getActualState(state, world, pos);

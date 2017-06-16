@@ -1,234 +1,118 @@
 package mrriegel.limelib.recipe;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
-import javax.annotation.Nonnull;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonSyntaxException;
 
-import mrriegel.limelib.LimeLib;
-import mrriegel.limelib.helper.StackHelper;
+import mrriegel.limelib.helper.RecipeHelper;
 import net.minecraft.block.Block;
-import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.RecipeSorter;
-import net.minecraftforge.oredict.RecipeSorter.Category;
+import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
-@Deprecated
-public class ShapedRecipeExt implements IRecipe {
-	public static final int MAX_CRAFT_GRID_WIDTH = 3;
-	public static final int MAX_CRAFT_GRID_HEIGHT = 3;
-	static {
-		RecipeSorter.register(LimeLib.MODID + ":shapedExt", ShapedRecipeExt.class, Category.SHAPED, "after:minecraft:shaped before:minecraft:shapeless");
+public class ShapedRecipeExt extends ShapedOreRecipe {
+
+	public ShapedRecipeExt(ResourceLocation group, Block result, Object... recipe) {
+		super(group, result, recipe);
 	}
 
-	@Nonnull
-	protected ItemStack output = ItemStack.EMPTY;
-	protected Object[] input = null;
-	protected int width = 0;
-	protected int height = 0;
-	protected boolean mirrored = true;
+	public ShapedRecipeExt(ResourceLocation group, Item result, Object... recipe) {
+		super(group, result, recipe);
+	}
 
-	public ShapedRecipeExt(@Nonnull ItemStack result, Object... recipe) {
-		output = result.copy();
+	public ShapedRecipeExt(ResourceLocation group, ItemStack result, Object... recipe) {
+		super(group, result, getPrimer(recipe));
+	}
 
+	public ShapedRecipeExt(ResourceLocation group, ItemStack result, ShapedPrimer primer) {
+		super(group, result, primer);
+	}
+
+	private static ShapedPrimer getPrimer(Object... recipe) {
+		ShapedPrimer ret = new ShapedPrimer();
 		String shape = "";
 		int idx = 0;
 
 		if (recipe[idx] instanceof Boolean) {
-			mirrored = (Boolean) recipe[idx];
-			if (recipe[idx + 1] instanceof Object[]) {
+			ret.mirrored = (Boolean) recipe[idx];
+			if (recipe[idx + 1] instanceof Object[])
 				recipe = (Object[]) recipe[idx + 1];
-			} else {
+			else
 				idx = 1;
-			}
 		}
 
 		if (recipe[idx] instanceof String[]) {
 			String[] parts = ((String[]) recipe[idx++]);
+
 			for (String s : parts) {
-				width = s.length();
+				ret.width = s.length();
 				shape += s;
 			}
 
-			height = parts.length;
+			ret.height = parts.length;
 		} else {
 			while (recipe[idx] instanceof String) {
 				String s = (String) recipe[idx++];
 				shape += s;
-				width = s.length();
-				height++;
+				ret.width = s.length();
+				ret.height++;
 			}
 		}
 
-		if (width * height != shape.length()) {
-			String ret = "Invalid shaped ore recipe: ";
+		if (ret.width * ret.height != shape.length() || shape.length() == 0) {
+			String err = "Invalid shaped recipe: ";
 			for (Object tmp : recipe) {
-				ret += tmp + ", ";
+				err += tmp + ", ";
 			}
-			ret += output;
-			throw new RuntimeException(ret);
+			throw new RuntimeException(err);
 		}
 
-		HashMap<Character, Object> itemMap = new HashMap<Character, Object>();
+		HashMap<Character, Ingredient> itemMap = Maps.newHashMap();
+		itemMap.put(' ', Ingredient.EMPTY);
 
 		for (; idx < recipe.length; idx += 2) {
 			Character chr = (Character) recipe[idx];
 			Object in = recipe[idx + 1];
+			Ingredient ing = RecipeHelper.getIngredient(in);
 
-			if (in instanceof ItemStack) {
-				itemMap.put(chr, ((ItemStack) in).copy());
-			} else if (in instanceof Item) {
-				itemMap.put(chr, new ItemStack((Item) in));
-			} else if (in instanceof Block) {
-				itemMap.put(chr, new ItemStack((Block) in, 1, OreDictionary.WILDCARD_VALUE));
-			} else if (in instanceof String) {
-				itemMap.put(chr, OreDictionary.getOres((String) in));
-			} else if (in instanceof List) {
-				StackHelper.toStackList((List<Object>) in);
-				itemMap.put(chr, in);
+			if (' ' == chr.charValue())
+				throw new JsonSyntaxException("Invalid key entry: ' ' is a reserved symbol.");
+
+			if (ing != null) {
+				itemMap.put(chr, ing);
 			} else {
-				throw new RuntimeException("wrong input");
+				String err = "Invalid shaped ore recipe: ";
+				for (Object tmp : recipe) {
+					err += tmp + ", ";
+				}
+				throw new RuntimeException(err);
 			}
 		}
 
-		input = new Object[width * height];
+		ret.input = NonNullList.withSize(ret.width * ret.height, Ingredient.EMPTY);
+
+		Set<Character> keys = Sets.newHashSet(itemMap.keySet());
+		keys.remove(' ');
+
 		int x = 0;
 		for (char chr : shape.toCharArray()) {
-			input[x++] = itemMap.get(chr);
-		}
-	}
-
-	@Override
-	@Nonnull
-	public ItemStack getCraftingResult(@Nonnull InventoryCrafting var1) {
-		return output.copy();
-	}
-
-	// @Override
-	public int getRecipeSize() {
-		return input.length;
-	}
-
-	@Override
-	@Nonnull
-	public ItemStack getRecipeOutput() {
-		return output;
-	}
-
-	@Override
-	public boolean matches(InventoryCrafting inv, World world) {
-		for (int x = 0; x <= MAX_CRAFT_GRID_WIDTH - width; x++) {
-			for (int y = 0; y <= MAX_CRAFT_GRID_HEIGHT - height; ++y) {
-				if (checkMatch(inv, x, y, false)) {
-					return true;
-				}
-
-				if (mirrored && checkMatch(inv, x, y, true)) {
-					return true;
-				}
-			}
+			Ingredient ing = itemMap.get(chr);
+			if (ing == null)
+				throw new IllegalArgumentException("Pattern references symbol '" + chr + "' but it's not defined in the key");
+			ret.input.set(x++, ing);
+			keys.remove(chr);
 		}
 
-		return false;
-	}
+		if (!keys.isEmpty())
+			throw new IllegalArgumentException("Key defines symbols that aren't used in pattern: " + keys);
 
-	protected boolean checkMatch(InventoryCrafting inv, int startX, int startY, boolean mirror) {
-		for (int x = 0; x < MAX_CRAFT_GRID_WIDTH; x++) {
-			for (int y = 0; y < MAX_CRAFT_GRID_HEIGHT; y++) {
-				int subX = x - startX;
-				int subY = y - startY;
-				Object target = null;
-
-				if (subX >= 0 && subY >= 0 && subX < width && subY < height) {
-					if (mirror) {
-						target = input[width - subX - 1 + subY * width];
-					} else {
-						target = input[subX + subY * width];
-					}
-				}
-
-				ItemStack slot = inv.getStackInRowAndColumn(x, y);
-
-				if (target instanceof ItemStack) {
-					if (!OreDictionary.itemMatches((ItemStack) target, slot, false)) {
-						return false;
-					}
-				} else if (target instanceof List) {
-					boolean matched = false;
-
-					Iterator<Object> itr = ((List<Object>) target).iterator();
-					while (itr.hasNext() && !matched) {
-						Object nex = itr.next();
-						if (nex instanceof ItemStack)
-							matched = OreDictionary.itemMatches((ItemStack) nex, slot, false);
-						else if (nex instanceof Item)
-							matched = slot.getItem() == nex;
-						else if (nex instanceof Block)
-							matched = slot.getItem() == Item.getItemFromBlock((Block) nex);
-					}
-
-					if (!matched) {
-						return false;
-					}
-				} else if (target == null && !slot.isEmpty()) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	public ShapedRecipeExt setMirrored(boolean mirror) {
-		mirrored = mirror;
-		return this;
-	}
-
-	public Object[] getInput() {
-		return this.input;
-	}
-
-	@Override
-	public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
-		return ForgeHooks.defaultRecipeGetRemainingItems(inv);
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	@Override
-	public IRecipe setRegistryName(ResourceLocation name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ResourceLocation getRegistryName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Class<IRecipe> getRegistryType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean canFit(int width, int height) {
-		return width >= this.width && height >= this.height;
+		return ret;
 	}
 }
