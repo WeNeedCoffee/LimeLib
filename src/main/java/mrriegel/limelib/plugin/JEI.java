@@ -1,4 +1,4 @@
-package mrriegel.limelib.jei;
+package mrriegel.limelib.plugin;
 
 import java.util.List;
 
@@ -19,10 +19,6 @@ public class JEI implements IModPlugin {
 
 	@Override
 	public void register(IModRegistry registry) {
-		// registry.addRecipeHandlers(new
-		// ShapedRecipeExtHandler(registry.getJeiHelpers()));
-		// registry.addRecipeHandlers(new
-		// ShapelessRecipeExtHandler(registry.getJeiHelpers()));
 	}
 
 	@Override

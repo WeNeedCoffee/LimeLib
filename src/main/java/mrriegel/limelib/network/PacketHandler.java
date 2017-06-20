@@ -2,6 +2,7 @@ package mrriegel.limelib.network;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -61,6 +62,8 @@ public class PacketHandler {
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, Side side) {
 		init();
+		if (!Stream.of(requestMessageType.getConstructors()).anyMatch((c) -> c.getParameterCount() == 0))
+			throw new IllegalStateException(requestMessageType + " needs a public default constructor.");
 		wrapper.registerMessage(messageHandler, requestMessageType, index++, side);
 	}
 

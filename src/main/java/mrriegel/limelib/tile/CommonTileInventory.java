@@ -57,9 +57,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 	@Override
 	public ItemStack decrStackSize(int index, int count) {
 		ItemStack itemstack = ItemStackHelper.getAndSplit(stacks, index, count);
-		if (itemstack.isEmpty()) {
-			markDirty();
-		}
+		markDirty();
 		return itemstack;
 	}
 

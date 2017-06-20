@@ -124,6 +124,21 @@ public class InvHelper {
 		return extracted;
 	}
 
+	public static boolean transfer(IItemHandler from, IItemHandler to, int amount, Predicate<ItemStack> pred) {
+		for (int i = 0; i < from.getSlots(); i++) {
+			ItemStack st = from.extractItem(i, amount, true);
+			if (st.isEmpty() || !pred.test(st))
+				continue;
+			int ins = st.getCount() - ItemHandlerHelper.insertItemStacked(to, st, true).getCount();
+			if (ins == 0)
+				continue;
+			ItemHandlerHelper.insertItemStacked(to, from.extractItem(i, Math.min(amount, ins), false), false);
+			return true;
+
+		}
+		return false;
+	}
+
 	public static void sort(IItemHandler inv) {
 		NonNullList<ItemStack> ex = StackHelper.inv2list(inv);
 		List<StackWrapper> wraps = StackWrapper.toWrapperList(ex);

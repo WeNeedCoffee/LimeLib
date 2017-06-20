@@ -1,6 +1,7 @@
 package mrriegel.limelib.helper;
 
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -37,6 +38,16 @@ public class NBTStackHelper {
 	public static ItemStack setList(ItemStack stack, String name, List<?> values) {
 		initNBTTagCompound(stack);
 		NBTHelper.setList(stack.getTagCompound(), name, values);
+		return stack;
+	}
+
+	public static <K, V> Map<K, V> getMap(ItemStack stack, String name, Class<K> keyClazz, Class<V> valClazz) {
+		return NBTHelper.getMap(stack.getTagCompound(), name, keyClazz, valClazz);
+	}
+
+	public static ItemStack setMap(ItemStack stack, String name, Map<?, ?> values) {
+		initNBTTagCompound(stack);
+		NBTHelper.setMap(stack.getTagCompound(), name, values);
 		return stack;
 	}
 

@@ -3,17 +3,15 @@ package mrriegel.limelib.gui;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import mrriegel.limelib.gui.slot.CommonSlot;
-import mrriegel.limelib.gui.slot.SlotFilter;
 import mrriegel.limelib.gui.slot.SlotGhost;
-import mrriegel.limelib.gui.slot.SlotOutput;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -66,6 +64,10 @@ public abstract class CommonContainer extends Container {
 		return getAreaForInv(inv, 0, inv.getSizeInventory());
 	}
 
+	protected Area getAreaForEntireInv(IItemHandler inv) {
+		return getAreaForInv(inv, 0, inv.getSlots());
+	}
+
 	protected Area getAreaForInv(Object inv, int start, int total) {
 		List<Integer> l = Lists.newArrayList();
 		for (Slot s : inventorySlots)
@@ -98,7 +100,6 @@ public abstract class CommonContainer extends Container {
 		initSlots(invPlayer, x, y, 9, 3, 9);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void initSlots(IInventory inv, int x, int y, int width, int height, int startIndex, Class<? extends Slot> clazz, Object... args) {
 		if (inv == null)
 			return;
@@ -108,38 +109,13 @@ public abstract class CommonContainer extends Container {
 				if (id >= inv.getSizeInventory())
 					break;
 				Slot slot = null;
-				if (clazz == Slot.class) {
-					slot = new Slot(inv, id, x + i * 18, y + k * 18) {
-						@Override
-						public void onSlotChanged() {
-							super.onSlotChanged();
-							inventoryChanged();
-						}
-					};
-				} else if (clazz == SlotGhost.class) {
-					slot = new SlotGhost(inv, id, x + i * 18, y + k * 18) {
-						@Override
-						public void onSlotChanged() {
-							super.onSlotChanged();
-							inventoryChanged();
-						}
-					};
-				} else if (clazz == SlotOutput.class) {
-					slot = new SlotOutput(inv, id, x + i * 18, y + k * 18) {
-						@Override
-						public void onSlotChanged() {
-							super.onSlotChanged();
-							inventoryChanged();
-						}
-					};
-				} else if (clazz == SlotFilter.class && args != null && args[0] instanceof Predicate) {
-					slot = new SlotFilter(inv, id, x + i * 18, y + k * 18, (Predicate<ItemStack>) args[0]) {
-						@Override
-						public void onSlotChanged() {
-							super.onSlotChanged();
-							inventoryChanged();
-						}
-					};
+				try {
+					List<Object> lis = Lists.newArrayList(inv, id, x + i * 18, y + k * 18);
+					for (Object o : args)
+						lis.add(o);
+					slot = ConstructorUtils.invokeConstructor(clazz, lis.toArray(new Object[0]), lis.stream().map(o -> o.getClass()).toArray(Class[]::new));
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				if (slot != null)
 					this.addSlotToContainer(slot);
@@ -155,7 +131,6 @@ public abstract class CommonContainer extends Container {
 		initSlots(inv, x, y, width, height, 0);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void initSlots(IItemHandler inv, int x, int y, int width, int height, int startIndex, Class<? extends Slot> clazz, Object... args) {
 		if (inv == null)
 			return;
@@ -165,38 +140,13 @@ public abstract class CommonContainer extends Container {
 				if (id >= inv.getSlots())
 					break;
 				Slot slot = null;
-				if (clazz == Slot.class) {
-					slot = new CommonSlot(inv, id, x + i * 18, y + k * 18) {
-						@Override
-						public void onSlotChanged() {
-							super.onSlotChanged();
-							inventoryChanged();
-						}
-					};
-				} else if (clazz == SlotGhost.class) {
-					slot = new SlotGhost(inv, id, x + i * 18, y + k * 18) {
-						@Override
-						public void onSlotChanged() {
-							super.onSlotChanged();
-							inventoryChanged();
-						}
-					};
-				} else if (clazz == SlotOutput.class) {
-					slot = new SlotOutput(inv, id, x + i * 18, y + k * 18) {
-						@Override
-						public void onSlotChanged() {
-							super.onSlotChanged();
-							inventoryChanged();
-						}
-					};
-				} else if (clazz == SlotFilter.class && args != null && args[0] instanceof Predicate) {
-					slot = new SlotFilter(inv, id, x + i * 18, y + k * 18, (Predicate<ItemStack>) args[0]) {
-						@Override
-						public void onSlotChanged() {
-							super.onSlotChanged();
-							inventoryChanged();
-						}
-					};
+				try {
+					List<Object> lis = Lists.newArrayList(inv, id, x + i * 18, y + k * 18);
+					for (Object o : args)
+						lis.add(o);
+					slot = ConstructorUtils.invokeConstructor(clazz, lis.toArray(new Object[0]), lis.stream().map(o -> o.getClass()).toArray(Class[]::new));
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				if (slot != null)
 					this.addSlotToContainer(slot);
@@ -210,9 +160,6 @@ public abstract class CommonContainer extends Container {
 
 	protected void initSlots(IItemHandler inv, int x, int y, int width, int height) {
 		initSlots(inv, x, y, width, height, 0);
-	}
-
-	protected void inventoryChanged() {
 	}
 
 	@Override
@@ -328,19 +275,16 @@ public abstract class CommonContainer extends Container {
 			while (!reverse && k < endindex || reverse && k >= startindex) {
 				slot = this.inventorySlots.get(k);
 				itemstack1 = slot.getStack();
-
 				if (itemstack1.isEmpty() && slot.isItemValid(stack)) {
 					if (1 < stack.getCount()) {
 						ItemStack copy = stack.copy();
 						copy.setCount(1);
 						slot.putStack(copy);
-
 						stack.shrink(1);
 						flag1 = true;
 						break;
 					} else {
 						slot.putStack(stack.copy());
-						slot.onSlotChanged();
 						stack.setCount(0);
 						flag1 = true;
 						break;

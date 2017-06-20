@@ -1,10 +1,16 @@
 package mrriegel.limelib.helper;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.Validate;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -33,7 +39,7 @@ public class NBTHelper {
 		STRING(8, null, String.class), //
 		NBT(10, null, NBTTagCompound.class), //
 		ITEMSTACK(10, ItemStack.EMPTY, ItemStack.class), //
-		BLOCKPOS(4, null, BlockPos.class);
+		BLOCKPOS(4, null, BlockPos.class); //
 
 		int tagID;
 		Object defaultV;
@@ -46,6 +52,11 @@ public class NBTHelper {
 		}
 
 		public static BiMap<Class<?>, NBTType> m = HashBiMap.create();
+
+		public static boolean validClass(Class<?> clazz) {
+			return Enum.class.isAssignableFrom(clazz) || m.get(clazz) != null;
+		}
+
 		static {
 			for (NBTType n : NBTType.values())
 				m.put(n.clazz, n);
@@ -64,6 +75,8 @@ public class NBTHelper {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T get(NBTTagCompound nbt, String name, Class<T> clazz) {
+		if (Enum.class.isAssignableFrom(clazz))
+			return clazz.getEnumConstants()[nbt.getInteger(name)];
 		NBTType type = NBTType.m.get(clazz);
 		if (type == null)
 			throw new IllegalArgumentException();
@@ -99,6 +112,8 @@ public class NBTHelper {
 	public static NBTTagCompound set(NBTTagCompound nbt, String name, Object value) {
 		if (nbt == null || value == null)
 			return nbt;
+		if (Enum.class.isAssignableFrom(value.getClass()))
+			return set(nbt, name, ((Enum<?>) value).ordinal());
 		NBTType type = NBTType.m.get(value.getClass());
 		if (type == null)
 			throw new IllegalArgumentException();
@@ -135,13 +150,13 @@ public class NBTHelper {
 			break;
 		case BLOCKPOS:
 			nbt.setLong(name, ((BlockPos) value).toLong());
+			break;
 		}
 		return nbt;
 	}
 
 	public static <T> List<T> getList(NBTTagCompound nbt, String name, Class<T> clazz) {
-		NBTType type = NBTType.m.get(clazz);
-		if (type == null)
+		if (!NBTType.validClass(clazz))
 			throw new IllegalArgumentException();
 		if (nbt == null || !nbt.hasKey(name, 10))
 			return Lists.newArrayList();
@@ -149,29 +164,55 @@ public class NBTHelper {
 		NBTTagCompound lis = nbt.getCompoundTag(name);
 		int size = lis.getInteger("size");
 		for (int i = 0; i < size; i++)
-			values.add(get(lis, name + "__" + i, clazz));
+			values.add(get(lis, "__" + i, clazz));
 		return values;
 	}
 
 	public static NBTTagCompound setList(NBTTagCompound nbt, String name, List<?> values) {
 		if (nbt == null || values.isEmpty())
 			return nbt;
-		Object one = null;
 		for (Object o : values)
 			if (o != null) {
-				one = o;
+				if (!NBTType.validClass(o.getClass()))
+					throw new IllegalArgumentException();
 				break;
 			}
 		NBTTagCompound lis = new NBTTagCompound();
 		lis.setInteger("size", values.size());
-		if (one != null) {
-			NBTType type = NBTType.m.get(one.getClass());
-			if (type == null)
-				throw new IllegalArgumentException();
-		}
 		for (int i = 0; i < values.size(); i++)
-			set(lis, name + "__" + i, values.get(i));
+			set(lis, "__" + i, values.get(i));
 		nbt.setTag(name, lis);
+		return nbt;
+	}
+
+	public static <K, V> Map<K, V> getMap(NBTTagCompound nbt, String name, Class<K> keyClazz, Class<V> valClazz) {
+		if (!NBTType.validClass(keyClazz) || !NBTType.validClass(valClazz))
+			throw new IllegalArgumentException();
+		if (nbt == null || !nbt.hasKey(name, 10))
+			return Maps.newHashMap();
+		Map<K, V> values = Maps.newHashMap();
+		NBTTagCompound map = nbt.getCompoundTag(name);
+		List<K> keys = getList(map, "key", keyClazz);
+		List<V> vals = getList(map, "value", valClazz);
+		Validate.isTrue(keys.size() == vals.size());
+		for (int i = 0; i < keys.size(); i++)
+			values.put(keys.get(i), vals.get(i));
+		return values;
+	}
+
+	public static NBTTagCompound setMap(NBTTagCompound nbt, String name, Map<?, ?> values) {
+		if (nbt == null || values.isEmpty())
+			return nbt;
+		List<Entry<?, ?>> entries = Lists.newArrayList();
+		for (Entry<?, ?> o : values.entrySet()) {
+			if (!NBTType.validClass(o.getKey().getClass()) || !NBTType.validClass(o.getValue().getClass()))
+				throw new IllegalArgumentException();
+			entries.add(o);
+		}
+		NBTTagCompound map = new NBTTagCompound();
+		setList(map, "key", entries.stream().map(e -> e.getKey()).collect(Collectors.toList()));
+		setList(map, "value", entries.stream().map(e -> e.getValue()).collect(Collectors.toList()));
+		nbt.setTag(name, map);
 		return nbt;
 	}
 

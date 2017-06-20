@@ -1,5 +1,6 @@
 package mrriegel.limelib.tile;
 
+import java.util.Collections;
 import java.util.List;
 
 import mrriegel.limelib.network.PacketHandler;
@@ -35,12 +36,18 @@ public class CommonTile extends TileEntity {
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(this.pos, 1337, writeToSyncNBT(new NBTTagCompound()));
+		NBTTagCompound tag = writeToSyncNBT(new NBTTagCompound());
+		for (String s : notSync())
+			tag.removeTag(s);
+		return new SPacketUpdateTileEntity(this.pos, 1337, tag);
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		readFromSyncNBT(pkt.getNbtCompound());
+		NBTTagCompound tag = pkt.getNbtCompound();
+		for (String s : notSync())
+			tag.removeTag(s);
+		readFromSyncNBT(tag);
 	}
 
 	public void readFromSyncNBT(NBTTagCompound compound) {
@@ -49,6 +56,10 @@ public class CommonTile extends TileEntity {
 
 	public NBTTagCompound writeToSyncNBT(NBTTagCompound compound) {
 		return writeToNBT(compound);
+	}
+
+	protected List<String> notSync() {
+		return Collections.emptyList();
 	}
 
 	public boolean needsSync() {
@@ -99,7 +110,7 @@ public class CommonTile extends TileEntity {
 	}
 
 	public final void sendMessage(NBTTagCompound nbt) {
-		nbt.setLong("pos", pos.toLong());
+		nbt.setLong("pOs", pos.toLong());
 		PacketHandler.sendToServer(new TileMessage(nbt));
 	}
 

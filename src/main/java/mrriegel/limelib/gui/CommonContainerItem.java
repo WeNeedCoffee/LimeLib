@@ -34,12 +34,6 @@ public abstract class CommonContainerItem extends CommonContainer {
 	}
 
 	@Override
-	protected void inventoryChanged() {
-		if (inited)
-			writeToStack();
-	}
-
-	@Override
 	protected void modifyInvs() {
 		setStack(getPlayer());
 		if (!stack.hasTagCompound())
@@ -51,7 +45,8 @@ public abstract class CommonContainerItem extends CommonContainer {
 	@Override
 	public void onContainerClosed(EntityPlayer playerIn) {
 		super.onContainerClosed(playerIn);
-		inventoryChanged();
+		if (inited)
+			writeToStack();
 	}
 
 	public void writeToStack() {

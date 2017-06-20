@@ -1,5 +1,7 @@
 package mrriegel.limelib.util;
 
+import java.util.function.Predicate;
+
 import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -7,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class FilterItem {
+public class FilterItem implements Predicate<ItemStack>{
 	ItemStack stack;
 	boolean meta, ore, nbt;
 
@@ -107,5 +109,10 @@ public class FilterItem {
 		if (meta && s.getItemDamage() != stack.getItemDamage())
 			return false;
 		return s.getItem() == stack.getItem();
+	}
+
+	@Override
+	public boolean test(ItemStack t) {
+		return match(t);
 	}
 }

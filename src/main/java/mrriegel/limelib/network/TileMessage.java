@@ -20,7 +20,7 @@ public class TileMessage extends AbstractMessage {
 
 	@Override
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
-		TileEntity tile = player.world.getTileEntity(BlockPos.fromLong(nbt.getLong("pos")));
+		TileEntity tile = player.world.getTileEntity(BlockPos.fromLong(nbt.getLong("pOs")));
 		if (tile instanceof CommonTile) {
 			((CommonTile) tile).handleMessage(player, nbt);
 			tile.markDirty();

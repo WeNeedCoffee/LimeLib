@@ -15,7 +15,7 @@ import mrriegel.limelib.gui.button.CommonGuiButton;
 import mrriegel.limelib.gui.button.CommonGuiButton.Design;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.helper.ColorHelper;
-import mrriegel.limelib.jei.JEI;
+import mrriegel.limelib.plugin.JEI;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.item.ItemStack;

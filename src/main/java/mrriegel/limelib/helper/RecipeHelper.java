@@ -42,6 +42,11 @@ public class RecipeHelper {
 		ResourceLocation rl = name(stack, input);
 		addRecipe(rl, new ShapelessRecipes("", stack, NonNullList.<Ingredient>from(Ingredient.EMPTY, Lists.newArrayList(input).stream().map(o -> CraftingHelper.getIngredient(o)).filter(o -> o != null).collect(Collectors.toList()).toArray(new Ingredient[0]))));
 	}
+	
+	public static void add(IRecipe recipe){
+		ResourceLocation rl = name(recipe.getRecipeOutput(), recipe.getIngredients());
+		addRecipe(rl, recipe);
+	}
 
 	private static void addRecipe(ResourceLocation rl, IRecipe recipe) {
 		recipe.setRegistryName(rl);

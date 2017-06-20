@@ -19,13 +19,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLiving.SpawnPlacementType;
 import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.ChunkCache;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEntitySpawner;
 import net.minecraft.world.chunk.Chunk;
@@ -45,10 +42,6 @@ public class WorldHelper {
 			int z = (chunkZ << 4) + world.rand.nextInt(16);
 			new WorldGenMinable(state, size, predicate).generate(world, world.rand, new BlockPos(x, y, z));
 		}
-	}
-
-	public static void addOreSpawn(IBlockState state, World world, int veinPerChunk, int size, int chunkX, int chunkZ, int minY, int maxY, java.util.function.Predicate<IBlockState> predicate) {
-		addOreSpawn(state, world, veinPerChunk, size, chunkX, chunkZ, minY, maxY, (Predicate<IBlockState>) b -> predicate.test(b));
 	}
 
 	public static double getDistance(BlockPos a, BlockPos b) {
@@ -85,7 +78,6 @@ public class WorldHelper {
 			return false;
 		} else {
 			IBlockState iblockstate = worldIn.getBlockState(pos);
-
 			if (spawnPlacementTypeIn == EntityLiving.SpawnPlacementType.IN_WATER) {
 				return iblockstate.getMaterial().isLiquid() && worldIn.getBlockState(pos.down()).getMaterial().isLiquid() && !worldIn.getBlockState(pos.up()).isNormalCube();
 			} else {
@@ -137,10 +129,6 @@ public class WorldHelper {
 				for (int z = chunk.z * 16; z < chunk.z * 16 + 16; z++)
 					lis.add(new BlockPos(x, y, z));
 		return lis;
-	}
-
-	public static TileEntity getTile(IBlockAccess world, BlockPos pos) {
-		return world instanceof ChunkCache ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : world.getTileEntity(pos);
 	}
 
 	public static List<BlockPos> getNeighbors(BlockPos p) {

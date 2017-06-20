@@ -3,13 +3,12 @@ package mrriegel.testmod;
 import java.util.Iterator;
 import java.util.List;
 
-import mrriegel.limelib.LimeLib;
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.helper.BlockHelper;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.NBTStackHelper;
-import mrriegel.limelib.helper.ParticleHelper;
-import mrriegel.limelib.particle.CommonParticle;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.tile.IDataKeeper;
 import mrriegel.limelib.tile.IOwneable;
@@ -21,10 +20,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
-
-import com.google.common.collect.Lists;
 
 public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper, IOwneable {
 

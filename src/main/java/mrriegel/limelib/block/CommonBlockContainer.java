@@ -2,12 +2,14 @@ package mrriegel.limelib.block;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import com.google.common.collect.Lists;
 
 import mrriegel.limelib.helper.NBTStackHelper;
+import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
 import net.minecraft.block.material.Material;
@@ -18,11 +20,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
@@ -51,18 +57,18 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	@Override
 	public void registerBlock() {
 		super.registerBlock();
+		if (!Stream.of(getTile().getConstructors()).anyMatch((c) -> c.getParameterCount() == 0))
+			throw new IllegalStateException(getTile() + " needs a public default constructor.");
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
 		if (clearRecipe && IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes()) {
-			// TODO
-			// final ItemStack result = new ItemStack(this);
-			// ShapelessRecipes r = new ShapelessRecipes(NBTStackHelper.set(new
-			// ItemStack(this), "ClEaR", true), Lists.newArrayList(new
-			// ItemStack(this))) {
-			// @Override
-			// public ItemStack getCraftingResult(InventoryCrafting inv) {
-			// return result;
-			// }
-			// };
+			final ItemStack result = new ItemStack(this);
+			ShapelessRecipes r = new ShapelessRecipes("", NBTStackHelper.set(new ItemStack(this), "ClEaR", true), NonNullList.from(Ingredient.EMPTY, RecipeHelper.getIngredient(new ItemStack(this)))) {
+				@Override
+				public ItemStack getCraftingResult(InventoryCrafting inv) {
+					return result;
+				}
+			};
+			RecipeHelper.add(r);
 			// RecipeSorter.register(LimeLib.MODID + ":idatakeeperClear",
 			// r.getClass(), Category.SHAPELESS, "after:minecraft:shapeless");
 			// GameRegistry.addRecipe(r);
@@ -124,6 +130,8 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
+		if (!(worldIn.getTileEntity(pos) instanceof IDataKeeper))
+			return;
 		List<ItemStack> lis = getDrops(worldIn, pos, state, 0);
 		if (!player.capabilities.isCreativeMode && lis.size() == 1) {
 			worldIn.setBlockToAir(pos);

@@ -2,13 +2,13 @@ package mrriegel.limelib.helper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -81,12 +81,7 @@ public class BlockHelper {
 				lis.add(item);
 			}
 		}
-		Iterator<ItemStack> it = lis.iterator();
-		while (it.hasNext()) {
-			ItemStack s = it.next();
-			if (s.isEmpty())
-				it.remove();
-		}
+		Iterables.removeIf(lis, s -> s.isEmpty());
 		return lis;
 	}
 
@@ -105,8 +100,6 @@ public class BlockHelper {
 				else
 					try {
 						m = ReflectionHelper.findMethod(clazz, "getSilkTouchDrop", "func_180643_i", IBlockState.class);
-						// m = findMethod(clazz, new String[] { "func_180643_i",
-						// "getSilkTouchDrop" }, IBlockState.class);
 					} catch (Exception e) {
 						clazz = clazz.getSuperclass();
 						if (clazz != null)
