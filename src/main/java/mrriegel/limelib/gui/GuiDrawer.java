@@ -249,6 +249,11 @@ public class GuiDrawer {
 		GuiUtils.drawHoveringText(list, x, y, sr.getScaledWidth(), sr.getScaledHeight(), -1, (font == null ? mc.fontRenderer : font));
 	}
 
+	public static void renderToolTip(List<String> list, int x, int y) {
+		ScaledResolution sr = new ScaledResolution(mc);
+		GuiUtils.drawHoveringText(list, x, y, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
+	}
+
 	public static List<String> getTooltip(ItemStack stack) {
 		List<String> list = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 		for (int i = 0; i < list.size(); ++i) {

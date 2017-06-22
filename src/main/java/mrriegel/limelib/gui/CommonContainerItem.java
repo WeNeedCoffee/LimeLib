@@ -14,14 +14,14 @@ import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public abstract class CommonContainerItem extends CommonContainer {
+public abstract class CommonContainerItem extends CommonContainer<ItemStack> {
 
 	protected ItemStack stack;
 	boolean inited = false;
 
 	@SuppressWarnings("unchecked")
 	public CommonContainerItem(InventoryPlayer invPlayer, int num) {
-		super(invPlayer, Pair.<String, IInventory>of("inv", new InventoryBasic(null, false, num)));
+		super(invPlayer, invPlayer.getCurrentItem(),Pair.<String, IInventory>of("inv", new InventoryBasic(null, false, num)));
 		inited = true;
 	}
 

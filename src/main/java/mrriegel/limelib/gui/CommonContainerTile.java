@@ -7,29 +7,30 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 
-public abstract class CommonContainerTile<T extends CommonTile> extends CommonContainer {
+public abstract class CommonContainerTile<T extends CommonTile> extends CommonContainer<T> {
 
-	protected T tile;
-
-	public CommonContainerTile(InventoryPlayer invPlayer, Pair<String, IInventory>[] invs, T tile) {
-		super(invPlayer, invs);
-		this.tile = tile;
+	public CommonContainerTile(InventoryPlayer invPlayer, T tile, Pair<String, IInventory>[] invs) {
+		super(invPlayer, tile, invs);
+		tile.markForSync();
+		tile.activePlayers.add(getPlayer());
 	}
 
 	public T getTile() {
-		return tile;
+		return save;
 	}
 
 	@Override
 	public void onContainerClosed(EntityPlayer playerIn) {
 		super.onContainerClosed(playerIn);
-		if (tile != null)
-			tile.sync();
+		if (save != null) {
+			save.markForSync();
+			save.activePlayers.remove(playerIn);
+		}
 	}
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return tile != null && tile.isUsable(playerIn);
+		return save != null && save.isUsable(playerIn);
 	}
 
 }

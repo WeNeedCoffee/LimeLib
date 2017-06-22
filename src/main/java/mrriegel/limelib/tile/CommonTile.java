@@ -2,6 +2,9 @@ package mrriegel.limelib.tile;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.TileGuiMessage;
@@ -23,6 +26,7 @@ import net.minecraft.world.World;
 public class CommonTile extends TileEntity {
 
 	private boolean syncDirty;
+	public Set<EntityPlayer> activePlayers = Sets.newHashSet();
 
 	@Override
 	public NBTTagCompound getUpdateTag() {

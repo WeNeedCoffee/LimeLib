@@ -31,7 +31,7 @@ dependencies {
     deobfCompile "net.darkhax.tesla:Tesla-1.12:1.0.59"
     deobfCompile "${props.get('jei_version')}"
     deobfCompile "mcp.mobius.waila:Hwyla:1.8.18-B32_1.12"
-    deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:1.2-1.4.7-1"
+    //deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:1.2-1.4.7-1"
 }
 
 processResources {

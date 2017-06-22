@@ -132,9 +132,9 @@ public class InvHelper {
 			int ins = st.getCount() - ItemHandlerHelper.insertItemStacked(to, st, true).getCount();
 			if (ins == 0)
 				continue;
-			ItemHandlerHelper.insertItemStacked(to, from.extractItem(i, Math.min(amount, ins), false), false);
+			ItemStack ex = from.extractItem(i, Math.min(amount, ins), false);
+			ItemHandlerHelper.insertItemStacked(to, ex, false);
 			return true;
-
 		}
 		return false;
 	}

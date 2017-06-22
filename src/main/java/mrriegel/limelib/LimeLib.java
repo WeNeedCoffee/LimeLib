@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.network.PacketHandler;
+import mrriegel.limelib.plugin.TOP;
 import mrriegel.limelib.util.ClientEventHandler;
 import mrriegel.limelib.util.EventHandler;
 import mrriegel.limelib.util.Serious;
@@ -15,6 +16,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION)
@@ -40,14 +43,16 @@ public class LimeLib {
 		wailaLoaded = Loader.isModLoaded("waila");
 		jeiLoaded = Loader.isModLoaded("jei");
 		teslaLoaded = Loader.isModLoaded("tesla");
+		topLoaded = Loader.isModLoaded("theoneprobe");
 		/*	ItemStack s = new ItemStack(Blocks.DIRT);
 			RecipeHelper.addShapedRecipe(s.copy(), "oo", "ii", 'o', Items.GLASS_BOTTLE, 'i', new ItemStack(Blocks.REDSTONE_BLOCK));
 			RecipeHelper.addShapelessRecipe(s.copy(), Items.APPLE, Items.SADDLE, Blocks.WOODEN_BUTTON);
 			RecipeHelper.addShapedOreRecipe(s.copy(), "qwe", 'q', Items.DYE, 'w', Lists.newArrayList("ingotIron", Items.GOLD_INGOT, Blocks.GREEN_GLAZED_TERRACOTTA), 'e', "chest");
 			RecipeHelper.addShapelessOreRecipe(s.copy(), "oreCoal", "cropWheat", Lists.newArrayList("feather", Items.EGG, new ItemStack(Items.DYE, 1, 5)), "stoneDioritePolished");
-		*/ }
+		*/ 
+		}
 
-	public static boolean wailaLoaded, jeiLoaded, teslaLoaded;
+	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded;
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
@@ -57,6 +62,13 @@ public class LimeLib {
 			MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
 		}
 		Serious.init();
+		if (LimeLib.topLoaded)
+			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
 	}
+	
+	@Mod.EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+	}
+
 
 }

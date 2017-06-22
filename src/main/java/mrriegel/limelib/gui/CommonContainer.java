@@ -22,14 +22,16 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.SlotItemHandler;
 
-public abstract class CommonContainer extends Container {
+public abstract class CommonContainer<T> extends Container {
 
 	protected InventoryPlayer invPlayer;
 	protected Map<String, IInventory> invs;
+	protected T save;
 
-	public CommonContainer(InventoryPlayer invPlayer, @SuppressWarnings("unchecked") Pair<String, IInventory>... invs) {
+	public CommonContainer(InventoryPlayer invPlayer, T save, @SuppressWarnings("unchecked") Pair<String, IInventory>... invs) {
 		this.invPlayer = invPlayer;
 		this.invs = Maps.newHashMap();
+		this.save = save;
 		if (invs != null)
 			for (Pair<String, IInventory> e : invs) {
 				if (e != null) {
@@ -217,8 +219,39 @@ public abstract class CommonContainer extends Container {
 			slot.onTake(playerIn, itemstack1);
 			detectAndSendChanges();
 		}
-
 		return itemstack;
+	}
+
+	private boolean merge(ItemStack stack, int startindex, int endindex, boolean reverse) {
+		boolean merged = false;
+		for (int i = reverse ? endindex - 1 : startindex; !stack.isEmpty() && (reverse ? i >= startindex : i < endindex); i += reverse ? -1 : 1) {
+			Slot slot = inventorySlots.get(i);
+			ItemStack slotstack = slot.getStack();
+			if (!slotstack.isEmpty() && slot.isItemValid(stack) && ItemHandlerHelper.canItemStacksStack(slotstack, stack)) {
+				int fit = Math.min(slot.getItemStackLimit(stack), slotstack.getMaxStackSize()) - slotstack.getCount();
+				if (fit == 0)
+					continue;
+				stack.shrink(fit);
+				slotstack.grow(fit);
+				slot.onSlotChanged();
+				merged = true;
+			}
+		}
+		for (int i = reverse ? endindex - 1 : startindex; !stack.isEmpty() && (reverse ? i >= startindex : i < endindex); i += reverse ? -1 : 1) {
+			Slot slot = inventorySlots.get(i);
+			ItemStack slotstack = slot.getStack();
+			if (slotstack.isEmpty() && slot.isItemValid(stack)) {
+				int fit = Math.min(slot.getItemStackLimit(stack), stack.getMaxStackSize());
+				if (fit == 0)
+					continue;
+				fit = Math.min(stack.getCount(), fit);
+				ItemStack copy = ItemHandlerHelper.copyStackWithSize(stack, fit);
+				slot.putStack(copy);
+				stack.shrink(fit);
+				merged = true;
+			}
+		}
+		return merged;
 	}
 
 	/**
@@ -226,6 +259,8 @@ public abstract class CommonContainer extends Container {
 	 */
 	@Override
 	public boolean mergeItemStack(ItemStack stack, int startindex, int endindex, boolean reverse) {
+		if ("".isEmpty())
+			return merge(stack, startindex, endindex, reverse);
 		boolean flag1 = false;
 		int k = startindex;
 
@@ -341,6 +376,11 @@ public abstract class CommonContainer extends Container {
 
 		public Area(IItemHandler inv, int min, int max) {
 			this((Object) inv, min, max);
+		}
+
+		@Override
+		public String toString() {
+			return "Area [inv=" + inv + ", min=" + min + ", max=" + max + "]";
 		}
 	}
 

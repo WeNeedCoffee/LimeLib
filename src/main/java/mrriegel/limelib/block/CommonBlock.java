@@ -5,6 +5,7 @@ import mrriegel.limelib.item.CommonItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -38,8 +39,11 @@ public class CommonBlock extends Block {
 		if (!getBlockState().getProperties().contains(property))
 			LimeLib.log.warn("Property " + property.getName() + " doesn't fit to " + getRegistryName() + ".");
 		else {
-			world.setBlockState(pos, world.getBlockState(pos).withProperty(property, value));
-			world.markBlockRangeForRenderUpdate(pos, pos);
+			IBlockState state = world.getBlockState(pos);
+			if (!state.getValue(property).equals(value)) {
+				world.setBlockState(pos, state.withProperty(property, value));
+				world.markBlockRangeForRenderUpdate(pos, pos);
+			}
 		}
 	}
 
