@@ -29,9 +29,9 @@ public abstract class Book {
 			return null;
 		for (Chapter c : chapters) {
 			if (c.implMap.get(impl) != null) {
-				return ImmutablePair.<Integer, Integer>of(c.index, c.implMap.get(impl).index);
+				return ImmutablePair.<Integer, Integer> of(c.index, c.implMap.get(impl).index);
 			} else if (impl instanceof Item && Block.getBlockFromItem((Item) impl) != null && c.implMap.get(Block.getBlockFromItem((Item) impl)) != null) {
-				return ImmutablePair.<Integer, Integer>of(c.index, c.implMap.get(Block.getBlockFromItem((Item) impl)).index);
+				return ImmutablePair.<Integer, Integer> of(c.index, c.implMap.get(Block.getBlockFromItem((Item) impl)).index);
 			}
 		}
 		return null;

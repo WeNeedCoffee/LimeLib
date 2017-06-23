@@ -49,8 +49,8 @@ public class LimeLib {
 			RecipeHelper.addShapelessRecipe(s.copy(), Items.APPLE, Items.SADDLE, Blocks.WOODEN_BUTTON);
 			RecipeHelper.addShapedOreRecipe(s.copy(), "qwe", 'q', Items.DYE, 'w', Lists.newArrayList("ingotIron", Items.GOLD_INGOT, Blocks.GREEN_GLAZED_TERRACOTTA), 'e', "chest");
 			RecipeHelper.addShapelessOreRecipe(s.copy(), "oreCoal", "cropWheat", Lists.newArrayList("feather", Items.EGG, new ItemStack(Items.DYE, 1, 5)), "stoneDioritePolished");
-		*/ 
-		}
+		*/
+	}
 
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded;
 
@@ -65,10 +65,9 @@ public class LimeLib {
 		if (LimeLib.topLoaded)
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
 	}
-	
+
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 	}
-
 
 }

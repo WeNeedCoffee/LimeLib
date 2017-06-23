@@ -40,10 +40,10 @@ public class RecipeHelper {
 
 	public static void addShapelessRecipe(ItemStack stack, Object... input) {
 		ResourceLocation rl = name(stack, input);
-		addRecipe(rl, new ShapelessRecipes("", stack, NonNullList.<Ingredient>from(Ingredient.EMPTY, Lists.newArrayList(input).stream().map(o -> CraftingHelper.getIngredient(o)).filter(o -> o != null).collect(Collectors.toList()).toArray(new Ingredient[0]))));
+		addRecipe(rl, new ShapelessRecipes("", stack, NonNullList.<Ingredient> from(Ingredient.EMPTY, Lists.newArrayList(input).stream().map(o -> CraftingHelper.getIngredient(o)).filter(o -> o != null).collect(Collectors.toList()).toArray(new Ingredient[0]))));
 	}
-	
-	public static void add(IRecipe recipe){
+
+	public static void add(IRecipe recipe) {
 		ResourceLocation rl = name(recipe.getRecipeOutput(), recipe.getIngredients());
 		addRecipe(rl, recipe);
 	}
@@ -54,7 +54,7 @@ public class RecipeHelper {
 	}
 
 	private static ResourceLocation name(ItemStack stack, Object... input) {
-		return new ResourceLocation(Utils.getCurrentModID(), stack + "_" + (Math.abs(Lists.newArrayList(input).hashCode()) % 9999));
+		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getResourcePath() + "_" + (Math.abs(Lists.newArrayList(input).hashCode()) % 9999));
 	}
 
 	public static Ingredient getIngredient(Object obj) {

@@ -60,20 +60,9 @@ public class NBTHelper {
 		static {
 			for (NBTType n : NBTType.values())
 				m.put(n.clazz, n);
-			// m.put(Boolean.class, NBTType.BOOLEAN);
-			// m.put(Byte.class, NBTType.BYTE);
-			// m.put(Short.class, NBTType.SHORT);
-			// m.put(Integer.class, NBTType.INT);
-			// m.put(Long.class, NBTType.LONG);
-			// m.put(Float.class, NBTType.FLOAT);
-			// m.put(Double.class, NBTType.DOUBLE);
-			// m.put(String.class, NBTType.STRING);
-			// m.put(NBTTagCompound.class, NBTType.NBT);
-			// m.put(ItemStack.class, NBTType.ITEMSTACK);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> T get(NBTTagCompound nbt, String name, Class<T> clazz) {
 		if (Enum.class.isAssignableFrom(clazz))
 			return clazz.getEnumConstants()[nbt.getInteger(name)];

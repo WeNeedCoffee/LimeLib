@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class FilterItem implements Predicate<ItemStack>{
+public class FilterItem implements Predicate<ItemStack> {
 	ItemStack stack;
 	boolean meta, ore, nbt;
 

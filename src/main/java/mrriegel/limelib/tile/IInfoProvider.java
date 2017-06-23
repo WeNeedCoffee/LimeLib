@@ -64,32 +64,33 @@ public interface IInfoProvider<T extends TileEntity> extends IWailaDataProvider/
 	default NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
 		return tag;
 	}
-/*
-	@Override
-	default String getID() {
-		return LimeLib.MODID + ":default";
-	}
 
-	@Override
-	default void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
-		if (probeInfo != null && world != null && blockState != null && data != null) {
-			BlockPos pos = data.getPos();
-			if (pos != null) {
-				TileEntity tileEntity = world.getTileEntity(pos);
-				try {
-					T t = (T) tileEntity;
-					if (!getStack(t).isEmpty())
-						probeInfo.item(getStack(t));
-					getHeadLines(t, blockState, player, data.getPickBlock(), Collections.emptyList()).forEach(s -> probeInfo.text(s));
-					getBodyLines(t, blockState, player, data.getPickBlock(), Collections.emptyList()).forEach(s -> probeInfo.text(s));
-					getTailLines(t, blockState, player, data.getPickBlock(), Collections.emptyList()).forEach(s -> probeInfo.text(s));
-				} catch (ClassCastException e) {
-					e.printStackTrace();
+	/*
+		@Override
+		default String getID() {
+			return LimeLib.MODID + ":default";
+		}
+	
+		@Override
+		default void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+			if (probeInfo != null && world != null && blockState != null && data != null) {
+				BlockPos pos = data.getPos();
+				if (pos != null) {
+					TileEntity tileEntity = world.getTileEntity(pos);
+					try {
+						T t = (T) tileEntity;
+						if (!getStack(t).isEmpty())
+							probeInfo.item(getStack(t));
+						getHeadLines(t, blockState, player, data.getPickBlock(), Collections.emptyList()).forEach(s -> probeInfo.text(s));
+						getBodyLines(t, blockState, player, data.getPickBlock(), Collections.emptyList()).forEach(s -> probeInfo.text(s));
+						getTailLines(t, blockState, player, data.getPickBlock(), Collections.emptyList()).forEach(s -> probeInfo.text(s));
+					} catch (ClassCastException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
-	}
-*/
+	*/
 	static class Dummy {
 		private static List<Pair<IInfoProvider<?>, Class<? extends TileEntity>>> providers = Lists.newArrayList();
 	}

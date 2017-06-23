@@ -21,7 +21,7 @@ public abstract class CommonContainerItem extends CommonContainer<ItemStack> {
 
 	@SuppressWarnings("unchecked")
 	public CommonContainerItem(InventoryPlayer invPlayer, int num) {
-		super(invPlayer, invPlayer.getCurrentItem(),Pair.<String, IInventory>of("inv", new InventoryBasic(null, false, num)));
+		super(invPlayer, invPlayer.getCurrentItem(), Pair.<String, IInventory> of("inv", new InventoryBasic(null, false, num)));
 		inited = true;
 	}
 

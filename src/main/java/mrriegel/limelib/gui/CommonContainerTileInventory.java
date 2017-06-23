@@ -10,7 +10,7 @@ public abstract class CommonContainerTileInventory<T extends CommonTileInventory
 
 	@SuppressWarnings("unchecked")
 	public CommonContainerTileInventory(InventoryPlayer invPlayer, T tile) {
-		super(invPlayer, tile,new Pair[] { Pair.<String, IInventory>of("tile", tile) });
+		super(invPlayer, tile, new Pair[] { Pair.<String, IInventory> of("tile", tile) });
 	}
 
 }
