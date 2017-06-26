@@ -8,7 +8,7 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class Chapter {
 

@@ -9,7 +9,7 @@ import net.minecraft.inventory.IInventory;
 
 public abstract class CommonContainerTile<T extends CommonTile> extends CommonContainer<T> {
 
-	public CommonContainerTile(InventoryPlayer invPlayer, T tile, Pair<String, IInventory>[] invs) {
+	public CommonContainerTile(InventoryPlayer invPlayer, T tile, Pair<String, IInventory>... invs) {
 		super(invPlayer, tile, invs);
 		tile.markForSync();
 		tile.activePlayers.add(getPlayer());

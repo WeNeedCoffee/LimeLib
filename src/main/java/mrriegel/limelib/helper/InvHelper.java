@@ -7,6 +7,7 @@ import mrriegel.limelib.util.FilterItem;
 import mrriegel.limelib.util.StackWrapper;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -137,6 +138,80 @@ public class InvHelper {
 			return true;
 		}
 		return false;
+	}
+
+	public static IInventory toInventory(IItemHandler handler) {
+		return new InventoryBasic("Null", false, handler.getSlots()) {
+			{
+
+			}
+
+			@Override
+			public int getSizeInventory() {
+				return handler.getSlots();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				for (int i = 0; i < handler.getSlots(); i++) {
+					if (!getStackInSlot(i).isEmpty())
+						return false;
+				}
+				return true;
+			}
+
+			@Override
+			public ItemStack getStackInSlot(int index) {
+				return handler.getStackInSlot(index);
+			}
+
+			@Override
+			public ItemStack decrStackSize(int index, int count) {
+				if (handler instanceof IItemHandlerModifiable) {
+					ItemStack s = ItemHandlerHelper.copyStackWithSize(getStackInSlot(index), Math.min(count, getStackInSlot(index).getCount()));
+					ItemStack k = getStackInSlot(count).copy();
+					k.shrink(s.getCount());
+					((IItemHandlerModifiable) handler).setStackInSlot(index, k);
+					return s;
+				}
+				return handler.extractItem(index, count, false);
+			}
+
+			@Override
+			public ItemStack removeStackFromSlot(int index) {
+				if (handler instanceof IItemHandlerModifiable) {
+					ItemStack s = handler.getStackInSlot(index).copy();
+					((IItemHandlerModifiable) handler).setStackInSlot(index, ItemStack.EMPTY);
+					return s;
+				}
+				return handler.extractItem(index, 64, false);
+			}
+
+			@Override
+			public void setInventorySlotContents(int index, ItemStack stack) {
+				if (handler instanceof IItemHandlerModifiable) {
+					((IItemHandlerModifiable) handler).setStackInSlot(index, stack);
+				} else {
+					removeStackFromSlot(index);
+					handler.insertItem(index, stack, false);
+				}
+			}
+
+			@Override
+			public int getInventoryStackLimit() {
+				int max = 0;
+				for (int i = 0; i < handler.getSlots(); i++)
+					max = Math.max(max, handler.getSlotLimit(i));
+				return max;
+			}
+
+			@Override
+			public void clear() {
+				for (int i = 0; i < handler.getSlots(); i++) {
+					setInventorySlotContents(i, ItemStack.EMPTY);
+				}
+			}
+		};
 	}
 
 	public static void sort(IItemHandler inv) {

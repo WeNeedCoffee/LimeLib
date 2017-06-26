@@ -16,6 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class TypeAdapters {
 
@@ -49,13 +51,13 @@ public class TypeAdapters {
 		@Override
 		public NBTTagCompound serialize(Item t, JsonSerializationContext context) {
 			NBTTagCompound n = new NBTTagCompound();
-			n.setInteger("item", Item.REGISTRY.getIDForObject(t));
+			n.setString("item", ForgeRegistries.ITEMS.getKey(t).toString());
 			return n;
 		}
 
 		@Override
 		public Item deserialize(NBTTagCompound nbt, JsonDeserializationContext context) {
-			return Item.REGISTRY.getObjectById(nbt.getInteger("item"));
+			return ForgeRegistries.ITEMS.getValue(new ResourceLocation(nbt.getString("item")));
 		}
 
 	}

@@ -12,6 +12,7 @@ import mrriegel.limelib.block.CommonBlock;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.datapart.RenderRegistry;
+import mrriegel.limelib.helper.RegistryHelper;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.recipe.RecipeItemHandler;
@@ -63,13 +64,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl;
-import net.minecraftforge.fml.common.registry.RegistryBuilder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
+import net.minecraftforge.registries.RegistryBuilder;
 
 //@Mod(modid = "lalal", name = "kohle", version = "${version}")
 public class TestMod implements IGuiHandler {
@@ -99,8 +100,8 @@ public class TestMod implements IGuiHandler {
 		//		item.registerItem();
 		//		item.initModel();
 		Block bb = new BB();
-		GameRegistry.register(bb);
-		GameRegistry.register(new ItemBlock(bb).setRegistryName(bb.getRegistryName()));
+		RegistryHelper.register(bb);
+		RegistryHelper.register(new ItemBlock(bb).setRegistryName(bb.getRegistryName()));
 		GameRegistry.registerTileEntity(BB.TT.class, "tt");
 		alcohol = new Fluid("alcohol", new ResourceLocation("lalal", "fluid/alcohol_still"), new ResourceLocation("lalal", "fluid/alcohol_flowing"));
 		//		FluidRegistry.registerFluid(alcohol);

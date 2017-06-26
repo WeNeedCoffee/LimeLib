@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 import mrriegel.limelib.gui.GuiDrawer;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public abstract class Book {
 

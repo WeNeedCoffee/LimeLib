@@ -1,9 +1,9 @@
 package mrriegel.limelib.item;
 
+import mrriegel.limelib.helper.RegistryHelper;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class CommonItem extends Item {
 
@@ -14,7 +14,7 @@ public class CommonItem extends Item {
 	}
 
 	public void registerItem() {
-		GameRegistry.register(this);
+		RegistryHelper.register(this);
 	}
 
 	public void initModel() {

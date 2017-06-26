@@ -1,6 +1,6 @@
 package mrriegel.limelib.util;
 
-import java.util.function.Predicate;
+import com.google.common.base.Predicate;
 
 import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.block.Block;
@@ -112,7 +112,7 @@ public class FilterItem implements Predicate<ItemStack> {
 	}
 
 	@Override
-	public boolean test(ItemStack t) {
-		return match(t);
+	public boolean apply(ItemStack input) {
+		return match(input);
 	}
 }

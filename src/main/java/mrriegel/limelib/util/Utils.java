@@ -41,7 +41,7 @@ import net.minecraftforge.fml.common.FMLContainer;
 import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class Utils {
 

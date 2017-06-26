@@ -39,15 +39,15 @@ public class NBTHelper {
 		STRING(8, null, String.class), //
 		NBT(10, null, NBTTagCompound.class), //
 		ITEMSTACK(10, ItemStack.EMPTY, ItemStack.class), //
-		BLOCKPOS(4, null, BlockPos.class); //
+		BLOCKPOS(4, null, BlockPos.class);
 
 		int tagID;
-		Object defaultV;
+		Object defaultValue;
 		Class<?> clazz;
 
-		private NBTType(int tagID, Object defaultV, Class<?> clazz) {
+		private NBTType(int tagID, Object defaultValue, Class<?> clazz) {
 			this.tagID = tagID;
-			this.defaultV = defaultV;
+			this.defaultValue = defaultValue;
 			this.clazz = clazz;
 		}
 
@@ -70,7 +70,7 @@ public class NBTHelper {
 		if (type == null)
 			throw new IllegalArgumentException();
 		if (nbt == null || !nbt.hasKey(name, type.tagID))
-			return (T) type.defaultV;
+			return (T) type.defaultValue;
 		switch (type) {
 		case BOOLEAN:
 			return (T) new Boolean(nbt.getBoolean(name));

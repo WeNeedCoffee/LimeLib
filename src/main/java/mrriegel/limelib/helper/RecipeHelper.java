@@ -18,7 +18,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class RecipeHelper {
 
@@ -50,7 +49,7 @@ public class RecipeHelper {
 
 	private static void addRecipe(ResourceLocation rl, IRecipe recipe) {
 		recipe.setRegistryName(rl);
-		GameRegistry.register(recipe);
+		RegistryHelper.register(recipe);
 	}
 
 	private static ResourceLocation name(ItemStack stack, Object... input) {

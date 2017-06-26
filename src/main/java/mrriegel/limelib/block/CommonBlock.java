@@ -1,6 +1,7 @@
 package mrriegel.limelib.block;
 
 import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.helper.RegistryHelper;
 import mrriegel.limelib.item.CommonItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -12,7 +13,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class CommonBlock extends Block {
 
@@ -23,8 +23,8 @@ public class CommonBlock extends Block {
 	}
 
 	public void registerBlock() {
-		GameRegistry.register(this);
-		GameRegistry.register(getItemBlock());
+		RegistryHelper.register(this);
+		RegistryHelper.register(getItemBlock());
 	}
 
 	public void initModel() {

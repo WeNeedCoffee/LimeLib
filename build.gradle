@@ -32,6 +32,7 @@ dependencies {
     deobfCompile "${props.get('jei_version')}"
     deobfCompile "mcp.mobius.waila:Hwyla:1.8.18-B32_1.12"
     //deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:1.2-1.4.7-1"
+    deobfCompile "cofh:RedstoneFlux:1.12-2.0.0.1:universal"
 }
 
 processResources {
@@ -60,6 +61,9 @@ repositories {
     }
     maven {
         url "http://maven.tterrag.com"
+    }
+    maven {
+        url "http://maven.covers1624.net"
     }
 }
 
