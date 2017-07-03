@@ -26,7 +26,7 @@ public class LimeLib {
 	@Instance(LimeLib.MODID)
 	public static LimeLib INSTANCE;
 
-	public static final String VERSION = "1.6.0";
+	public static final String VERSION = "1.7.0";
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
 
@@ -44,12 +44,6 @@ public class LimeLib {
 		jeiLoaded = Loader.isModLoaded("jei");
 		teslaLoaded = Loader.isModLoaded("tesla");
 		topLoaded = Loader.isModLoaded("theoneprobe");
-		/*	ItemStack s = new ItemStack(Blocks.DIRT);
-			RecipeHelper.addShapedRecipe(s.copy(), "oo", "ii", 'o', Items.GLASS_BOTTLE, 'i', new ItemStack(Blocks.REDSTONE_BLOCK));
-			RecipeHelper.addShapelessRecipe(s.copy(), Items.APPLE, Items.SADDLE, Blocks.WOODEN_BUTTON);
-			RecipeHelper.addShapedOreRecipe(s.copy(), "qwe", 'q', Items.DYE, 'w', Lists.newArrayList("ingotIron", Items.GOLD_INGOT, Blocks.GREEN_GLAZED_TERRACOTTA), 'e', "chest");
-			RecipeHelper.addShapelessOreRecipe(s.copy(), "oreCoal", "cropWheat", Lists.newArrayList("feather", Items.EGG, new ItemStack(Items.DYE, 1, 5)), "stoneDioritePolished");
-		*/
 	}
 
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded;

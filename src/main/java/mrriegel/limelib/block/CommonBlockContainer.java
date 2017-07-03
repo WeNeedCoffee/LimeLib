@@ -62,7 +62,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
 		if (clearRecipe && IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes()) {
 			final ItemStack result = new ItemStack(this);
-			ShapelessRecipes r = new ShapelessRecipes("", NBTStackHelper.set(new ItemStack(this), "ClEaR", true), NonNullList.from(Ingredient.EMPTY, RecipeHelper.getIngredient(new ItemStack(this)))) {
+			ShapelessRecipes r = new ShapelessRecipes("", NBTStackHelper.set(new ItemStack(this), "ClEaR", true), NonNullList.from(Ingredient.EMPTY, RecipeHelper.getIngredient(new ItemStack(this.getItemBlock())))) {
 				@Override
 				public ItemStack getCraftingResult(InventoryCrafting inv) {
 					return result;

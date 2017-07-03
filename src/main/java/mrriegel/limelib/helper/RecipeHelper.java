@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.Validate;
+
 import com.google.common.collect.Lists;
 
 import mrriegel.limelib.recipe.ShapedRecipeExt;
@@ -48,6 +50,7 @@ public class RecipeHelper {
 	}
 
 	private static void addRecipe(ResourceLocation rl, IRecipe recipe) {
+		Validate.isTrue(!recipe.getRecipeOutput().isEmpty());
 		recipe.setRegistryName(rl);
 		RegistryHelper.register(recipe);
 	}

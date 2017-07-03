@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 Properties props = new Properties()
 props.load(new BufferedReader(new FileReader(file('../gradle.properties'))))
 
-version = "${props.get('mc_version')}-1.6.0"
+version = "${props.get('mc_version')}-1.7.0"
 group = "mrriegel.limelib"
 archivesBaseName = "limelib"
 
@@ -28,11 +28,11 @@ minecraft {
 }
 
 dependencies {
-    deobfCompile "net.darkhax.tesla:Tesla-1.12:1.0.59"
+    deobfCompile "${props.get('tesla_version')}"
     deobfCompile "${props.get('jei_version')}"
-    deobfCompile "mcp.mobius.waila:Hwyla:1.8.18-B32_1.12"
+    deobfCompile "${props.get('hwyla_version')}"
     //deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:1.2-1.4.7-1"
-    deobfCompile "cofh:RedstoneFlux:1.12-2.0.0.1:universal"
+    deobfCompile "${props.get('flux_version')}"
 }
 
 processResources {
