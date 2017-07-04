@@ -43,9 +43,9 @@ public class EnergyHelper {
 			return Energy.FORGE;
 		if (set.contains(Energy.TESLA) && LimeLib.teslaLoaded && container.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, side))
 			return Energy.TESLA;
-		if (set.contains(Energy.RF) && container instanceof IEnergyHandler)
+		if (set.contains(Energy.RF) && LimeLib.fluxLoaded && container instanceof IEnergyHandler)
 			return Energy.RF;
-		if (set.contains(Energy.RF) && container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
+		if (set.contains(Energy.RF) && LimeLib.fluxLoaded && container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
 			return Energy.RF;
 		return null;
 	}
@@ -61,9 +61,9 @@ public class EnergyHelper {
 			return container.getCapability(CapabilityEnergy.ENERGY, side).getEnergyStored();
 		if (LimeLib.teslaLoaded && container.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, side))
 			return container.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, side).getStoredPower();
-		if (container instanceof IEnergyHandler)
+		if (LimeLib.fluxLoaded && container instanceof IEnergyHandler)
 			return ((IEnergyHandler) container).getEnergyStored(side);
-		if (container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
+		if (LimeLib.fluxLoaded && container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
 			return ((IEnergyContainerItem) ((ItemStack) container).getItem()).getEnergyStored((ItemStack) container);
 		return 0;
 	}
@@ -75,9 +75,9 @@ public class EnergyHelper {
 			return container.getCapability(CapabilityEnergy.ENERGY, side).getMaxEnergyStored();
 		if (LimeLib.teslaLoaded && container.hasCapability(TeslaCapabilities.CAPABILITY_HOLDER, side))
 			return container.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, side).getCapacity();
-		if (container instanceof IEnergyHandler)
+		if (LimeLib.fluxLoaded && container instanceof IEnergyHandler)
 			return ((IEnergyHandler) container).getMaxEnergyStored(side);
-		if (container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
+		if (LimeLib.fluxLoaded && container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
 			return ((IEnergyContainerItem) ((ItemStack) container).getItem()).getMaxEnergyStored((ItemStack) container);
 		return 0;
 	}
@@ -89,9 +89,9 @@ public class EnergyHelper {
 			return container.getCapability(CapabilityEnergy.ENERGY, side).receiveEnergy(maxReceive, simulate);
 		if (LimeLib.teslaLoaded && container.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, side))
 			return container.getCapability(TeslaCapabilities.CAPABILITY_CONSUMER, side).givePower(maxReceive, simulate);
-		if (container instanceof IEnergyReceiver)
+		if (LimeLib.fluxLoaded && container instanceof IEnergyReceiver)
 			return ((IEnergyReceiver) container).receiveEnergy(side, maxReceive, simulate);
-		if (container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
+		if (LimeLib.fluxLoaded && container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
 			return ((IEnergyContainerItem) ((ItemStack) container).getItem()).receiveEnergy((ItemStack) container, maxReceive, simulate);
 		return 0;
 	}
@@ -103,9 +103,9 @@ public class EnergyHelper {
 			return container.getCapability(CapabilityEnergy.ENERGY, side).extractEnergy(maxExtract, simulate);
 		if (LimeLib.teslaLoaded && container.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, side))
 			return container.getCapability(TeslaCapabilities.CAPABILITY_PRODUCER, side).takePower(maxExtract, simulate);
-		if (container instanceof IEnergyProvider)
+		if (LimeLib.fluxLoaded && container instanceof IEnergyProvider)
 			return ((IEnergyProvider) container).extractEnergy(side, maxExtract, simulate);
-		if (container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
+		if (LimeLib.fluxLoaded && container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
 			return ((IEnergyContainerItem) ((ItemStack) container).getItem()).extractEnergy((ItemStack) container, maxExtract, simulate);
 		return 0;
 	}

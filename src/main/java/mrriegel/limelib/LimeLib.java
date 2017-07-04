@@ -26,7 +26,7 @@ public class LimeLib {
 	@Instance(LimeLib.MODID)
 	public static LimeLib INSTANCE;
 
-	public static final String VERSION = "1.7.0";
+	public static final String VERSION = "1.7.1";
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
 
@@ -44,9 +44,10 @@ public class LimeLib {
 		jeiLoaded = Loader.isModLoaded("jei");
 		teslaLoaded = Loader.isModLoaded("tesla");
 		topLoaded = Loader.isModLoaded("theoneprobe");
+		fluxLoaded = Loader.isModLoaded("redstoneflux");
 	}
 
-	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded;
+	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded, fluxLoaded;
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
@@ -56,7 +57,7 @@ public class LimeLib {
 			MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
 		}
 		Serious.init();
-		if (LimeLib.topLoaded)
+		if (LimeLib.topLoaded && !"".isEmpty())
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
 	}
 
