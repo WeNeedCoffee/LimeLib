@@ -20,6 +20,11 @@ public class SlotFilter extends CommonSlot {
 		this.pred = pred;
 	}
 
+	public SlotFilter(IInventory inventoryIn, int index, int xPosition, int yPosition) {
+		super(inventoryIn, index, xPosition, yPosition);
+		this.pred = s -> inventoryIn.isItemValidForSlot(index, s);
+	}
+
 	@Override
 	public boolean isItemValid(ItemStack stack) {
 		return pred.test(stack);

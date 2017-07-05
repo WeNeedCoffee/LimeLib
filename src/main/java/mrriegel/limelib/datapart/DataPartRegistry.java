@@ -151,7 +151,6 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void createPart(NBTTagCompound n) {
 		try {
 			Class<?> clazz = DataPartRegistry.PARTS.get(n.getString("id"));

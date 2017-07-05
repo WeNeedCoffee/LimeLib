@@ -28,7 +28,7 @@ public abstract class CommonContainer<T> extends Container {
 	protected Map<String, IInventory> invs;
 	protected T save;
 
-	public CommonContainer(InventoryPlayer invPlayer, T save, @SuppressWarnings("unchecked") Pair<String, IInventory>... invs) {
+	public CommonContainer(InventoryPlayer invPlayer, T save, Pair<String, IInventory>... invs) {
 		this.invPlayer = invPlayer;
 		this.invs = Maps.newHashMap();
 		this.save = save;
@@ -231,6 +231,7 @@ public abstract class CommonContainer<T> extends Container {
 				int fit = Math.min(slot.getItemStackLimit(stack), slotstack.getMaxStackSize()) - slotstack.getCount();
 				if (fit == 0)
 					continue;
+				fit = Math.min(stack.getCount(), fit);
 				stack.shrink(fit);
 				slotstack.grow(fit);
 				slot.onSlotChanged();
@@ -259,7 +260,7 @@ public abstract class CommonContainer<T> extends Container {
 	 */
 	@Override
 	public boolean mergeItemStack(ItemStack stack, int startindex, int endindex, boolean reverse) {
-		if ("".isEmpty())
+		if ("".isEmpty()/*custom method*/)
 			return merge(stack, startindex, endindex, reverse);
 		boolean flag1 = false;
 		int k = startindex;

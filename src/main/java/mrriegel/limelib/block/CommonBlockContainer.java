@@ -69,9 +69,6 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 				}
 			};
 			RecipeHelper.add(r);
-			// RecipeSorter.register(LimeLib.MODID + ":idatakeeperClear",
-			// r.getClass(), Category.SHAPELESS, "after:minecraft:shapeless");
-			// GameRegistry.addRecipe(r);
 		}
 	}
 

@@ -2,7 +2,8 @@ package mrriegel.limelib.helper;
 
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.Validate;
+
 import com.google.common.collect.Sets;
 
 import cofh.redstoneflux.api.IEnergyContainerItem;
@@ -22,6 +23,69 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.Optional;
 
 public class EnergyHelper {
+
+	@Optional.InterfaceList(value = { @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaHolder", modid = "tesla"), @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaConsumer", modid = "tesla"), @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaProducer", modid = "tesla") })
+	@Deprecated
+	//TODO remove
+	public class ItemEnergyWrapper implements IEnergyStorage, ITeslaHolder, ITeslaConsumer, ITeslaProducer {
+		ItemStack stack;
+
+		public ItemEnergyWrapper(ItemStack stack) {
+			this.stack = stack;
+			Validate.isTrue(LimeLib.fluxLoaded && stack.getItem() instanceof IEnergyContainerItem);
+		}
+
+		@Override
+		public int receiveEnergy(int maxReceive, boolean simulate) {
+			return ((IEnergyContainerItem) stack.getItem()).receiveEnergy(stack, maxReceive, simulate);
+		}
+
+		@Override
+		public int extractEnergy(int maxExtract, boolean simulate) {
+			return ((IEnergyContainerItem) stack.getItem()).extractEnergy(stack, maxExtract, simulate);
+		}
+
+		@Override
+		public int getEnergyStored() {
+			return ((IEnergyContainerItem) stack.getItem()).getEnergyStored(stack);
+		}
+
+		@Override
+		public int getMaxEnergyStored() {
+			return ((IEnergyContainerItem) stack.getItem()).getMaxEnergyStored(stack);
+		}
+
+		@Override
+		public boolean canExtract() {
+			return true;
+		}
+
+		@Override
+		public boolean canReceive() {
+			return true;
+		}
+
+		@Override
+		public long takePower(long power, boolean simulated) {
+			return extractEnergy((int) (power % Integer.MAX_VALUE), simulated);
+		}
+
+		@Override
+		public long givePower(long power, boolean simulated) {
+			return receiveEnergy((int) (power % Integer.MAX_VALUE), simulated);
+		}
+
+		@Override
+		public long getStoredPower() {
+			return getEnergyStored();
+		}
+
+		@Override
+		public long getCapacity() {
+			return getMaxEnergyStored();
+		}
+
+	}
 
 	public enum Energy {
 		RF("RF"), //
@@ -108,67 +172,6 @@ public class EnergyHelper {
 		if (LimeLib.fluxLoaded && container instanceof ItemStack && ((ItemStack) container).getItem() instanceof IEnergyContainerItem)
 			return ((IEnergyContainerItem) ((ItemStack) container).getItem()).extractEnergy((ItemStack) container, maxExtract, simulate);
 		return 0;
-	}
-
-	@Optional.InterfaceList(value = { @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaHolder", modid = "tesla"), @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaConsumer", modid = "tesla"), @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaProducer", modid = "tesla") })
-	public static class ItemEnergyWrapper implements IEnergyStorage, ITeslaHolder, ITeslaConsumer, ITeslaProducer {
-		ItemStack stack;
-
-		public ItemEnergyWrapper(ItemStack stack) {
-			this.stack = stack;
-			Preconditions.checkArgument(stack.getItem() instanceof IEnergyContainerItem);
-		}
-
-		@Override
-		public int receiveEnergy(int maxReceive, boolean simulate) {
-			return ((IEnergyContainerItem) stack.getItem()).receiveEnergy(stack, maxReceive, simulate);
-		}
-
-		@Override
-		public int extractEnergy(int maxExtract, boolean simulate) {
-			return ((IEnergyContainerItem) stack.getItem()).extractEnergy(stack, maxExtract, simulate);
-		}
-
-		@Override
-		public int getEnergyStored() {
-			return ((IEnergyContainerItem) stack.getItem()).getEnergyStored(stack);
-		}
-
-		@Override
-		public int getMaxEnergyStored() {
-			return ((IEnergyContainerItem) stack.getItem()).getMaxEnergyStored(stack);
-		}
-
-		@Override
-		public boolean canExtract() {
-			return true;
-		}
-
-		@Override
-		public boolean canReceive() {
-			return true;
-		}
-
-		@Override
-		public long takePower(long power, boolean simulated) {
-			return extractEnergy((int) (power % Integer.MAX_VALUE), simulated);
-		}
-
-		@Override
-		public long givePower(long power, boolean simulated) {
-			return receiveEnergy((int) (power % Integer.MAX_VALUE), simulated);
-		}
-
-		@Override
-		public long getStoredPower() {
-			return getEnergyStored();
-		}
-
-		@Override
-		public long getCapacity() {
-			return getMaxEnergyStored();
-		}
-
 	}
 
 }

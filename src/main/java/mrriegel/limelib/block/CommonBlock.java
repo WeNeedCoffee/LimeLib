@@ -14,12 +14,13 @@ import net.minecraft.world.World;
 
 public class CommonBlock extends Block {
 
-	protected ItemBlock itemblock = null;
+	protected ItemBlock itemblock;
 
 	public CommonBlock(Material materialIn, String name) {
 		super(materialIn);
 		setRegistryName(name);
 		setUnlocalizedName(getRegistryName().toString());
+		itemblock = new CommonItemBlock(this);
 	}
 
 	public void registerBlock() {
@@ -32,8 +33,6 @@ public class CommonBlock extends Block {
 	}
 
 	public final ItemBlock getItemBlock() {
-		if (itemblock == null)
-			itemblock = new CommonItemBlock(this);
 		return itemblock;
 	}
 

@@ -8,7 +8,6 @@ import net.minecraft.inventory.IInventory;
 
 public abstract class CommonContainerTileInventory<T extends CommonTileInventory> extends CommonContainerTile<T> {
 
-	@SuppressWarnings("unchecked")
 	public CommonContainerTileInventory(InventoryPlayer invPlayer, T tile) {
 		super(invPlayer, tile, new Pair[] { Pair.<String, IInventory> of("tile", tile) });
 	}

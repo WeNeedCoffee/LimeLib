@@ -13,9 +13,9 @@ import net.minecraft.item.crafting.Ingredient;
 
 /**
  * @param <S>
- *            type of output
+ *            type of output ()
  * @param <T>
- *            type of interacting object
+ *            type of interacting object (world, inventory)
  */
 public abstract class AbstractRecipe<S, T> {
 	protected final List<S> output;

@@ -98,7 +98,6 @@ public class ClientEventHandler {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@SubscribeEvent
 	public static void render(RenderWorldLastEvent event) {
 		DataPartRegistry reg = DataPartRegistry.get(Minecraft.getMinecraft().world);

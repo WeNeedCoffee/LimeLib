@@ -38,7 +38,6 @@ public class CommonItemTool extends CommonItem {
 	protected final Set<Block> effectiveBlocks;
 	protected final Item.ToolMaterial toolMaterial;
 
-	@SuppressWarnings("unchecked")
 	public CommonItemTool(String name, ToolMaterial material, String... toolClasses) {
 		super(name);
 		toolMaterial = material;

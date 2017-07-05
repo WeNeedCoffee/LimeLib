@@ -38,14 +38,12 @@ public class PacketHandler {
 		registerMessage(TileMessage.class, Side.SERVER);
 		registerMessage(TileGuiMessage.class, Side.SERVER);
 		registerMessage(TileSyncMessage.class);
-		registerMessage(TeleportMessage.class, Side.CLIENT);
 		registerMessage(EnergySyncMessage.class, Side.CLIENT);
 		registerMessage(DataPartSyncMessage.class, Side.CLIENT);
 		registerMessage(OpenGuiMessage.class, Side.SERVER);
 		registerMessage(PlayerClickMessage.class, Side.SERVER);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage> classMessage, Side side) {
 		Class<? extends IMessageHandler<REQ, REPLY>> c1 = (Class<? extends IMessageHandler<REQ, REPLY>>) classMessage;
 		Class<REQ> c2 = (Class<REQ>) classMessage;

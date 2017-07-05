@@ -3,9 +3,12 @@ package mrriegel.limelib.helper;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -29,26 +32,30 @@ public class NBTHelper {
 	}
 
 	public enum NBTType {
-		BOOLEAN(1, false, Boolean.class), //
-		BYTE(1, (byte) 0, Byte.class), //
-		SHORT(2, (short) 0, Short.class), //
-		INT(3, 0, Integer.class), //
-		LONG(4, 0L, Long.class), //
-		FLOAT(5, 0F, Float.class), //
-		DOUBLE(6, 0D, Double.class), //
-		STRING(8, null, String.class), //
-		NBT(10, null, NBTTagCompound.class), //
-		ITEMSTACK(10, ItemStack.EMPTY, ItemStack.class), //
-		BLOCKPOS(4, null, BlockPos.class);
+		BOOLEAN(1, false, Boolean.class, (n, s) -> n.getBoolean(s), (n, p) -> n.setBoolean(p.getKey(), (boolean) p.getValue())), //
+		BYTE(1, (byte) 0, Byte.class, (n, s) -> n.getByte(s), (n, p) -> n.setByte(p.getKey(), (byte) p.getValue())), //
+		SHORT(2, (short) 0, Short.class, (n, s) -> n.getShort(s), (n, p) -> n.setShort(p.getKey(), (short) p.getValue())), //
+		INT(3, 0, Integer.class, (n, s) -> n.getInteger(s), (n, p) -> n.setInteger(p.getKey(), (int) p.getValue())), //
+		LONG(4, 0L, Long.class, (n, s) -> n.getLong(s), (n, p) -> n.setLong(p.getKey(), (long) p.getValue())), //
+		FLOAT(5, 0F, Float.class, (n, s) -> n.getFloat(s), (n, p) -> n.setFloat(p.getKey(), (float) p.getValue())), //
+		DOUBLE(6, 0D, Double.class, (n, s) -> n.getDouble(s), (n, p) -> n.setDouble(p.getKey(), (double) p.getValue())), //
+		STRING(8, null, String.class, (n, s) -> n.getString(s), (n, p) -> n.setString(p.getKey(), (String) p.getValue())), //
+		NBT(10, null, NBTTagCompound.class, (n, s) -> n.getCompoundTag(s), (n, p) -> n.setTag(p.getKey(), (NBTTagCompound) p.getValue())), //
+		ITEMSTACK(10, ItemStack.EMPTY, ItemStack.class, (n, s) -> new ItemStack(n.getCompoundTag(s)), (n, p) -> n.setTag(p.getKey(), ((ItemStack) p.getValue()).writeToNBT(new NBTTagCompound()))), //
+		BLOCKPOS(4, null, BlockPos.class, (n, s) -> BlockPos.fromLong(n.getLong(s)), (n, p) -> n.setLong(p.getKey(), ((BlockPos) p.getValue()).toLong()));
 
 		int tagID;
 		Object defaultValue;
 		Class<?> clazz;
+		BiFunction<NBTTagCompound, String, Object> getter;
+		BiConsumer<NBTTagCompound, Pair<String, Object>> setter;
 
-		private NBTType(int tagID, Object defaultValue, Class<?> clazz) {
+		private NBTType(int tagID, Object defaultValue, Class<?> clazz, BiFunction<NBTTagCompound, String, Object> getter, BiConsumer<NBTTagCompound, Pair<String, Object>> setter) {
 			this.tagID = tagID;
 			this.defaultValue = defaultValue;
 			this.clazz = clazz;
+			this.getter = getter;
+			this.setter = setter;
 		}
 
 		public static BiMap<Class<?>, NBTType> m = HashBiMap.create();
@@ -71,31 +78,7 @@ public class NBTHelper {
 			throw new IllegalArgumentException();
 		if (nbt == null || !nbt.hasKey(name, type.tagID))
 			return (T) type.defaultValue;
-		switch (type) {
-		case BOOLEAN:
-			return (T) new Boolean(nbt.getBoolean(name));
-		case BYTE:
-			return (T) new Byte(nbt.getByte(name));
-		case SHORT:
-			return (T) new Short(nbt.getShort(name));
-		case INT:
-			return (T) new Integer(nbt.getInteger(name));
-		case LONG:
-			return (T) new Long(nbt.getLong(name));
-		case FLOAT:
-			return (T) new Float(nbt.getFloat(name));
-		case DOUBLE:
-			return (T) new Double(nbt.getDouble(name));
-		case STRING:
-			return (T) nbt.getString(name);
-		case NBT:
-			return (T) nbt.getCompoundTag(name);
-		case ITEMSTACK:
-			return (T) new ItemStack(nbt.getCompoundTag(name));
-		case BLOCKPOS:
-			return (T) BlockPos.fromLong(nbt.getLong(name));
-		}
-		return null;
+		return (T) type.getter.apply(nbt, name);
 	}
 
 	public static NBTTagCompound set(NBTTagCompound nbt, String name, Object value) {
@@ -106,41 +89,7 @@ public class NBTHelper {
 		NBTType type = NBTType.m.get(value.getClass());
 		if (type == null)
 			throw new IllegalArgumentException();
-		switch (type) {
-		case BOOLEAN:
-			nbt.setBoolean(name, (boolean) value);
-			break;
-		case BYTE:
-			nbt.setByte(name, (byte) value);
-			break;
-		case SHORT:
-			nbt.setShort(name, (short) value);
-			break;
-		case INT:
-			nbt.setInteger(name, (int) value);
-			break;
-		case LONG:
-			nbt.setLong(name, (long) value);
-			break;
-		case FLOAT:
-			nbt.setFloat(name, (float) value);
-			break;
-		case DOUBLE:
-			nbt.setDouble(name, (double) value);
-			break;
-		case STRING:
-			nbt.setString(name, (String) value);
-			break;
-		case NBT:
-			nbt.setTag(name, (NBTTagCompound) value);
-			break;
-		case ITEMSTACK:
-			nbt.setTag(name, ((ItemStack) value).writeToNBT(new NBTTagCompound()));
-			break;
-		case BLOCKPOS:
-			nbt.setLong(name, ((BlockPos) value).toLong());
-			break;
-		}
+		type.setter.accept(nbt, Pair.of(name, value));
 		return nbt;
 	}
 

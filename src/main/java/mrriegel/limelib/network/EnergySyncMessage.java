@@ -9,7 +9,6 @@ import com.google.common.collect.Lists;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.EnergyHelper;
 import mrriegel.limelib.helper.NBTHelper;
-import mrriegel.limelib.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,14 +33,14 @@ public class EnergySyncMessage extends AbstractMessage {
 		}
 		if (lis1.isEmpty())
 			shouldSend = false;
-		NBTHelper.setList(nbt, "lis1", Utils.getLongList(lis1));
+		NBTHelper.setList(nbt, "lis1", lis1);
 		NBTHelper.setList(nbt, "lis2", lis2);
 		NBTHelper.setList(nbt, "lis3", lis3);
 	}
 
 	@Override
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
-		List<BlockPos> lis1 = Utils.getBlockPosList(NBTHelper.getList(nbt, "lis1", Long.class));
+		List<BlockPos> lis1 = NBTHelper.getList(nbt, "lis1", BlockPos.class);
 		List<Long> lis2 = NBTHelper.getList(nbt, "lis2", Long.class), lis3 = NBTHelper.getList(nbt, "lis3", Long.class);
 		LimeLib.proxy.energyTiles().clear();
 		try {
