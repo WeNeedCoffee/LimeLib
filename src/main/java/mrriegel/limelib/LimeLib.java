@@ -26,7 +26,7 @@ public class LimeLib {
 	@Instance(LimeLib.MODID)
 	public static LimeLib INSTANCE;
 
-	public static final String VERSION = "1.7.2";
+	public static final String VERSION = "1.7.3";
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
 
@@ -39,7 +39,11 @@ public class LimeLib {
 	public void preInit(FMLPreInitializationEvent event) {
 		Config.init(event.getSuggestedConfigurationFile());
 		Utils.init();
+		MinecraftForge.EVENT_BUS.register(EventHandler.class);
+		if (event.getSide().isClient())
+			MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
 		CapabilityDataPart.register();
+		Serious.preinit();
 		wailaLoaded = Loader.isModLoaded("waila");
 		jeiLoaded = Loader.isModLoaded("jei");
 		teslaLoaded = Loader.isModLoaded("tesla");
@@ -52,10 +56,6 @@ public class LimeLib {
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		PacketHandler.init();
-		MinecraftForge.EVENT_BUS.register(EventHandler.class);
-		if (event.getSide().isClient()) {
-			MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
-		}
 		Serious.init();
 		if (LimeLib.topLoaded && !"".isEmpty())
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());

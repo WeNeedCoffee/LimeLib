@@ -9,7 +9,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -73,7 +72,7 @@ public class BlockHelper {
 	public static NonNullList<ItemStack> getFortuneDrops(World world, BlockPos pos, EntityPlayer player, int fortune) {
 		IBlockState state = world.getBlockState(pos);
 		NonNullList<ItemStack> tmp = NonNullList.create();
-		tmp.addAll(Lists.newArrayList(state.getBlock().getDrops(world, pos, state, fortune)));
+		state.getBlock().getDrops(tmp, world, pos, state, fortune);
 		float chance = ForgeEventFactory.fireBlockHarvesting(tmp, world, pos, state, fortune, 1.0f, false, player);
 		NonNullList<ItemStack> lis = NonNullList.create();
 		for (ItemStack item : tmp) {
@@ -131,9 +130,10 @@ public class BlockHelper {
 		try {
 			ItemStack stack = ItemStack.EMPTY;
 			try {
-				stack = getSilkDrop(world, pos, world.isRemote ? LimeLib.proxy.getClientPlayer() : Utils.getFakePlayer((WorldServer) world));
+				EntityPlayer player = world.isRemote ? LimeLib.proxy.getClientPlayer() : Utils.getFakePlayer((WorldServer) world);
+				stack = getSilkDrop(world, pos, player);
 				if (stack.isEmpty())
-					stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, null);
+					stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, player);
 				return StackHelper.isOre(stack);
 			} catch (Exception e) {
 				stack = new ItemStack(state.getBlock(), 1, state.getBlock().damageDropped(state));

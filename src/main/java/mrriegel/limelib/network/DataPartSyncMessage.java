@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.helper.NBTHelper;
-import mrriegel.limelib.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -21,15 +20,15 @@ public class DataPartSyncMessage extends AbstractMessage {
 	public DataPartSyncMessage(DataPart part, BlockPos pos, List<BlockPos> parts) {
 		if (part == null) {
 			nbt.setBoolean("removed", true);
-			nbt.setLong("poS", pos.toLong());
+			NBTHelper.set(nbt, "poS", pos);
 		} else
 			part.writeDataToNBT(nbt);
-		NBTHelper.setList(nbt, "poss", Utils.getLongList(parts));
+		NBTHelper.setList(nbt, "poss", parts);
 	}
 
 	@Override
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
-		BlockPos pos = BlockPos.fromLong(nbt.getLong("poS"));
+		BlockPos pos = NBTHelper.get(nbt, "poS", BlockPos.class);
 		DataPartRegistry reg = DataPartRegistry.get(player.world);
 		if (reg != null) {
 			if (nbt.getBoolean("removed"))
@@ -43,7 +42,7 @@ public class DataPartSyncMessage extends AbstractMessage {
 					reg.createPart(nbt);
 				}
 			}
-			List<BlockPos> valids = Utils.getBlockPosList(NBTHelper.getList(nbt, "poss", Long.class));
+			List<BlockPos> valids = NBTHelper.getList(nbt, "poss", BlockPos.class);
 			Set<BlockPos> clients = reg.getParts().stream().map(DataPart::getPos).collect(Collectors.toSet());
 			clients.removeAll(valids);
 			clients.forEach(p -> reg.removeDataPart(p));

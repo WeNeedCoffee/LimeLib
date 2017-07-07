@@ -20,6 +20,10 @@ public class GlobalBlockPos {
 		this(pos, world.provider.getDimension());
 	}
 
+	public GlobalBlockPos(NBTTagCompound nbt) {
+		readFromNBT(nbt);
+	}
+
 	private GlobalBlockPos() {
 	}
 

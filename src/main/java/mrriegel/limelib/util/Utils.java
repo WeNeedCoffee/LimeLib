@@ -7,7 +7,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -30,7 +29,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
@@ -133,14 +131,6 @@ public class Utils {
 		return rayTrace(player, player.capabilities.isCreativeMode ? 5F : 4.5F);
 	}
 
-	public static List<Long> getLongList(List<BlockPos> list) {
-		return list.stream().map(p -> p != null ? p.toLong() : null).collect(Collectors.toList());
-	}
-
-	public static List<BlockPos> getBlockPosList(List<Long> list) {
-		return list.stream().map(p -> p != null ? BlockPos.fromLong(p) : null).collect(Collectors.toList());
-	}
-
 	public static String getModID(IForgeRegistryEntry<?> registerable) {
 		final String modID = registerable.getRegistryName().getResourceDomain();
 		ModContainer mod = Loader.instance().getIndexedModList().get(modID);
@@ -161,12 +151,6 @@ public class Utils {
 			return m.getName();
 		else
 			return "Minecraft";
-		// final String modID =
-		// registerable.getRegistryName().getResourceDomain();
-		// final ModContainer mod =
-		// Loader.instance().getIndexedModList().get(modID);
-		// return mod != null ? mod.getName() :
-		// modID.equalsIgnoreCase("minecraft") ? "Minecraft" : "Unknown";
 	}
 
 	public static EntityPlayerMP getRandomPlayer() {

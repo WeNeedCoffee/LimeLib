@@ -3,7 +3,7 @@ package mrriegel.limelib.particle;
 import java.awt.Color;
 import java.util.Random;
 
-import org.lwjgl.util.vector.Vector4f;
+import javax.vecmath.Vector4f;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.ColorHelper;
@@ -183,6 +183,7 @@ public class CommonParticle extends Particle {
 		return this;
 	}
 
+	@FunctionalInterface
 	public static interface IColorCall {
 		public Vector4f getColor(CommonParticle par);
 	}

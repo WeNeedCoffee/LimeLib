@@ -80,13 +80,13 @@ public class InvHelper {
 		return false;
 	}
 
-	public static int getAmount(IItemHandler inv, FilterItem fil) {
+	public static int getAmount(IItemHandler inv, Predicate<ItemStack> fil) {
 		if (inv == null || fil == null)
 			return 0;
 		int amount = 0;
 		for (int i = 0; i < inv.getSlots(); i++) {
 			ItemStack slot = inv.getStackInSlot(i);
-			if (fil.match(slot))
+			if (fil.test(slot))
 				amount += slot.getCount();
 		}
 		return amount;
@@ -282,8 +282,8 @@ public class InvHelper {
 		if (inv == null)
 			return;
 		for (IFluidTankProperties p : inv.getTankProperties()) {
-			p.canDrain();
-			inv.drain(Integer.MAX_VALUE, true);
+			if (p.canDrain())
+				inv.drain(Integer.MAX_VALUE, true);
 		}
 	}
 

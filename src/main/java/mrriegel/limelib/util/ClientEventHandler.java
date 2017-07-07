@@ -17,22 +17,29 @@ import mrriegel.limelib.helper.EnergyHelper.Energy;
 import mrriegel.limelib.helper.ParticleHelper;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.PlayerClickMessage;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -137,6 +144,16 @@ public class ClientEventHandler {
 				}
 			}
 		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public static void itemToolTip(ItemTooltipEvent event) {
+		Minecraft mc = Minecraft.getMinecraft();
+		if (Config.commandBlockCreativeTab && mc.currentScreen instanceof GuiContainerCreative && ((GuiContainerCreative) mc.currentScreen).getSelectedTabIndex() == CreativeTabs.REDSTONE.getTabIndex()) {
+			if (Block.getBlockFromItem(event.getItemStack().getItem()) instanceof BlockCommandBlock)
+				event.getToolTip().add(TextFormatting.YELLOW + "Can be disabled in LimeLib config.");
+		}
+
 	}
 
 	public static DataPart rayTrace = null;

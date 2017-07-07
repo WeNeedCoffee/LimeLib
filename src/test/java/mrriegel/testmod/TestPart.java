@@ -2,6 +2,8 @@ package mrriegel.testmod;
 
 import java.util.LinkedList;
 
+import com.google.common.collect.Lists;
+
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.datapart.DataPartWorker;
 import mrriegel.limelib.helper.BlockHelper;
@@ -9,13 +11,10 @@ import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.ParticleHelper;
 import mrriegel.limelib.helper.WorldHelper;
 import mrriegel.limelib.particle.CommonParticle;
-import mrriegel.limelib.util.Utils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
-
-import com.google.common.collect.Lists;
 
 public class TestPart extends DataPartWorker {
 
@@ -24,14 +23,14 @@ public class TestPart extends DataPartWorker {
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
-		posList = Lists.newLinkedList(Utils.getBlockPosList(NBTHelper.getList(compound, "poss",Long.class)));
+		posList = Lists.newLinkedList(NBTHelper.getList(compound, "poss", BlockPos.class));
 		started = compound.getBoolean("started");
 		super.readFromNBT(compound);
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		NBTHelper.setList(compound, "poss", Utils.getLongList(posList));
+		NBTHelper.setList(compound, "poss", posList);
 		compound.setBoolean("started", started);
 		return super.writeToNBT(compound);
 	}
