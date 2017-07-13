@@ -11,6 +11,8 @@ import com.google.common.collect.Lists;
 import mrriegel.limelib.recipe.ShapedRecipeExt;
 import mrriegel.limelib.recipe.ShapelessRecipeExt;
 import mrriegel.limelib.util.Utils;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
@@ -56,7 +58,18 @@ public class RecipeHelper {
 	}
 
 	private static ResourceLocation name(ItemStack stack, Object... input) {
-		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getResourcePath() + "_" + (Math.abs(Lists.newArrayList(input).hashCode()) % 9999));
+		List<String> lis = Lists.newArrayList(input).stream().map(o -> {
+			if (o instanceof String)
+				return o.toString();
+			if (o instanceof Item)
+				return ((Item) o).getRegistryName().getResourcePath().toString();
+			if (o instanceof Block)
+				return ((Block) o).getRegistryName().getResourcePath().toString();
+			if (o instanceof ItemStack)
+				return ((ItemStack) o).getItem().getRegistryName().getResourcePath().toString();
+			return "";
+		}).collect(Collectors.toList());
+		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getResourcePath() + "/" + stack.getItemDamage() + "#" + stack.getCount() + "_" + (Math.abs(lis.hashCode()) % 9999));
 	}
 
 	public static Ingredient getIngredient(Object obj) {

@@ -12,6 +12,7 @@ import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -151,6 +152,13 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param) {
 		TileEntity tileentity = worldIn.getTileEntity(pos);
 		return tileentity == null ? false : tileentity.receiveClientEvent(id, param);
+	}
+
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		TileEntity tileentity = worldIn.getTileEntity(pos);
+		if (tileentity instanceof CommonTile)
+			((CommonTile) tileentity).neighborChanged(state, blockIn, fromPos);
 	}
 
 	@Override

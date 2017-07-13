@@ -10,14 +10,13 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 
 public class NBTHelper {
 
@@ -32,25 +31,25 @@ public class NBTHelper {
 	}
 
 	public enum NBTType {
-		BOOLEAN(1, false, Boolean.class, (n, s) -> n.getBoolean(s), (n, p) -> n.setBoolean(p.getKey(), (boolean) p.getValue())), //
-		BYTE(1, (byte) 0, Byte.class, (n, s) -> n.getByte(s), (n, p) -> n.setByte(p.getKey(), (byte) p.getValue())), //
-		SHORT(2, (short) 0, Short.class, (n, s) -> n.getShort(s), (n, p) -> n.setShort(p.getKey(), (short) p.getValue())), //
-		INT(3, 0, Integer.class, (n, s) -> n.getInteger(s), (n, p) -> n.setInteger(p.getKey(), (int) p.getValue())), //
-		LONG(4, 0L, Long.class, (n, s) -> n.getLong(s), (n, p) -> n.setLong(p.getKey(), (long) p.getValue())), //
-		FLOAT(5, 0F, Float.class, (n, s) -> n.getFloat(s), (n, p) -> n.setFloat(p.getKey(), (float) p.getValue())), //
-		DOUBLE(6, 0D, Double.class, (n, s) -> n.getDouble(s), (n, p) -> n.setDouble(p.getKey(), (double) p.getValue())), //
-		STRING(8, null, String.class, (n, s) -> n.getString(s), (n, p) -> n.setString(p.getKey(), (String) p.getValue())), //
-		NBT(10, null, NBTTagCompound.class, (n, s) -> n.getCompoundTag(s), (n, p) -> n.setTag(p.getKey(), (NBTTagCompound) p.getValue())), //
-		ITEMSTACK(10, ItemStack.EMPTY, ItemStack.class, (n, s) -> new ItemStack(n.getCompoundTag(s)), (n, p) -> n.setTag(p.getKey(), ((ItemStack) p.getValue()).writeToNBT(new NBTTagCompound()))), //
-		BLOCKPOS(4, null, BlockPos.class, (n, s) -> BlockPos.fromLong(n.getLong(s)), (n, p) -> n.setLong(p.getKey(), ((BlockPos) p.getValue()).toLong()));
+		BOOLEAN(1, false, (n, s) -> n.getBoolean(s), (n, p) -> n.setBoolean(p.getKey(), (boolean) p.getValue()), Boolean.class, boolean.class), //
+		BYTE(1, (byte) 0, (n, s) -> n.getByte(s), (n, p) -> n.setByte(p.getKey(), (byte) p.getValue()), Byte.class, byte.class), //
+		SHORT(2, (short) 0, (n, s) -> n.getShort(s), (n, p) -> n.setShort(p.getKey(), (short) p.getValue()), Short.class, short.class), //
+		INT(3, 0, (n, s) -> n.getInteger(s), (n, p) -> n.setInteger(p.getKey(), (int) p.getValue()), Integer.class, int.class), //
+		LONG(4, 0L, (n, s) -> n.getLong(s), (n, p) -> n.setLong(p.getKey(), (long) p.getValue()), Long.class, long.class), //
+		FLOAT(5, 0F, (n, s) -> n.getFloat(s), (n, p) -> n.setFloat(p.getKey(), (float) p.getValue()), Float.class, float.class), //
+		DOUBLE(6, 0D, (n, s) -> n.getDouble(s), (n, p) -> n.setDouble(p.getKey(), (double) p.getValue()), Double.class, double.class), //
+		STRING(8, null, (n, s) -> n.getString(s), (n, p) -> n.setString(p.getKey(), (String) p.getValue()), String.class), //
+		NBT(10, null, (n, s) -> n.getCompoundTag(s), (n, p) -> n.setTag(p.getKey(), (NBTTagCompound) p.getValue()), NBTTagCompound.class), //
+		ITEMSTACK(10, ItemStack.EMPTY, (n, s) -> new ItemStack(n.getCompoundTag(s)), (n, p) -> n.setTag(p.getKey(), ((ItemStack) p.getValue()).writeToNBT(new NBTTagCompound())), ItemStack.class), //
+		BLOCKPOS(4, null, (n, s) -> BlockPos.fromLong(n.getLong(s)), (n, p) -> n.setLong(p.getKey(), ((BlockPos) p.getValue()).toLong()), BlockPos.class, MutableBlockPos.class);
 
 		int tagID;
 		Object defaultValue;
-		Class<?> clazz;
+		Class<?>[] clazz;
 		BiFunction<NBTTagCompound, String, Object> getter;
 		BiConsumer<NBTTagCompound, Pair<String, Object>> setter;
 
-		private NBTType(int tagID, Object defaultValue, Class<?> clazz, BiFunction<NBTTagCompound, String, Object> getter, BiConsumer<NBTTagCompound, Pair<String, Object>> setter) {
+		private NBTType(int tagID, Object defaultValue, BiFunction<NBTTagCompound, String, Object> getter, BiConsumer<NBTTagCompound, Pair<String, Object>> setter, Class<?>... clazz) {
 			this.tagID = tagID;
 			this.defaultValue = defaultValue;
 			this.clazz = clazz;
@@ -58,7 +57,7 @@ public class NBTHelper {
 			this.setter = setter;
 		}
 
-		public static BiMap<Class<?>, NBTType> m = HashBiMap.create();
+		public static Map<Class<?>, NBTType> m = Maps.newHashMap();
 
 		public static boolean validClass(Class<?> clazz) {
 			return Enum.class.isAssignableFrom(clazz) || m.get(clazz) != null;
@@ -66,7 +65,8 @@ public class NBTHelper {
 
 		static {
 			for (NBTType n : NBTType.values())
-				m.put(n.clazz, n);
+				for (Class<?> c : n.clazz)
+					m.put(c, n);
 		}
 	}
 

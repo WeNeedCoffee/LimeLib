@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.TileGuiMessage;
 import mrriegel.limelib.network.TileMessage;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -114,6 +115,9 @@ public class CommonTile extends TileEntity {
 	public final void sendMessage(NBTTagCompound nbt) {
 		nbt.setLong("pOs", pos.toLong());
 		PacketHandler.sendToServer(new TileMessage(nbt));
+	}
+
+	public void neighborChanged(IBlockState state, Block block, BlockPos fromPos) {
 	}
 
 	public final int getX() {
