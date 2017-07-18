@@ -39,7 +39,7 @@ public abstract class AbstractMessage implements IMessage, IMessageHandler<Abstr
 	public IMessage onMessage(final AbstractMessage message, final MessageContext ctx) {
 		Runnable run = () -> {
 			EntityPlayer player = (ctx.side.isClient() ? LimeLib.proxy.getClientPlayer() : ctx.getServerHandler().player);
-			message.handleMessage(player, message.nbt, ctx.side);
+			message.handleMessage(player, message.nbt.copy(), ctx.side);
 		};
 		IThreadListener listener = (ctx.side.isClient() ? LimeLib.proxy.getClientListener() : ctx.getServerHandler().player.getServerWorld());
 		listener.addScheduledTask(run);

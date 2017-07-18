@@ -59,7 +59,7 @@ public class ClientEventHandler {
 	@SubscribeEvent
 	public static void renderEnergy(Post event) {
 		Minecraft mc = getMC();
-		if (!Config.showEnergy || mc == null || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null || LimeLib.proxy.energyTiles().isEmpty())
+		if (!Config.showEnergy || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null || LimeLib.proxy.energyTiles().isEmpty())
 			return;
 		BlockPos p = mc.objectMouseOver.getBlockPos();
 		if (event.getType() == ElementType.TEXT && LimeLib.proxy.energyTiles().containsKey(p)) {

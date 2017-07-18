@@ -57,7 +57,7 @@ public class LimeLib {
 	public void init(FMLInitializationEvent event) {
 		PacketHandler.init();
 		Serious.init();
-		if (LimeLib.topLoaded && !"".isEmpty())
+		if (LimeLib.topLoaded)
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
 	}
 

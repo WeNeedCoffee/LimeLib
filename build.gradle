@@ -31,7 +31,7 @@ dependencies {
     deobfCompile "${props.get('tesla_version')}"
     deobfCompile "${props.get('jei_version')}"
     deobfCompile "${props.get('hwyla_version')}"
-    //deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:1.2-1.4.7-1"
+    deobfCompile "${props.get('top_version')}"
     deobfCompile "${props.get('flux_version')}"
 }
 

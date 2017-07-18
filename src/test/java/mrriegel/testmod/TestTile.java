@@ -2,6 +2,7 @@ package mrriegel.testmod;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import com.google.common.collect.Lists;
 
@@ -17,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.scoreboard.IScoreCriteria;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
@@ -63,6 +65,9 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 
 	@Override
 	public void update() {
+		if(world.getTotalWorldTime()%20==0){
+			k=new Random().nextInt(10)+(onClient()?0:10);
+		}
 		if (world.isRemote)
 			return;
 		int range = 9;
@@ -103,8 +108,8 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
-		super.readFromNBT(compound);
 		k = NBTHelper.get(compound, "k",Integer.class);
+		super.readFromNBT(compound);
 	}
 
 	@Override

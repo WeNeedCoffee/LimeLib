@@ -7,6 +7,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 
+import joptsimple.util.DateConverter;
+import mcp.mobius.waila.api.impl.DataAccessorCommon;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.block.CommonBlock;
 import mrriegel.limelib.datapart.DataPart;
@@ -17,6 +19,7 @@ import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.recipe.RecipeItemHandler;
 import mrriegel.limelib.tile.CommonTileInventory;
+import mrriegel.limelib.tile.IInfoProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -72,7 +75,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 import net.minecraftforge.registries.RegistryBuilder;
 
-//@Mod(modid = "lalal", name = "kohle", version = "${version}")
+@Mod(modid = "lalal", name = "kohle", version = "${version}")
 public class TestMod implements IGuiHandler {
 
 	@Mod.Instance("lalal")
@@ -95,10 +98,36 @@ public class TestMod implements IGuiHandler {
 	public void preInit(FMLPreInitializationEvent event) {
 		if (!ENABLE)
 			return;
-		//		block.registerBlock();
-		//		block.initModel();
-		//		item.registerItem();
-		//		item.initModel();
+		block.registerBlock();
+		block.initModel();
+		item.registerItem();
+		item.initModel();
+
+		IInfoProvider.registerProvider(new IInfoProvider<TestTile>() {
+			@Override
+			public List<String> getBodyLines(TestTile tile, IBlockState state, EntityPlayer player, ItemStack stack, List<String> currenttip) {
+				currenttip.add(tile.getWorld().isRemote ? "client" : "server");
+				currenttip.add(tile.k+"");
+				return currenttip;
+			}
+			
+			@Override
+			public List<String> getHeadLines(TestTile tile, IBlockState state, EntityPlayer player, ItemStack stack, List<String> currenttip) {
+				currenttip.add("head");
+				return currenttip;
+			}
+			
+			@Override
+			public List<String> getTailLines(TestTile tile, IBlockState state, EntityPlayer player, ItemStack stack, List<String> currenttip) {
+				currenttip.add("tail");
+				return currenttip;
+			}
+
+			@Override
+			public Class<TestTile> getTileClass() {
+				return TestTile.class;
+			}
+		}, TestTile.class);
 		Block bb = new BB();
 		RegistryHelper.register(bb);
 		RegistryHelper.register(new ItemBlock(bb).setRegistryName(bb.getRegistryName()));
@@ -308,9 +337,9 @@ public class TestMod implements IGuiHandler {
 			int range = 8;
 			List<EntityLivingBase> lis = e.getEntity().world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)), input -> e.getEntity().getClass().equals(input.getClass()));
 			lis.remove(e.getEntity());
-//			for (EntityLivingBase ent : lis)
-//				for (Vec3d v : ParticleHelper.getVecsForLine(e.getEntity().posX, e.getEntity().posY + e.getEntity().height - .1, e.getEntity().posZ, ent.posX, ent.posY + ent.height - .1, ent.posZ, 3))
-//					LimeLib.proxy.renderParticle(new CommonParticle(v.xCoord, v.yCoord, v.zCoord).setMaxAge2(10).setTexture(ParticleHelper.sparkleParticle));
+			//			for (EntityLivingBase ent : lis)
+			//				for (Vec3d v : ParticleHelper.getVecsForLine(e.getEntity().posX, e.getEntity().posY + e.getEntity().height - .1, e.getEntity().posZ, ent.posX, ent.posY + ent.height - .1, ent.posZ, 3))
+			//					LimeLib.proxy.renderParticle(new CommonParticle(v.xCoord, v.yCoord, v.zCoord).setMaxAge2(10).setTexture(ParticleHelper.sparkleParticle));
 		}
 	}
 
