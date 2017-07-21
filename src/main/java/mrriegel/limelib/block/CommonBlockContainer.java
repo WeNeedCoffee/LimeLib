@@ -12,6 +12,7 @@ import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IDataKeeper;
+import mrriegel.limelib.util.LimeCapabilities;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -61,7 +62,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		if (!Stream.of(getTile().getConstructors()).anyMatch((c) -> c.getParameterCount() == 0))
 			throw new IllegalStateException(getTile() + " needs a public default constructor.");
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
-		if (clearRecipe && IDataKeeper.class.isAssignableFrom(getTile()) && !getItemBlock().getHasSubtypes()) {
+		if (clearRecipe && isDataKeeper(getTile(), null) && !getItemBlock().getHasSubtypes()) {
 			final ItemStack result = new ItemStack(this);
 			ShapelessRecipes r = new ShapelessRecipes("", NBTStackHelper.set(new ItemStack(getItemBlock()), "ClEaR", true), NonNullList.from(Ingredient.EMPTY, RecipeHelper.getIngredient(new ItemStack(this.getItemBlock())))) {
 				@Override
@@ -105,8 +106,8 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 
 	@Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-		if (worldIn.getTileEntity(pos) instanceof IDataKeeper && NBTStackHelper.get(stack, "idatakeeper", Boolean.class)) {
-			IDataKeeper tile = (IDataKeeper) worldIn.getTileEntity(pos);
+		if (isDataKeeper(null, worldIn.getTileEntity(pos)) && NBTStackHelper.get(stack, "idatakeeper", Boolean.class)) {
+			IDataKeeper tile = getDataKeeper(worldIn.getTileEntity(pos));
 			tile.readFromStack(stack);
 			((TileEntity) tile).markDirty();
 		}
@@ -117,8 +118,8 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		List<ItemStack> lis = super.getDrops(world, pos, state, fortune);
 		ItemStack stack = ItemStack.EMPTY;
 		TileEntity t = world.getTileEntity(pos);
-		if (t instanceof IDataKeeper && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
-			IDataKeeper tile = (IDataKeeper) t;
+		if (isDataKeeper(null, t) && lis.size() == 1 && lis.get(0).getItem() == Item.getItemFromBlock(state.getBlock())) {
+			IDataKeeper tile = getDataKeeper(t);
 			stack = lis.get(0).copy();
 			NBTStackHelper.set(stack, "idatakeeper", true);
 			tile.writeToStack(stack);
@@ -128,7 +129,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
-		if (!(worldIn.getTileEntity(pos) instanceof IDataKeeper))
+		if (!isDataKeeper(null, worldIn.getTileEntity(pos)))
 			return;
 		List<ItemStack> lis = getDrops(worldIn, pos, state, 0);
 		if (!player.capabilities.isCreativeMode && lis.size() == 1) {
@@ -140,8 +141,8 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
 		ItemStack stack = super.getPickBlock(state, target, world, pos, player);
-		if (player.isSneaking() && player.capabilities.isCreativeMode && world.getTileEntity(pos) instanceof IDataKeeper && !stack.isEmpty()) {
-			IDataKeeper tile = (IDataKeeper) world.getTileEntity(pos);
+		if (player.isSneaking() && player.capabilities.isCreativeMode && isDataKeeper(null, world.getTileEntity(pos)) && !stack.isEmpty()) {
+			IDataKeeper tile = getDataKeeper(world.getTileEntity(pos));
 			NBTStackHelper.set(stack, "idatakeeper", true);
 			tile.writeToStack(stack);
 		}
@@ -179,5 +180,22 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		if (t instanceof IInventory)
 			return Container.calcRedstoneFromInventory((IInventory) t);
 		return 0;
+	}
+
+	private static boolean isDataKeeper(Class<? extends TileEntity> c, TileEntity t) {
+		if (c != null)
+			return IDataKeeper.class.isAssignableFrom(c);
+		if (t != null)
+			return t.hasCapability(LimeCapabilities.datakeeperCapa, null) || t instanceof IDataKeeper;
+		return false;
+	}
+
+	private static IDataKeeper getDataKeeper(TileEntity t) {
+		IDataKeeper dk = null;
+		if (t != null)
+			dk = t.getCapability(LimeCapabilities.datakeeperCapa, null);
+		if (dk == null)
+			dk = (IDataKeeper) t;
+		return dk;
 	}
 }

@@ -43,7 +43,7 @@ public class TestGui extends CommonGuiContainer {
 		buttonList.add(new GuiButtonExt(3, 11 + guiLeft, 17 + guiTop, 33, 22, "DUMB"));
 		buttonList.add(new GuiButtonArrow(4, 10 + guiLeft, 50 + guiTop, Direction.UP));
 		elementList.add(s = new AbstractSlot.ItemSlot(new ItemStack(Items.COOKED_BEEF), 5, 5 + guiLeft, 60 + guiTop, 3200, drawer, false, true, true, true));
-//		buttonList.add(new GuiButtonTooltip(5, guiLeft - 19, 78 + guiTop, 18, 22, "if", EnumDyeColor.PURPLE, Lists.newArrayList("horde", "maul")));
+		//		buttonList.add(new GuiButtonTooltip(5, guiLeft - 19, 78 + guiTop, 18, 22, "if", EnumDyeColor.PURPLE, Lists.newArrayList("horde", "maul")));
 		t = new GuiTextField(1, fontRenderer, guiLeft + 130, guiTop + 77, 45, fontRenderer.FONT_HEIGHT);
 		t.setEnableBackgroundDrawing(false);
 		t.setFocused(true);
@@ -109,7 +109,7 @@ public class TestGui extends CommonGuiContainer {
 					tile.k = 999;
 				}
 				NBTTagCompound nbt = new NBTTagCompound();
-//				NBTHelper.setInt(nbt, "k", tile.k);
+				//				NBTHelper.setInt(nbt, "k", tile.k);
 				tile.sendMessage(nbt);
 			} else
 				super.keyTyped(typedChar, keyCode);

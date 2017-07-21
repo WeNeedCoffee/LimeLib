@@ -42,6 +42,7 @@ public class PacketHandler {
 		registerMessage(DataPartSyncMessage.class, Side.CLIENT);
 		registerMessage(OpenGuiMessage.class, Side.SERVER);
 		registerMessage(PlayerClickMessage.class, Side.SERVER);
+		registerMessage(HUDProviderMessage.class, Side.CLIENT);
 	}
 
 	public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends AbstractMessage> classMessage, Side side) {

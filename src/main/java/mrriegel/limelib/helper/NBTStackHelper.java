@@ -2,6 +2,7 @@ package mrriegel.limelib.helper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,6 +26,10 @@ public class NBTStackHelper {
 		return NBTHelper.get(stack.getTagCompound(), name, clazz);
 	}
 
+	public static <T> Optional<T> getSafe(ItemStack stack, String name, Class<T> clazz) {
+		return NBTHelper.getSafe(stack.getTagCompound(), name, clazz);
+	}
+
 	public static ItemStack set(ItemStack stack, String name, Object value) {
 		initNBTTagCompound(stack);
 		NBTHelper.set(stack.getTagCompound(), name, value);
@@ -35,6 +40,10 @@ public class NBTStackHelper {
 		return NBTHelper.getList(stack.getTagCompound(), name, clazz);
 	}
 
+	public static <T> Optional<List<T>> getListSafe(ItemStack stack, String name, Class<T> clazz) {
+		return NBTHelper.getListSafe(stack.getTagCompound(), name, clazz);
+	}
+
 	public static ItemStack setList(ItemStack stack, String name, List<?> values) {
 		initNBTTagCompound(stack);
 		NBTHelper.setList(stack.getTagCompound(), name, values);
@@ -43,6 +52,10 @@ public class NBTStackHelper {
 
 	public static <K, V> Map<K, V> getMap(ItemStack stack, String name, Class<K> keyClazz, Class<V> valClazz) {
 		return NBTHelper.getMap(stack.getTagCompound(), name, keyClazz, valClazz);
+	}
+
+	public static <K, V> Optional<Map<K, V>> getMapSafe(ItemStack stack, String name, Class<K> keyClazz, Class<V> valClazz) {
+		return NBTHelper.getMapSafe(stack.getTagCompound(), name, keyClazz, valClazz);
 	}
 
 	public static ItemStack setMap(ItemStack stack, String name, Map<?, ?> values) {

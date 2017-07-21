@@ -7,8 +7,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 
-import joptsimple.util.DateConverter;
-import mcp.mobius.waila.api.impl.DataAccessorCommon;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.block.CommonBlock;
 import mrriegel.limelib.datapart.DataPart;
@@ -19,7 +17,9 @@ import mrriegel.limelib.item.CommonItem;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.recipe.RecipeItemHandler;
 import mrriegel.limelib.tile.CommonTileInventory;
+import mrriegel.limelib.tile.IHUDProvider;
 import mrriegel.limelib.tile.IInfoProvider;
+import mrriegel.limelib.util.LimeCapabilities;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -43,6 +43,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -53,6 +54,9 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
@@ -102,32 +106,28 @@ public class TestMod implements IGuiHandler {
 		block.initModel();
 		item.registerItem();
 		item.initModel();
+		IInfoProvider<TestTile> iip = new IInfoProvider<TestTile>() {
+			@Override
+			public List<String> getBodyLines(TestTile tile, IBlockState state, EntityPlayer player, ItemStack stack, boolean sneak) {
+				return Lists.newArrayList(tile.k + "");
+			}
 
-		IInfoProvider.registerProvider(new IInfoProvider<TestTile>() {
 			@Override
-			public List<String> getBodyLines(TestTile tile, IBlockState state, EntityPlayer player, ItemStack stack, List<String> currenttip) {
-				currenttip.add(tile.getWorld().isRemote ? "client" : "server");
-				currenttip.add(tile.k+"");
-				return currenttip;
+			public List<String> getHeadLines(TestTile tile, IBlockState state, EntityPlayer player, ItemStack stack, boolean sneak) {
+				return Lists.newArrayList("Head UPP", sneak ? "stand up" : "bow down");
 			}
-			
+
 			@Override
-			public List<String> getHeadLines(TestTile tile, IBlockState state, EntityPlayer player, ItemStack stack, List<String> currenttip) {
-				currenttip.add("head");
-				return currenttip;
-			}
-			
-			@Override
-			public List<String> getTailLines(TestTile tile, IBlockState state, EntityPlayer player, ItemStack stack, List<String> currenttip) {
-				currenttip.add("tail");
-				return currenttip;
+			public List<String> getTailLines(TestTile tile, IBlockState state, EntityPlayer player, ItemStack stack, boolean sneak) {
+				return Lists.newArrayList();
 			}
 
 			@Override
 			public Class<TestTile> getTileClass() {
 				return TestTile.class;
 			}
-		}, TestTile.class);
+		};
+		IInfoProvider.registerProvider(iip, TestTile.class);
 		Block bb = new BB();
 		RegistryHelper.register(bb);
 		RegistryHelper.register(new ItemBlock(bb).setRegistryName(bb.getRegistryName()));
@@ -144,6 +144,47 @@ public class TestMod implements IGuiHandler {
 		//		Part part = new Part();
 		//		part.setRegistryName("party");
 		//		GameRegistry.register(part);
+	}
+
+	@SubscribeEvent
+	public void attachTile(AttachCapabilitiesEvent<TileEntity> event) {
+		if (event.getObject() instanceof TileEntityFurnace)
+			event.addCapability(new ResourceLocation("dd"), new ICapabilityProvider() {
+				TileEntityFurnace tile = (TileEntityFurnace) event.getObject();
+
+				@Override
+				public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+					return capability == LimeCapabilities.hudproviderCapa;
+				}
+
+				@Override
+				public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+					if (hasCapability(capability, facing))
+						return (T) new IHUDProvider() {
+
+							@Override
+							public boolean showData(boolean sneak, EnumFacing facing) {
+								return true;
+							}
+
+							@Override
+							public List<String> getData(boolean sneak, EnumFacing facing) {
+								List<String> lis = Lists.newArrayList();
+								lis.add("Burntime: " + tile.getField(0));
+								ItemStack in = tile.getStackInSlot(0);
+								if (!in.isEmpty())
+									lis.add("Input: " + in.getDisplayName() + " " + in.getCount() + "x");
+								ItemStack out = tile.getStackInSlot(2);
+								if (!out.isEmpty())
+									lis.add("Output: " + out.getDisplayName() + " " + out.getCount() + "x");
+								if (sneak)
+									lis.add(facing.toString().toUpperCase());
+								return lis;
+							}
+						};
+					return null;
+				}
+			});
 	}
 
 	static class BB extends Block implements ITileEntityProvider {
@@ -367,5 +408,8 @@ public class TestMod implements IGuiHandler {
 	public static class Part extends Impl<Part> {
 		public static IForgeRegistry<Part> PARTREGISTRY = new RegistryBuilder<Part>().setName(new ResourceLocation("lalal" + ":partss")).setType(Part.class).create();
 
+		static {
+			PARTREGISTRY.register(new Part().setRegistryName("kuni"));
+		}
 	}
 }

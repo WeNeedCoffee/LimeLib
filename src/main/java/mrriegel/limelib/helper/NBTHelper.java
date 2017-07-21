@@ -3,6 +3,7 @@ package mrriegel.limelib.helper;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -81,6 +82,12 @@ public class NBTHelper {
 		return (T) type.getter.apply(nbt, name);
 	}
 
+	public static <T> Optional<T> getSafe(NBTTagCompound nbt, String name, Class<T> clazz) {
+		if (nbt.hasKey(name))
+			return Optional.of(get(nbt, name, clazz));
+		return Optional.empty();
+	}
+
 	public static NBTTagCompound set(NBTTagCompound nbt, String name, Object value) {
 		if (nbt == null || value == null)
 			return nbt;
@@ -104,6 +111,12 @@ public class NBTHelper {
 		for (int i = 0; i < size; i++)
 			values.add(get(lis, "__" + i, clazz));
 		return values;
+	}
+
+	public static <T> Optional<List<T>> getListSafe(NBTTagCompound nbt, String name, Class<T> clazz) {
+		if (nbt.hasKey(name))
+			return Optional.of(getList(nbt, name, clazz));
+		return Optional.empty();
 	}
 
 	public static NBTTagCompound setList(NBTTagCompound nbt, String name, List<?> values) {
@@ -136,6 +149,12 @@ public class NBTHelper {
 		for (int i = 0; i < keys.size(); i++)
 			values.put(keys.get(i), vals.get(i));
 		return values;
+	}
+
+	public static <K, V> Optional<Map<K, V>> getMapSafe(NBTTagCompound nbt, String name, Class<K> keyClazz, Class<V> valClazz) {
+		if (nbt.hasKey(name))
+			return Optional.of(getMap(nbt, name, keyClazz, valClazz));
+		return Optional.empty();
 	}
 
 	public static NBTTagCompound setMap(NBTTagCompound nbt, String name, Map<?, ?> values) {

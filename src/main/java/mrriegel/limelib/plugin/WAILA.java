@@ -1,5 +1,10 @@
 package mrriegel.limelib.plugin;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import mcp.mobius.waila.api.IWailaPlugin;
@@ -14,11 +19,17 @@ public class WAILA implements IWailaPlugin {
 	@Override
 	public void register(IWailaRegistrar registrar) {
 		for (Pair<IInfoProvider<?>, Class<? extends TileEntity>> e : IInfoProvider.getProviders()) {
-			registrar.registerBodyProvider(e.getKey(), e.getValue());
-			registrar.registerHeadProvider(e.getKey(), e.getValue());
-			registrar.registerTailProvider(e.getKey(), e.getValue());
-			registrar.registerNBTProvider(e.getKey(), e.getValue());
-			registrar.registerStackProvider(e.getKey(), e.getValue());
+			Class<? extends TileEntity> c = e.getValue();
+			IInfoProvider<?> iip = e.getKey();
+			Set<String> methods = Arrays.stream(iip.getClass().getMethods()).filter(m -> m.getDeclaringClass() == iip.getClass()).map(Method::getName).collect(Collectors.toSet());
+			if (methods.contains("getHeadLines"))
+				registrar.registerHeadProvider(iip, c);
+			if (methods.contains("getBodyLines"))
+				registrar.registerBodyProvider(iip, c);
+			if (methods.contains("getTailLines"))
+				registrar.registerTailProvider(iip, c);
+			if (iip.readingSide().isServer())
+				registrar.registerNBTProvider(iip, c);
 		}
 	}
 

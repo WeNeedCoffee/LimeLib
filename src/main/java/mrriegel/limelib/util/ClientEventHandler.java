@@ -1,8 +1,13 @@
 package mrriegel.limelib.util;
 
 import java.awt.Color;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.Maps;
 
 import mrriegel.limelib.Config;
 import mrriegel.limelib.LimeLib;
@@ -11,13 +16,14 @@ import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.datapart.RenderRegistry;
 import mrriegel.limelib.datapart.RenderRegistry.RenderDataPart;
 import mrriegel.limelib.gui.GuiDrawer;
-import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.EnergyHelper;
 import mrriegel.limelib.helper.EnergyHelper.Energy;
 import mrriegel.limelib.helper.ParticleHelper;
+import mrriegel.limelib.tile.IHUDProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
@@ -25,8 +31,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -84,7 +94,7 @@ public class ClientEventHandler {
 				mc.fontRenderer.setUnicodeFlag(before);
 			}
 			drawer.drawEnergyBarH((sr.getScaledWidth() - lenght) / 2, (sr.getScaledHeight() + 20 - 8) / 2, lenght, (float) ((double) energy / (double) max));
-			drawer.drawFrame((sr.getScaledWidth() - lenght) / 2 - 1, (sr.getScaledHeight() + 20 - 8) / 2 - 1, lenght + 2, 9, 1, ColorHelper.darker(Color.RED.getRGB(), .8));
+			drawer.drawFrame((sr.getScaledWidth() - lenght) / 2 - 1, (sr.getScaledHeight() + 20 - 8) / 2 - 1, lenght + 2, 9, 1, Color.BLACK.getRGB());
 			GlStateManager.disableBlend();
 			GlStateManager.popMatrix();
 		}
@@ -108,8 +118,68 @@ public class ClientEventHandler {
 		}
 	}
 
+	public static Map<BlockPos, List<String>> supplierTexts = Maps.newHashMap();
+
 	@SubscribeEvent
 	public static void render(RenderWorldLastEvent event) {
+		//ihudprovider
+		if (getMC().objectMouseOver.typeOfHit == Type.BLOCK && !getMC().isGamePaused()) {
+			TileEntity t = getMC().world.getTileEntity(getMC().objectMouseOver.getBlockPos());
+			IHUDProvider tile = IHUDProvider.isHUDProvider(t) ? IHUDProvider.getHUDProvider(t) : null;
+			if (tile != null) {
+				boolean sneak = getMC().player.isSneaking();
+				EnumFacing face = getMC().objectMouseOver.sideHit.getOpposite();
+				boolean playerhorizontal = false;
+				if (face.getAxis() == Axis.Y || playerhorizontal)
+					face = getMC().player.getHorizontalFacing();
+				if (tile.showData(sneak, face.getOpposite())) {
+					double x = t.getPos().getX() - TileEntityRendererDispatcher.staticPlayerX;
+					double y = t.getPos().getY() - TileEntityRendererDispatcher.staticPlayerY;
+					double z = t.getPos().getZ() - TileEntityRendererDispatcher.staticPlayerZ;
+					GlStateManager.pushMatrix();
+					double dx = face.getAxis() == Axis.Z ? 0.5F : Math.max(-0.001, face.getAxisDirection().getOffset() * -1.001);
+					double dz = face.getAxis() == Axis.X ? 0.5F : Math.max(-0.001, face.getAxisDirection().getOffset() * -1.001);
+					GlStateManager.translate((float) x + dx, (float) y + 1.F, (float) z + dz);
+					float f1 = face.getHorizontalIndex() * 90f;
+					if (face.getAxis() == Axis.Z)
+						f1 += 180f;
+					GlStateManager.rotate(f1, 0.0F, 1.0F, 0.0F);
+					GlStateManager.enableRescaleNormal();
+					FontRenderer fontrenderer = getMC().fontRenderer;
+					float f3 = 0.010416667F;
+					//					GlStateManager.translate(0.0F, 0.33333334F, 0.046666667F);
+					GlStateManager.scale(f3, -f3, f3);
+					GlStateManager.glNormal3f(0.0F, 0.0F, -f3);
+					GlStateManager.depthMask(false);
+					List<String> tmp = tile.getData(sneak, face.getOpposite());
+					if (tile.readingSide().isServer()) {
+						List<String> foo = ClientEventHandler.supplierTexts.get(t.getPos());
+						if (foo != null)
+							tmp = foo;
+					}
+					double factor = tile.scale(sneak, face.getOpposite());
+					List<String> text = tmp == null ? Collections.emptyList() : tmp.stream().filter(s -> s != null)//
+							.flatMap(s -> fontrenderer.listFormattedStringToWidth(s, (int) (93 / factor)).stream()).collect(Collectors.toList());
+					int lineHeight = fontrenderer.FONT_HEIGHT + 1;
+					int oy = (int) ((-(lineHeight) * text.size()) * factor);
+					int ysize = (int) ((text.size() * (lineHeight)) * factor);
+					new GuiDrawer(0, 0, 0, 0, 0).drawColoredRectangle(-48, oy, 96, ysize, tile.getBackgroundColor(sneak, face.getOpposite()));
+					GlStateManager.translate(0, (-text.size() * (lineHeight)) * factor, 0);
+					GlStateManager.scale(factor, factor, factor);
+					for (int j = 0; j < text.size(); ++j) {
+						String s = text.get(j);
+						int xx = tile.center(sneak, face.getOpposite()) ? -fontrenderer.getStringWidth(s) / 2 : (int) (-46 / factor);
+						fontrenderer.drawString(s, xx, j * 10 + 1, 0xFFFFFFFF);
+					}
+					GlStateManager.scale(1. / factor, 1. / factor, 1. / factor);
+					GlStateManager.depthMask(true);
+					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+					GlStateManager.popMatrix();
+
+				}
+			}
+		}
+		//datapart
 		DataPartRegistry reg = DataPartRegistry.get(getMC().world);
 		if (reg != null) {
 			Iterator<DataPart> it = reg.getParts().stream().filter(p -> p != null && getMC().player.getDistance(p.getX(), p.getY(), p.getZ()) < 64).collect(Collectors.toList()).iterator();

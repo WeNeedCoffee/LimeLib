@@ -12,19 +12,20 @@ import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.tile.IDataKeeper;
+import mrriegel.limelib.tile.IHUDProvider;
 import mrriegel.limelib.tile.IOwneable;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.scoreboard.IScoreCriteria;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.WorldServer;
 
-public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper, IOwneable {
+public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper, IOwneable, IHUDProvider {
 
 	public int k;
 
@@ -45,7 +46,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 		sync();
 		int range = 8;
 		if (NBTHelper.hasTag(nbt, "k"))
-			k = NBTHelper.get(nbt, "k",Integer.class);
+			k = NBTHelper.get(nbt, "k", Integer.class);
 		if (!InvHelper.hasItemHandler(world.getTileEntity(pos.up()), EnumFacing.DOWN))
 			return;
 		List<BlockPos> lis = Lists.newArrayList();
@@ -54,19 +55,19 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 				for (int z = pos.getZ() - range; z <= pos.getZ() + range; z++)
 					if (!BlockHelper.isOre(world, new BlockPos(x, y, z)))
 						lis.add(new BlockPos(x, y, z));
-//		for (BlockPos p : lis) {
-//			for (ItemStack s : BlockHelper.breakBlockWithFortune(world, p, 3, player, false, false,true))
-//				if (ItemHandlerHelper.insertItemStacked(InvHelper.getItemHandler(world.getTileEntity(pos.up()), EnumFacing.DOWN), s.copy(), false) != null)
-//					return;
-//		}
+		//		for (BlockPos p : lis) {
+		//			for (ItemStack s : BlockHelper.breakBlockWithFortune(world, p, 3, player, false, false,true))
+		//				if (ItemHandlerHelper.insertItemStacked(InvHelper.getItemHandler(world.getTileEntity(pos.up()), EnumFacing.DOWN), s.copy(), false) != null)
+		//					return;
+		//		}
 	}
 
 	List<BlockPos> lis = null;
 
 	@Override
 	public void update() {
-		if(world.getTotalWorldTime()%20==0){
-			k=new Random().nextInt(10)+(onClient()?0:10);
+		if (world.getTotalWorldTime() % 22 == 0) {
+			k = new Random().nextInt(10) + (onClient() ? 0 : 10);
 		}
 		if (world.isRemote)
 			return;
@@ -88,15 +89,15 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 					whil: while (it.hasNext()) {
 						BlockPos p = it.next();
 						if (world.getTileEntity(p) == null && BlockHelper.isBlockBreakable(world, p) && !BlockHelper.isOre(world, p)) {
-//							List<ItemStack> drops = BlockHelper.breakBlockWithFortune(world, p, 0, null, false, false,true);
-//							drops.clear();
-//							for (ItemStack drop : drops)
-//								if (drop != null)
-//									ItemHandlerHelper.insertItemStacked(new PlayerMainInvWrapper(player.inventory), drop.copy(), false);
+							//							List<ItemStack> drops = BlockHelper.breakBlockWithFortune(world, p, 0, null, false, false,true);
+							//							drops.clear();
+							//							for (ItemStack drop : drops)
+							//								if (drop != null)
+							//									ItemHandlerHelper.insertItemStacked(new PlayerMainInvWrapper(player.inventory), drop.copy(), false);
 							break whil;
 						} else {
-//							for (Vec3d vec : ParticleHelper.getVecsForLine(p, pos, .6))
-//								LimeLib.proxy.renderParticle(new CommonParticle(vec.xCoord, vec.yCoord, vec.zCoord).setMaxAge2(1));
+							//							for (Vec3d vec : ParticleHelper.getVecsForLine(p, pos, .6))
+							//								LimeLib.proxy.renderParticle(new CommonParticle(vec.xCoord, vec.yCoord, vec.zCoord).setMaxAge2(1));
 						}
 						it.remove();
 					}
@@ -108,7 +109,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
-		k = NBTHelper.get(compound, "k",Integer.class);
+		NBTHelper.getSafe(compound, "k", Integer.class).ifPresent(i -> k = i);
 		super.readFromNBT(compound);
 	}
 
@@ -125,7 +126,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 
 	@Override
 	public void readFromStack(ItemStack stack) {
-		k = NBTStackHelper.get(stack, "k",Integer.class);
+		k = NBTStackHelper.get(stack, "k", Integer.class);
 	}
 
 	@Override
@@ -138,4 +139,35 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 		return true;
 	}
 
+	@Override
+	public boolean showData(boolean sneak, EnumFacing facing) {
+		return true;
+	}
+
+	@Override
+	public List<String> getData(boolean sneak, EnumFacing facing) {
+		if (!sneak)
+			return Lists.newArrayList(TextFormatting.DARK_GREEN + "" + facing, //
+					TextFormatting.GOLD.toString() + "Topic: ", //
+					"   -Thermodynamik", //
+					"   -Kunst", //
+					"   -Tierwesen", //
+					"   -Kanada");
+		else
+			return Lists.newArrayList("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor");
+	}
+
+	@Override
+	public int getBackgroundColor(boolean sneak, EnumFacing facing) {
+		if (!sneak)
+			return 0x66850000;
+		else
+			return 0xFF000099;
+		//		return IDataSupplier.super.getBackgroundColor(sneak, facing);
+	}
+
+	@Override
+	public boolean center(boolean sneak, EnumFacing facing) {
+		return sneak;
+	}
 }

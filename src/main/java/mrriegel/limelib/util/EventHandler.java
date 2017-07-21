@@ -11,6 +11,7 @@ import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.network.EnergySyncMessage;
+import mrriegel.limelib.network.HUDProviderMessage;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.PlayerClickMessage;
 import mrriegel.limelib.tile.CommonTile;
@@ -115,6 +116,9 @@ public class EventHandler {
 		if (event.phase == Phase.END && event.side == Side.SERVER) {
 			if (event.player.world.getTotalWorldTime() % (event.player.isSneaking() ? 8 : 20) == 0) {
 				PacketHandler.sendTo(new EnergySyncMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
+			}
+			if (event.player.world.getTotalWorldTime() % 12 == 0) {
+				PacketHandler.sendTo(new HUDProviderMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
 			}
 		}
 	}

@@ -6,10 +6,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.world.World;
 
-public class CompressedEntity<T extends EntityLivingBase> extends EntityLivingBase{
+public class CompressedEntity<T extends EntityLivingBase> extends EntityLivingBase {
 
-	
-	public CompressedEntity(World worldIn,T entity) {
+	public CompressedEntity(World worldIn, T entity) {
 		super(worldIn);
 	}
 
@@ -28,7 +27,7 @@ public class CompressedEntity<T extends EntityLivingBase> extends EntityLivingBa
 	@Override
 	public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

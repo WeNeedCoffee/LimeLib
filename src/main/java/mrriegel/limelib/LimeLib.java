@@ -8,6 +8,7 @@ import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.plugin.TOP;
 import mrriegel.limelib.util.ClientEventHandler;
 import mrriegel.limelib.util.EventHandler;
+import mrriegel.limelib.util.LimeCapabilities;
 import mrriegel.limelib.util.Serious;
 import mrriegel.limelib.util.Utils;
 import net.minecraftforge.common.MinecraftForge;
@@ -43,12 +44,14 @@ public class LimeLib {
 		if (event.getSide().isClient())
 			MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
 		CapabilityDataPart.register();
+		LimeCapabilities.register();
 		Serious.preinit();
 		wailaLoaded = Loader.isModLoaded("waila");
 		jeiLoaded = Loader.isModLoaded("jei");
 		teslaLoaded = Loader.isModLoaded("tesla");
 		topLoaded = Loader.isModLoaded("theoneprobe");
 		fluxLoaded = Loader.isModLoaded("redstoneflux");
+
 	}
 
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded, fluxLoaded;
