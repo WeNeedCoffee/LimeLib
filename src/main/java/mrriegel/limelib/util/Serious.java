@@ -1,5 +1,6 @@
 package mrriegel.limelib.util;
 
+import java.lang.reflect.Field;
 import java.util.Random;
 
 import com.google.common.collect.Lists;
@@ -20,14 +21,21 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 
 public class Serious {
 
 	public static void preinit() {
-		ResourceLocation rl = new ResourceLocation("unknown", "unknown");
+		String k = "\u0075\u006E\u006B\u006E\u006F\u0077\u006E";
+		ResourceLocation rl = new ResourceLocation(k, k);
 		RandomShapedRecipe rsh = new RandomShapedRecipe(rl);
-		rsh.setRegistryName(rl);
-		RegistryHelper.register(rsh);
+		try {
+			Field f = Impl.class.getDeclaredField("registryName");
+			f.setAccessible(true);
+			f.set(rsh, rl);
+			RegistryHelper.register(rsh);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+		}
 	}
 
 	public static void init() {

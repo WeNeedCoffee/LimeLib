@@ -35,8 +35,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLContainer;
-import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -68,8 +66,7 @@ public class Utils {
 	}
 
 	public static String getCurrentModID() {
-		ModContainer mc = Loader.instance().activeModContainer();
-		return mc == null || (mc instanceof InjectedModContainer && ((InjectedModContainer) mc).wrappedContainer instanceof FMLContainer) ? "minecraft" : mc.getModId().toLowerCase();
+		return new Item().setRegistryName("dummy").getRegistryName().getResourceDomain();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

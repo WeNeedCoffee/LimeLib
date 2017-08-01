@@ -6,7 +6,7 @@ import net.minecraftforge.common.config.Configuration;
 
 public class Config {
 
-	private static Configuration config;
+	public static Configuration config;
 
 	public static boolean showEnergy, energyConfigHint, commandBlockCreativeTab;
 

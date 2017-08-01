@@ -19,7 +19,7 @@ public class EnergyHelper {
 
 	public enum Energy {
 		RF("RF"), //
-		FORGE("FU"), //
+		FORGE("FE"), //
 		TESLA("Tesla");
 
 		public String unit;

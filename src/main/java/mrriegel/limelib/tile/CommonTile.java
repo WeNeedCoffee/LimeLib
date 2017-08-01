@@ -1,6 +1,5 @@
 package mrriegel.limelib.tile;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -42,16 +41,12 @@ public class CommonTile extends TileEntity {
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound tag = writeToSyncNBT(new NBTTagCompound());
-		for (String s : notSync())
-			tag.removeTag(s);
 		return new SPacketUpdateTileEntity(this.pos, 1337, tag);
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		NBTTagCompound tag = pkt.getNbtCompound();
-		for (String s : notSync())
-			tag.removeTag(s);
 		readFromSyncNBT(tag);
 	}
 
@@ -61,10 +56,6 @@ public class CommonTile extends TileEntity {
 
 	public NBTTagCompound writeToSyncNBT(NBTTagCompound compound) {
 		return writeToNBT(compound);
-	}
-
-	protected List<String> notSync() {
-		return Collections.emptyList();
 	}
 
 	public boolean needsSync() {

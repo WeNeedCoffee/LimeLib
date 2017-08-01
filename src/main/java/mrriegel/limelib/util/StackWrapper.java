@@ -3,6 +3,8 @@ package mrriegel.limelib.util;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.Validate;
+
 import com.google.common.collect.Lists;
 
 import net.minecraft.item.ItemStack;
@@ -10,7 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-public class StackWrapper {
+public final class StackWrapper {
 	ItemStack stack;
 	int size;
 
@@ -74,6 +76,23 @@ public class StackWrapper {
 		return new StackWrapper(stack.copy(), size);
 	}
 
+	public boolean canInsert(ItemStack stack) {
+		return ItemHandlerHelper.canItemStacksStack(stack, this.stack);
+	}
+
+	public void insert(ItemStack stack) {
+		if (canInsert(stack))
+			size += stack.getCount();
+	}
+
+	public ItemStack extract(int size) {
+		Validate.isTrue(size >= 0);
+		size = Math.min(size, this.size);
+		this.size -= size;
+		return ItemHandlerHelper.copyStackWithSize(stack, size);
+
+	}
+
 	public static StackWrapper loadStackWrapperFromNBT(NBTTagCompound nbt) {
 		StackWrapper wrap = new StackWrapper();
 		wrap.readFromNBT(nbt);
@@ -107,9 +126,10 @@ public class StackWrapper {
 				continue;
 			boolean added = false;
 			for (int i = 0; i < lis.size(); i++) {
-				ItemStack stack = lis.get(i).getStack().copy();
+				ItemStack stack = lis.get(i).getStack();
 				if (ItemHandlerHelper.canItemStacksStack(s, stack)) {
-					lis.get(i).setSize(lis.get(i).getSize() + s.getCount());
+					lis.get(i).size += s.getCount();
+					//					lis.get(i).setSize(lis.get(i).getSize() + s.getCount());
 					added = true;
 					break;
 				}

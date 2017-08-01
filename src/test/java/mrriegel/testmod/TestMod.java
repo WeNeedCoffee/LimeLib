@@ -51,6 +51,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -79,7 +80,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 import net.minecraftforge.registries.RegistryBuilder;
 
-@Mod(modid = "lalal", name = "kohle", version = "${version}")
+//@Mod(modid = "lalal", name = "kohle", version = "${version}")
 public class TestMod implements IGuiHandler {
 
 	@Mod.Instance("lalal")
@@ -170,20 +171,31 @@ public class TestMod implements IGuiHandler {
 							@Override
 							public List<String> getData(boolean sneak, EnumFacing facing) {
 								List<String> lis = Lists.newArrayList();
-								lis.add("Burntime: " + tile.getField(0));
+								lis.add(TextFormatting.DARK_RED+"Burntime: " + tile.getField(0));
 								ItemStack in = tile.getStackInSlot(0);
-								if (!in.isEmpty())
-									lis.add("Input: " + in.getDisplayName() + " " + in.getCount() + "x");
+								lis.add("Input: " + (in.isEmpty() ? "" : (in.getDisplayName() + " " + in.getCount() + "x")));
 								ItemStack out = tile.getStackInSlot(2);
-								if (!out.isEmpty())
-									lis.add("Output: " + out.getDisplayName() + " " + out.getCount() + "x");
-								if (sneak)
-									lis.add(facing.toString().toUpperCase());
+								lis.add("Output: " + (out.isEmpty() ? "" : (out.getDisplayName() + " " + out.getCount() + "x")));
+								ItemStack fu = tile.getStackInSlot(1);
+								lis.add("Fuel: " + (fu.isEmpty() ? "" : (fu.getDisplayName() + " " + fu.getCount() + "x")));
+//								if (sneak)
+//									lis.add(facing.toString().toUpperCase());
 								return lis;
+							}
+
+							@Override
+							public Side readingSide() {
+								return Side.SERVER;
+							}
+							
+							@Override
+							public double scale(boolean sneak, EnumFacing facing) {
+								return .7;
 							}
 						};
 					return null;
 				}
+
 			});
 	}
 

@@ -14,7 +14,7 @@ public interface IHUDProvider {
 	List<String> getData(boolean sneak, EnumFacing facing);
 
 	default int getBackgroundColor(boolean sneak, EnumFacing facing) {
-		return 0x33FFFFFF;
+		return 0x44FFFFFF;
 	}
 
 	default Side readingSide() {
@@ -27,6 +27,10 @@ public interface IHUDProvider {
 
 	default double scale(boolean sneak, EnumFacing facing) {
 		return .8;
+	}
+
+	default boolean lineBreak(boolean sneak, EnumFacing facing) {
+		return false;
 	}
 
 	static boolean isHUDProvider(TileEntity t) {

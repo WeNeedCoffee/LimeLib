@@ -150,7 +150,7 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 			return Lists.newArrayList(TextFormatting.DARK_GREEN + "" + facing, //
 					TextFormatting.GOLD.toString() + "Topic: ", //
 					"   -Thermodynamik", //
-					"   -Kunst", //
+					"   -" + TextFormatting.ITALIC + "Van Gogh", //
 					"   -Tierwesen", //
 					"   -Kanada");
 		else
