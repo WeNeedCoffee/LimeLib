@@ -6,9 +6,9 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
 
-import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.EnergyHelper;
 import mrriegel.limelib.helper.NBTHelper;
+import mrriegel.limelib.util.ClientEventHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -42,13 +42,13 @@ public class EnergySyncMessage extends AbstractMessage {
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
 		List<BlockPos> lis1 = NBTHelper.getList(nbt, "lis1", BlockPos.class);
 		List<Long> lis2 = NBTHelper.getList(nbt, "lis2", Long.class), lis3 = NBTHelper.getList(nbt, "lis3", Long.class);
-		LimeLib.proxy.energyTiles().clear();
+		ClientEventHandler.energyTiles.clear();
 		try {
 			for (int i = 0; i < lis1.size(); i++) {
-				LimeLib.proxy.energyTiles().put(lis1.get(i), Pair.of(lis2.get(i), lis3.get(i)));
+				ClientEventHandler.energyTiles.put(lis1.get(i), Pair.of(lis2.get(i), lis3.get(i)));
 			}
 		} catch (IndexOutOfBoundsException e) {
-			LimeLib.proxy.energyTiles().clear();
+			ClientEventHandler.energyTiles.clear();
 		}
 	}
 

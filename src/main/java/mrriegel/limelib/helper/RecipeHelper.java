@@ -1,6 +1,7 @@
 package mrriegel.limelib.helper;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -9,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
@@ -27,10 +30,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 public class RecipeHelper {
 
@@ -40,6 +50,7 @@ public class RecipeHelper {
 
 	private File DIR;
 	private final Set<String> USED_OD_NAMES = Sets.newTreeSet();
+	private boolean oldway = true;
 
 	private static RecipeHelper getHelper() {
 		String modid = Utils.getCurrentModID();
@@ -47,7 +58,6 @@ public class RecipeHelper {
 		if (rh != null)
 			return rh;
 		rh = new RecipeHelper(modid);
-		Arrays.stream(rh.DIR.listFiles()).forEach(File::delete);
 		helpers.put(modid, rh);
 		return rh;
 
@@ -55,8 +65,25 @@ public class RecipeHelper {
 
 	private RecipeHelper(String modid) {
 		DIR = new File("").toPath().resolve("../src/main/resources/assets/" + modid + "/recipes/").toFile();
-		if (!DIR.exists())
+		if (!DIR.exists() && dev)
 			DIR.mkdirs();
+		if (DIR.exists())
+			Arrays.stream(DIR.listFiles()).forEach(File::delete);
+		if (!dev) {
+			File jar = Loader.instance().activeModContainer().getSource();
+			try {
+				JarInputStream jis = new JarInputStream(new FileInputStream(jar));
+				JarEntry e = null;
+				while ((e = jis.getNextJarEntry()) != null)
+					if (e.getName().equals("assets/" + modid + "/recipes/")) {
+						oldway = false;
+						break;
+					}
+				jis.close();
+			} catch (IOException e) {
+			}
+		} else
+			oldway = false;
 	}
 
 	@Deprecated
@@ -69,13 +96,17 @@ public class RecipeHelper {
 		ResourceLocation rl = name(stack, input);
 		if (Arrays.stream(input).anyMatch(o -> o instanceof Collection))
 			addRecipe(rl, new ShapedRecipeExt(rl, stack, input));
-		else if (Arrays.stream(input).anyMatch(o -> o instanceof String && OreDictionary.doesOreNameExist((String) o)))
-			//			addRecipe(rl, new ShapedOreRecipe(rl, stack, input));
-			rh.addRecipe(rl, true, true, stack, input);
-		else {
-			//			ShapedPrimer sp = CraftingHelper.parseShaped(input);
-			//			addRecipe(rl, new ShapedRecipes("", sp.width, sp.height, sp.input, stack));
-			rh.addRecipe(rl, true, false, stack, input);
+		else if (Arrays.stream(input).anyMatch(o -> o instanceof String && OreDictionary.doesOreNameExist((String) o))) {
+			if (rh.oldway)
+				addRecipe(rl, new ShapedOreRecipe(rl, stack, input));
+			else
+				rh.addRecipe(rl, true, true, stack, input);
+		} else {
+			if (rh.oldway) {
+				ShapedPrimer sp = CraftingHelper.parseShaped(input);
+				addRecipe(rl, new ShapedRecipes("", sp.width, sp.height, sp.input, stack));
+			} else
+				rh.addRecipe(rl, true, false, stack, input);
 		}
 	}
 
@@ -89,12 +120,17 @@ public class RecipeHelper {
 		ResourceLocation rl = name(stack, input);
 		if (Arrays.stream(input).anyMatch(o -> o instanceof Collection))
 			addRecipe(rl, new ShapelessRecipeExt(rl, stack, input));
-		else if (Arrays.stream(input).anyMatch(o -> o instanceof String && OreDictionary.doesOreNameExist((String) o)))
-			//			addRecipe(rl, new ShapelessOreRecipe(rl, stack, input));
-			rh.addRecipe(rl, false, true, stack, input);
-		else
-			//			addRecipe(rl, new ShapelessRecipes("", stack, NonNullList.<Ingredient> from(Ingredient.EMPTY, Lists.newArrayList(input).stream().map(o -> CraftingHelper.getIngredient(o)).filter(o -> o != null).collect(Collectors.toList()).toArray(new Ingredient[0]))));
-			rh.addRecipe(rl, false, false, stack, input);
+		else if (Arrays.stream(input).anyMatch(o -> o instanceof String && OreDictionary.doesOreNameExist((String) o))) {
+			if (rh.oldway)
+				addRecipe(rl, new ShapelessOreRecipe(rl, stack, input));
+			else
+				rh.addRecipe(rl, false, true, stack, input);
+		} else {
+			if (rh.oldway)
+				addRecipe(rl, new ShapelessRecipes("", stack, NonNullList.<Ingredient> from(Ingredient.EMPTY, Lists.newArrayList(input).stream().map(o -> CraftingHelper.getIngredient(o)).filter(o -> o != null).collect(Collectors.toList()).toArray(new Ingredient[0]))));
+			else
+				rh.addRecipe(rl, false, false, stack, input);
+		}
 	}
 
 	public static void add(IRecipe recipe) {
@@ -104,7 +140,7 @@ public class RecipeHelper {
 	}
 
 	private static void addRecipe(ResourceLocation rl, IRecipe recipe) {
-		Validate.isTrue(!recipe.getRecipeOutput().isEmpty() && !recipe.getClass().getName().startsWith("net.minecraft"));
+		Validate.isTrue(!recipe.getRecipeOutput().isEmpty() /*&& !recipe.getClass().getName().startsWith("net.minecraft")*/);
 		recipe.setRegistryName(rl);
 		RegistryHelper.register(recipe);
 	}
@@ -148,13 +184,9 @@ public class RecipeHelper {
 		json.put("type", shaped ? (ore ? "forge:ore_shaped" : "minecraft:crafting_shaped") : (ore ? "forge:ore_shapeless" : "minecraft:crafting_shapeless"));
 		json.put("result", serializeItem(stack));
 
-		String suffix = stack.getItem().getHasSubtypes() ? "_" + stack.getItemDamage() : "";
-		File f = new File(DIR, stack.getItem().getRegistryName().getResourcePath() + suffix + ".json");
-		f = new File(DIR, rl.getResourcePath() + ".json");
-		//		while (f.exists()) {
-		//			suffix += "_alt";
-		//			f = new File(DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
-		//		}
+		//		String suffix = stack.getItem().getHasSubtypes() ? "_" + stack.getItemDamage() : "";
+		//		File f = new File(DIR, stack.getItem().getRegistryName().getResourcePath() + suffix + ".json");
+		File f = new File(DIR, rl.getResourcePath().replace('/', '|') + ".json");
 		try {
 			FileWriter fw = new FileWriter(f);
 			Utils.getGSON().toJson(json, fw);
@@ -176,10 +208,10 @@ public class RecipeHelper {
 			if (o instanceof ItemStack)
 				return ((ItemStack) o).getItem().getRegistryName().getResourcePath().toString();
 			if (o instanceof Ingredient)
-				return Joiner.on(" ").join(Arrays.stream(((Ingredient) o).getMatchingStacks()).map(s -> s.getItem().getRegistryName().getResourcePath().toString()).collect(Collectors.toList()));
+				return Joiner.on(" ").join(Arrays.stream(((Ingredient) o).getMatchingStacks()).map(s -> s.getItem().getRegistryName().getResourcePath().toString()).sorted().collect(Collectors.toList()));
 			return "";
 		}).collect(Collectors.toList());
-		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getResourcePath() + "|" + stack.getItemDamage() + "#" + stack.getCount() + "_" + (Math.abs(lis.hashCode()) % 9999));
+		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getResourcePath() + "/" + stack.getItemDamage() + "#" + stack.getCount() + "_" + (Math.abs(lis.hashCode()) % 9999));
 	}
 
 	public static Ingredient getIngredient(Object obj) {
@@ -234,6 +266,8 @@ public class RecipeHelper {
 	 * @author williewillus
 	 */
 	public static void generateConstants() {
+		if (!dev)
+			return;
 		for (RecipeHelper rh : helpers.values()) {
 			List<Map<String, Object>> json = Lists.newArrayList();
 			for (String s : rh.USED_OD_NAMES) {

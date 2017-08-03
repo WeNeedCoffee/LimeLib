@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.common.collect.Maps;
 
 import mrriegel.limelib.Config;
-import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.datapart.RenderRegistry;
@@ -67,23 +68,25 @@ public class ClientEventHandler {
 		return mc;
 	}
 
+	public static Map<BlockPos, Pair<Long, Long>> energyTiles = Maps.newHashMap();
+
 	@SubscribeEvent
 	public static void renderEnergy(Post event) {
 		Minecraft mc = getMC();
-		if (!Config.showEnergy || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null || LimeLib.proxy.energyTiles().isEmpty())
+		if (!Config.showEnergy || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null || energyTiles.isEmpty())
 			return;
 		BlockPos p = mc.objectMouseOver.getBlockPos();
-		if (event.getType() == ElementType.TEXT && LimeLib.proxy.energyTiles().containsKey(p)) {
+		if (event.getType() == ElementType.TEXT && energyTiles.containsKey(p)) {
 			Energy energyType = null;
 			if ((energyType = EnergyHelper.isEnergyContainer(mc.world.getTileEntity(p), null)) == null) {
-				LimeLib.proxy.energyTiles().remove(p);
+				energyTiles.remove(p);
 				return;
 			}
 			ScaledResolution sr = event.getResolution();
 			GlStateManager.pushMatrix();
 			GlStateManager.enableBlend();
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
-			long energy = LimeLib.proxy.energyTiles().get(p).getLeft(), max = LimeLib.proxy.energyTiles().get(p).getRight();
+			long energy = energyTiles.get(p).getLeft(), max = energyTiles.get(p).getRight();
 			String text = (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(energy) : energy) + "/" + (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(max) : max) + " " + energyType.unit;
 			int lenght = 90/* mc.fontRenderer.getStringWidth(text) */;
 			mc.fontRenderer.drawString(text, (sr.getScaledWidth() - mc.fontRenderer.getStringWidth(text)) / 2, (sr.getScaledHeight() - 15 - mc.fontRenderer.FONT_HEIGHT) / 2, GuiScreen.isShiftKeyDown() ? 0xffff00 : 0x80ffff00, true);

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import com.google.common.collect.Lists;
 
+import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.tile.CommonTile;
@@ -37,6 +38,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public abstract class CommonBlockContainer<T extends CommonTile> extends CommonBlock {
 
@@ -179,6 +181,8 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		TileEntity t = worldIn.getTileEntity(pos);
 		if (t instanceof IInventory)
 			return Container.calcRedstoneFromInventory((IInventory) t);
+		if (t.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+			return Container.calcRedstoneFromInventory(InvHelper.toInventory(t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)));
 		return 0;
 	}
 

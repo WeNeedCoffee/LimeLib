@@ -1,15 +1,19 @@
 package mrriegel.limelib;
 
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.google.common.collect.Lists;
 
 import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.plugin.TOP;
+import mrriegel.limelib.tile.IHUDProvider;
 import mrriegel.limelib.util.ClientEventHandler;
 import mrriegel.limelib.util.EventHandler;
 import mrriegel.limelib.util.LimeCapabilities;
@@ -17,8 +21,16 @@ import mrriegel.limelib.util.Serious;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.Loader;
@@ -31,6 +43,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION)
 public class LimeLib {
@@ -75,10 +88,64 @@ public class LimeLib {
 		if (LimeLib.topLoaded)
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
 		wrenchAvailable = StreamSupport.stream(ForgeRegistries.ITEMS.spliterator(), false).anyMatch(item -> StackHelper.isWrench(new ItemStack(item)));
+		//		MinecraftForge.EVENT_BUS.register(INSTANCE);
 	}
 
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+	}
+
+	@SubscribeEvent
+	public void attachTile(AttachCapabilitiesEvent<TileEntity> event) {
+		if (event.getObject() instanceof TileEntityFurnace)
+			event.addCapability(new ResourceLocation("dd"), new ICapabilityProvider() {
+				TileEntityFurnace tile = (TileEntityFurnace) event.getObject();
+				IHUDProvider pro = new IHUDProvider() {
+
+					@Override
+					public boolean showData(boolean sneak, EnumFacing facing) {
+						return true;
+					}
+
+					@Override
+					public List<String> getData(boolean sneak, EnumFacing facing) {
+						List<String> lis = Lists.newArrayList();
+						lis.add(TextFormatting.DARK_RED + "Burntime: " + tile.getField(0));
+						ItemStack in = tile.getStackInSlot(0);
+						lis.add("Input: " + (in.isEmpty() ? "" : (in.getDisplayName() + " " + in.getCount() + "x")));
+						ItemStack out = tile.getStackInSlot(2);
+						lis.add("Output: " + (out.isEmpty() ? "" : (out.getDisplayName() + " " + out.getCount() + "x")));
+						ItemStack fu = tile.getStackInSlot(1);
+						lis.add("Fuel: " + (fu.isEmpty() ? "" : (fu.getDisplayName() + " " + fu.getCount() + "x")));
+						//						if (sneak)
+						//							lis.add(facing.toString().toUpperCase());
+						return lis;
+					}
+
+					@Override
+					public Side readingSide() {
+						return Side.SERVER;
+					}
+
+					@Override
+					public double scale(boolean sneak, EnumFacing facing) {
+						return .7;
+					}
+				};
+
+				@Override
+				public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+					return capability == LimeCapabilities.hudproviderCapa;
+				}
+
+				@Override
+				public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+					if (hasCapability(capability, facing))
+						return (T) pro;
+					return null;
+				}
+
+			});
 	}
 
 	static {
