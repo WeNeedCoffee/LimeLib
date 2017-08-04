@@ -37,7 +37,7 @@ public class RegistryHelper {
 				toRemove.add(entry);
 			}
 		}
-		toRemove.forEach(e -> entries.remove(e));
+		toRemove.forEach(entries::remove);
 	}
 
 	@SubscribeEvent

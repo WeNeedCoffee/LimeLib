@@ -88,7 +88,7 @@ public class LimeLib {
 		if (LimeLib.topLoaded)
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
 		wrenchAvailable = StreamSupport.stream(ForgeRegistries.ITEMS.spliterator(), false).anyMatch(item -> StackHelper.isWrench(new ItemStack(item)));
-		//		MinecraftForge.EVENT_BUS.register(INSTANCE);
+//		MinecraftForge.EVENT_BUS.register(INSTANCE);
 	}
 
 	@Mod.EventHandler

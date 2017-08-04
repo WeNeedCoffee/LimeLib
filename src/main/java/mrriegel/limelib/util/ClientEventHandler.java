@@ -168,16 +168,17 @@ public class ClientEventHandler {
 					List<String> text = tmp == null ? Collections.emptyList() : tmp.stream().filter(s -> s != null)//
 							.flatMap(s -> (!cutLongLines ? Collections.singletonList(s) : fontrenderer.listFormattedStringToWidth(s, (int) (maxWordLength / factor))).stream()).collect(Collectors.toList());
 					int lineHeight = fontrenderer.FONT_HEIGHT + 1;
-					int oy = (int) ((-(lineHeight) * text.size()) * factor);
-					int ysize = (int) ((text.size() * (lineHeight)) * factor);
+					int oy = (int) -(lineHeight * text.size() * factor);
+					int ysize = -oy;
 					new GuiDrawer(0, 0, 0, 0, 0).drawColoredRectangle(-48, oy, 96, ysize, tile.getBackgroundColor(sneak, face.getOpposite()));
-					GlStateManager.translate(0, (-text.size() * (lineHeight)) * factor, 0);
+					GlStateManager.translate(0, -text.size() * lineHeight * factor, 0);
 					GlStateManager.scale(factor, factor, factor);
 					for (int j = 0; j < text.size(); ++j) {
 						String s = text.get(j);
-						boolean tooLong = !cutLongLines && fontrenderer.getStringWidth(s) * factor > maxWordLength;
-						double fac = maxWordLength / (fontrenderer.getStringWidth(s) * factor);
-						int xx = tile.center(sneak, face.getOpposite()) || tooLong ? -fontrenderer.getStringWidth(s) / 2 : (int) (-46 / factor);
+						int width = fontrenderer.getStringWidth(s);
+						boolean tooLong = !cutLongLines && width * factor > maxWordLength;
+						double fac = maxWordLength / (width * factor);
+						int xx = tile.center(sneak, face.getOpposite()) || tooLong ? -width / 2 : (int) (-46 / factor);
 						if (tooLong)
 							GlStateManager.scale(fac, 1, 1);
 						fontrenderer.drawString(s, xx, j * 10 + 1, 0xFFFFFFFF);

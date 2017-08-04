@@ -201,6 +201,7 @@ public abstract class CommonContainer<T> extends Container {
 				}
 				if (this.mergeItemStack(itemstack1, minSlot.slotNumber, maxSlot.slotNumber + 1, false)) {
 					merged = true;
+					slot.onSlotChange(itemstack1, itemstack);
 					break;
 				}
 
@@ -216,6 +217,7 @@ public abstract class CommonContainer<T> extends Container {
 			if (itemstack1.getCount() == itemstack.getCount()) {
 				return ItemStack.EMPTY;
 			}
+//			ItemStack s = ItemHandlerHelper.copyStackWithSize(itemstack, Math.max(itemstack.getCount() - itemstack1.getCount(), 0));
 			slot.onTake(playerIn, itemstack1);
 			detectAndSendChanges();
 		}
