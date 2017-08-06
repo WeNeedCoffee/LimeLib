@@ -19,20 +19,16 @@ import mrriegel.limelib.util.EventHandler;
 import mrriegel.limelib.util.LimeCapabilities;
 import mrriegel.limelib.util.Serious;
 import mrriegel.limelib.util.Utils;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -51,7 +47,7 @@ public class LimeLib {
 	@Instance(LimeLib.MODID)
 	public static LimeLib INSTANCE;
 
-	public static final String VERSION = "1.7.4";
+	public static final String VERSION = "1.7.5";
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
 
@@ -88,7 +84,8 @@ public class LimeLib {
 		if (LimeLib.topLoaded)
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
 		wrenchAvailable = StreamSupport.stream(ForgeRegistries.ITEMS.spliterator(), false).anyMatch(item -> StackHelper.isWrench(new ItemStack(item)));
-//		MinecraftForge.EVENT_BUS.register(INSTANCE);
+		if (RecipeHelper.dev)
+			MinecraftForge.EVENT_BUS.register(INSTANCE);
 	}
 
 	@Mod.EventHandler
@@ -146,33 +143,6 @@ public class LimeLib {
 				}
 
 			});
-	}
-
-	static {
-		//		MinecraftForge.EVENT_BUS.register(O.class);
-	}
-
-	static class O {
-		@SubscribeEvent
-		public static void spawn(EntityJoinWorldEvent event) {
-			if (!event.getWorld().isRemote && event.getEntity() instanceof EntityItem) {
-				System.out.println(event.getEntity());
-				new Exception().printStackTrace();
-				//				for(Entity e:event.getWorld().loadedEntityList){
-				//					if(e instanceof EntityLiving)e.setDead();
-				//				}
-			}
-		}
-
-		@SubscribeEvent
-		public static void click(RightClickBlock event) {
-			if (!event.getWorld().isRemote) {
-				NonNullList<ItemStack> l = NonNullList.create();
-				event.getWorld().getBlockState(event.getPos()).getBlock().getDrops(l, event.getWorld(), event.getPos(), event.getWorld().getBlockState(event.getPos()), 0);
-				System.out.println(l);
-				System.out.println(event.getWorld().getBlockState(event.getPos()).getBlock().getDrops(event.getWorld(), event.getPos(), event.getWorld().getBlockState(event.getPos()), 0));
-			}
-		}
 	}
 
 }

@@ -201,7 +201,7 @@ public abstract class CommonContainer<T> extends Container {
 				}
 				if (this.mergeItemStack(itemstack1, minSlot.slotNumber, maxSlot.slotNumber + 1, false)) {
 					merged = true;
-					slot.onSlotChange(itemstack1, itemstack);
+//					slot.onSlotChange(itemstack1, itemstack);
 					break;
 				}
 
@@ -217,7 +217,7 @@ public abstract class CommonContainer<T> extends Container {
 			if (itemstack1.getCount() == itemstack.getCount()) {
 				return ItemStack.EMPTY;
 			}
-//			ItemStack s = ItemHandlerHelper.copyStackWithSize(itemstack, Math.max(itemstack.getCount() - itemstack1.getCount(), 0));
+			//			ItemStack s = ItemHandlerHelper.copyStackWithSize(itemstack, Math.max(itemstack.getCount() - itemstack1.getCount(), 0));
 			slot.onTake(playerIn, itemstack1);
 			detectAndSendChanges();
 		}
@@ -234,16 +234,15 @@ public abstract class CommonContainer<T> extends Container {
 				if (fit == 0)
 					continue;
 				fit = Math.min(stack.getCount(), fit);
-				stack.shrink(fit);
 				slotstack.grow(fit);
 				slot.onSlotChanged();
+				stack.shrink(fit);
 				merged = true;
 			}
 		}
 		for (int i = reverse ? endindex - 1 : startindex; !stack.isEmpty() && (reverse ? i >= startindex : i < endindex); i += reverse ? -1 : 1) {
 			Slot slot = inventorySlots.get(i);
-			ItemStack slotstack = slot.getStack();
-			if (slotstack.isEmpty() && slot.isItemValid(stack)) {
+			if (!slot.getHasStack() && slot.isItemValid(stack)) {
 				int fit = Math.min(slot.getItemStackLimit(stack), stack.getMaxStackSize());
 				if (fit == 0)
 					continue;
