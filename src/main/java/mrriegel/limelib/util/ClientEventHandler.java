@@ -128,7 +128,7 @@ public class ClientEventHandler {
 	public static void render(RenderWorldLastEvent event) {
 		//ihudprovider
 		RayTraceResult rtr = getMC().objectMouseOver;
-		if (rtr.typeOfHit == Type.BLOCK && !getMC().isGamePaused()) {
+		if (rtr != null && rtr.typeOfHit == Type.BLOCK && !getMC().isGamePaused()) {
 			TileEntity t = getMC().world.getTileEntity(rtr.getBlockPos());
 			IHUDProvider tile = IHUDProvider.isHUDProvider(t) ? IHUDProvider.getHUDProvider(t) : null;
 			if (tile != null) {
@@ -165,8 +165,9 @@ public class ClientEventHandler {
 					final int maxWordLength = 93;
 					boolean cutLongLines = !tile.lineBreak(sneak, face.getOpposite());
 					final double factor = MathHelper.clamp(tile.scale(sneak, face.getOpposite()), .1, 2.);
-					List<String> text = tmp == null ? Collections.emptyList() : tmp.stream().filter(s -> s != null)//
-							.flatMap(s -> (!cutLongLines ? Collections.singletonList(s) : fontrenderer.listFormattedStringToWidth(s, (int) (maxWordLength / factor))).stream()).collect(Collectors.toList());
+					List<String> text = tmp == null ? Collections.emptyList()
+							: tmp.stream().filter(s -> s != null)//
+									.flatMap(s -> (!cutLongLines ? Collections.singletonList(s) : fontrenderer.listFormattedStringToWidth(s, (int) (maxWordLength / factor))).stream()).collect(Collectors.toList());
 					int lineHeight = fontrenderer.FONT_HEIGHT + 1;
 					int oy = (int) -(lineHeight * text.size() * factor);
 					int ysize = -oy;

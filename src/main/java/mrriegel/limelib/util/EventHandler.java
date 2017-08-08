@@ -117,7 +117,7 @@ public class EventHandler {
 			if (event.player.world.getTotalWorldTime() % (event.player.isSneaking() ? 8 : 20) == 0) {
 				PacketHandler.sendTo(new EnergySyncMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
 			}
-			if (event.player.world.getTotalWorldTime() % 12 == 0) {
+			if (event.player.world.getTotalWorldTime() % 10 == 0) {
 				PacketHandler.sendTo(new HUDProviderMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
 			}
 		}

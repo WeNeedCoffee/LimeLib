@@ -2,6 +2,7 @@ package mrriegel.limelib.helper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import com.google.common.collect.Sets;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockShulkerBox;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -34,7 +36,6 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class BlockHelper {
 
-	@SuppressWarnings("deprecation")
 	public static boolean isBlockBreakable(World world, BlockPos pos) {
 		IBlockState state = world.getBlockState(pos);
 		return !world.isAirBlock(pos) && !state.getBlock().getMaterial(state).isLiquid() && state.getBlock().getBlockHardness(state, world, pos) > -1F;
@@ -64,6 +65,8 @@ public class BlockHelper {
 		if (player != null && !ForgeHooks.canHarvestBlock(state.getBlock(), player, world, pos))
 			lis.clear();
 		world.setBlockToAir(pos);
+		if (state.getBlock() instanceof BlockShulkerBox)
+			return NonNullList.create();
 		if (dropXP && !silk && exp > 0)
 			state.getBlock().dropXpOnBlockBreak(world, pos, exp);
 		return lis;
@@ -71,8 +74,15 @@ public class BlockHelper {
 
 	public static NonNullList<ItemStack> getFortuneDrops(World world, BlockPos pos, EntityPlayer player, int fortune) {
 		IBlockState state = world.getBlockState(pos);
-		NonNullList<ItemStack> tmp = NonNullList.create();
-		state.getBlock().getDrops(tmp, world, pos, state, fortune);
+		List<ItemStack> tmp = NonNullList.create();
+		state.getBlock().getDrops((NonNullList<ItemStack>) tmp, world, pos, state, fortune);
+		try {
+			Method m = state.getBlock().getClass().getMethod("getDrops", IBlockAccess.class, BlockPos.class, IBlockState.class, int.class);
+			if (m.getDeclaringClass() != Block.class)
+				tmp = state.getBlock().getDrops(world, pos, state, fortune);
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
 		float chance = ForgeEventFactory.fireBlockHarvesting(tmp, world, pos, state, fortune, 1.0f, false, player);
 		NonNullList<ItemStack> lis = NonNullList.create();
 		for (ItemStack item : tmp) {

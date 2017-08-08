@@ -276,13 +276,13 @@ public class RecipeHelper {
 				entry.put("ingredient", ImmutableMap.of("type", "forge:ore_dict", "ore", s));
 				json.add(entry);
 			}
-
-			try (FileWriter fw = new FileWriter(new File(rh.DIR, "_constants.json"))) {
-				Utils.getGSON().toJson(json, fw);
-				fw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			if (!rh.USED_OD_NAMES.isEmpty())
+				try (FileWriter fw = new FileWriter(new File(rh.DIR, "_constants.json"))) {
+					Utils.getGSON().toJson(json, fw);
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 	}
 
