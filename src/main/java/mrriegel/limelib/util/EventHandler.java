@@ -86,9 +86,9 @@ public class EventHandler {
 		if (event.phase == Phase.END && event.side == Side.SERVER) {
 			try {
 				if (event.world.getTotalWorldTime() % 4 == 0) {
-					Iterator<TileEntity> it = event.world.loadedTileEntityList.stream().filter(t -> t instanceof CommonTile && !t.isInvalid()).collect(Collectors.toList()).iterator();
+					Iterator<CommonTile> it = event.world.loadedTileEntityList.stream().filter(t -> t instanceof CommonTile && !t.isInvalid()).map(t -> (CommonTile) t).collect(Collectors.toList()).iterator();
 					while (it.hasNext()) {
-						CommonTile tile = (CommonTile) it.next();
+						CommonTile tile = it.next();
 						if (tile.needsSync()) {
 							tile.sync();
 							tile.unmarkForSync();

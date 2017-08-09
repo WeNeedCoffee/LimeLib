@@ -201,7 +201,7 @@ public abstract class CommonContainer<T> extends Container {
 				}
 				if (this.mergeItemStack(itemstack1, minSlot.slotNumber, maxSlot.slotNumber + 1, false)) {
 					merged = true;
-//					slot.onSlotChange(itemstack1, itemstack);
+					slot.onSlotChange(itemstack1, itemstack);
 					break;
 				}
 
@@ -256,86 +256,9 @@ public abstract class CommonContainer<T> extends Container {
 		return merged;
 	}
 
-	/**
-	 * @author lumien
-	 */
 	@Override
 	public boolean mergeItemStack(ItemStack stack, int startindex, int endindex, boolean reverse) {
-		if ("".isEmpty()/*custom method*/)
-			return merge(stack, startindex, endindex, reverse);
-		boolean flag1 = false;
-		int k = startindex;
-
-		if (reverse) {
-			k = endindex - 1;
-		}
-
-		Slot slot;
-		ItemStack itemstack1;
-
-		if (stack.isStackable()) {
-			while (stack.getCount() > 0 && (!reverse && k < endindex || reverse && k >= startindex)) {
-				slot = this.inventorySlots.get(k);
-				itemstack1 = slot.getStack();
-
-				if (!itemstack1.isEmpty() && itemstack1.getItem() == stack.getItem() && (!stack.getHasSubtypes() || stack.getItemDamage() == itemstack1.getItemDamage()) && ItemStack.areItemStackTagsEqual(stack, itemstack1) && slot.isItemValid(stack)) {
-					int l = itemstack1.getCount() + stack.getCount();
-
-					if (l <= stack.getMaxStackSize() && l <= slot.getSlotStackLimit()) {
-						stack.setCount(0);
-						itemstack1.setCount(l);
-						slot.onSlotChanged();
-						flag1 = true;
-					} else if (itemstack1.getCount() < stack.getMaxStackSize() && itemstack1.getCount() < slot.getSlotStackLimit()) {
-						stack.shrink(stack.getMaxStackSize() - itemstack1.getCount());
-						itemstack1.setCount(stack.getMaxStackSize());
-						slot.onSlotChanged();
-						flag1 = true;
-					}
-				}
-
-				if (reverse) {
-					--k;
-				} else {
-					++k;
-				}
-			}
-		}
-
-		if (stack.getCount() > 0) {
-			if (reverse) {
-				k = endindex - 1;
-			} else {
-				k = startindex;
-			}
-
-			while (!reverse && k < endindex || reverse && k >= startindex) {
-				slot = this.inventorySlots.get(k);
-				itemstack1 = slot.getStack();
-				if (itemstack1.isEmpty() && slot.isItemValid(stack)) {
-					if (1 < stack.getCount()) {
-						ItemStack copy = stack.copy();
-						copy.setCount(1);
-						slot.putStack(copy);
-						stack.shrink(1);
-						flag1 = true;
-						break;
-					} else {
-						slot.putStack(stack.copy());
-						stack.setCount(0);
-						flag1 = true;
-						break;
-					}
-				}
-
-				if (reverse) {
-					--k;
-				} else {
-					++k;
-				}
-			}
-		}
-		return flag1;
+		return merge(stack, startindex, endindex, reverse);
 	}
 
 	public Slot getSlotFromInv(Object inv, int slotIn) {

@@ -83,7 +83,7 @@ public class NBTHelper {
 	}
 
 	public static <T> Optional<T> getSafe(NBTTagCompound nbt, String name, Class<T> clazz) {
-		if (nbt.hasKey(name))
+		if (nbt == null || nbt.hasKey(name))
 			return Optional.of(get(nbt, name, clazz));
 		return Optional.empty();
 	}
@@ -114,7 +114,7 @@ public class NBTHelper {
 	}
 
 	public static <T> Optional<List<T>> getListSafe(NBTTagCompound nbt, String name, Class<T> clazz) {
-		if (nbt.hasKey(name))
+		if (nbt == null || nbt.hasKey(name, 10))
 			return Optional.of(getList(nbt, name, clazz));
 		return Optional.empty();
 	}
@@ -152,7 +152,7 @@ public class NBTHelper {
 	}
 
 	public static <K, V> Optional<Map<K, V>> getMapSafe(NBTTagCompound nbt, String name, Class<K> keyClazz, Class<V> valClazz) {
-		if (nbt.hasKey(name))
+		if (nbt == null || nbt.hasKey(name, 10))
 			return Optional.of(getMap(nbt, name, keyClazz, valClazz));
 		return Optional.empty();
 	}

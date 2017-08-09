@@ -80,9 +80,12 @@ public final class StackWrapper {
 		return ItemHandlerHelper.canItemStacksStack(stack, this.stack);
 	}
 
-	public void insert(ItemStack stack) {
+	public boolean insert(ItemStack stack) {
 		if (canInsert(stack))
 			size += stack.getCount();
+		else
+			return false;
+		return true;
 	}
 
 	public ItemStack extract(int size) {

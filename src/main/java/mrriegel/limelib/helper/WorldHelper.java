@@ -1,11 +1,8 @@
 package mrriegel.limelib.helper;
 
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Predicate;
@@ -133,37 +130,6 @@ public class WorldHelper {
 
 	public static List<BlockPos> getNeighbors(BlockPos p) {
 		return Lists.newArrayList(EnumFacing.VALUES).stream().map(f -> p.offset(f)).collect(Collectors.toList());
-	}
-
-	@Deprecated
-	public static Iterator<BlockPos> getConnectedBlocks(World world, BlockPos start, boolean needLoaded, BiPredicate<BlockPos, World> pred, EnumFacing... faces) {
-		return new Iterator<BlockPos>() {
-			LinkedList<BlockPos> research = Lists.newLinkedList(Collections.singleton(start));
-			Set<BlockPos> done = Sets.newHashSet();
-
-			@Override
-			public boolean hasNext() {
-				return !research.isEmpty();
-			}
-
-			@Override
-			public BlockPos next() {
-				BlockPos current = research.poll();
-				for (EnumFacing facing : faces) {
-					BlockPos searchPos = current.offset(facing);
-					if (needLoaded && !world.isBlockLoaded(searchPos))
-						continue;
-					if (pred.test(searchPos, world)) {
-						if (!done.contains(searchPos)) {
-							done.add(searchPos);
-							research.add(searchPos);
-							return searchPos;
-						}
-					}
-				}
-				return null;
-			}
-		};
 	}
 
 }

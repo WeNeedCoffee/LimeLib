@@ -69,7 +69,7 @@ public class Utils {
 		return new Item().setRegistryName("dummy").getRegistryName().getResourceDomain();
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	public static List<Enum> getEnums(Class<? extends Enum> clazz) {
 		List<Enum> lis = Lists.newArrayList();
 		EnumSet enums = EnumSet.allOf(clazz);

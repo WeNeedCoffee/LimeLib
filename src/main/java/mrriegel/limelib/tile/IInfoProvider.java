@@ -17,6 +17,7 @@ import mcjty.theoneprobe.api.ProbeMode;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -113,6 +114,8 @@ public interface IInfoProvider<T extends TileEntity> extends IWailaDataProvider,
 	public static void registerProvider(IInfoProvider<?> provider, Class<? extends TileEntity> clazz) {
 		if (!Dummy.providers.stream().map(p -> p.getRight()).anyMatch(c -> c == clazz))
 			Dummy.providers.add(Pair.of(provider, clazz));
+		else
+			LimeLib.log.warn(clazz + " is already registered.");
 	}
 
 	public static List<Pair<IInfoProvider<?>, Class<? extends TileEntity>>> getProviders() {
