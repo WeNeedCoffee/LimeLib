@@ -19,7 +19,7 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class CommonGuiButton extends GuiButtonExt implements ITooltip {
 
-	protected List<String> strings;
+	protected List<String> tooltip;
 	protected Minecraft mc;
 	protected GuiDrawer drawer;
 	protected int frameColor, buttonColor, overlayColor;
@@ -88,18 +88,18 @@ public class CommonGuiButton extends GuiButtonExt implements ITooltip {
 	public void drawTooltip(int mouseX, int mouseY) {
 		GlStateManager.pushMatrix();
 		ScaledResolution sr = new ScaledResolution(mc);
-		if (strings != null)
-			GuiUtils.drawHoveringText(strings, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
+		if (tooltip != null)
+			GuiUtils.drawHoveringText(tooltip, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
 		GlStateManager.popMatrix();
 	}
 
 	public CommonGuiButton setTooltip(List<String> lines) {
-		strings = lines;
+		tooltip = lines;
 		return this;
 	}
 
 	public CommonGuiButton setTooltip(String string) {
-		strings = Lists.newArrayList(string);
+		tooltip = Lists.newArrayList(string);
 		return this;
 	}
 

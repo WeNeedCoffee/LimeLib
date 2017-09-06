@@ -1,26 +1,29 @@
 package mrriegel.limelib.helper;
 
+import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.util.Utils;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 
 @EventBusSubscriber(modid = LimeLib.MODID)
 public class RegistryHelper {
@@ -30,14 +33,14 @@ public class RegistryHelper {
 	@SubscribeEvent
 	public static <T extends IForgeRegistryEntry<T>> void registerEvent(@SuppressWarnings("rawtypes") RegistryEvent.Register event) {
 		Class<?> clazz = (Class<?>) event.getGenericType();
-		Set<IForgeRegistryEntry<?>> toRemove = Sets.newHashSet();
-		for (IForgeRegistryEntry<?> entry : entries) {
+		Iterator<IForgeRegistryEntry<?>> it = entries.iterator();
+		while (it.hasNext()) {
+			IForgeRegistryEntry<?> entry = it.next();
 			if (clazz.isAssignableFrom(entry.getClass())) {
 				event.getRegistry().register(entry);
-				toRemove.add(entry);
+				it.remove();
 			}
 		}
-		toRemove.forEach(entries::remove);
 	}
 
 	@SubscribeEvent
@@ -54,6 +57,18 @@ public class RegistryHelper {
 	public static void initModel(Item item, int meta, ModelResourceLocation mrl) {
 		Validate.isTrue(item != null && item != Items.AIR);
 		models.put(Pair.of(item, meta), mrl);
+	}
+
+	public static void setRegistryName(Impl<?> entry, ResourceLocation rl) {
+		if (Utils.getCurrentModID().equals(rl.getResourceDomain()))
+			entry.setRegistryName(rl);
+		else
+			try {
+				Field f = Impl.class.getDeclaredField("registryName");
+				f.setAccessible(true);
+				f.set(entry, rl);
+			} catch (Exception e) {
+			}
 	}
 
 }

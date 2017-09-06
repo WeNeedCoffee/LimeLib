@@ -137,14 +137,20 @@ public class ClientEventHandler {
 				boolean playerhorizontal = false;
 				if (face.getAxis() == Axis.Y || playerhorizontal)
 					face = getMC().player.getHorizontalFacing();
-				if (tile.showData(sneak, face.getOpposite())) {
+				List<String> tmp = tile.getData(sneak, face.getOpposite());
+				if (tile.readingSide().isServer()) {
+					List<String> foo = supplierTexts.get(t.getPos());
+					if (foo != null)
+						tmp = foo;
+				}
+				if (tmp != null && !tmp.isEmpty()) {
 					double x = t.getPos().getX() - TileEntityRendererDispatcher.staticPlayerX;
 					double y = t.getPos().getY() - TileEntityRendererDispatcher.staticPlayerY;
 					double z = t.getPos().getZ() - TileEntityRendererDispatcher.staticPlayerZ;
 					GlStateManager.pushMatrix();
 					double dx = face.getAxis() == Axis.Z ? 0.5F : Math.max(-0.001, face.getAxisDirection().getOffset() * -1.001);
 					double dz = face.getAxis() == Axis.X ? 0.5F : Math.max(-0.001, face.getAxisDirection().getOffset() * -1.001);
-					GlStateManager.translate((float) x + dx, (float) y + 1.F, (float) z + dz);
+					GlStateManager.translate((float) x + dx, (float) y + 1F, (float) z + dz);
 					float f1 = face.getHorizontalIndex() * 90f;
 					if (face.getAxis() == Axis.Z)
 						f1 += 180f;
@@ -156,18 +162,11 @@ public class ClientEventHandler {
 					GlStateManager.scale(f3, -f3, f3);
 					GlStateManager.glNormal3f(0.0F, 0.0F, -f3);
 					GlStateManager.depthMask(false);
-					List<String> tmp = tile.getData(sneak, face.getOpposite());
-					if (tile.readingSide().isServer()) {
-						List<String> foo = supplierTexts.get(t.getPos());
-						if (foo != null)
-							tmp = foo;
-					}
 					final int maxWordLength = 93;
-					boolean cutLongLines = !tile.lineBreak(sneak, face.getOpposite());
+					boolean cutLongLines = tile.lineBreak(sneak, face.getOpposite());
 					final double factor = MathHelper.clamp(tile.scale(sneak, face.getOpposite()), .1, 2.);
-					List<String> text = tmp == null ? Collections.emptyList()
-							: tmp.stream().filter(s -> s != null)//
-									.flatMap(s -> (!cutLongLines ? Collections.singletonList(s) : fontrenderer.listFormattedStringToWidth(s, (int) (maxWordLength / factor))).stream()).collect(Collectors.toList());
+					List<String> text = tmp.stream().filter(s -> s != null)//
+							.flatMap(s -> (!cutLongLines ? Collections.singletonList(s) : fontrenderer.listFormattedStringToWidth(s, (int) (maxWordLength / factor))).stream()).collect(Collectors.toList());
 					int lineHeight = fontrenderer.FONT_HEIGHT + 1;
 					int oy = (int) -(lineHeight * text.size() * factor);
 					int ysize = -oy;
@@ -182,10 +181,9 @@ public class ClientEventHandler {
 						int xx = tile.center(sneak, face.getOpposite()) || tooLong ? -width / 2 : (int) (-46 / factor);
 						if (tooLong)
 							GlStateManager.scale(fac, 1, 1);
-						fontrenderer.drawString(s, xx, j * 10 + 1, 0xFFFFFFFF);
+						fontrenderer.drawString(s, xx, j * 10 + 1, 0xFFFFFFFF, true);
 						if (tooLong)
 							GlStateManager.scale(1. / fac, 1, 1);
-
 					}
 					GlStateManager.scale(1. / factor, 1. / factor, 1. / factor);
 					GlStateManager.depthMask(true);

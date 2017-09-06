@@ -1,6 +1,7 @@
 package mrriegel.limelib.book;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -9,7 +10,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 public class Article {
 	protected String text;
 	protected NonNullList<ItemStack> stacks = NonNullList.create();
-	protected String name;
+	private String name;
 	protected int index;
 
 	static final int maxItems = 10;
@@ -38,6 +39,10 @@ public class Article {
 	public Article setText(String text) {
 		this.text = text;
 		return this;
+	}
+	
+	public String getName() {
+		return I18n.format(name);
 	}
 
 	@Override

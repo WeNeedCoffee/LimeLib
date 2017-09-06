@@ -22,7 +22,7 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 public class CommonTileInventory extends CommonTile implements IInventory {
 
 	protected NonNullList<ItemStack> stacks;
-	public final int SIZE, STACKLIMIT;
+	private int SIZE, STACKLIMIT;
 
 	public CommonTileInventory(int size) {
 		this(size, 64);
@@ -150,7 +150,7 @@ public class CommonTileInventory extends CommonTile implements IInventory {
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		NBTHelper.setList(compound, "Items", Lists.newArrayList(stacks));
+		NBTHelper.setList(compound, "Items", stacks);
 		return super.writeToNBT(compound);
 	}
 

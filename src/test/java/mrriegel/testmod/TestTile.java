@@ -140,11 +140,6 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 	}
 
 	@Override
-	public boolean showData(boolean sneak, EnumFacing facing) {
-		return true;
-	}
-
-	@Override
 	public List<String> getData(boolean sneak, EnumFacing facing) {
 		if (!sneak)
 			return Lists.newArrayList(TextFormatting.DARK_GREEN + "" + facing, //

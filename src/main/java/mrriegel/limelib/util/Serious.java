@@ -1,16 +1,13 @@
 package mrriegel.limelib.util;
 
-import java.lang.reflect.Field;
 import java.util.Random;
 
 import com.google.common.collect.Lists;
 
-import mrriegel.limelib.Config;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.helper.RegistryHelper;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
@@ -21,7 +18,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 
 public class Serious {
 
@@ -29,21 +25,11 @@ public class Serious {
 		String k = "\u0075\u006E\u006B\u006E\u006F\u0077\u006E";
 		ResourceLocation rl = new ResourceLocation(k, k);
 		RandomShapedRecipe rsh = new RandomShapedRecipe(rl);
-		try {
-			Field f = Impl.class.getDeclaredField("registryName");
-			f.setAccessible(true);
-			f.set(rsh, rl);
-			RegistryHelper.register(rsh);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-		}
+		RegistryHelper.setRegistryName(rsh, rl);
+		RegistryHelper.register(rsh);
 	}
 
 	public static void init() {
-		if (Config.commandBlockCreativeTab) {
-			Blocks.COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
-			Blocks.CHAIN_COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
-			Blocks.REPEATING_COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
-		}
 	}
 
 	private static class RandomShapedRecipe extends ShapedOreRecipe {

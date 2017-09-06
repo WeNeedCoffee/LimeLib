@@ -1,6 +1,5 @@
 package mrriegel.limelib.block;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -85,7 +84,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	public TileEntity createTileEntity(World world, IBlockState state) {
 		try {
 			return ConstructorUtils.invokeConstructor(getTile());
-		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}

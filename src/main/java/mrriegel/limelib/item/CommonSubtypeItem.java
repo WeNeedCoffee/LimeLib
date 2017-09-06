@@ -8,7 +8,7 @@ import net.minecraft.util.NonNullList;
 
 public abstract class CommonSubtypeItem extends CommonItem {
 
-	private final int num;
+	protected final int num;
 
 	public CommonSubtypeItem(String name, int num) {
 		super(name);

@@ -69,24 +69,24 @@ public class InvHelper {
 
 	}
 
-	public static boolean contains(IItemHandler inv, ItemStack stack) {
-		if (inv == null || stack.isEmpty())
+	public static boolean contains(IItemHandler inv, Predicate<ItemStack> pred) {
+		if (inv == null)
 			return false;
 		for (int i = 0; i < inv.getSlots(); i++) {
-			if (ItemHandlerHelper.canItemStacksStack(inv.getStackInSlot(i), stack)) {
+			if (pred.test(inv.getStackInSlot(i))) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public static int getAmount(IItemHandler inv, Predicate<ItemStack> fil) {
-		if (inv == null || fil == null)
+	public static int getAmount(IItemHandler inv, Predicate<ItemStack> pred) {
+		if (inv == null || pred == null)
 			return 0;
 		int amount = 0;
 		for (int i = 0; i < inv.getSlots(); i++) {
 			ItemStack slot = inv.getStackInSlot(i);
-			if (fil.test(slot))
+			if (pred.test(slot))
 				amount += slot.getCount();
 		}
 		return amount;

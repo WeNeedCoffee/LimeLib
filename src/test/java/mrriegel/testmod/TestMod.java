@@ -164,11 +164,6 @@ public class TestMod implements IGuiHandler {
 						return (T) new IHUDProvider() {
 
 							@Override
-							public boolean showData(boolean sneak, EnumFacing facing) {
-								return true;
-							}
-
-							@Override
 							public List<String> getData(boolean sneak, EnumFacing facing) {
 								List<String> lis = Lists.newArrayList();
 								lis.add(TextFormatting.DARK_RED+"Burntime: " + tile.getField(0));

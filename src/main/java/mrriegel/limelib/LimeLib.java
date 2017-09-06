@@ -19,6 +19,8 @@ import mrriegel.limelib.util.EventHandler;
 import mrriegel.limelib.util.LimeCapabilities;
 import mrriegel.limelib.util.Serious;
 import mrriegel.limelib.util.Utils;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -81,11 +83,17 @@ public class LimeLib {
 		PacketHandler.init();
 		Serious.init();
 		RecipeHelper.generateConstants();
+		if (Config.commandBlockCreativeTab) {
+			Blocks.COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
+			Blocks.CHAIN_COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
+			Blocks.REPEATING_COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
+		}
 		if (LimeLib.topLoaded)
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
 		wrenchAvailable = StreamSupport.stream(ForgeRegistries.ITEMS.spliterator(), false).anyMatch(item -> StackHelper.isWrench(new ItemStack(item)));
-		if (RecipeHelper.dev)
+		if (RecipeHelper.dev) {
 			MinecraftForge.EVENT_BUS.register(INSTANCE);
+		}
 	}
 
 	@Mod.EventHandler
@@ -95,14 +103,9 @@ public class LimeLib {
 	@SubscribeEvent
 	public void attachTile(AttachCapabilitiesEvent<TileEntity> event) {
 		if (event.getObject() instanceof TileEntityFurnace)
-			event.addCapability(new ResourceLocation("dd"), new ICapabilityProvider() {
+			event.addCapability(new ResourceLocation(MODID, "dd"), new ICapabilityProvider() {
 				TileEntityFurnace tile = (TileEntityFurnace) event.getObject();
 				IHUDProvider pro = new IHUDProvider() {
-
-					@Override
-					public boolean showData(boolean sneak, EnumFacing facing) {
-						return true;
-					}
 
 					@Override
 					public List<String> getData(boolean sneak, EnumFacing facing) {
@@ -126,7 +129,12 @@ public class LimeLib {
 
 					@Override
 					public double scale(boolean sneak, EnumFacing facing) {
-						return .7;
+						return .5;
+					}
+
+					@Override
+					public boolean lineBreak(boolean sneak, EnumFacing facing) {
+						return !!!false;
 					}
 				};
 

@@ -18,6 +18,7 @@ import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.plugin.JEI;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
@@ -98,7 +99,7 @@ public class GuiBook extends CommonGuiScreen {
 		for (int i = 0; i < book.chapters.size(); i++) {
 			List<String> tooltip = Lists.newArrayList(book.chapters.get(i).name);
 			for (Article c : book.chapters.get(i).articles)
-				tooltip.add(TextFormatting.GRAY + "  " + c.name);
+				tooltip.add(TextFormatting.GRAY + "  " + c.getName());
 			/** clear tooltip */
 			tooltip.clear();
 			buttonList.add(new CommonGuiButton(i + 100, guiLeft + 7, guiTop + 7 + i * 18, 46, 15, book.chapters.get(i).name).setTooltip(tooltip).setDesign(Design.SIMPLE));
@@ -137,7 +138,7 @@ public class GuiBook extends CommonGuiScreen {
 	}
 
 	private String formatText() {
-		String s = TextFormatting.BOLD + currentArticle.name + TextFormatting.RESET + "\n\n" + currentArticle.text;
+		String s = TextFormatting.BOLD + currentArticle.getName() + TextFormatting.RESET + "\n\n" + I18n.format(currentArticle.text);
 		s = s.replaceAll("<r>", TextFormatting.RESET.toString());
 		s = s.replaceAll("<b>", TextFormatting.BOLD.toString());
 		s = s.replaceAll("<i>", TextFormatting.ITALIC.toString());
@@ -193,7 +194,7 @@ public class GuiBook extends CommonGuiScreen {
 			return;
 		for (int i = 0; i < Math.min(currentArticle.stacks.size(), slots.size()); i++) {
 			slots.get(i).stack = currentArticle.stacks.get(i);
-			slots.get(i).x = guiLeft + 114 + (i * 17) + fontRenderer.getStringWidth(TextFormatting.BOLD + currentArticle.name);
+			slots.get(i).x = guiLeft + 114 + (i * 17) + fontRenderer.getStringWidth(TextFormatting.BOLD + currentArticle.getName());
 		}
 	}
 
@@ -201,7 +202,7 @@ public class GuiBook extends CommonGuiScreen {
 		for (int i = 0; i < articleButtons.size(); i++) {
 			if (i < currentChapter.articles.size()) {
 				articleButtons.get(i).visible = true;
-				articleButtons.get(i).displayString = currentChapter.articles.get(i + articlePos).name;
+				articleButtons.get(i).displayString = currentChapter.articles.get(i + articlePos).getName();
 			} else {
 				articleButtons.get(i).visible = false;
 			}

@@ -2,6 +2,8 @@ package mrriegel.limelib.tile;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import mrriegel.limelib.util.LimeCapabilities;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -9,9 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public interface IHUDProvider {
 
-	boolean showData(boolean sneak, EnumFacing facing);
-
-	List<String> getData(boolean sneak, EnumFacing facing);
+	@Nullable List<String> getData(boolean sneak, EnumFacing facing);
 
 	default int getBackgroundColor(boolean sneak, EnumFacing facing) {
 		return 0x44FFFFFF;
@@ -30,7 +30,7 @@ public interface IHUDProvider {
 	}
 
 	default boolean lineBreak(boolean sneak, EnumFacing facing) {
-		return false;
+		return true;
 	}
 
 	static boolean isHUDProvider(TileEntity t) {

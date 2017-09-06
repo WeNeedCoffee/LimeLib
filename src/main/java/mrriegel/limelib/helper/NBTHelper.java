@@ -1,5 +1,6 @@
 package mrriegel.limelib.helper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,7 +59,7 @@ public class NBTHelper {
 			this.setter = setter;
 		}
 
-		public static Map<Class<?>, NBTType> m = Maps.newHashMap();
+		public static Map<Class<?>, NBTType> m = new HashMap<Class<?>, NBTType>();
 
 		public static boolean validClass(Class<?> clazz) {
 			return Enum.class.isAssignableFrom(clazz) || m.get(clazz) != null;
@@ -72,8 +73,10 @@ public class NBTHelper {
 	}
 
 	public static <T> T get(NBTTagCompound nbt, String name, Class<T> clazz) {
-		if (Enum.class.isAssignableFrom(clazz))
-			return clazz.getEnumConstants()[nbt.getInteger(name)];
+		if (Enum.class.isAssignableFrom(clazz)) {
+			Optional<Integer> o = getSafe(nbt, name, Integer.class);
+			return o.isPresent() ? clazz.getEnumConstants()[o.get()] : null;
+		}
 		NBTType type = NBTType.m.get(clazz);
 		if (type == null)
 			throw new IllegalArgumentException();
