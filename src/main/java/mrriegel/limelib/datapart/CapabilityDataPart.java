@@ -56,7 +56,7 @@ public class CapabilityDataPart {
 
 		@Override
 		public void deserializeNBT(NBTTagCompound nbt) {
-			CapabilityDataPart.DATAPART.readNBT(instance, null, nbt);
+			CapabilityDataPart.DATAPART.getStorage().readNBT(DATAPART, instance, null, nbt);
 		}
 	}
 }

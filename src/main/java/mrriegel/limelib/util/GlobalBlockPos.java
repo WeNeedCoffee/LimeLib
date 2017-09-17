@@ -5,11 +5,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class GlobalBlockPos {
 	private BlockPos pos;
 	private int dimension;
+	private World world;
 
 	public GlobalBlockPos(BlockPos pos, int dimension) {
 		this.pos = pos;
@@ -80,10 +81,13 @@ public class GlobalBlockPos {
 
 	public void setDimension(int dimension) {
 		this.dimension = dimension;
+		this.world = null;
 	}
 
 	public World getWorld() {
-		return DimensionManager.getWorld(dimension);
+		if (world != null)
+			return world;
+		return world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimension);
 	}
 
 	public TileEntity getTile() {

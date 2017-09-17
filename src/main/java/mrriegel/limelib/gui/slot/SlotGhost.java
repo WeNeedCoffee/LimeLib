@@ -20,7 +20,7 @@ public class SlotGhost extends CommonSlot {
 	public boolean canTakeStack(EntityPlayer playerIn) {
 		ItemStack holding = playerIn.inventory.getItemStack();
 
-		if (holding != null) {
+		if (!holding.isEmpty()) {
 			holding = holding.copy();
 			holding.setCount(1);
 		}

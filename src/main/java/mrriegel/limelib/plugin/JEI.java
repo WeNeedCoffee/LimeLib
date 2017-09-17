@@ -46,11 +46,11 @@ public class JEI implements IModPlugin {
 		showUsage((Object) stack);
 	}
 
-	private static void showRecipes(Object stack) {
+	public static void showRecipes(Object stack) {
 		runtime.getRecipesGui().show(runtime.getRecipeRegistry().createFocus(Mode.OUTPUT, stack));
 	}
 
-	private static void showUsage(Object stack) {
+	public static void showUsage(Object stack) {
 		runtime.getRecipesGui().show(runtime.getRecipeRegistry().createFocus(Mode.INPUT, stack));
 	}
 
@@ -60,6 +60,23 @@ public class JEI implements IModPlugin {
 
 	public static void showCategories(String string) {
 		showCategories(Lists.newArrayList(string));
+	}
+
+	public static boolean hasKeyboardFocus() {
+		if (runtime.getIngredientListOverlay() != null)
+			return runtime.getIngredientListOverlay().hasKeyboardFocus();
+		return false;
+	}
+
+	public static void setFilterText(String s) {
+		if (runtime.getIngredientFilter() != null)
+			runtime.getIngredientFilter().setFilterText(s);
+	}
+
+	public static String getFilterText() {
+		if (runtime.getIngredientFilter() != null)
+			return runtime.getIngredientFilter().getFilterText();
+		return null;
 	}
 
 }

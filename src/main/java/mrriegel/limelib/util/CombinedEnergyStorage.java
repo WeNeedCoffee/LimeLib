@@ -1,5 +1,7 @@
 package mrriegel.limelib.util;
 
+import java.util.Arrays;
+
 import net.minecraftforge.energy.IEnergyStorage;
 
 public class CombinedEnergyStorage implements IEnergyStorage {
@@ -40,18 +42,12 @@ public class CombinedEnergyStorage implements IEnergyStorage {
 
 	@Override
 	public int getEnergyStored() {
-		int i = 0;
-		for (IEnergyStorage e : storages)
-			i += e.getEnergyStored();
-		return i;
+		return Arrays.stream(storages).mapToInt(IEnergyStorage::getEnergyStored).sum();
 	}
 
 	@Override
 	public int getMaxEnergyStored() {
-		int i = 0;
-		for (IEnergyStorage e : storages)
-			i += e.getMaxEnergyStored();
-		return i;
+		return Arrays.stream(storages).mapToInt(IEnergyStorage::getMaxEnergyStored).sum();
 	}
 
 	// private static int getCapacity(EnergyStorage... storages) {

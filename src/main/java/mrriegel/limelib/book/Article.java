@@ -40,7 +40,7 @@ public class Article {
 		this.text = text;
 		return this;
 	}
-	
+
 	public String getName() {
 		return I18n.format(name);
 	}

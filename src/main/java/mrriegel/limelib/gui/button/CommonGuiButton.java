@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.lwjgl.input.Mouse;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import mrriegel.limelib.gui.GuiDrawer;
@@ -68,13 +69,15 @@ public class CommonGuiButton extends GuiButtonExt implements ITooltip {
 			} else if (this.hovered) {
 				color = 16777120;
 			}
-			String buttonText = this.displayString;
-			int strWidth = mc.fontRenderer.getStringWidth(buttonText);
-			int ellipsisWidth = mc.fontRenderer.getStringWidth("...");
-			if (strWidth > width - 6 && strWidth > ellipsisWidth)
-				buttonText = mc.fontRenderer.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
-			int xS = this.x + this.width / 2;
-			this.drawCenteredString(mc.fontRenderer, buttonText, xS, this.y + (this.height - 8) / 2, color);
+			if (!Strings.isNullOrEmpty(displayString)) {
+				String buttonText = this.displayString;
+				int strWidth = mc.fontRenderer.getStringWidth(buttonText);
+				int ellipsisWidth = mc.fontRenderer.getStringWidth("...");
+				if (strWidth > width - 6 && strWidth > ellipsisWidth)
+					buttonText = mc.fontRenderer.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
+				int xS = this.x + this.width / 2;
+				this.drawCenteredString(mc.fontRenderer, buttonText, xS, this.y + (this.height - 8) / 2, color);
+			}
 			if (!stack.isEmpty()) {
 				int yp = Math.max(y, y + (Math.max(height - 16, 0) / 2));
 				int xp = Math.max(x, x + (Math.max(width - 16, 0) / 2));

@@ -3,7 +3,6 @@ package mrriegel.limelib.helper;
 import java.util.List;
 import java.util.function.Predicate;
 
-import mrriegel.limelib.util.FilterItem;
 import mrriegel.limelib.util.StackWrapper;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -90,12 +89,6 @@ public class InvHelper {
 				amount += slot.getCount();
 		}
 		return amount;
-	}
-
-	public static ItemStack extractItem(IItemHandler inv, FilterItem fil, int num, boolean simulate) {
-		if (fil == null)
-			return ItemStack.EMPTY;
-		return extractItem(inv, (ItemStack s) -> fil.match(s), num, simulate);
 	}
 
 	public static ItemStack extractItem(IItemHandler inv, Predicate<ItemStack> pred, int num, boolean simulate) {

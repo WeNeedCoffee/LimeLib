@@ -3,8 +3,6 @@ package mrriegel.limelib.util;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.Validate;
-
 import com.google.common.collect.Lists;
 
 import net.minecraft.item.ItemStack;
@@ -89,7 +87,6 @@ public final class StackWrapper {
 	}
 
 	public ItemStack extract(int size) {
-		Validate.isTrue(size >= 0);
 		size = Math.min(size, this.size);
 		this.size -= size;
 		return ItemHandlerHelper.copyStackWithSize(stack, size);

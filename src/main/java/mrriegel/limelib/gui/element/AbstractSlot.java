@@ -1,8 +1,8 @@
 package mrriegel.limelib.gui.element;
 
 import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import mrriegel.limelib.gui.GuiDrawer;
 import net.minecraft.client.gui.GuiScreen;
@@ -13,18 +13,18 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
-public abstract class AbstractSlot extends GuiElement implements ITooltip {
+public abstract class AbstractSlot<T> extends GuiElement implements ITooltip {
 	public int amount;
 	public boolean number, square, smallFont, toolTip, editable;
+	public T stack;
 
 	public AbstractSlot(int id, int x, int y, int amount, GuiDrawer drawer, boolean number, boolean square, boolean smallFont, boolean toolTip) {
-		super(id, x, y, 16, 16, drawer);
+		super(id, x, y, 18, 18, drawer);
 		this.amount = amount;
 		this.number = number;
 		this.square = square;
@@ -36,9 +36,7 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 		return null;
 	}
 
-	public static class ItemSlot extends AbstractSlot {
-
-		public ItemStack stack;
+	public static class ItemSlot extends AbstractSlot<ItemStack> {
 
 		public ItemSlot(ItemStack stack, int id, int x, int y, int amount, GuiDrawer drawer, boolean number, boolean square, boolean smallFont, boolean toolTip) {
 			super(id, x, y, amount, drawer, number, square, smallFont, toolTip);
@@ -53,11 +51,11 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();
 				ScaledResolution sr = new ScaledResolution(mc);
-				NBTTagCompound n = stack.hasTagCompound() ? stack.getTagCompound().copy() : null;
+				//				NBTTagCompound n = stack.hasTagCompound() ? stack.getTagCompound().copy() : null;
 				List<String> tips = getTooltip(GuiScreen.isShiftKeyDown());
 				if (tips != null)
 					GuiUtils.drawHoveringText(tips, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
-				stack.setTagCompound(n);
+				//				stack.setTagCompound(n);
 				GlStateManager.popMatrix();
 				GlStateManager.enableLighting();
 			}
@@ -65,7 +63,7 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 
 		@Override
 		protected List<String> getTooltip(boolean shift) {
-			return shift ? Lists.newArrayList("Amount: " + amount) : GuiDrawer.getTooltip(stack);
+			return Stream.concat(shift ? Stream.of(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + "Amount: " + amount) : Stream.empty(), GuiDrawer.getTooltip(stack).stream()).collect(Collectors.toList());
 		}
 
 		@Override
@@ -108,19 +106,18 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 
 	}
 
-	public static class FluidSlot extends AbstractSlot {
-		Fluid fluid;
+	public static class FluidSlot extends AbstractSlot<FluidStack> {
 
-		public FluidSlot(Fluid fluid, int id, int x, int y, int amount, GuiDrawer drawer, boolean number, boolean square, boolean smallFont, boolean toolTip) {
+		public FluidSlot(FluidStack stack, int id, int x, int y, int amount, GuiDrawer drawer, boolean number, boolean square, boolean smallFont, boolean toolTip) {
 			super(id, x, y, amount, drawer, number, square, smallFont, toolTip);
-			this.fluid = fluid;
+			this.stack = stack;
 		}
 
 		@Override
 		public void drawTooltip(int mouseX, int mouseY) {
 			if (!visible)
 				return;
-			if (toolTip && fluid != null) {
+			if (toolTip && stack != null) {
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();
 				ScaledResolution sr = new ScaledResolution(mc);
@@ -134,19 +131,19 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 
 		@Override
 		protected List<String> getTooltip(boolean shift) {
-			return shift ? Lists.newArrayList("Amount: " + amount + " mB") : Lists.newArrayList(fluid.getLocalizedName(new FluidStack(fluid, 1)));
+			return Stream.concat(shift ? Stream.of(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + "Amount: " + amount + " mB") : Stream.empty(), Stream.of(stack.getFluid().getLocalizedName(new FluidStack(stack, 1)))).collect(Collectors.toList());
 		}
 
 		@Override
 		public void draw(int mouseX, int mouseY) {
 			if (!visible)
 				return;
-			if (fluid != null) {
+			if (stack != null) {
 				GlStateManager.pushMatrix();
-				TextureAtlasSprite fluidIcon = mc.getTextureMapBlocks().getTextureExtry(fluid.getStill().toString());
+				TextureAtlasSprite fluidIcon = mc.getTextureMapBlocks().getTextureExtry(stack.getFluid().getStill().toString());
 				if (fluidIcon == null)
 					return;
-				int color = fluid.getColor(new FluidStack(fluid, 1));
+				int color = stack.getFluid().getColor(stack);
 				float a = ((color >> 24) & 0xFF) / 255.0F;
 				float r = ((color >> 16) & 0xFF) / 255.0F;
 				float g = ((color >> 8) & 0xFF) / 255.0F;
@@ -172,15 +169,15 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 				}
 			}
 			if (square && isMouseOver(mouseX, mouseY)) {
-				// GlStateManager.disableLighting();
-				// GlStateManager.disableDepth();
+				GlStateManager.disableLighting();
+				GlStateManager.disableDepth();
 				int j1 = x;
 				int k1 = y;
 				GlStateManager.colorMask(true, true, true, false);
 				drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, -2130706433);
 				GlStateManager.colorMask(true, true, true, true);
-				// GlStateManager.enableLighting();
-				// GlStateManager.enableDepth();
+				GlStateManager.enableLighting();
+				GlStateManager.enableDepth();
 			}
 		}
 
@@ -189,9 +186,9 @@ public abstract class AbstractSlot extends GuiElement implements ITooltip {
 			if (editable) {
 				FluidStack s = FluidUtil.getFluidContained(mc.player.inventory.getItemStack());
 				if (s != null && s.getFluid() != null)
-					fluid = s.getFluid();
+					stack = s.copy();
 				else
-					fluid = null;
+					stack = null;
 			}
 		}
 

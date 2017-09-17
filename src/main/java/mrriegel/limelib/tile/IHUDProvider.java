@@ -11,7 +11,8 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public interface IHUDProvider {
 
-	@Nullable List<String> getData(boolean sneak, EnumFacing facing);
+	@Nullable
+	List<String> getData(boolean sneak, EnumFacing facing);
 
 	default int getBackgroundColor(boolean sneak, EnumFacing facing) {
 		return 0x44FFFFFF;
