@@ -18,7 +18,6 @@ public class CommonItem extends Item {
 
 	public void initModel() {
 		RegistryHelper.initModel(this, 0, new ModelResourceLocation(getRegistryName(), "inventory"));
-		//		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(getRegistryName(), "inventory"));
 	}
 
 }

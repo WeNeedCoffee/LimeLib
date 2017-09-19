@@ -140,4 +140,12 @@ public final class StackWrapper {
 		return lis;
 	}
 
+	public static void add(StackWrapper wrap, List<StackWrapper> lis) {
+		for (StackWrapper w : lis)
+			if (ItemHandlerHelper.canItemStacksStack(wrap.stack, w.stack)) {
+				w.size += wrap.size;
+				break;
+			}
+	}
+
 }
