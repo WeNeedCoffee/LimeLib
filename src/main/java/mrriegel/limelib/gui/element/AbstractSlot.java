@@ -24,7 +24,7 @@ public abstract class AbstractSlot<T> extends GuiElement implements ITooltip {
 	public T stack;
 
 	public AbstractSlot(int id, int x, int y, int amount, GuiDrawer drawer, boolean number, boolean square, boolean smallFont, boolean toolTip) {
-		super(id, x, y, 18, 18, drawer);
+		super(id, x, y, 18, 18);
 		this.amount = amount;
 		this.number = number;
 		this.square = square;

@@ -3,6 +3,7 @@ package mrriegel.limelib.gui;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -90,11 +91,7 @@ public abstract class CommonContainer<T> extends Container {
 	}
 
 	protected List<Slot> getSlotsFor(Object inv) {
-		List<Slot> slots = Lists.newArrayList();
-		for (Slot s : inventorySlots)
-			if (sameInventory(inv, s))
-				slots.add(s);
-		return slots;
+		return inventorySlots.stream().filter(s -> sameInventory(inv, s)).collect(Collectors.toList());
 	}
 
 	protected void initPlayerSlots(int x, int y) {

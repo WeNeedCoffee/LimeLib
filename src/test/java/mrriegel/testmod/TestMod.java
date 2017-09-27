@@ -80,7 +80,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 import net.minecraftforge.registries.RegistryBuilder;
 
-//@Mod(modid = "lalal", name = "kohle", version = "${version}")
+//@Mod(modid = TestMod.id, name = "kohle", version = "${version}")
 public class TestMod implements IGuiHandler {
 
 	@Mod.Instance("lalal")
@@ -90,7 +90,7 @@ public class TestMod implements IGuiHandler {
 	public static final CommonItem item = new TestItem();
 	public static Fluid alcohol;
 	public static Block alcoholBlock;
-
+	public static final String id = "lalal";
 	//	public TestBook book = new TestBook();
 
 	public static final boolean ENABLE = !false;
@@ -166,15 +166,15 @@ public class TestMod implements IGuiHandler {
 							@Override
 							public List<String> getData(boolean sneak, EnumFacing facing) {
 								List<String> lis = Lists.newArrayList();
-								lis.add(TextFormatting.DARK_RED+"Burntime: " + tile.getField(0));
+								lis.add(TextFormatting.DARK_RED + "Burntime: " + tile.getField(0));
 								ItemStack in = tile.getStackInSlot(0);
 								lis.add("Input: " + (in.isEmpty() ? "" : (in.getDisplayName() + " " + in.getCount() + "x")));
 								ItemStack out = tile.getStackInSlot(2);
 								lis.add("Output: " + (out.isEmpty() ? "" : (out.getDisplayName() + " " + out.getCount() + "x")));
 								ItemStack fu = tile.getStackInSlot(1);
 								lis.add("Fuel: " + (fu.isEmpty() ? "" : (fu.getDisplayName() + " " + fu.getCount() + "x")));
-//								if (sneak)
-//									lis.add(facing.toString().toUpperCase());
+								//								if (sneak)
+								//									lis.add(facing.toString().toUpperCase());
 								return lis;
 							}
 
@@ -182,7 +182,7 @@ public class TestMod implements IGuiHandler {
 							public Side readingSide() {
 								return Side.SERVER;
 							}
-							
+
 							@Override
 							public double scale(boolean sneak, EnumFacing facing) {
 								return .7;

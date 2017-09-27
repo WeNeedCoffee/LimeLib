@@ -3,9 +3,9 @@ package mrriegel.limelib.helper;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -37,7 +37,7 @@ public class WorldHelper {
 			int x = (chunkX << 4) + world.rand.nextInt(16);
 			int y = minY + world.rand.nextInt(diffBtwnMinMaxY);
 			int z = (chunkZ << 4) + world.rand.nextInt(16);
-			new WorldGenMinable(state, size, predicate).generate(world, world.rand, new BlockPos(x, y, z));
+			new WorldGenMinable(state, size, b -> predicate.test(b)).generate(world, world.rand, new BlockPos(x, y, z));
 		}
 	}
 

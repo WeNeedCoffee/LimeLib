@@ -11,7 +11,7 @@ public class ScrollBar extends GuiElement {
 	public double status = 0.;
 
 	public ScrollBar(int id, int x, int y, int width, int height, GuiDrawer drawer, Plane orientation) {
-		super(id, x, y, width, height, drawer);
+		super(id, x, y, width, height);
 		this.orientation = Validate.notNull(orientation);
 	}
 

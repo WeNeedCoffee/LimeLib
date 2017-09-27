@@ -43,13 +43,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION)
+@Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION, acceptedMinecraftVersions = "[1.12,1.13)")
 public class LimeLib {
 
 	@Instance(LimeLib.MODID)
 	public static LimeLib INSTANCE;
 
-	public static final String VERSION = "1.7.7";
+	public static final String VERSION = "1.7.8";
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
 

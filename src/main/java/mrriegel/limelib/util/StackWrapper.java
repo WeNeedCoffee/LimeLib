@@ -22,6 +22,10 @@ public final class StackWrapper {
 		this.size = size;
 	}
 
+	public StackWrapper(ItemStack stack) {
+		this(stack, stack.getCount());
+	}
+
 	private StackWrapper() {
 	}
 
@@ -49,7 +53,7 @@ public final class StackWrapper {
 		if (!(obj instanceof StackWrapper))
 			return false;
 		StackWrapper o = (StackWrapper) obj;
-		return o.stack.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(o.stack, stack);
+		return ItemHandlerHelper.canItemStacksStack(stack, o.stack);
 	}
 
 	public ItemStack getStack() {
@@ -87,6 +91,8 @@ public final class StackWrapper {
 	}
 
 	public ItemStack extract(int size) {
+		if (size <= 0)
+			return ItemStack.EMPTY;
 		size = Math.min(size, this.size);
 		this.size -= size;
 		return ItemHandlerHelper.copyStackWithSize(stack, size);
@@ -138,6 +144,14 @@ public final class StackWrapper {
 				lis.add(new StackWrapper(s, s.getCount()));
 		}
 		return lis;
+	}
+
+	public static void add(StackWrapper wrap, List<StackWrapper> lis) {
+		for (StackWrapper w : lis)
+			if (ItemHandlerHelper.canItemStacksStack(wrap.stack, w.stack)) {
+				w.size += wrap.size;
+				break;
+			}
 	}
 
 }

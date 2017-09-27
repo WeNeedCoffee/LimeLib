@@ -115,7 +115,7 @@ public class CommonItemTool extends CommonItem {
 	}
 
 	protected double getAttackDamage(ItemStack stack) {
-		return getBaseDamage(stack) + toolMaterial.getDamageVsEntity();
+		return getBaseDamage(stack) + toolMaterial.getAttackDamage();
 	};
 
 	protected double getAttackSpeed(ItemStack stack) {
@@ -127,17 +127,17 @@ public class CommonItemTool extends CommonItem {
 	};
 
 	@Override
-	public float getStrVsBlock(ItemStack stack, IBlockState state) {
+	public float getDestroySpeed(ItemStack stack, IBlockState state) {
 		float result = 1.0F;
 		if (toolClasses.contains("pickaxe"))
-			result = getDigSpeed(stack, Items.DIAMOND_PICKAXE.getStrVsBlock(stack, state));
+			result = getDigSpeed(stack, Items.DIAMOND_PICKAXE.getDestroySpeed(stack, state));
 		if (toolClasses.contains("axe"))
-			result = Math.max(result, getDigSpeed(stack, Items.DIAMOND_AXE.getStrVsBlock(stack, state)));
+			result = Math.max(result, getDigSpeed(stack, Items.DIAMOND_AXE.getDestroySpeed(stack, state)));
 		for (String type : getToolClasses(stack)) {
 			if (state.getBlock().isToolEffective(type, state))
-				result = Math.max(result, getDigSpeed(stack, toolMaterial.getEfficiencyOnProperMaterial()));
+				result = Math.max(result, getDigSpeed(stack, toolMaterial.getEfficiency()));
 		}
-		return Math.max(result, this.effectiveBlocks.contains(state.getBlock()) ? getDigSpeed(stack, toolMaterial.getEfficiencyOnProperMaterial()) : 1.0F);
+		return Math.max(result, this.effectiveBlocks.contains(state.getBlock()) ? getDigSpeed(stack, toolMaterial.getEfficiency()) : 1.0F);
 	}
 
 	@Override

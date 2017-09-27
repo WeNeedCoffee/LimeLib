@@ -10,13 +10,13 @@ public abstract class GuiElement extends Gui {
 	protected boolean visible;
 	protected Minecraft mc;
 
-	public GuiElement(int id, int x, int y, int width, int height, GuiDrawer drawer) {
+	public GuiElement(int id, int x, int y, int width, int height) {
 		this.id = id;
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.drawer = drawer;
+		this.drawer = new GuiDrawer(0, 0, 0, 0, 0);
 		visible = true;
 		mc = Minecraft.getMinecraft();
 	}

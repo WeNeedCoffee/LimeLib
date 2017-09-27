@@ -12,6 +12,15 @@ import net.minecraft.item.ItemStack;
 
 public class TestBook extends Book {
 
+	boolean init = false;
+
+	public TestBook() {
+		if (!init) {
+			init();
+			init = true;
+		}
+	}
+
 	public void init() {
 		chapters.clear();
 		Chapter blocks = new Chapter("Blocks");

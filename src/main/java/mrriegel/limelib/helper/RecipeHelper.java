@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.recipe.ShapedRecipeExt;
 import mrriegel.limelib.recipe.ShapelessRecipeExt;
 import mrriegel.limelib.util.Utils;
@@ -35,6 +37,7 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
 import net.minecraftforge.fml.common.Loader;
@@ -67,8 +70,8 @@ public class RecipeHelper {
 		DIR = new File("").toPath().resolve("../src/main/resources/assets/" + modid + "/recipes/").toFile();
 		if (!DIR.exists() && dev)
 			DIR.mkdirs();
-		if (DIR.exists())
-			Arrays.stream(DIR.listFiles()).forEach(File::delete);
+		//		if (DIR.exists())
+		//			Arrays.stream(DIR.listFiles()).forEach(File::delete);
 		if (!dev) {
 			File jar = Loader.instance().activeModContainer().getSource();
 			try {
@@ -151,7 +154,6 @@ public class RecipeHelper {
 	private void addRecipe(ResourceLocation rl, boolean shaped, boolean ore, ItemStack stack, Object... input) {
 		if (!dev)
 			return;
-		Validate.isTrue(!stack.isEmpty());
 		Map<String, Object> json = Maps.newHashMap();
 		if (shaped) {
 			List<String> pattern = Lists.newArrayList();
@@ -186,14 +188,11 @@ public class RecipeHelper {
 
 		//		String suffix = stack.getItem().getHasSubtypes() ? "_" + stack.getItemDamage() : "";
 		//		File f = new File(DIR, stack.getItem().getRegistryName().getResourcePath() + suffix + ".json");
-		File f = new File(DIR, rl.getResourcePath().replace('/', '|') + ".json");
-		try {
-			FileWriter fw = new FileWriter(f);
-			Utils.getGSON().toJson(json, fw);
-			fw.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		if (!stack.isEmpty()) {
+			File f = new File(DIR, rl.getResourcePath().replace('/', '|') + ".json");
+			writeToFile(f, json);
+		} else
+			LimeLib.log.warn("ItemStack " + stack + " is empty. Can't create a recipe.");
 
 	}
 
@@ -276,13 +275,28 @@ public class RecipeHelper {
 				entry.put("ingredient", ImmutableMap.of("type", "forge:ore_dict", "ore", s));
 				json.add(entry);
 			}
-			if (!rh.USED_OD_NAMES.isEmpty())
-				try (FileWriter fw = new FileWriter(new File(rh.DIR, "_constants.json"))) {
-					Utils.getGSON().toJson(json, fw);
-					fw.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			if (!rh.USED_OD_NAMES.isEmpty()) {
+				File file = new File(rh.DIR, "_constants.json");
+				writeToFile(file, json);
+			}
+		}
+	}
+
+	private static void writeToFile(File file, Object o) {
+		String newJson = Utils.getGSON().toJson(o).trim();
+		String oldJson = null;
+		try {
+			oldJson = !file.exists() ? "" : Files.lines(file.toPath()).collect(Collectors.joining(Configuration.NEW_LINE)).trim();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (!oldJson.equals(newJson)) {
+			try (FileWriter fw = new FileWriter(file)) {
+				Utils.getGSON().toJson(o, fw);
+				fw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
