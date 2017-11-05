@@ -93,7 +93,7 @@ public class ClientEventHandler {
 			if (Config.energyConfigHint) {
 				boolean before = mc.fontRenderer.getUnicodeFlag();
 				mc.fontRenderer.setUnicodeFlag(true);
-				String config = "Can be disabled in LimeLib config.";
+				String config = Config.CONFIGHINT;
 				mc.fontRenderer.drawString(config, (sr.getScaledWidth() - mc.fontRenderer.getStringWidth(config)) / 2, (sr.getScaledHeight() + 40 - mc.fontRenderer.FONT_HEIGHT) / 2, 0x40ffff00, true);
 				mc.fontRenderer.setUnicodeFlag(before);
 			}
@@ -137,11 +137,13 @@ public class ClientEventHandler {
 				boolean playerhorizontal = false;
 				if (face.getAxis() == Axis.Y || playerhorizontal)
 					face = getMC().player.getHorizontalFacing();
-				List<String> tmp = tile.getData(sneak, face.getOpposite());
+				List<String> tmp = null;
 				if (tile.readingSide().isServer()) {
 					List<String> foo = supplierTexts.get(t.getPos());
 					if (foo != null)
 						tmp = foo;
+					else
+						tmp = tile.getData(sneak, face.getOpposite());
 				}
 				if (tmp != null && !tmp.isEmpty()) {
 					double x = t.getPos().getX() - TileEntityRendererDispatcher.staticPlayerX;
@@ -181,7 +183,10 @@ public class ClientEventHandler {
 						int xx = tile.center(sneak, face.getOpposite()) || tooLong ? -width / 2 : (int) (-46 / factor);
 						if (tooLong)
 							GlStateManager.scale(fac, 1, 1);
-						fontrenderer.drawString(s, xx, j * 10 + 1, 0xFFFFFFFF, true);
+						boolean shadow = s.contains(IHUDProvider.SHADOWFONT);
+						if (shadow)
+							s = s.replace(IHUDProvider.SHADOWFONT, "");
+						fontrenderer.drawString(s, xx, j * 10 + 1, 0xFFFFFFFF, shadow);
 						if (tooLong)
 							GlStateManager.scale(1. / fac, 1, 1);
 					}
@@ -212,7 +217,7 @@ public class ClientEventHandler {
 		Minecraft mc = getMC();
 		if (Config.commandBlockCreativeTab && mc.currentScreen instanceof GuiContainerCreative && ((GuiContainerCreative) mc.currentScreen).getSelectedTabIndex() == CreativeTabs.REDSTONE.getTabIndex()) {
 			if (Block.getBlockFromItem(event.getItemStack().getItem()) instanceof BlockCommandBlock)
-				event.getToolTip().add(TextFormatting.YELLOW + "Can be disabled in LimeLib config.");
+				event.getToolTip().add(TextFormatting.YELLOW + Config.CONFIGHINT);
 		}
 
 	}

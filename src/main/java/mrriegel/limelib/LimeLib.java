@@ -49,7 +49,7 @@ public class LimeLib {
 	@Instance(LimeLib.MODID)
 	public static LimeLib INSTANCE;
 
-	public static final String VERSION = "1.7.8";
+	public static final String VERSION = "1.7.9";
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
 
@@ -129,7 +129,7 @@ public class LimeLib {
 
 					@Override
 					public double scale(boolean sneak, EnumFacing facing) {
-						return .5;
+						return .6;
 					}
 
 					@Override

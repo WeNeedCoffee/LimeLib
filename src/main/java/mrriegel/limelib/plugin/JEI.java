@@ -31,19 +31,23 @@ public class JEI implements IModPlugin {
 	}
 
 	public static void showRecipes(ItemStack stack) {
-		showRecipes((Object) stack);
+		if (!stack.isEmpty())
+			showRecipes((Object) stack);
 	}
 
 	public static void showUsage(ItemStack stack) {
-		showUsage((Object) stack);
+		if (!stack.isEmpty())
+			showUsage((Object) stack);
 	}
 
 	public static void showRecipes(FluidStack stack) {
-		showRecipes((Object) stack);
+		if (stack != null)
+			showRecipes((Object) stack);
 	}
 
 	public static void showUsage(FluidStack stack) {
-		showUsage((Object) stack);
+		if (stack != null)
+			showUsage((Object) stack);
 	}
 
 	public static void showRecipes(Object stack) {

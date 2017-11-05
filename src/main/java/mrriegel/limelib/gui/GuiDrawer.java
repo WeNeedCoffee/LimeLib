@@ -272,6 +272,22 @@ public class GuiDrawer {
 		}
 	}
 
+	private static FontRenderer uni, notUni;
+
+	public static FontRenderer getFontRenderer(boolean unicode) {
+		if (unicode) {
+			if (uni == null)
+				return uni = new FontRenderer(mc.gameSettings, new ResourceLocation("textures/font/ascii.png"), mc.renderEngine, true);
+			else
+				return uni;
+		} else {
+			if (notUni == null)
+				return notUni = new FontRenderer(mc.gameSettings, new ResourceLocation("textures/font/ascii.png"), mc.renderEngine, false);
+			else
+				return notUni;
+		}
+	}
+
 	public enum Direction {
 		UP, RIGHT, DOWN, LEFT;
 

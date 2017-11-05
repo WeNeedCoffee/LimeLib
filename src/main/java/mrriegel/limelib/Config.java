@@ -6,6 +6,7 @@ import net.minecraftforge.common.config.Configuration;
 
 public class Config {
 
+	public static final String CONFIGHINT = "Can be disabled in LimeLib config.";
 	public static Configuration config;
 
 	public static boolean showEnergy, energyConfigHint, commandBlockCreativeTab;

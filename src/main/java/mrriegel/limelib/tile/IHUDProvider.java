@@ -11,6 +11,8 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public interface IHUDProvider {
 
+	public static final String SHADOWFONT = "?~~%z";
+
 	@Nullable
 	List<String> getData(boolean sneak, EnumFacing facing);
 

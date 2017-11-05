@@ -11,6 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class LimeClientProxy extends LimeCommonProxy {
 
 	@Override
+	@Deprecated
 	public Side getSide() {
 		return Side.CLIENT;
 	}
@@ -20,11 +21,13 @@ public class LimeClientProxy extends LimeCommonProxy {
 		return Minecraft.getMinecraft().playerController.getBlockReachDistance();
 	}
 
+	@Deprecated
 	@Override
 	public World getClientWorld() {
 		return Minecraft.getMinecraft().world;
 	}
 
+	@Deprecated
 	@Override
 	public EntityPlayer getClientPlayer() {
 		return Minecraft.getMinecraft().player;
@@ -35,6 +38,7 @@ public class LimeClientProxy extends LimeCommonProxy {
 		return Minecraft.getMinecraft().objectMouseOver;
 	}
 
+	@Deprecated
 	@Override
 	public IThreadListener getClientListener() {
 		return Minecraft.getMinecraft();

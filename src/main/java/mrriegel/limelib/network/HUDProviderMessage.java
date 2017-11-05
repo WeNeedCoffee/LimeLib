@@ -17,6 +17,8 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class HUDProviderMessage extends AbstractMessage {
 
+	private static final String SPLIT = "~#~²";
+
 	public HUDProviderMessage() {
 	}
 
@@ -30,7 +32,7 @@ public class HUDProviderMessage extends AbstractMessage {
 				IHUDProvider ds = IHUDProvider.getHUDProvider(t);
 				if (ds.readingSide().isServer()) {
 					lis1.add(p);
-					lis2.add(Joiner.on("~#~").join(ds.getData(player.isSneaking(), player.getHorizontalFacing())));
+					lis2.add(Joiner.on(SPLIT).join(ds.getData(player.isSneaking(), player.getHorizontalFacing())));
 				}
 			}
 		}
@@ -49,7 +51,7 @@ public class HUDProviderMessage extends AbstractMessage {
 			BlockPos p = lis1.get(i);
 			TileEntity t = player.world.getTileEntity(p);
 			if (IHUDProvider.isHUDProvider(t)) {
-				ClientEventHandler.supplierTexts.put(t.getPos(), Lists.newArrayList(lis2.get(i).split("~#~")));
+				ClientEventHandler.supplierTexts.put(t.getPos(), Lists.newArrayList(lis2.get(i).split(SPLIT)));
 			}
 		}
 	}

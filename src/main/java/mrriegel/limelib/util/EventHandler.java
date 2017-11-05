@@ -21,6 +21,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -117,7 +118,7 @@ public class EventHandler {
 			if (event.player.world.getTotalWorldTime() % (event.player.isSneaking() ? 8 : 20) == 0) {
 				PacketHandler.sendTo(new EnergySyncMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
 			}
-			if (event.player.world.getTotalWorldTime() % 10 == 0) {
+			if (event.player.world.getTotalWorldTime() % 5 == 0) {
 				PacketHandler.sendTo(new HUDProviderMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
 			}
 		}
@@ -145,7 +146,7 @@ public class EventHandler {
 		boolean left = event instanceof LeftClickBlock || event instanceof LeftClickEmpty;
 		boolean right = event instanceof RightClickBlock || event instanceof RightClickEmpty || event instanceof RightClickItem;
 		boolean server = event instanceof RightClickBlock || event instanceof LeftClickBlock || event instanceof RightClickItem;
-		if ((left || right) && !event.isCanceled()) {
+		if ((left || right) && !event.isCanceled() && !(event.getEntityPlayer() instanceof FakePlayer)) {
 			DataPart part = DataPart.rayTrace(event.getEntityPlayer());
 			Side side = event.getSide();
 			if (part != null && part.clientValid() && !event.getEntityPlayer().isSneaking()) {

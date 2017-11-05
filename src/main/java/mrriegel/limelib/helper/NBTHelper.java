@@ -1,5 +1,6 @@
 package mrriegel.limelib.helper;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,20 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class NBTHelper {
 
+	private static Set<INBTable> iNBTs = new ObjectOpenCustomHashSet<>(new Strategy<INBTable>() {
+
+		@Override
+		public int hashCode(INBTable o) {
+			return System.identityHashCode(o);
+		}
+
+		@Override
+		public boolean equals(INBTable a, INBTable b) {
+			return a == b;
+		}
+
+	});
+
 	public static boolean hasTag(NBTTagCompound nbt, String keyName) {
 		return nbt != null && nbt.hasKey(keyName);
 	}
@@ -45,20 +60,6 @@ public class NBTHelper {
 		ByteBufUtils.writeTag(buf, nbt);
 		return buf.readableBytes();
 	}
-
-	private static Set<INBTable> iNBTs = new ObjectOpenCustomHashSet<>(new Strategy<INBTable>() {
-
-		@Override
-		public int hashCode(INBTable o) {
-			return System.identityHashCode(o);
-		}
-
-		@Override
-		public boolean equals(INBTable a, INBTable b) {
-			return a == b;
-		}
-
-	});
 
 	@Deprecated
 	public static void register(INBTable n) {
@@ -104,6 +105,34 @@ public class NBTHelper {
 				return Enum.class.isAssignableFrom(clazz);
 			}
 		});
+		for (NBTType t : NBTType.values())
+			register(of(t.defaultValue, t.getter, t.setter, t.classes));
+	}
+
+	public static INBTable of(Object defaultValue, BiFunction<NBTTagCompound, String, Object> getter, BiConsumer<NBTTagCompound, Pair<String, Object>> setter, Class<?>... classes) {
+		return new INBTable() {
+
+			@Override
+			public void set(NBTTagCompound nbt, String name, Object value) {
+				setter.accept(nbt, Pair.of(name, value));
+			}
+
+			@Override
+			public Object get(NBTTagCompound nbt, String name, Class<?> clazz) {
+				return getter.apply(nbt, name);
+			}
+
+			@Override
+			public boolean classValid(Class<?> clazz) {
+				return Arrays.stream(classes).anyMatch(c -> clazz == c);
+			}
+
+			@Override
+			public Object defaultValue() {
+				return defaultValue;
+			}
+
+		};
 	}
 
 	private static enum NBTType implements INBTable {
@@ -121,13 +150,13 @@ public class NBTHelper {
 		FLUIDSTACK(null, (n, s) -> FluidStack.loadFluidStackFromNBT(n.getCompoundTag(s)), (n, p) -> n.setTag(p.getKey(), ((FluidStack) p.getValue()).writeToNBT(new NBTTagCompound())), FluidStack.class);
 
 		Object defaultValue;
-		Class<?>[] clazz;
+		Class<?>[] classes;
 		BiFunction<NBTTagCompound, String, Object> getter;
 		BiConsumer<NBTTagCompound, Pair<String, Object>> setter;
 
-		private NBTType(Object defaultValue, BiFunction<NBTTagCompound, String, Object> getter, BiConsumer<NBTTagCompound, Pair<String, Object>> setter, Class<?>... clazz) {
+		private NBTType(Object defaultValue, BiFunction<NBTTagCompound, String, Object> getter, BiConsumer<NBTTagCompound, Pair<String, Object>> setter, Class<?>... classes) {
 			this.defaultValue = defaultValue;
-			this.clazz = clazz;
+			this.classes = classes;
 			this.getter = getter;
 			this.setter = setter;
 		}
@@ -140,7 +169,7 @@ public class NBTHelper {
 
 		static {
 			for (NBTType n : NBTType.values()) {
-				for (Class<?> c : n.clazz)
+				for (Class<?> c : n.classes)
 					m.put(c, n);
 				register(n);
 			}
