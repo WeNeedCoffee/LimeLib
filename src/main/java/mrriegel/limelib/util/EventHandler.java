@@ -10,6 +10,8 @@ import com.google.common.collect.Maps;
 import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
+import mrriegel.limelib.gui.CommonContainer;
+import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.network.EnergySyncMessage;
 import mrriegel.limelib.network.HUDProviderMessage;
 import mrriegel.limelib.network.PacketHandler;
@@ -17,12 +19,14 @@ import mrriegel.limelib.network.PlayerClickMessage;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
@@ -121,6 +125,32 @@ public class EventHandler {
 			if (event.player.world.getTotalWorldTime() % 5 == 0) {
 				PacketHandler.sendTo(new HUDProviderMessage((EntityPlayerMP) event.player), (EntityPlayerMP) event.player);
 			}
+		}
+		if (event.phase == Phase.END) {
+			if (event.player.openContainer instanceof CommonContainer) {
+				((CommonContainer<?>) event.player.openContainer).update(event.player);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void test(LivingJumpEvent event) {
+		if (!RecipeHelper.dev || !(event.getEntityLiving() instanceof EntityPlayer))
+			return;
+		EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+		if (!player.world.isRemote) {
+		} else {
+		}
+	}
+
+	@SubscribeEvent
+	public static void test(PlayerTickEvent event) {
+		if (!RecipeHelper.dev)
+			return;
+		if (event.phase == Phase.END) {
+			if (event.player.isSneaking())
+				event.player.noClip = true;
+		} else {
 		}
 	}
 

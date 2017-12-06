@@ -19,6 +19,7 @@ import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.mojang.authlib.GameProfile;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.TypeAdapters.ItemLizer;
 import mrriegel.limelib.util.TypeAdapters.ItemStackLizer;
@@ -85,7 +86,7 @@ public class Utils {
 	}
 
 	public static List<Integer> split(int ii, int splits) {
-		List<Integer> ints = Lists.newArrayList();
+		List<Integer> ints = new IntArrayList();
 		for (int i = 0; i < splits; i++)
 			ints.add(ii / splits);
 		for (int i = 0; i < ii % splits; i++)

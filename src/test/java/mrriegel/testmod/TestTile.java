@@ -24,6 +24,9 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.EnergyStorage;
 
 public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper, IOwneable, IHUDProvider {
 
@@ -164,5 +167,20 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 	@Override
 	public boolean center(boolean sneak, EnumFacing facing) {
 		return sneak;
+	}
+
+	EnergyStorage energy = new EnergyStorage(1000000, 1000);
+
+	@Override
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		return super.hasCapability(capability, facing) || capability == CapabilityEnergy.ENERGY;
+	}
+
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		if (capability == CapabilityEnergy.ENERGY) {
+			return (T) energy;
+		}
+		return super.getCapability(capability, facing);
 	}
 }

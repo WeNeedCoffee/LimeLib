@@ -4,7 +4,7 @@ import java.io.File;
 
 import net.minecraftforge.common.config.Configuration;
 
-public class Config {
+public class LimeConfig {
 
 	public static final String CONFIGHINT = "Can be disabled in LimeLib config.";
 	public static Configuration config;

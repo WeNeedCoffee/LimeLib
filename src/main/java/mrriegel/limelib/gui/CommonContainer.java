@@ -63,6 +63,9 @@ public abstract class CommonContainer<T> extends Container {
 		return null;
 	};
 
+	public void update(EntityPlayer player) {
+	}
+
 	protected Area getAreaForEntireInv(IInventory inv) {
 		return getAreaForInv(inv, 0, inv.getSizeInventory());
 	}

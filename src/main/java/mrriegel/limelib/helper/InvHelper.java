@@ -135,9 +135,6 @@ public class InvHelper {
 
 	public static IInventory toInventory(IItemHandler handler) {
 		return new InventoryBasic("Null", false, handler.getSlots()) {
-			{
-
-			}
 
 			@Override
 			public int getSizeInventory() {

@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Maps;
 
-import mrriegel.limelib.Config;
+import mrriegel.limelib.LimeConfig;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.datapart.RenderRegistry;
@@ -73,7 +73,7 @@ public class ClientEventHandler {
 	@SubscribeEvent
 	public static void renderEnergy(Post event) {
 		Minecraft mc = getMC();
-		if (!Config.showEnergy || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null || energyTiles.isEmpty())
+		if (!LimeConfig.showEnergy || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null || energyTiles.isEmpty())
 			return;
 		BlockPos p = mc.objectMouseOver.getBlockPos();
 		if (event.getType() == ElementType.TEXT && energyTiles.containsKey(p)) {
@@ -90,10 +90,10 @@ public class ClientEventHandler {
 			String text = (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(energy) : energy) + "/" + (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(max) : max) + " " + energyType.unit;
 			int lenght = 90/* mc.fontRenderer.getStringWidth(text) */;
 			mc.fontRenderer.drawString(text, (sr.getScaledWidth() - mc.fontRenderer.getStringWidth(text)) / 2, (sr.getScaledHeight() - 15 - mc.fontRenderer.FONT_HEIGHT) / 2, GuiScreen.isShiftKeyDown() ? 0xffff00 : 0x80ffff00, true);
-			if (Config.energyConfigHint) {
+			if (LimeConfig.energyConfigHint) {
 				boolean before = mc.fontRenderer.getUnicodeFlag();
 				mc.fontRenderer.setUnicodeFlag(true);
-				String config = Config.CONFIGHINT;
+				String config = LimeConfig.CONFIGHINT;
 				mc.fontRenderer.drawString(config, (sr.getScaledWidth() - mc.fontRenderer.getStringWidth(config)) / 2, (sr.getScaledHeight() + 40 - mc.fontRenderer.FONT_HEIGHT) / 2, 0x40ffff00, true);
 				mc.fontRenderer.setUnicodeFlag(before);
 			}
@@ -144,7 +144,8 @@ public class ClientEventHandler {
 						tmp = foo;
 					else
 						tmp = tile.getData(sneak, face.getOpposite());
-				}
+				} else
+					tmp = tile.getData(sneak, face.getOpposite());
 				if (tmp != null && !tmp.isEmpty()) {
 					double x = t.getPos().getX() - TileEntityRendererDispatcher.staticPlayerX;
 					double y = t.getPos().getY() - TileEntityRendererDispatcher.staticPlayerY;
@@ -177,15 +178,16 @@ public class ClientEventHandler {
 					GlStateManager.scale(factor, factor, factor);
 					for (int j = 0; j < text.size(); ++j) {
 						String s = text.get(j);
+						boolean shadow = s.contains(IHUDProvider.SHADOWFONT);
+						if (shadow)
+							s = s.replace(IHUDProvider.SHADOWFONT, "");
 						int width = fontrenderer.getStringWidth(s);
 						boolean tooLong = !cutLongLines && width * factor > maxWordLength;
 						double fac = maxWordLength / (width * factor);
 						int xx = tile.center(sneak, face.getOpposite()) || tooLong ? -width / 2 : (int) (-46 / factor);
 						if (tooLong)
 							GlStateManager.scale(fac, 1, 1);
-						boolean shadow = s.contains(IHUDProvider.SHADOWFONT);
-						if (shadow)
-							s = s.replace(IHUDProvider.SHADOWFONT, "");
+						//						mc.getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(Blocks.OBSIDIAN), xx, j);
 						fontrenderer.drawString(s, xx, j * 10 + 1, 0xFFFFFFFF, shadow);
 						if (tooLong)
 							GlStateManager.scale(1. / fac, 1, 1);
@@ -215,9 +217,9 @@ public class ClientEventHandler {
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void itemToolTip(ItemTooltipEvent event) {
 		Minecraft mc = getMC();
-		if (Config.commandBlockCreativeTab && mc.currentScreen instanceof GuiContainerCreative && ((GuiContainerCreative) mc.currentScreen).getSelectedTabIndex() == CreativeTabs.REDSTONE.getTabIndex()) {
+		if (LimeConfig.commandBlockCreativeTab && mc.currentScreen instanceof GuiContainerCreative && ((GuiContainerCreative) mc.currentScreen).getSelectedTabIndex() == CreativeTabs.REDSTONE.getTabIndex()) {
 			if (Block.getBlockFromItem(event.getItemStack().getItem()) instanceof BlockCommandBlock)
-				event.getToolTip().add(TextFormatting.YELLOW + Config.CONFIGHINT);
+				event.getToolTip().add(TextFormatting.YELLOW + LimeConfig.CONFIGHINT);
 		}
 
 	}

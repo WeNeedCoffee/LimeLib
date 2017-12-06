@@ -37,6 +37,7 @@ public abstract class AbstractMessage implements IMessage, IMessageHandler<Abstr
 
 	@Override
 	public IMessage onMessage(final AbstractMessage message, final MessageContext ctx) {
+		//FMLCommonHandler.instance().getWorldThread(ctx.netHandler); //TODO
 		Runnable run = () -> {
 			EntityPlayer player = (ctx.side.isClient() ? LimeLib.proxy.getClientPlayer() : ctx.getServerHandler().player);
 			message.handleMessage(player, message.nbt.copy(), ctx.side);

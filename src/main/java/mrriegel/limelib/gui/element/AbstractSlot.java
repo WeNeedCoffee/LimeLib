@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -51,11 +52,11 @@ public abstract class AbstractSlot<T> extends GuiElement implements ITooltip {
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();
 				ScaledResolution sr = new ScaledResolution(mc);
-				//				NBTTagCompound n = stack.hasTagCompound() ? stack.getTagCompound().copy() : null;
+				NBTTagCompound n = stack.hasTagCompound() ? stack.getTagCompound().copy() : null;
 				List<String> tips = getTooltip(GuiScreen.isShiftKeyDown());
 				if (tips != null)
 					GuiUtils.drawHoveringText(tips, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
-				//				stack.setTagCompound(n);
+				stack.setTagCompound(n);
 				GlStateManager.popMatrix();
 				GlStateManager.enableLighting();
 			}

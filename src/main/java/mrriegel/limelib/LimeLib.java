@@ -60,7 +60,7 @@ public class LimeLib {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		Config.init(event.getSuggestedConfigurationFile());
+		LimeConfig.init(event.getSuggestedConfigurationFile());
 		Utils.init();
 		MinecraftForge.EVENT_BUS.register(EventHandler.class);
 		if (event.getSide().isClient())
@@ -83,7 +83,7 @@ public class LimeLib {
 		PacketHandler.init();
 		Serious.init();
 		RecipeHelper.generateConstants();
-		if (Config.commandBlockCreativeTab) {
+		if (LimeConfig.commandBlockCreativeTab) {
 			Blocks.COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
 			Blocks.CHAIN_COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
 			Blocks.REPEATING_COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
@@ -110,7 +110,7 @@ public class LimeLib {
 					@Override
 					public List<String> getData(boolean sneak, EnumFacing facing) {
 						List<String> lis = Lists.newArrayList();
-						lis.add(TextFormatting.DARK_RED + "Burntime: " + tile.getField(0));
+						lis.add(TextFormatting.RED + IHUDProvider.SHADOWFONT + "Burntime: " + tile.getField(0));
 						ItemStack in = tile.getStackInSlot(0);
 						lis.add("Input: " + (in.isEmpty() ? "" : (in.getDisplayName() + " " + in.getCount() + "x")));
 						ItemStack out = tile.getStackInSlot(2);
@@ -129,12 +129,17 @@ public class LimeLib {
 
 					@Override
 					public double scale(boolean sneak, EnumFacing facing) {
-						return .6;
+						return .99;
 					}
 
 					@Override
 					public boolean lineBreak(boolean sneak, EnumFacing facing) {
-						return !!!false;
+						return !!!!false;
+					}
+
+					@Override
+					public boolean center(boolean sneak, EnumFacing facing) {
+						return false;
 					}
 				};
 

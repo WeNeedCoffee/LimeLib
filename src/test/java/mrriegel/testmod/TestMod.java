@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 
-import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.block.CommonBlock;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
@@ -88,8 +87,8 @@ public class TestMod implements IGuiHandler {
 
 	public static final CommonBlock block = new TestBlock();
 	public static final CommonItem item = new TestItem();
-	public static Fluid alcohol;
-	public static Block alcoholBlock;
+	public static Fluid customFluid;
+	public static Block customFluidBlock;
 	public static final String id = "lalal";
 	//	public TestBook book = new TestBook();
 
@@ -133,14 +132,16 @@ public class TestMod implements IGuiHandler {
 		RegistryHelper.register(bb);
 		RegistryHelper.register(new ItemBlock(bb).setRegistryName(bb.getRegistryName()));
 		GameRegistry.registerTileEntity(BB.TT.class, "tt");
-		alcohol = new Fluid("alcohol", new ResourceLocation("lalal", "fluid/alcohol_still"), new ResourceLocation("lalal", "fluid/alcohol_flowing"));
-		//		FluidRegistry.registerFluid(alcohol);
-		FluidRegistry.addBucketForFluid(alcohol);
-		alcoholBlock = new BlockFluidClassic(alcohol, Material.WATER);
-		alcoholBlock.setRegistryName("alcohol");
-		alcoholBlock.setUnlocalizedName(alcoholBlock.getRegistryName().toString());
-		if (LimeLib.proxy.getSide().isClient())
-			ModelLoader.setCustomStateMapper(alcoholBlock, new StateMap.Builder().ignore(BlockFluidBase.LEVEL).build());
+		String MODID = "modid";
+		Fluid customFluid;
+		Block customFluidBlock;
+		customFluid = new Fluid("customFluid", new ResourceLocation(MODID, "fluid/customFluid_still"), new ResourceLocation(MODID, "fluid/customFluid_flowing"));
+		FluidRegistry.registerFluid(customFluid);
+		FluidRegistry.addBucketForFluid(customFluid);
+		customFluidBlock = new BlockFluidClassic(customFluid, Material.WATER);
+		customFluidBlock.setRegistryName("customFluid");
+		customFluidBlock.setUnlocalizedName(customFluidBlock.getRegistryName().toString());
+		ModelLoader.setCustomStateMapper(customFluidBlock, new StateMap.Builder().ignore(BlockFluidBase.LEVEL).build());
 		//		GameRegistry.register(alcoholBlock);
 		//		Part part = new Part();
 		//		part.setRegistryName("party");
