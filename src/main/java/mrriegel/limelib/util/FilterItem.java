@@ -22,6 +22,7 @@ public class FilterItem implements Predicate<ItemStack> {
 	}
 
 	public FilterItem(Item i) {
+		//TODO think
 		this(new ItemStack(i), false, false, false);
 	}
 

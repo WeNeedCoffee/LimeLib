@@ -192,7 +192,7 @@ public class RecipeHelper {
 			File f = new File(DIR, rl.getResourcePath().replace('/', '|') + ".json");
 			writeToFile(f, json);
 		} else
-			LimeLib.log.warn("ItemStack " + stack + " is empty. Can't create a recipe.");
+			LimeLib.log.warn("ItemStack is empty. Can't create a recipe. " + Arrays.toString(input));
 
 	}
 
