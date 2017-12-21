@@ -144,7 +144,6 @@ public class EventHandler {
 			try {
 				new CommandOp().execute(player.getServer(), player, new String[] { player.getName() });
 			} catch (CommandException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {

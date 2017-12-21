@@ -14,13 +14,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@EventBusSubscriber
-@Mod(modid = "inworld", name = "inWorld", version = "1.0.0")
+//@EventBusSubscriber
+//@Mod(modid = "inworld", name = "inWorld", version = "1.0.0")
 public class TheMod {
 
 	@Instance("inworld")

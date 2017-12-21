@@ -116,4 +116,5 @@ public class FilterItem implements Predicate<ItemStack> {
 	public boolean apply(ItemStack input) {
 		return match(input);
 	}
+
 }

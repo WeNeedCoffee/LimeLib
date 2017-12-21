@@ -34,8 +34,8 @@ public class TileCompressor extends CommonTile implements ITickable {
 		boxSize = 3;
 		if (world.isRemote)
 			return;
-		//		if (innerWorld != null)
-		//			innerWorld.updateEntities();
+		if (innerWorld != null)
+			innerWorld.updateEntities();
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class TileCompressor extends CommonTile implements ITickable {
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		T cap = (T) side(facing).stream().map(p -> innerWorld.getTileEntity(p)).filter(Objects::nonNull).map(t -> t.getCapability(capability, facing)).filter(Objects::nonNull).findFirst().orElse(null);
+		T cap = side(facing).stream().map(p -> innerWorld.getTileEntity(p)).filter(Objects::nonNull).map(t -> t.getCapability(capability, facing)).filter(Objects::nonNull).findFirst().orElse(null);
 		if (cap != null)
 			return cap;
 		return super.getCapability(capability, facing);
@@ -68,14 +68,17 @@ public class TileCompressor extends CommonTile implements ITickable {
 			world.removeTileEntity(p.add(pos.add(offset)));
 			world.setBlockToAir(p.add(pos.add(offset)));
 		}
-		List<Entity> entities = world.getEntitiesInAABBexcluding(null, new AxisAlignedBB(pos.add(offset), pos.add(offset).add(boxSize, boxSize, boxSize)), e -> !(e instanceof EntityPlayer));
+		List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.add(offset), pos.add(offset).add(boxSize, boxSize, boxSize)), e -> !(e instanceof EntityPlayer));
+		System.out.println(entities);
+		System.out.println("ents real:" + entities.size());
 		for (Entity e : entities) {
 			Entity e2 = EntityList.createEntityFromNBT(e.serializeNBT(), innerWorld);
+			//			e2.setUniqueId(MathHelper.getRandomUUID());
 			world.removeEntity(e);
 			e2.setWorld(innerWorld);
-			innerWorld.spawnEntity(e2);
-			Vec3d vec = toFakePos(e.getPositionVector())/*e.getPositionVector().subtract(new Vec3d(p.add(pos.add(offset))))*/;
+			Vec3d vec = toFakePos(e.getPositionVector());
 			e2.setPosition(vec.x, vec.y, vec.z);
+			innerWorld.spawnEntity(e2);
 		}
 		System.out.println(innerWorld.loadedEntityList);
 	}
@@ -87,19 +90,14 @@ public class TileCompressor extends CommonTile implements ITickable {
 			world.setTileEntity(toRealPos(p), innerWorld.getTileEntity(p));
 		}
 		System.out.println(innerWorld.loadedEntityList);
+		System.out.println("ents fake:" + innerWorld.loadedEntityList.size());
 		for (Entity e : innerWorld.loadedEntityList) {
 			Entity e2 = EntityList.createEntityFromNBT(e.serializeNBT(), world);
-			//			try {
-			//				e2 = e.getClass().getConstructor(World.class).newInstance(world);
-			//			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
-			//				// TODO Auto-generated catch block
-			//				e1.printStackTrace();
-			//			}
+			//			e2.setUniqueId(MathHelper.getRandomUUID());
 			e2.setWorld(world);
-			Vec3d vec = toRealPos(e.getPositionVector())/*e.getPositionVector().add(new Vec3d(p.add(pos.add(offset))))*/;
+			Vec3d vec = toRealPos(e.getPositionVector());
 			e2.setPositionAndUpdate(vec.x, vec.y, vec.z);
 			world.spawnEntity(e2);
-			System.out.println(e2.toString());
 		}
 		innerWorld = null;
 		//		world.spawnEntity(new EntityItem(world, pos.getX() + .5, pos.getY() + 1.3, pos.getZ() + .5, new ItemStack(Blocks.QUARTZ_BLOCK)));

@@ -43,16 +43,14 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		if (world == null)
 			return null;
 		DataPartRegistry reg = world.hasCapability(CapabilityDataPart.DATAPART, null) ? world.getCapability(CapabilityDataPart.DATAPART, null) : null;
-		if (reg == null)
-			return null;
-		else {
+		if (reg != null) {
 			if (reg.world == null)
 				reg.world = world;
 			for (DataPart part : reg.getParts())
 				if (part.world == null)
 					part.world = world;
-			return reg;
 		}
+		return reg;
 	}
 
 	public static void register(String name, Class<? extends DataPart> clazz) {

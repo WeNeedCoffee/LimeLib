@@ -73,6 +73,7 @@ public class LimeLib {
 		teslaLoaded = Loader.isModLoaded("tesla");
 		topLoaded = Loader.isModLoaded("theoneprobe");
 		fluxLoaded = Loader.isModLoaded("redstoneflux");
+
 	}
 
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded, fluxLoaded;
@@ -157,5 +158,4 @@ public class LimeLib {
 
 			});
 	}
-
 }
