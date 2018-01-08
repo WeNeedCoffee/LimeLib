@@ -86,6 +86,8 @@ public class ClientEventHandler {
 			GlStateManager.pushMatrix();
 			GlStateManager.enableBlend();
 			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
+			int color = 0;
+			drawer.drawColoredRectangle(0, 0, 44, 44, color);
 			long energy = energyTiles.get(p).getLeft(), max = energyTiles.get(p).getRight();
 			String text = (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(energy) : energy) + "/" + (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(max) : max) + " " + energyType.unit;
 			int lenght = 90/* mc.fontRenderer.getStringWidth(text) */;
@@ -187,7 +189,6 @@ public class ClientEventHandler {
 						int xx = tile.center(sneak, face.getOpposite()) || tooLong ? -width / 2 : (int) (-46 / factor);
 						if (tooLong)
 							GlStateManager.scale(fac, 1, 1);
-						//						mc.getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(Blocks.OBSIDIAN), xx, j);
 						fontrenderer.drawString(s, xx, j * 10 + 1, 0xFFFFFFFF, shadow);
 						if (tooLong)
 							GlStateManager.scale(1. / fac, 1, 1);

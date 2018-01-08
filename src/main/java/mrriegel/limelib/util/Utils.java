@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,8 +31,10 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -103,6 +106,28 @@ public class Utils {
 			return String.valueOf((int) (Math.round(value / 1000) / 1000D)) + "M";
 		else
 			return String.valueOf((int) (Math.round(value / 1000000) / 1000D)) + "G";
+	}
+
+	public static Iterable<TileEntity> tiles(World world) {
+		return new Iterable<TileEntity>() {
+
+			@Override
+			public Iterator<TileEntity> iterator() {
+				return new Iterator<TileEntity>() {
+					int index = 0;
+
+					@Override
+					public boolean hasNext() {
+						return world.loadedTileEntityList.size() > index;
+					}
+
+					@Override
+					public TileEntity next() {
+						return world.loadedTileEntityList.get(index++);
+					}
+				};
+			}
+		};
 	}
 
 	public static FakePlayer getFakePlayer(WorldServer world) {

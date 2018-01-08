@@ -31,6 +31,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -73,7 +74,6 @@ public class LimeLib {
 		teslaLoaded = Loader.isModLoaded("tesla");
 		topLoaded = Loader.isModLoaded("theoneprobe");
 		fluxLoaded = Loader.isModLoaded("redstoneflux");
-
 	}
 
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded, fluxLoaded;
@@ -93,6 +93,7 @@ public class LimeLib {
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
 		wrenchAvailable = StreamSupport.stream(ForgeRegistries.ITEMS.spliterator(), false).anyMatch(item -> StackHelper.isWrench(new ItemStack(item)));
 		if (RecipeHelper.dev) {
+			UnderWorld.init();
 			MinecraftForge.EVENT_BUS.register(INSTANCE);
 		}
 	}
@@ -118,8 +119,7 @@ public class LimeLib {
 						lis.add("Output: " + (out.isEmpty() ? "" : (out.getDisplayName() + " " + out.getCount() + "x")));
 						ItemStack fu = tile.getStackInSlot(1);
 						lis.add("Fuel: " + (fu.isEmpty() ? "" : (fu.getDisplayName() + " " + fu.getCount() + "x")));
-						//						if (sneak)
-						//							lis.add(facing.toString().toUpperCase());
+						lis.add(IHUDProvider.SHADOWFONT + (sneak ? facing.toString().toUpperCase() : facing.toString().toLowerCase()));
 						return lis;
 					}
 
@@ -130,7 +130,11 @@ public class LimeLib {
 
 					@Override
 					public double scale(boolean sneak, EnumFacing facing) {
-						return .99;
+						int ticks = FMLClientHandler.instance().getClientPlayerEntity().ticksExisted;
+						double k = (Math.sin(ticks / 10.) + 1) / 2 + .5;
+						if ("".isEmpty())
+							return k;
+						return (System.currentTimeMillis() / 350) % 2 == 0 ? .99 : .97;
 					}
 
 					@Override
