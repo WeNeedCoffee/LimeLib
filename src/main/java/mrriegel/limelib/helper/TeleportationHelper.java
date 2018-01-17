@@ -1,8 +1,11 @@
 package mrriegel.limelib.helper;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.network.PacketHandler;
+import mrriegel.limelib.network.TeleportMessage;
 import mrriegel.limelib.util.GlobalBlockPos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -36,25 +39,26 @@ public class TeleportationHelper {
 		return entity != null && !entity.world.isRemote && entity.isEntityAlive() && !entity.isBeingRidden() && !entity.isRiding() && (entity instanceof EntityLivingBase || entity instanceof EntityItem);
 	}
 
-	public static boolean teleport(Entity entity, GlobalBlockPos pos) {
+	public static Optional<Entity> teleport(Entity entity, GlobalBlockPos pos) {
 		return teleport(entity, pos.getPos(), pos.getDimension());
 	}
 
-	public static boolean teleport(Entity entity, BlockPos pos) {
+	public static Optional<Entity> teleport(Entity entity, BlockPos pos) {
 		return teleport(entity, pos, entity.world.provider.getDimension());
 	}
 
-	public static boolean teleport(Entity entity, Vec3d vec) {
+	public static Optional<Entity> teleport(Entity entity, Vec3d vec) {
 		return teleport(entity, vec, entity.world.provider.getDimension());
 	}
 
-	public static boolean teleport(Entity entity, BlockPos pos, int targetDim) {
-		return teleport(entity, new Vec3d(pos.getX() + .5, pos.getY(), pos.getZ() + .5), targetDim);
+	public static Optional<Entity> teleport(Entity entity, BlockPos pos, int targetDim) {
+		return teleport(entity, new Vec3d(pos.getX() + .5, pos.getY() + .1, pos.getZ() + .5), targetDim);
 	}
 
-	public static boolean teleport(Entity entity, Vec3d vec, int targetDim) {
+	public static Optional<Entity> teleport(Entity entity, Vec3d vec, int targetDim) {
 		if (!canTeleport(entity))
-			return false;
+			return Optional.empty();
+		System.out.println("beforeprepare " + (entity instanceof EntityPlayerMP ? ((EntityPlayerMP) entity).isInvulnerableDimensionChange() : ""));
 		prepareEntity(entity);
 		double x = vec.x, y = vec.y, z = vec.z;
 
@@ -62,22 +66,24 @@ public class TeleportationHelper {
 		if (from != targetDim) {
 			if (!DimensionManager.isDimensionRegistered(targetDim)) {
 				LimeLib.log.error("serverTeleport: Dimension " + targetDim + " is not registered.");
-				return false;
+				return Optional.empty();
 			}
 			MinecraftServer server = entity.world.getMinecraftServer();
 			WorldServer fromDim = server.getWorld(from);
 			WorldServer toDim = server.getWorld(targetDim);
 			if (entity instanceof EntityPlayerMP) {
+				System.out.println("beforetele " + (entity instanceof EntityPlayerMP ? ((EntityPlayerMP) entity).isInvulnerableDimensionChange() : ""));
 				Teleporter teleporter = new Tele(toDim, x, y, z, entity.rotationYaw, entity.rotationPitch);
 				if (from == 1)
 					entity.world.removeEntity(entity);
 				server.getPlayerList().transferPlayerToDimension((EntityPlayerMP) entity, targetDim, teleporter);
-				if (from == 1 && entity.isEntityAlive()) { // get around vanilla End hacks
+				if (from == 1 && entity.isEntityAlive()) {
 					toDim.spawnEntity(entity);
 					toDim.updateEntityWithOptionalForce(entity, false);
 					entity.setPositionAndUpdate(x, y, z);
-					entity.fallDistance = 0;
 				}
+				System.out.println("aftertele " + (entity instanceof EntityPlayerMP ? ((EntityPlayerMP) entity).isInvulnerableDimensionChange() : ""));
+				PacketHandler.sendTo(new TeleportMessage(), (EntityPlayerMP) entity);
 			} else {
 				NBTTagCompound tagCompound = entity.serializeNBT();
 				float rotationYaw = entity.rotationYaw;
@@ -89,16 +95,16 @@ public class TeleportationHelper {
 					newEntity.setLocationAndAngles(x, y, z, rotationYaw, rotationPitch);
 					newEntity.forceSpawn = true;
 					toDim.spawnEntity(newEntity);
-					newEntity.forceSpawn = false; // necessary?
-					newEntity.fallDistance = 0;
+					newEntity.forceSpawn = false;
+					entity = newEntity;
 				} catch (Exception e) {
 					LimeLib.log.error("serverTeleport: Error creating a entity to be created in new dimension.");
-					return false;
+					return Optional.empty();
 				}
 			}
 		} else
 			entity.setPositionAndUpdate(x, y, z);
-		return true;
+		return Optional.of(entity);
 	}
 
 	public static class Tele extends Teleporter {
@@ -128,7 +134,12 @@ public class TeleportationHelper {
 		public void placeInPortal(Entity entity, float rotationYaw) {
 			if (!entity.world.isBlockLoaded(new BlockPos(x, y, z)))
 				entity.world.getBlockState(new BlockPos(x, y, z));
-			entity.setLocationAndAngles(x, y, z, yaw, pitch);
+			//						entity.setLocationAndAngles(x, y, z, yaw, pitch);
+			System.out.println("place");
+			teleport(entity, new Vec3d(x, y, z));
+			System.out.println("place2");
+			entity.rotationYaw = yaw;
+			entity.rotationPitch = pitch;
 			entity.motionX = 0;
 			entity.motionY = 0;
 			entity.motionZ = 0;

@@ -1,5 +1,6 @@
 package mrriegel.limelib.util;
 
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.energy.EnergyStorage;
 
 public class EnergyStorageExt extends EnergyStorage {
@@ -17,21 +18,12 @@ public class EnergyStorageExt extends EnergyStorage {
 	}
 
 	public void setEnergyStored(int energy) {
-		this.energy = energy;
-		if (this.energy > capacity) {
-			this.energy = capacity;
-		} else if (this.energy < 0) {
-			this.energy = 0;
-		}
+		this.energy = MathHelper.clamp(energy, 0, capacity);
 	}
 
 	public void modifyEnergyStored(int energy) {
 		this.energy += energy;
-		if (this.energy > capacity) {
-			this.energy = capacity;
-		} else if (this.energy < 0) {
-			this.energy = 0;
-		}
+		this.energy = MathHelper.clamp(this.energy, 0, capacity);
 	}
 
 	public int getMaxReceive() {

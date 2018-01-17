@@ -90,9 +90,17 @@ public class CommonGuiButton extends GuiButtonExt implements ITooltip {
 	@Override
 	public void drawTooltip(int mouseX, int mouseY) {
 		GlStateManager.pushMatrix();
-		ScaledResolution sr = new ScaledResolution(mc);
+		int w, h;
+		if (mc.currentScreen == null) {
+			ScaledResolution sr = new ScaledResolution(mc);
+			w = sr.getScaledWidth();
+			h = sr.getScaledHeight();
+		} else {
+			w = mc.currentScreen.width;
+			h = mc.currentScreen.height;
+		}
 		if (tooltip != null)
-			GuiUtils.drawHoveringText(tooltip, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
+			GuiUtils.drawHoveringText(tooltip, mouseX, mouseY, w, h, -1, mc.fontRenderer);
 		GlStateManager.popMatrix();
 	}
 

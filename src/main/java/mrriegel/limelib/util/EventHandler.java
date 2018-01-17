@@ -21,8 +21,6 @@ import mrriegel.limelib.network.PlayerClickMessage;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IOwneable;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.server.CommandOp;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -98,10 +96,10 @@ public class EventHandler {
 		if (event.phase == Phase.END && event.side == Side.SERVER) {
 			try {
 				if (event.world.getTotalWorldTime() % 4 == 0) {
-					Iterator<CommonTile> it = event.world.loadedTileEntityList.stream().filter(t -> t instanceof CommonTile && !t.isInvalid()).map(t -> (CommonTile) t).collect(Collectors.toList()).iterator();
-					while (it.hasNext()) {
-						CommonTile tile = it.next();
-						if (tile.needsSync()) {
+					for (int i = 0; i < event.world.loadedTileEntityList.size(); i++) {
+						TileEntity t = event.world.loadedTileEntityList.get(i);
+						CommonTile tile = t instanceof CommonTile ? (CommonTile) t : null;
+						if (tile != null && tile.needsSync()) {
 							tile.sync();
 							tile.unmarkForSync();
 						}
@@ -146,32 +144,31 @@ public class EventHandler {
 			return;
 		EntityPlayer player = (EntityPlayer) event.getEntityLiving();
 		if (!player.world.isRemote) {
-			try {
-				new CommandOp().execute(player.getServer(), player, new String[] { player.getName() });
-			} catch (CommandException e) {
-				e.printStackTrace();
-			}
-			System.out.println(player.dimension + " " + player.world.provider.getDimension());
-			//			ReflectionHelper.setPrivateValue(EntityPlayerMP.class, (EntityPlayerMP) player, true, "invulnerableDimensionChange", "field_184851_cj");
+			//			try {
+			//				new CommandOp().execute(player.getServer(), player, new String[] { player.getName() });
+			//			} catch (CommandException e) {
+			//				e.printStackTrace();
+			//			}
 			//			BlockPos quarz = new BlockPos(9, 4, 5);
 			//			player.setPositionAndUpdate(quarz.getX() + .5, quarz.getY(), quarz.getZ() + .5);
 			List<EntitySheep> sheeps = player.world.getEntitiesWithinAABB(EntitySheep.class, new AxisAlignedBB(new BlockPos(player).add(-6, -6, -6), new BlockPos(player).add(6, 6, 6)));
-			if (!sheeps.isEmpty() && false) {
-				for (EntitySheep sheep : sheeps) {
+			if (".".isEmpty())
+				if (!sheeps.isEmpty() && false) {
+					for (EntitySheep sheep : sheeps) {
+						if (player.dimension == 0) {
+							TeleportationHelper.teleport(sheep, new BlockPos(110, 30, -20), 1);
+						} else {
+							TeleportationHelper.teleport(sheep, new BlockPos(12, 5, -6), 0);
+						}
+					}
+				} else {
 					if (player.dimension == 0) {
-						TeleportationHelper.teleport(sheep, new BlockPos(110, 30, -20), 1);
+						//					TeleportationHelper.teleport(player, new BlockPos(110, 30, -20), 1);
+						TeleportationHelper.teleport(player, new BlockPos(110, 130, -20), 12);
 					} else {
-						TeleportationHelper.teleport(sheep, new BlockPos(12, 5, -6), 0);
+						TeleportationHelper.teleport(player, new BlockPos(12, 5, -6), 0);
 					}
 				}
-			} else {
-				if (player.dimension == 0) {
-					//					TeleportationHelper.teleport(player, new BlockPos(110, 30, -20), 1);
-					TeleportationHelper.teleport(player, new BlockPos(110, 130, -20), 12);
-				} else {
-					TeleportationHelper.teleport(player, new BlockPos(12, 5, -6), 0);
-				}
-			}
 		} else {
 		}
 	}

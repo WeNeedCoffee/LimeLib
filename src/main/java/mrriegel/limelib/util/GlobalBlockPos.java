@@ -21,17 +21,7 @@ public class GlobalBlockPos {
 		this(pos, world.provider.getDimension());
 	}
 
-	public GlobalBlockPos(NBTTagCompound nbt) {
-		readFromNBT(nbt);
-	}
-
 	private GlobalBlockPos() {
-	}
-
-	public static GlobalBlockPos fromTile(TileEntity tile) {
-		if (tile == null)
-			return null;
-		return new GlobalBlockPos(tile.getPos(), tile.getWorld());
 	}
 
 	@Override
@@ -108,10 +98,11 @@ public class GlobalBlockPos {
 		dimension = compound.getInteger("Gdim");
 	}
 
-	public void writeToNBT(NBTTagCompound compound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		if (pos != null)
 			compound.setLong("Gpos", pos.toLong());
 		compound.setInteger("Gdim", dimension);
+		return compound;
 	}
 
 	public static GlobalBlockPos loadGlobalPosFromNBT(NBTTagCompound nbt) {
@@ -120,4 +111,9 @@ public class GlobalBlockPos {
 		return pos.getPos() != null ? pos : null;
 	}
 
+	public static GlobalBlockPos fromTile(TileEntity tile) {
+		if (tile == null)
+			return null;
+		return new GlobalBlockPos(tile.getPos(), tile.getWorld());
+	}
 }

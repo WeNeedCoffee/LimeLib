@@ -54,6 +54,10 @@ public class RegistryHelper {
 		entries.add(entry);
 	}
 
+	public static <T extends IForgeRegistryEntry<T>> void unregister(IForgeRegistryEntry<T> entry) {
+		entries.remove(entry);
+	}
+
 	public static void initModel(Item item, int meta, ModelResourceLocation mrl) {
 		Validate.isTrue(item != null && item != Items.AIR);
 		models.put(Pair.of(item, meta), mrl);

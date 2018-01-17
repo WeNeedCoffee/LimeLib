@@ -25,13 +25,6 @@ public class CommonGuiContainer extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		for (GuiElement e : elementList)
-			if (e.isMouseOver(mouseX, mouseY) && e instanceof ITooltip && e.isVisible())
-				((ITooltip) e).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
-		for (GuiButton e : buttonList)
-			if (e instanceof ITooltip)
-				if (e.isMouseOver())
-					((ITooltip) e).drawTooltip(mouseX - guiLeft, mouseY - guiTop);
 	}
 
 	@Override
@@ -45,6 +38,13 @@ public class CommonGuiContainer extends GuiContainer {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		renderHoveredToolTip(mouseX, mouseY);
+		for (GuiElement e : elementList)
+			if (e.isMouseOver(mouseX, mouseY) && e instanceof ITooltip && e.isVisible())
+				((ITooltip) e).drawTooltip(mouseX, mouseY);
+		for (GuiButton e : buttonList)
+			if (e instanceof ITooltip)
+				if (e.isMouseOver())
+					((ITooltip) e).drawTooltip(mouseX, mouseY);
 	}
 
 	@Override

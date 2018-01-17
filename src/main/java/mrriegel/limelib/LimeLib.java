@@ -74,6 +74,9 @@ public class LimeLib {
 		teslaLoaded = Loader.isModLoaded("tesla");
 		topLoaded = Loader.isModLoaded("theoneprobe");
 		fluxLoaded = Loader.isModLoaded("redstoneflux");
+		if (RecipeHelper.dev) {
+			Connect.preInit();
+		}
 	}
 
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded, fluxLoaded;
@@ -93,8 +96,9 @@ public class LimeLib {
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
 		wrenchAvailable = StreamSupport.stream(ForgeRegistries.ITEMS.spliterator(), false).anyMatch(item -> StackHelper.isWrench(new ItemStack(item)));
 		if (RecipeHelper.dev) {
-			UnderWorld.init();
+			//			UnderWorld.init();
 			MinecraftForge.EVENT_BUS.register(INSTANCE);
+			Connect.init();
 		}
 	}
 
@@ -120,6 +124,7 @@ public class LimeLib {
 						ItemStack fu = tile.getStackInSlot(1);
 						lis.add("Fuel: " + (fu.isEmpty() ? "" : (fu.getDisplayName() + " " + fu.getCount() + "x")));
 						lis.add(IHUDProvider.SHADOWFONT + (sneak ? facing.toString().toUpperCase() : facing.toString().toLowerCase()));
+						lis.add("komisc dass am im garten nich gut schlaf mark");
 						return lis;
 					}
 
