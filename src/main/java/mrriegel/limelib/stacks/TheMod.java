@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import javax.vecmath.Point2f;
 
@@ -18,26 +20,25 @@ import mrriegel.limelib.helper.RegistryHelper;
 import mrriegel.limelib.stacks.BlockIngots.TileIngots;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.ModelChest;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockFaceUV;
-import net.minecraft.client.renderer.block.model.BlockPartFace;
-import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -83,6 +84,50 @@ public class TheMod {
 				return Color.GREEN.getRGB();
 			return 0xffffff;
 		}, ingots);
+		ClientRegistry.bindTileEntitySpecialRenderer(TileIngots.class, new TileEntitySpecialRenderer<TileIngots>() {
+
+			private ModelChest modelChest = new ModelChest() {
+				@Override
+				public void renderAll() {
+					textureHeight = textureWidth = 64;
+					ModelRenderer mr = new ModelRenderer(this, 0, 0);
+					mr.setTextureOffset(12, 12);
+					//					mr.setRotationPoint(-8, 8, -8);
+					mr.addBox(0, 0, 0, 16, 16, 16, 0);
+					mr.render(.0625f);
+				}
+			};
+
+			@Override
+			public void render(TileIngots te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+				if (destroyStage >= 0) {
+					this.bindTexture(DESTROY_STAGES[destroyStage]);
+					//					this.bindTexture(new ResourceLocation("textures/blocks/gold_block.png"));
+					GlStateManager.matrixMode(5890);
+					GlStateManager.pushMatrix();
+					GlStateManager.scale(4.0F, 4.0F, 1.0F);
+					GlStateManager.translate(0.0625F, 0.0625F, 0.0625F);
+					GlStateManager.matrixMode(5888);
+					GlStateManager.pushMatrix();
+					GlStateManager.enableRescaleNormal();
+					GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
+					GlStateManager.translate((float) x, (float) y + 1.0F, (float) z + 1.0F);
+					GlStateManager.scale(1.0F, -1.0F, -1.0F);
+					GlStateManager.translate(0.5F, 0.5F, 0.5F);
+
+					GlStateManager.translate(-0.5F, -0.5F, -0.5F);
+					this.modelChest.renderAll();
+					GlStateManager.disableRescaleNormal();
+					GlStateManager.popMatrix();
+					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
+					GlStateManager.matrixMode(5890);
+					GlStateManager.popMatrix();
+					GlStateManager.matrixMode(5888);
+				}
+
+			}
+		});
 	}
 
 	static int color(ItemStack s) {
@@ -118,6 +163,7 @@ public class TheMod {
 	}
 
 	static final int perX = 6, perY = 8, perZ = 2;
+	private static final Map<TileIngots, List<BakedQuad>> cachedQuads = new WeakHashMap<>();
 
 	@SubscribeEvent
 	public static void bake(ModelBakeEvent event) {
@@ -141,12 +187,16 @@ public class TheMod {
 
 			@Override
 			public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
-				TileIngots tile = null;
-				Long lon = ((IExtendedBlockState) state).getValue(BlockIngots.prop);
-				if (lon != null)
-					tile = (TileIngots) FMLClientHandler.instance().getWorldClient().getTileEntity(BlockPos.fromLong(lon));
+				TileIngots tile = ((IExtendedBlockState) state).getValue(BlockIngots.prop);
+				//				Long lon = ((IExtendedBlockState) state).getValue(BlockIngots.prop);
+				//				if (lon != null)
+				//					tile = (TileIngots) FMLClientHandler.instance().getWorldClient().getTileEntity(BlockPos.fromLong(lon));
+
 				List<BakedQuad> quads = new ArrayList<>();
 				if (tile != null) {
+					//					cachedQuads.clear();
+					if (!tile.changed && cachedQuads.containsKey(tile))
+						return cachedQuads.get(tile);
 					IItemHandler handler = tile.handler;
 					int count = 0;
 					for (int y = 0; y < perY; y++) {
@@ -160,15 +210,14 @@ public class TheMod {
 						}
 					}
 				}
+				tile.changed = false;
+				cachedQuads.put(tile, quads);
 				return quads;
 			}
 
 			private void createIngot(List<BakedQuad> quads, ItemStack stack, int x, int y, int z) {
-				float r = .2f, g = .3f, b = .4f;
 				int color = color(stack);
-				r = ColorHelper.getRed(color) / 255f;
-				g = ColorHelper.getGreen(color) / 255f;
-				b = ColorHelper.getBlue(color) / 255f;
+				float r = ColorHelper.getRed(color) / 255f, g = ColorHelper.getGreen(color) / 255f, b = ColorHelper.getBlue(color) / 255f;
 				float xs = 1f / perX, ys = 1f / perY, zs = 1f / perZ;
 				float diffX = xs * .1f, diffZ = zs * .1f;
 				Vector3f va = new Vector3f(0 + (diffX * .2f) + xs * x, 0 + ys * y, 0 + (diffZ * .2f) + zs * z), //
@@ -182,10 +231,10 @@ public class TheMod {
 				//bottom
 				quads.add(createQuad(DefaultVertexFormats.ITEM, va, ve, vf, vb, r, g, b));
 				//top
-				quads.add(createQuad(DefaultVertexFormats.ITEM, vg, vh, vd, vc, r, g, b));
+				quads.add(createQuad(DefaultVertexFormats.ITEM, vh, vd, vc, vg, r, g, b));
 				//sides
-				quads.add(createQuad(DefaultVertexFormats.ITEM, va, vd, vh, ve, r, g, b));
-				quads.add(createQuad(DefaultVertexFormats.ITEM, va, vb, vc, vd, r, g, b));
+				quads.add(createQuad(DefaultVertexFormats.ITEM, vh, ve, va, vd, r, g, b));
+				quads.add(createQuad(DefaultVertexFormats.ITEM, vd, va, vb, vc, r, g, b));
 				quads.add(createQuad(DefaultVertexFormats.ITEM, vc, vb, vf, vg, r, g, b));
 				quads.add(createQuad(DefaultVertexFormats.ITEM, vg, vf, ve, vh, r, g, b));
 			}
@@ -200,33 +249,6 @@ public class TheMod {
 				return ItemOverrideList.NONE;
 			}
 
-			BakedQuad quad(EnumFacing face, Vector3f from, Vector3f to, int rotation, Axis mirror, TextureAtlasSprite tex, int tint) {
-				FaceBakery fb = new FaceBakery();
-				int[] ar = new int[] { 16, 16, 0, 0 };
-				if (mirror != null) {
-					switch (face.getAxis()) {
-					case X:
-						if (mirror == Axis.Z)
-							ar = new int[] { 16, 0, 0, 16 };//z
-						else if (mirror == Axis.Y)
-							ar = new int[] { 0, 16, 16, 0 };//y
-						break;
-					case Y:
-						if (mirror == Axis.X)
-							ar = new int[] { 16, 0, 0, 16 };//x
-						else if (mirror == Axis.Z)
-							ar = new int[] { 0, 16, 16, 0 };//z
-						break;
-					case Z:
-						if (mirror == Axis.X)
-							ar = new int[] { 16, 0, 0, 16 };//x
-						else if (mirror == Axis.Y)
-							ar = new int[] { 0, 16, 16, 0 };//y
-						break;
-					}
-				}
-				return fb.makeBakedQuad(from, to, new BlockPartFace(null, tint, null, new BlockFaceUV(new float[] { ar[0], ar[1], ar[2], ar[3] }, rotation)), tex, null/*face.getOpposite()*/, ModelRotation.X0_Y0, null, false, true);
-			}
 		});
 	}
 
@@ -237,16 +259,34 @@ public class TheMod {
 	public static BakedQuad createQuad(VertexFormat format, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, float r, float g, float b) {
 		UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
 		TextureAtlasSprite tex = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/snow");
-		//		tex = ModelLoader.White.INSTANCE;
+		tex = ModelLoader.White.INSTANCE;
 		tex = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/iron_block");
+		//		tex = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/tnt_side");
 		builder.setTexture(tex);
 		builder.setQuadTint(3);
 		Vec3d normal = new Vec3d(0, 0, 0);
+		//		x1 *= 2;
+		//		x2 *= 2;
+		//		x3 *= 2;
+		//		x4 *= 2;
+		//		y1 *= 2;
+		//		y2 *= 2;
+		//		y3 *= 2;
+		//		y4 *= 2;
+		//		z1 *= 2;
+		//		z2 *= 2;
+		//		z3 *= 2;
+		//		z4 *= 2;
 		float diff1 = (float) new Vec3d(x1, y1, z1).distanceTo(new Vec3d(x2, y2, z2));
 		float diff2 = (float) new Vec3d(x2, y2, z2).distanceTo(new Vec3d(x3, y3, z3));
 		float diff3 = (float) new Vec3d(x3, y3, z3).distanceTo(new Vec3d(x4, y4, z4));
 		diff1 = diff2 = diff3 = 1f;
 		Point2f p1 = new Point2f(0, 0), p2 = new Point2f(0 * diff1, 16 * diff1), p3 = new Point2f(16 * diff2, 16 * diff2), p4 = new Point2f(16 * diff3, 0 * diff3);
+		//		Point2f p1 = new Point2f(x1 * 16, y1 * 16), p2 = new Point2f(x2 * 16, y2 * 16), p3 = new Point2f(x3 * 16, y3 * 16), p4 = new Point2f(x4 * 16, y4 * 16);
+		//		Point2f p1 = new Point2f((x1 + y1 + z1) / 3 * 16, (x1 + y1 + z1) / 3 * 16), //
+		//				p2 = new Point2f((x2 + y2 + z2) / 3 * 16, (x2 + y2 + z2) / 3 * 16), //
+		//				p3 = new Point2f((x3 + y3 + z3) / 3 * 16, (x3 + y3 + z3) / 3 * 16), //
+		//				p4 = new Point2f((x4 + y4 + z4) / 3 * 16, (x4 + y4 + z4) / 3 * 16);
 		putVertex(format, tex, builder, normal, x1, y1, z1, p1.x, p1.y, r, g, b);
 		putVertex(format, tex, builder, normal, x2, y2, z2, p2.x, p2.y, r, g, b);
 		putVertex(format, tex, builder, normal, x3, y3, z3, p3.x, p3.y, r, g, b);
