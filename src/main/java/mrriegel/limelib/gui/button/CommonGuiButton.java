@@ -50,12 +50,13 @@ public class CommonGuiButton extends GuiButtonExt implements ITooltip {
 			if (design == Design.NORMAL)
 				GuiUtils.drawContinuousTexturedBox(BUTTON_TEXTURES, this.x, this.y, 0, 46 + k * 20, this.width, this.height, 200, 20, 2, 3, 2, 2, this.zLevel);
 			else if (design == Design.SIMPLE) {
+				//TODO enabled colors
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.enableBlend();
 				GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				drawer.drawFrame(x, y, width - 1, height - 1, 1, frameColor);
-				drawer.drawColoredRectangle(x + 1, y + 1, width - 2, height - 2, hovered && !Mouse.isButtonDown(0) ? ColorHelper.brighter(buttonColor, 0.10) : buttonColor);
+				drawer.drawColoredRectangle(x + 1, y + 1, width - 2, height - 2, enabled ? hovered && !Mouse.isButtonDown(0) ? ColorHelper.brighter(buttonColor, 0.10) : buttonColor : ColorHelper.darker(buttonColor, 0.10));
 			} else if (design == Design.NONE)
 				;// NO-OP
 			if (overlayColor != Integer.MAX_VALUE)

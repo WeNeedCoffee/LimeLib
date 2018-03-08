@@ -2,6 +2,8 @@ package mrriegel.limelib.helper;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.network.PacketHandler;
@@ -17,6 +19,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Teleporter;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -58,7 +61,6 @@ public class TeleportationHelper {
 	public static Optional<Entity> teleport(Entity entity, Vec3d vec, int targetDim) {
 		if (!canTeleport(entity))
 			return Optional.empty();
-		System.out.println("beforeprepare " + (entity instanceof EntityPlayerMP ? ((EntityPlayerMP) entity).isInvulnerableDimensionChange() : ""));
 		prepareEntity(entity);
 		double x = vec.x, y = vec.y, z = vec.z;
 
@@ -72,18 +74,23 @@ public class TeleportationHelper {
 			WorldServer fromDim = server.getWorld(from);
 			WorldServer toDim = server.getWorld(targetDim);
 			if (entity instanceof EntityPlayerMP) {
-				System.out.println("beforetele " + (entity instanceof EntityPlayerMP ? ((EntityPlayerMP) entity).isInvulnerableDimensionChange() : ""));
+				((EntityPlayerMP) entity).addExperienceLevel(0);
 				Teleporter teleporter = new Tele(toDim, x, y, z, entity.rotationYaw, entity.rotationPitch);
 				if (from == 1)
 					entity.world.removeEntity(entity);
+				print("1t", toDim);
 				server.getPlayerList().transferPlayerToDimension((EntityPlayerMP) entity, targetDim, teleporter);
+				//				teleport(entity, vec);
 				if (from == 1 && entity.isEntityAlive()) {
 					toDim.spawnEntity(entity);
 					toDim.updateEntityWithOptionalForce(entity, false);
 					entity.setPositionAndUpdate(x, y, z);
 				}
-				System.out.println("aftertele " + (entity instanceof EntityPlayerMP ? ((EntityPlayerMP) entity).isInvulnerableDimensionChange() : ""));
+				print("2t", toDim);
 				PacketHandler.sendTo(new TeleportMessage(), (EntityPlayerMP) entity);
+				Entity e = entity;
+				if ("".isEmpty())
+					toDim.getMinecraftServer().futureTaskQueue.add(new FutureTask<>(Executors.callable(() -> prepareEntity(e))));
 			} else {
 				NBTTagCompound tagCompound = entity.serializeNBT();
 				float rotationYaw = entity.rotationYaw;
@@ -102,9 +109,15 @@ public class TeleportationHelper {
 					return Optional.empty();
 				}
 			}
-		} else
+			print("3t", toDim);
+		} else {
 			entity.setPositionAndUpdate(x, y, z);
+		}
 		return Optional.of(entity);
+	}
+
+	public static final void print(String pre, World world) {
+		//		System.out.println(pre + " World " + world.provider.getDimension() + " has players: " + world.loadedEntityList.stream().anyMatch(e -> e instanceof EntityPlayer));
 	}
 
 	public static class Tele extends Teleporter {
@@ -134,10 +147,7 @@ public class TeleportationHelper {
 		public void placeInPortal(Entity entity, float rotationYaw) {
 			if (!entity.world.isBlockLoaded(new BlockPos(x, y, z)))
 				entity.world.getBlockState(new BlockPos(x, y, z));
-			//						entity.setLocationAndAngles(x, y, z, yaw, pitch);
-			System.out.println("place");
 			teleport(entity, new Vec3d(x, y, z));
-			System.out.println("place2");
 			entity.rotationYaw = yaw;
 			entity.rotationPitch = pitch;
 			entity.motionX = 0;

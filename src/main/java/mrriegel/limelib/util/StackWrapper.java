@@ -105,6 +105,10 @@ public final class StackWrapper {
 		return !wrap.getStack().isEmpty() ? wrap : null;
 	}
 
+	/**
+	 * WRONG!!!
+	 */
+	@Deprecated
 	public static NonNullList<ItemStack> toStackList(List<StackWrapper> list) {
 		NonNullList<ItemStack> lis = NonNullList.create();
 		for (StackWrapper s : list) {
@@ -121,6 +125,7 @@ public final class StackWrapper {
 		return lis;
 	}
 
+	@Deprecated
 	public static NonNullList<ItemStack> toStackList(StackWrapper wrap) {
 		return toStackList(Collections.singletonList(wrap));
 	}

@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.Validate;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -46,27 +47,32 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 public class Utils {
 
 	private static GsonBuilder GSONBUILDER;
+	private static Gson GSON;
 
 	public static void init() {
 	}
 
 	public static Gson getGSON() {
+		if (GSON != null)
+			return GSON;
 		if (GSONBUILDER == null)
 			registerDefaultAdapters();
-		return GSONBUILDER.create();
+		return GSON = GSONBUILDER.create();
 	}
 
 	private static void registerDefaultAdapters() {
 		GSONBUILDER = new GsonBuilder().setPrettyPrinting().//
 				registerTypeAdapter(NBTTagCompound.class, new NBTLizer()).//
 				registerTypeAdapter(Item.class, new ItemLizer()).//
+				//				registerTypeAdapter(IForgeRegistryEntry.class, new RegistryEntryLizer()).//
 				registerTypeAdapter(ItemStack.class, new ItemStackLizer());
 	}
 
 	public static void registerGsonAdapter(Type type, Object adapter) {
-		Preconditions.checkArgument(adapter instanceof JsonSerializer<?> || adapter instanceof JsonDeserializer<?> || adapter instanceof InstanceCreator<?> || adapter instanceof TypeAdapter<?>);
+		Validate.isTrue(adapter instanceof JsonSerializer<?> || adapter instanceof JsonDeserializer<?> || adapter instanceof InstanceCreator<?> || adapter instanceof TypeAdapter<?>);
 		getGSON();
 		GSONBUILDER.registerTypeAdapter(type, adapter);
+		GSON = null;
 	}
 
 	public static String getCurrentModID() {

@@ -1,6 +1,8 @@
 package mrriegel.limelib;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,9 +17,11 @@ import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.plugin.TOP;
 import mrriegel.limelib.tile.IHUDProvider;
 import mrriegel.limelib.util.ClientEventHandler;
+import mrriegel.limelib.util.CommonModGuiFactory;
 import mrriegel.limelib.util.EventHandler;
 import mrriegel.limelib.util.LimeCapabilities;
 import mrriegel.limelib.util.Serious;
+import mrriegel.limelib.util.ServerData;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -30,8 +34,10 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -40,11 +46,13 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION, acceptedMinecraftVersions = "[1.12,1.13)")
+@Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION, acceptedMinecraftVersions = "[1.12,1.13)", guiFactory = "mrriegel.limelib.LimeLib$G")
 public class LimeLib {
 
 	@Instance(LimeLib.MODID)
@@ -79,6 +87,14 @@ public class LimeLib {
 		}
 	}
 
+	public static class G extends CommonModGuiFactory {
+
+		public G() {
+			super(g -> new GuiConfig(g, LimeConfig.config.getCategoryNames().stream().flatMap(s -> new ConfigElement(LimeConfig.config.getCategory(s)).getChildElements().stream()).collect(Collectors.toList()), LimeLib.MODID, false, false, LimeLib.NAME));
+		}
+
+	}
+
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded, fluxLoaded;
 	public static boolean wrenchAvailable;
 
@@ -106,6 +122,24 @@ public class LimeLib {
 	public void postInit(FMLPostInitializationEvent event) {
 	}
 
+	@Mod.EventHandler
+	public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+		try {
+			ServerData.start(event.getServer());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Mod.EventHandler
+	public void serverStopping(FMLServerStoppingEvent event) {
+		try {
+			ServerData.stop();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@SubscribeEvent
 	public void attachTile(AttachCapabilitiesEvent<TileEntity> event) {
 		if (event.getObject() instanceof TileEntityFurnace)
@@ -124,7 +158,6 @@ public class LimeLib {
 						ItemStack fu = tile.getStackInSlot(1);
 						lis.add("Fuel: " + (fu.isEmpty() ? "" : (fu.getDisplayName() + " " + fu.getCount() + "x")));
 						lis.add(IHUDProvider.SHADOWFONT + (sneak ? facing.toString().toUpperCase() : facing.toString().toLowerCase()));
-						lis.add("komisc dass am im garten nich gut schlaf mark");
 						return lis;
 					}
 
@@ -136,7 +169,7 @@ public class LimeLib {
 					@Override
 					public double scale(boolean sneak, EnumFacing facing) {
 						int ticks = FMLClientHandler.instance().getClientPlayerEntity().ticksExisted;
-						double k = (Math.sin(ticks / 10.) + 1) / 2 + .5;
+						double k = (Math.sin((ticks + FMLClientHandler.instance().getClient().getRenderPartialTicks()) / 10.) + 1) / 2 + .5;
 						if ("".isEmpty())
 							return k;
 						return (System.currentTimeMillis() / 350) % 2 == 0 ? .99 : .97;
@@ -167,4 +200,5 @@ public class LimeLib {
 
 			});
 	}
+
 }

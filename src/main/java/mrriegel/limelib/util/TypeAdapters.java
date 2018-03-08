@@ -46,6 +46,7 @@ public class TypeAdapters {
 
 	}
 
+	//TODO remove
 	public static class ItemLizer extends JsonLizer<Item> {
 
 		@Override
@@ -59,8 +60,36 @@ public class TypeAdapters {
 		public Item deserialize(NBTTagCompound nbt, JsonDeserializationContext context) {
 			return ForgeRegistries.ITEMS.getValue(new ResourceLocation(nbt.getString("item")));
 		}
-
 	}
+
+	//	public static class RegistryEntryLizer<T extends IForgeRegistryEntry<T>> extends JsonLizer<IForgeRegistryEntry<T>> {
+	//
+	//		@Override
+	//		public NBTTagCompound serialize(IForgeRegistryEntry<T> t, JsonSerializationContext context) {
+	//			System.out.println("zaaap");
+	//			NBTTagCompound n = new NBTTagCompound();
+	//			IForgeRegistry<T> reg = GameRegistry.findRegistry(t.getRegistryType());
+	//			if (reg != null) {
+	//				Validate.isTrue(t.getRegistryType() == reg.getRegistrySuperType(), t.getRegistryType() + " != " + reg.getRegistrySuperType());
+	//				n.setString("fentry", reg.getKey((T) t).toString());
+	//				n.setString("fregistry", reg.getRegistrySuperType().toString());
+	//			}
+	//			return n;
+	//		}
+	//
+	//		@Override
+	//		public IForgeRegistryEntry<T> deserialize(NBTTagCompound nbt, JsonDeserializationContext context) {
+	//			System.out.println("zooop");
+	//			Class<T> clazz = null;
+	//			try {
+	//				clazz = (Class<T>) Class.forName(nbt.getString("fregistry"));
+	//			} catch (Exception e) {
+	//				return null;
+	//			}
+	//			IForgeRegistry<T> reg = GameRegistry.findRegistry(clazz);
+	//			return reg == null ? null : reg.getValue(new ResourceLocation(nbt.getString("fentry")));
+	//		}
+	//	}
 
 	public static class ItemStackLizer extends JsonLizer<ItemStack> {
 

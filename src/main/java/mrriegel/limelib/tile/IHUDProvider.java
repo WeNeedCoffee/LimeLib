@@ -13,6 +13,7 @@ public interface IHUDProvider {
 
 	public static final String SHADOWFONT = "?~~%z";
 
+	//TODO add player, remove sneak
 	@Nullable
 	List<String> getData(boolean sneak, EnumFacing facing);
 

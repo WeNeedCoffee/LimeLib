@@ -15,11 +15,7 @@
     "variants" : {
         "normal" : [{
                 
-            }], 
-        "inventory" : [{
-                "transform" : "forge:default-block", 
-                "y" : 90
-            }], 
+            }],
         "up" : {
             "true" : {
                 "textures" : {

@@ -63,6 +63,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		super.registerBlock();
 		if (!Stream.of(getTile().getConstructors()).anyMatch((c) -> c.getParameterCount() == 0))
 			throw new IllegalStateException(getTile() + " needs a public default constructor.");
+		//TODO change to registryname
 		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
 		if (clearRecipe && isDataKeeper(getTile(), null) && !getItemBlock().getHasSubtypes()) {
 			final ItemStack result = new ItemStack(this);

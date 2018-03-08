@@ -14,10 +14,14 @@ public class ContainerNull extends Container {
 
 	@Override
 	public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
 	public void putStackInSlot(int slotID, ItemStack stack) {
+	}
+
+	@Override
+	public void detectAndSendChanges() {
 	}
 }

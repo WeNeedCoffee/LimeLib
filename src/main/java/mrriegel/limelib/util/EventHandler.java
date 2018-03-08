@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import mrriegel.limelib.datapart.CapabilityDataPart;
@@ -20,10 +21,13 @@ import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.PlayerClickMessage;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IOwneable;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -45,6 +49,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class EventHandler {
@@ -149,8 +154,26 @@ public class EventHandler {
 			//			} catch (CommandException e) {
 			//				e.printStackTrace();
 			//			}
-			//			BlockPos quarz = new BlockPos(9, 4, 5);
-			//			player.setPositionAndUpdate(quarz.getX() + .5, quarz.getY(), quarz.getZ() + .5);
+			System.out.println("sds");
+			BlockPos pb = new BlockPos(player);
+			new Thread(() -> {
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				player.world.getMinecraftServer().addScheduledTask(() -> {
+					//					player.world.setBlockState(pb, Blocks.BEDROCK.getDefaultState());
+					ItemStack e = ItemStack.EMPTY;
+					while (e.isEmpty()) {
+						List<Item> list = Lists.newArrayList(ForgeRegistries.ITEMS);
+						e = new ItemStack(list.get(player.world.rand.nextInt(list.size())));
+					}
+					Block.spawnAsEntity(player.world, pb, e);
+				});
+			}).start();
+			//			Stopwatch sw = Stopwatch.createStarted();
+			//			System.out.println(sw.stop().elapsed(TimeUnit.MICROSECONDS) + " micros");
 			List<EntitySheep> sheeps = player.world.getEntitiesWithinAABB(EntitySheep.class, new AxisAlignedBB(new BlockPos(player).add(-6, -6, -6), new BlockPos(player).add(6, 6, 6)));
 			if (".".isEmpty())
 				if (!sheeps.isEmpty() && false) {
@@ -178,8 +201,6 @@ public class EventHandler {
 		if (!RecipeHelper.dev)
 			return;
 		if (event.phase == Phase.END) {
-			if (event.player.isSneaking())
-				event.player.noClip = true;
 		} else {
 		}
 	}
@@ -216,7 +237,7 @@ public class EventHandler {
 					lastClicks.put(Side.CLIENT, Maps.newTreeMap());
 				}
 				boolean touch = false;
-				if (!lastClicks.get(side).containsKey(event.getEntityPlayer().getDisplayNameString()) || System.currentTimeMillis() - lastClicks.get(side).get(event.getEntityPlayer().getDisplayNameString()) > (left ? 150 : 40)) {
+				if (!lastClicks.get(side).containsKey(event.getEntityPlayer().getName()) || System.currentTimeMillis() - lastClicks.get(side).get(event.getEntityPlayer().getName()) > (left ? 150 : 40)) {
 					if (left)
 						touch = part.onLeftClicked(event.getEntityPlayer(), event.getHand());
 					else {
@@ -225,7 +246,7 @@ public class EventHandler {
 					}
 					if (!server && event.getWorld().isRemote)
 						PacketHandler.sendToServer(new PlayerClickMessage(part.getPos(), event.getHand(), left));
-					lastClicks.get(side).put(event.getEntityPlayer().getDisplayNameString(), System.currentTimeMillis());
+					lastClicks.get(side).put(event.getEntityPlayer().getName(), System.currentTimeMillis());
 				}
 				if (!touch)
 					return;

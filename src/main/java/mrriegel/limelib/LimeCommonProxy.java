@@ -15,6 +15,8 @@ public class LimeCommonProxy {
 		return Side.SERVER;
 	}
 
+	//TODO remove
+	@Deprecated
 	public double getReachDistance(EntityPlayer player) {
 		return player instanceof FakePlayer ? 0 : ((EntityPlayerMP) player).interactionManager.getBlockReachDistance();
 	}
@@ -29,6 +31,7 @@ public class LimeCommonProxy {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	public RayTraceResult getClientRayTrace() {
 		throw new UnsupportedOperationException();
 	}

@@ -107,19 +107,17 @@ public interface IInfoProvider<T extends TileEntity> extends IWailaDataProvider,
 
 	}
 
-	static class Dummy {
-		private static List<Pair<IInfoProvider<?>, Class<? extends TileEntity>>> providers = Lists.newArrayList();
-	}
+	static final List<Pair<IInfoProvider<?>, Class<? extends TileEntity>>> providers = Lists.newArrayList();
 
 	public static void registerProvider(IInfoProvider<?> provider, Class<? extends TileEntity> clazz) {
-		if (!Dummy.providers.stream().map(p -> p.getRight()).anyMatch(c -> c == clazz))
-			Dummy.providers.add(Pair.of(provider, clazz));
+		if (!providers.stream().map(p -> p.getRight()).anyMatch(c -> c == clazz))
+			providers.add(Pair.of(provider, clazz));
 		else
 			LimeLib.log.warn(clazz + " is already registered.");
 	}
 
 	public static List<Pair<IInfoProvider<?>, Class<? extends TileEntity>>> getProviders() {
-		return Collections.unmodifiableList(Dummy.providers);
+		return Collections.unmodifiableList(providers);
 	}
 
 	static TileEntity getSyncedTile(TileEntity t, IWailaDataAccessor accessor) {

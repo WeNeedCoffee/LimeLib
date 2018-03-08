@@ -1,13 +1,13 @@
 package mrriegel.limelib;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
 import org.lwjgl.util.vector.Vector3f;
-
-import com.google.common.collect.Lists;
 
 import mrriegel.limelib.block.CommonBlock;
 import net.minecraft.block.material.Material;
@@ -15,7 +15,6 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockFaceUV;
 import net.minecraft.client.renderer.block.model.BlockPartFace;
@@ -26,11 +25,12 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -85,6 +85,8 @@ public class Connect {
 	};
 
 	public static void preInit() {
+		if (!false)
+			return;
 		con.registerBlock();
 		con.initModel();
 		ModelLoaderRegistry.registerLoader(new Loader());
@@ -95,7 +97,6 @@ public class Connect {
 				return new ModelResourceLocation(con.getRegistryName().toString());
 			}
 		});
-		//		ModelLoader.setCustomModelResourceLocation(con.getItemBlock(), 0, new ModelResourceLocation(con.getRegistryName(), "inventory"));
 	}
 
 	public static void init() {
@@ -103,8 +104,7 @@ public class Connect {
 
 	static class Bake implements IBakedModel {
 
-		static ResourceLocation tex = new ResourceLocation(LimeLib.MODID, "blocks/four");
-		TextureAtlasSprite tas;
+		TextureAtlasSprite zero, one, twos, two_c, two_s, three, four;
 		VertexFormat format;
 
 		private void putVertex(UnpackedBakedQuad.Builder builder, Vec3d normal, float x, float y, float z, float u, float v) {
@@ -118,8 +118,8 @@ public class Connect {
 					break;
 				case UV:
 					if (format.getElement(e).getIndex() == 0) {
-						u = tas.getInterpolatedU(u);
-						v = tas.getInterpolatedV(v);
+						u = zero.getInterpolatedU(u);
+						v = zero.getInterpolatedV(v);
 						builder.put(e, u, v, 0f, 1f);
 						break;
 					}
@@ -137,66 +137,100 @@ public class Connect {
 		public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
 			List<BakedQuad> quads = new ArrayList<>();
 
-			tas = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(Blocks.BRICK_BLOCK.getDefaultState()).getParticleTexture();
-			//			if ("".isEmpty())
-			//				return Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(Blocks.CRAFTING_TABLE.getDefaultState()).getQuads(state, side, rand);
+			//			//north
+			//			UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
+			//			builder.setTexture(tas);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 0f, 16, 16);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 0f, 16, 0);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 0f, 0, 0);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 0f, 0, 16);
+			//			quads.add(builder.build());
+			//			//west
+			//			builder = new UnpackedBakedQuad.Builder(format);
+			//			builder.setTexture(tas);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 1f, 16, 16);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 1f, 16, 0);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 0f, 0, 0);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 0f, 0, 16);
+			//			quads.add(builder.build());
+			//			//south
+			//			builder = new UnpackedBakedQuad.Builder(format);
+			//			builder.setTexture(tas);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 1f, 16, 16);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 1f, 16, 0);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 1f, 0, 0);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 1f, 0, 16);
+			//			quads.add(builder.build());
+			//			//east
+			//			builder = new UnpackedBakedQuad.Builder(format);
+			//			builder.setTexture(tas);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 0f, 16, 16);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 0f, 16, 0);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 1f, 0, 0);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 1f, 0, 16);
+			//			quads.add(builder.build());
+			//			//top
+			//			builder = new UnpackedBakedQuad.Builder(format);
+			//			builder.setTexture(tas);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 1f, 0, 16);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 1f, 16, 16);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 0f, 16, 0);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 0f, 0, 0);
+			//			quads.add(builder.build());
+			//			//bottom
+			//			builder = new UnpackedBakedQuad.Builder(format);
+			//			builder.setTexture(tas);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 0f, 0, 16);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 0f, 16, 16);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 1f, 16, 0);
+			//			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 1f, 0, 0);
+			//			quads.add(builder.build());
+			//			tas = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA.getDefaultState()).getParticleTexture();
+			if (side != null)
+				return Collections.emptyList();
+			boolean up = state.getValue(UP), down = state.getValue(DOWN), north = state.getValue(NORTH), east = state.getValue(EAST), south = state.getValue(SOUTH), west = state.getValue(WEST);
 			//north
-			UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
-			builder.setTexture(tas);
-			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 0f, 16, 16);
-			putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 0f, 16, 0);
-			putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 0f, 0, 0);
-			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 0f, 0, 16);
-			quads.add(builder.build());
-			//west
-			builder = new UnpackedBakedQuad.Builder(format);
-			builder.setTexture(tas);
-			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 1f, 16, 16);
-			putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 1f, 16, 0);
-			putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 0f, 0, 0);
-			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 0f, 0, 16);
-			quads.add(builder.build());
-			//south
-			builder = new UnpackedBakedQuad.Builder(format);
-			builder.setTexture(tas);
-			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 1f, 16, 16);
-			putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 1f, 16, 0);
-			putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 1f, 0, 0);
-			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 1f, 0, 16);
-			quads.add(builder.build());
+			TextureAtlasSprite tex = null;
+			quads.add(quad(EnumFacing.NORTH, new Vector3f(0f, 16f, 0f), new Vector3f(16f, 0f, 0f), 0, null, zero));
 			//east
-			builder = new UnpackedBakedQuad.Builder(format);
-			builder.setTexture(tas);
-			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 0f, 16, 16);
-			putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 0f, 16, 0);
-			putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 1f, 0, 0);
-			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 1f, 0, 16);
-			quads.add(builder.build());
-			quads.clear();
+			quads.add(quad(EnumFacing.EAST, new Vector3f(16f, 16f, 0f), new Vector3f(16f, 0f, 16f), 0, null, one));
+			//south
+			quads.add(quad(EnumFacing.SOUTH, new Vector3f(0f, 16f, 16f), new Vector3f(16f, 0f, 16f), 0, null, two_s));
+			//west
+			quads.add(quad(EnumFacing.WEST, new Vector3f(0f, 16f, 0f), new Vector3f(0f, 0f, 16f), 0, null, two_c));
 			//top
-			FaceBakery fb = new FaceBakery();
-			if ("".isEmpty()) {
-				quads.add(fb.makeBakedQuad(new Vector3f(0f, 16f, 16f), new Vector3f(16f, 16f, 0f), new BlockPartFace(null, -1, tex.toString(), new BlockFaceUV(new float[] { 16, 16, 0, 0 }, 0)), tas, EnumFacing.DOWN, ModelRotation.X0_Y0, null, true, true));
-			} else {
-				builder = new UnpackedBakedQuad.Builder(format);
-				builder.setTexture(tas);
-				putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 1f, 0, 16);
-				putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 1f, 16, 16);
-				putVertex(builder, new Vec3d(0, 0, 0), 1f, 1f, 0f, 16, 0);
-				putVertex(builder, new Vec3d(0, 0, 0), 0f, 1f, 0f, 0, 0);
-				quads.add(builder.build());
-			}
+			quads.add(quad(EnumFacing.UP, new Vector3f(16f, 16f, 0f), new Vector3f(0f, 16f, 16f), 0, null, three));
 			//bottom
-			builder = new UnpackedBakedQuad.Builder(format);
-			builder.setTexture(tas);
-			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 0f, 0, 16);
-			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 0f, 16, 16);
-			putVertex(builder, new Vec3d(0, 0, 0), 1f, 0f, 1f, 16, 0);
-			putVertex(builder, new Vec3d(0, 0, 0), 0f, 0f, 1f, 0, 0);
-			quads.add(builder.build());
-
-			//			quads = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(Blocks.STONE_BUTTON.getDefaultState()).getQuads(state, side, rand);
+			quads.add(quad(EnumFacing.DOWN, new Vector3f(16f, 0f, 0f), new Vector3f(0f, 0f, 16f), 0, null, four));
 			return quads;
+		}
+
+		BakedQuad quad(EnumFacing face, Vector3f from, Vector3f to, int rotation, Axis mirror, TextureAtlasSprite tex) {
+			FaceBakery fb = new FaceBakery();
+			int[] ar = new int[] { 16, 16, 0, 0 };
+			if (mirror != null) {
+				switch (face.getAxis()) {
+				case X:
+					if (mirror == Axis.Z)
+						ar = new int[] { 16, 0, 0, 16 };//z
+					else if (mirror == Axis.Y)
+						ar = new int[] { 0, 16, 16, 0 };//y
+					break;
+				case Y:
+					if (mirror == Axis.X)
+						ar = new int[] { 16, 0, 0, 16 };//x
+					else if (mirror == Axis.Z)
+						ar = new int[] { 0, 16, 16, 0 };//z
+					break;
+				case Z:
+					if (mirror == Axis.X)
+						ar = new int[] { 16, 0, 0, 16 };//x
+					else if (mirror == Axis.Y)
+						ar = new int[] { 0, 16, 16, 0 };//y
+					break;
+				}
+			}
+			return fb.makeBakedQuad(from, to, new BlockPartFace(null, -1, null, new BlockFaceUV(new float[] { ar[0], ar[1], ar[2], ar[3] }, rotation)), tex, face.getOpposite(), ModelRotation.X0_Y0, null, false, true);
 		}
 
 		@Override
@@ -216,7 +250,7 @@ public class Connect {
 
 		@Override
 		public TextureAtlasSprite getParticleTexture() {
-			return tas;
+			return zero;
 		}
 
 		@Override
@@ -231,20 +265,34 @@ public class Connect {
 		@Override
 		public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
 			Bake b = new Bake();
-			b.tas = bakedTextureGetter.apply(Bake.tex);
+			System.out.println("zip: " + format + " " + format.getElements());
+			for (Field f : DefaultVertexFormats.class.getDeclaredFields()) {
+				try {
+					if (format == f.get(null))
+						System.out.println(f.getName());
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			b.zero = bakedTextureGetter.apply(new ResourceLocation(LimeLib.MODID, "blocks/zero"));
+			b.one = bakedTextureGetter.apply(new ResourceLocation(LimeLib.MODID, "blocks/one"));
+			b.two_c = bakedTextureGetter.apply(new ResourceLocation(LimeLib.MODID, "blocks/two_c"));
+			b.two_s = bakedTextureGetter.apply(new ResourceLocation(LimeLib.MODID, "blocks/two_s"));
+			b.three = bakedTextureGetter.apply(new ResourceLocation(LimeLib.MODID, "blocks/three"));
+			b.four = bakedTextureGetter.apply(new ResourceLocation(LimeLib.MODID, "blocks/four"));
 			b.format = format;
 			return b;
 		}
 
 		@Override
 		public Collection<ResourceLocation> getTextures() {
-			return Lists.newArrayList(Bake.tex);
+			return Collections.emptyList();
 		}
 
 		@Override
 		public IModelState getDefaultState() {
 			return IModel.super.getDefaultState();
-			//			return null;
 		}
 
 	}
