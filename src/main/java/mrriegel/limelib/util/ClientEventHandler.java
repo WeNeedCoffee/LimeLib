@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.collect.Maps;
 
 import mrriegel.limelib.LimeConfig;
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.datapart.RenderRegistry;
@@ -60,11 +61,14 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.relauncher.Side;
 
+@EventBusSubscriber(modid = LimeLib.MODID, value = { Side.CLIENT })
 public class ClientEventHandler {
 
 	@SubscribeEvent

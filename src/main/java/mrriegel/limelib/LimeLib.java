@@ -2,7 +2,6 @@ package mrriegel.limelib;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,11 +15,7 @@ import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.plugin.TOP;
 import mrriegel.limelib.tile.IHUDProvider;
-import mrriegel.limelib.util.ClientEventHandler;
-import mrriegel.limelib.util.CommonModGuiFactory;
-import mrriegel.limelib.util.EventHandler;
 import mrriegel.limelib.util.LimeCapabilities;
-import mrriegel.limelib.util.Serious;
 import mrriegel.limelib.util.ServerData;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.creativetab.CreativeTabs;
@@ -34,10 +29,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -52,7 +45,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION, acceptedMinecraftVersions = "[1.12,1.13)", guiFactory = "mrriegel.limelib.LimeLib$G")
+@Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION, acceptedMinecraftVersions = "[1.12,1.13)")
 public class LimeLib {
 
 	@Instance(LimeLib.MODID)
@@ -71,12 +64,8 @@ public class LimeLib {
 	public void preInit(FMLPreInitializationEvent event) {
 		LimeConfig.init(event.getSuggestedConfigurationFile());
 		Utils.init();
-		MinecraftForge.EVENT_BUS.register(EventHandler.class);
-		if (event.getSide().isClient())
-			MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
 		CapabilityDataPart.register();
 		LimeCapabilities.register();
-		Serious.preinit();
 		wailaLoaded = Loader.isModLoaded("waila");
 		jeiLoaded = Loader.isModLoaded("jei");
 		teslaLoaded = Loader.isModLoaded("tesla");
@@ -87,21 +76,12 @@ public class LimeLib {
 		}
 	}
 
-	public static class G extends CommonModGuiFactory {
-
-		public G() {
-			super(g -> new GuiConfig(g, LimeConfig.config.getCategoryNames().stream().flatMap(s -> new ConfigElement(LimeConfig.config.getCategory(s)).getChildElements().stream()).collect(Collectors.toList()), LimeLib.MODID, false, false, LimeLib.NAME));
-		}
-
-	}
-
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded, fluxLoaded;
 	public static boolean wrenchAvailable;
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		PacketHandler.init();
-		Serious.init();
 		RecipeHelper.generateConstants();
 		if (LimeConfig.commandBlockCreativeTab) {
 			Blocks.COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);

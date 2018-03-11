@@ -49,6 +49,7 @@ public class NBTHelper {
 		return nbt != null && nbt.hasKey(keyName);
 	}
 
+	//TODO return nbt
 	public static void removeTag(NBTTagCompound nbt, String keyName) {
 		if (nbt == null)
 			return;
@@ -76,6 +77,8 @@ public class NBTHelper {
 		default Object defaultValue() {
 			return null;
 		}
+
+		//TODO getMap & getList classes
 	}
 
 	@SuppressWarnings("unused")
@@ -210,6 +213,7 @@ public class NBTHelper {
 		return (T) type.get(nbt, name, clazz);
 	}
 
+	//TODO rename to getOptional
 	public static <T> Optional<T> getSafe(NBTTagCompound nbt, String name, Class<T> clazz) {
 		if (nbt == null || nbt.hasKey(name))
 			return Optional.of(get(nbt, name, clazz));
