@@ -5,12 +5,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.INBTSerializable;
 
-public abstract class ServerData implements INBTSerializable<NBTTagCompound> {
+public abstract class ServerData {
 
 	private static final Set<ServerData> datas = new HashSet<>();
 	protected static MinecraftServer server;
@@ -32,18 +30,18 @@ public abstract class ServerData implements INBTSerializable<NBTTagCompound> {
 		dir.mkdirs();
 		mainDir = dir;
 		for (ServerData data : datas) {
-			data.read(mainDir);
+			data.read();
 		}
 	}
 
 	public static void stop() throws IOException {
 		for (ServerData data : datas) {
-			data.read(mainDir);
+			data.write();
 		}
 	}
 
-	protected abstract void read(File mainDir);
+	protected abstract void read();
 
-	protected abstract void write(File mainDir);
+	protected abstract void write();
 
 }
