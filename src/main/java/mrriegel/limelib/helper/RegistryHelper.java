@@ -1,6 +1,5 @@
 package mrriegel.limelib.helper;
 
-import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 
@@ -67,12 +67,7 @@ public class RegistryHelper {
 		if (Utils.getCurrentModID().equals(rl.getResourceDomain()))
 			entry.setRegistryName(rl);
 		else
-			try {
-				Field f = Impl.class.getDeclaredField("registryName");
-				f.setAccessible(true);
-				f.set(entry, rl);
-			} catch (Exception e) {
-			}
+			ReflectionHelper.setPrivateValue(Impl.class, entry, rl, "registryName");
 	}
 
 }

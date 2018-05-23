@@ -1,10 +1,8 @@
 package mrriegel.limelib.tile;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 
@@ -122,12 +120,12 @@ public interface IInfoProvider<T extends TileEntity> extends IWailaDataProvider,
 
 	static TileEntity getSyncedTile(TileEntity t, IWailaDataAccessor accessor) {
 		try {
-			TileEntity tile = ConstructorUtils.invokeConstructor(t.getClass());
+			TileEntity tile = t.getClass().newInstance();
 			tile.handleUpdateTag(accessor.getNBTData());
 			tile.setWorld(t.getWorld());
 			tile.setPos(t.getPos());
 			return tile;
-		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+		} catch (IllegalAccessException | InstantiationException e) {
 			return t;
 		}
 	}

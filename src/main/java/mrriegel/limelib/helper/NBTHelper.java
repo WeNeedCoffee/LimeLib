@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
@@ -23,11 +24,16 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class NBTHelper {
 
@@ -62,20 +68,46 @@ public class NBTHelper {
 		return buf.readableBytes();
 	}
 
+	public static Pair<NBTTagCompound, NBTTagCompound> split(NBTTagCompound nbt) {
+		if (nbt == null)
+			return null;
+		List<Pair<String, NBTBase>> ns = nbt.getKeySet().stream().map(s -> Pair.of(s, nbt.getTag(s))).collect(Collectors.toList());
+		int nsize = ns.size();
+		if (nsize < 2)
+			return Pair.of(nbt, new NBTTagCompound());
+		NBTTagCompound a = new NBTTagCompound(), b = new NBTTagCompound();
+		List<Pair<String, NBTBase>> as = ns.subList(0, (nsize + 1) / 2);
+		List<Pair<String, NBTBase>> bs = ns.subList((nsize + 1) / 2, nsize);
+		for (Pair<String, NBTBase> p : as)
+			a.setTag(p.getKey(), p.getValue());
+		for (Pair<String, NBTBase> p : bs)
+			b.setTag(p.getKey(), p.getValue());
+		return Pair.of(a, b);
+	}
+
 	@Deprecated
 	public static void register(INBTable n) {
 		iNBTs.add(n);
 	}
 
-	public static interface INBTable {
-		void set(NBTTagCompound nbt, String name, Object value);
+	public static interface INBTable<T> {
 
-		Object get(NBTTagCompound nbt, String name, Class<?> clazz);
+		void set(NBTTagCompound nbt, String name, T value);
 
-		boolean classValid(Class<?> clazz);
+		T get(NBTTagCompound nbt, String name, Class<T> clazz);
 
-		default Object defaultValue() {
+		boolean classValid(Class<T> clazz);
+
+		default T defaultValue() {
 			return null;
+		}
+
+		default Map<?, ?> getEmptyMap() {
+			return new Object2ObjectOpenHashMap<>();
+		}
+
+		default List<?> getEmptyList() {
+			return new ObjectArrayList<>();
 		}
 
 		//TODO getMap & getList classes
@@ -91,54 +123,88 @@ public class NBTHelper {
 
 	static {
 		//enum
-		register(new INBTable() {
+		register(new INBTable<Enum>() {
 
 			@Override
-			public void set(NBTTagCompound nbt, String name, Object value) {
-				nbt.setInteger(name, ((Enum<?>) value).ordinal());
+			public void set(NBTTagCompound nbt, String name, Enum value) {
+				nbt.setInteger(name, value.ordinal());
 			}
 
 			@Override
-			public Object get(NBTTagCompound nbt, String name, Class<?> clazz) {
+			public Enum<?> get(NBTTagCompound nbt, String name, Class<Enum> clazz) {
 				return clazz.getEnumConstants()[nbt.getInteger(name)];
 			}
 
 			@Override
-			public boolean classValid(Class<?> clazz) {
+			public boolean classValid(Class<Enum> clazz) {
 				return Enum.class.isAssignableFrom(clazz);
 			}
 		});
-		for (NBTType t : NBTType.values())
-			register(of(t.defaultValue, t.getter, t.setter, t.classes));
-	}
-
-	public static INBTable of(Object defaultValue, BiFunction<NBTTagCompound, String, Object> getter, BiConsumer<NBTTagCompound, Pair<String, Object>> setter, Class<?>... classes) {
-		return new INBTable() {
+		register(new INBTable<IForgeRegistryEntry>() {
 
 			@Override
-			public void set(NBTTagCompound nbt, String name, Object value) {
+			public void set(NBTTagCompound nbt, String name, IForgeRegistryEntry value) {
+				NBTTagCompound entry = new NBTTagCompound();
+				entry.setString("id", value.getRegistryName().toString());
+				entry.setString("class", value.getRegistryType().getCanonicalName());
+				nbt.setTag(name, entry);
+			}
+
+			@Override
+			public IForgeRegistryEntry get(NBTTagCompound nbt, String name, Class<IForgeRegistryEntry> clazz) {
+				NBTTagCompound entry = nbt.getCompoundTag(name);
+				String id = entry.getString("id"), clas = entry.getString("class");
+				try {
+					IForgeRegistry reg = GameRegistry.findRegistry((Class<IForgeRegistryEntry>) Class.forName(clas));
+					if (reg != null) {
+						return reg.getValue(new ResourceLocation(id));
+					}
+				} catch (ClassNotFoundException e) {
+					return null;
+				}
+				return null;
+			}
+
+			@Override
+			public boolean classValid(Class<IForgeRegistryEntry> clazz) {
+				return IForgeRegistryEntry.class.isAssignableFrom(clazz);
+			}
+		});
+		//		for (NBTType t : NBTType.values())
+		//			register(of(t.defaultValue, t.getter, t.setter, t.classes));
+	}
+
+	public static <T> INBTable of(T defaultValue, BiFunction<NBTTagCompound, String, T> getter, BiConsumer<NBTTagCompound, Pair<String, T>> setter, Class<T>... classes) {
+		return of(defaultValue, getter, setter, clazz -> Arrays.stream(classes).anyMatch(c -> clazz == c));
+	}
+
+	public static <T> INBTable of(T defaultValue, BiFunction<NBTTagCompound, String, T> getter, BiConsumer<NBTTagCompound, Pair<String, T>> setter, Predicate<Class<T>> pred) {
+		return new INBTable<T>() {
+
+			@Override
+			public void set(NBTTagCompound nbt, String name, T value) {
 				setter.accept(nbt, Pair.of(name, value));
 			}
 
 			@Override
-			public Object get(NBTTagCompound nbt, String name, Class<?> clazz) {
+			public T get(NBTTagCompound nbt, String name, Class<T> clazz) {
 				return getter.apply(nbt, name);
 			}
 
 			@Override
-			public boolean classValid(Class<?> clazz) {
-				return Arrays.stream(classes).anyMatch(c -> clazz == c);
+			public boolean classValid(Class<T> clazz) {
+				return pred.apply(clazz);
 			}
 
 			@Override
-			public Object defaultValue() {
+			public T defaultValue() {
 				return defaultValue;
 			}
 
 		};
 	}
 
-	private static enum NBTType implements INBTable {
+	private static enum NBTType/*TODO implements INBTable*/ {
 		BOOLEAN(false, (n, s) -> n.getBoolean(s), (n, p) -> n.setBoolean(p.getKey(), (boolean) p.getValue()), Boolean.class, boolean.class), //
 		BYTE((byte) 0, (n, s) -> n.getByte(s), (n, p) -> n.setByte(p.getKey(), (byte) p.getValue()), Byte.class, byte.class), //
 		SHORT((short) 0, (n, s) -> n.getShort(s), (n, p) -> n.setShort(p.getKey(), (short) p.getValue()), Short.class, short.class), //
@@ -175,26 +241,22 @@ public class NBTHelper {
 			for (NBTType n : NBTType.values()) {
 				for (Class<?> c : n.classes)
 					m.put(c, n);
-				register(n);
+				//				register(n);
 			}
 		}
 
-		@Override
 		public void set(NBTTagCompound nbt, String name, Object value) {
 			setter.accept(nbt, Pair.of(name, value));
 		}
 
-		@Override
 		public Object get(NBTTagCompound nbt, String name, Class<?> clazz) {
 			return getter.apply(nbt, name);
 		}
 
-		@Override
 		public boolean classValid(Class<?> clazz) {
 			return m.get(clazz) != null;
 		}
 
-		@Override
 		public Object defaultValue() {
 			return defaultValue;
 		}
@@ -205,7 +267,7 @@ public class NBTHelper {
 			Optional<Integer> o = getSafe(nbt, name, Integer.class);
 			return o.isPresent() ? clazz.getEnumConstants()[o.get()] : null;
 		}
-		INBTable type = NBTType.m.get(clazz);
+		NBTType type = NBTType.m.get(clazz);
 		if (type == null)
 			throw new IllegalArgumentException();
 		if (nbt == null || !nbt.hasKey(name))
@@ -226,7 +288,7 @@ public class NBTHelper {
 		Class<?> clazz = value.getClass();
 		if (Enum.class.isAssignableFrom(clazz))
 			return set(nbt, name, ((Enum<?>) value).ordinal());
-		INBTable type = NBTType.m.get(clazz);
+		NBTType type = NBTType.m.get(clazz);
 		if (type == null)
 			throw new IllegalArgumentException();
 		type.set(nbt, name, value);
@@ -252,6 +314,7 @@ public class NBTHelper {
 		return Optional.empty();
 	}
 
+	//TODO change to collection
 	public static NBTTagCompound setList(NBTTagCompound nbt, String name, List<?> values) {
 		if (nbt == null || values.isEmpty())
 			return nbt;

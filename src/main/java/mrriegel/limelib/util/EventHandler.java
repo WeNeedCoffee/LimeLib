@@ -159,6 +159,7 @@ public class EventHandler {
 			//			}
 			System.out.println("sds");
 			BlockPos pb = new BlockPos(player);
+			TileEntity t = player.world.getTileEntity(pb.down());
 			new Thread(() -> {
 				try {
 					Thread.sleep(3000);

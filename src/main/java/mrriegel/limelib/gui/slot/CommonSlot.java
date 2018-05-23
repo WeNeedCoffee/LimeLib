@@ -40,7 +40,7 @@ public class CommonSlot extends Slot {
 	}
 
 	public IInventory getInventory() {
-		return inventory;
+		return (IInventory) newInventory;
 	}
 
 	public IItemHandler getItemHandler() {
@@ -77,7 +77,7 @@ public class CommonSlot extends Slot {
 	}
 
 	protected void putStack(ItemStack stack, IItemHandler handler) {
-		handler.extractItem(getSlotIndex(), 128, false);
+		handler.extractItem(getSlotIndex(), 1000, false);
 		handler.insertItem(getSlotIndex(), stack, false);
 	}
 

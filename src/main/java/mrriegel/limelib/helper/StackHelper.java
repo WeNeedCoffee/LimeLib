@@ -2,10 +2,10 @@ package mrriegel.limelib.helper;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 
@@ -134,7 +134,7 @@ public class StackHelper {
 	public static boolean isWrench(ItemStack stack) {
 		if (stack.isEmpty() || stack.getItem() instanceof ItemBlock)
 			return false;
-		return Lists.newArrayList("wrench", "scrench", "screwdriver").stream().//
+		return Stream.of("wrench", "scrench", "screwdriver").//
 				anyMatch(s -> stack.getItem().getClass().getSimpleName().toLowerCase().contains(s)//
 						|| stack.getUnlocalizedName().toLowerCase().contains(s)//
 						|| Arrays.stream(stack.getItem().getClass().getInterfaces()).anyMatch(c -> c.getSimpleName().toLowerCase().contains(s)));

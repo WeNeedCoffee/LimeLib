@@ -2,7 +2,6 @@ package mrriegel.limelib;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +10,6 @@ import com.google.common.collect.Lists;
 
 import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.helper.RecipeHelper;
-import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.plugin.TOP;
 import mrriegel.limelib.tile.IHUDProvider;
@@ -42,7 +40,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION, acceptedMinecraftVersions = "[1.12,1.13)")
@@ -51,7 +48,7 @@ public class LimeLib {
 	@Instance(LimeLib.MODID)
 	public static LimeLib INSTANCE;
 
-	public static final String VERSION = "1.7.10";
+	public static final String VERSION = "1.7.11";
 	public static final String NAME = "LimeLib";
 	public static final String MODID = "limelib";
 
@@ -64,6 +61,7 @@ public class LimeLib {
 	public void preInit(FMLPreInitializationEvent event) {
 		LimeConfig.init(event.getSuggestedConfigurationFile());
 		Utils.init();
+		//TODO remove to limecaps
 		CapabilityDataPart.register();
 		LimeCapabilities.register();
 		wailaLoaded = Loader.isModLoaded("waila");
@@ -77,7 +75,7 @@ public class LimeLib {
 	}
 
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded, fluxLoaded;
-	public static boolean wrenchAvailable;
+	//	public static boolean wrenchAvailable;
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
@@ -90,7 +88,7 @@ public class LimeLib {
 		}
 		if (LimeLib.topLoaded)
 			FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", TOP.class.getName());
-		wrenchAvailable = StreamSupport.stream(ForgeRegistries.ITEMS.spliterator(), false).anyMatch(item -> StackHelper.isWrench(new ItemStack(item)));
+		//		wrenchAvailable = StreamSupport.stream(ForgeRegistries.ITEMS.spliterator(), false).anyMatch(item -> StackHelper.isWrench(new ItemStack(item)));
 		if (RecipeHelper.dev) {
 			//			UnderWorld.init();
 			MinecraftForge.EVENT_BUS.register(INSTANCE);

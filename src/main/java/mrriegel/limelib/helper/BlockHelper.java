@@ -1,5 +1,6 @@
 package mrriegel.limelib.helper;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -9,10 +10,11 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.block.Block;
@@ -41,10 +43,25 @@ public class BlockHelper {
 		return !world.isAirBlock(pos) && !state.getBlock().getMaterial(state).isLiquid() && state.getBlock().getBlockHardness(state, world, pos) > -1F;
 	}
 
+	private static Field harvesters = ReflectionHelper.findField(Block.class, "harvesters");
+	private static Reference2ObjectMap<Block, ThreadLocal<EntityPlayer>> players = new Reference2ObjectOpenHashMap<>();
+
+	private static ThreadLocal<EntityPlayer> getPlayer(Block block) {
+		ThreadLocal<EntityPlayer> harvesters = players.get(block);
+		if (harvesters == null)
+			try {
+				players.put(block, harvesters = (ThreadLocal<EntityPlayer>) BlockHelper.harvesters.get(block));
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		return harvesters;
+	}
+
 	public static NonNullList<ItemStack> breakBlock(World world, BlockPos pos, IBlockState state, @Nullable EntityPlayer player, boolean silk, int fortune, boolean dropXP, boolean particle) {
 		if (!isBlockBreakable(world, pos))
 			return NonNullList.create();
-		int exp = state.getBlock().getExpDrop(state, world, pos, fortune);
+		Block block = state.getBlock();
+		int exp = block.getExpDrop(state, world, pos, fortune);
 		if (player != null) {
 			BreakEvent event = new BreakEvent(world, pos, state, player);
 			event.setExpToDrop(exp);
@@ -55,25 +72,28 @@ public class BlockHelper {
 		if (particle)
 			world.playEvent(2001, pos, Block.getStateId(state));
 		NonNullList<ItemStack> lis = null;
-		if (silk && state.getBlock().canSilkHarvest(world, pos, state, player)) {
+		if (silk && block.canSilkHarvest(world, pos, state, player)) {
 			lis = NonNullList.create();
 			ItemStack drop = getSilkDrop(world, pos, player);
 			if (!drop.isEmpty())
 				lis.add(drop);
 		} else
 			lis = getFortuneDrops(world, pos, player, fortune);
-		if (player != null && !ForgeHooks.canHarvestBlock(state.getBlock(), player, world, pos))
+		if (player != null && !ForgeHooks.canHarvestBlock(block, player, world, pos))
 			lis.clear();
 		world.setBlockToAir(pos);
-		if (state.getBlock() instanceof BlockShulkerBox)
+		if (block instanceof BlockShulkerBox)
 			return NonNullList.create();
 		if (dropXP && !silk && exp > 0)
-			state.getBlock().dropXpOnBlockBreak(world, pos, exp);
+			block.dropXpOnBlockBreak(world, pos, exp);
 		return lis;
 	}
 
 	public static NonNullList<ItemStack> getFortuneDrops(World world, BlockPos pos, EntityPlayer player, int fortune) {
 		IBlockState state = world.getBlockState(pos);
+		ThreadLocal<EntityPlayer> harvesters = getPlayer(state.getBlock());
+		if (player != null)
+			harvesters.set(player);
 		List<ItemStack> tmp = NonNullList.create();
 		state.getBlock().getDrops((NonNullList<ItemStack>) tmp, world, pos, state, fortune);
 		try {
@@ -86,11 +106,11 @@ public class BlockHelper {
 		float chance = ForgeEventFactory.fireBlockHarvesting(tmp, world, pos, state, fortune, 1.0f, false, player);
 		NonNullList<ItemStack> lis = NonNullList.create();
 		for (ItemStack item : tmp) {
-			if (world.rand.nextFloat() <= chance) {
+			if (!item.isEmpty() && world.rand.nextFloat() <= chance) {
 				lis.add(item);
 			}
 		}
-		Iterables.removeIf(lis, s -> s.isEmpty());
+		harvesters.set(null);
 		return lis;
 	}
 
@@ -98,6 +118,9 @@ public class BlockHelper {
 
 	public static ItemStack getSilkDrop(World world, BlockPos pos, EntityPlayer player) {
 		IBlockState state = world.getBlockState(pos);
+		ThreadLocal<EntityPlayer> harvesters = getPlayer(state.getBlock());
+		if (player != null)
+			harvesters.set(player);
 		NonNullList<ItemStack> tmp = NonNullList.create();
 		if (state.getBlock().canSilkHarvest(world, pos, state, player)) {
 			Method m = null;
@@ -117,7 +140,6 @@ public class BlockHelper {
 							break;
 					}
 			}
-			// m.setAccessible(true);
 			for (Class<?> c : clazzes)
 				methodMap.put(c, m);
 			ItemStack silked = ItemStack.EMPTY;
@@ -129,6 +151,7 @@ public class BlockHelper {
 				tmp.add(silked);
 		}
 		ForgeEventFactory.fireBlockHarvesting(tmp, world, pos, state, 0, 1.0f, true, player);
+		harvesters.set(null);
 		return tmp.isEmpty() ? ItemStack.EMPTY : tmp.get(0);
 	}
 

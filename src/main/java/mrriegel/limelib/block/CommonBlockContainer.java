@@ -3,8 +3,6 @@ package mrriegel.limelib.block;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.reflect.ConstructorUtils;
-
 import com.google.common.collect.Lists;
 
 import mrriegel.limelib.helper.InvHelper;
@@ -85,7 +83,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 	@Override
 	public TileEntity createTileEntity(World world, IBlockState state) {
 		try {
-			return ConstructorUtils.invokeConstructor(getTile());
+			return getTile().newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

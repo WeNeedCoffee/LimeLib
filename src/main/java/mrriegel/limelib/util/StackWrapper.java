@@ -11,13 +11,13 @@ import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public final class StackWrapper {
-	ItemStack stack;
-	int size;
+	private ItemStack stack;
+	private int size;
 
 	public StackWrapper(ItemStack stack, int size) {
 		super();
 		if (stack.isEmpty())
-			throw new NullPointerException();
+			throw new IllegalArgumentException();
 		this.stack = stack.copy();
 		this.size = size;
 	}
@@ -109,6 +109,7 @@ public final class StackWrapper {
 	 * WRONG!!!
 	 */
 	@Deprecated
+	//TODO wrong
 	public static NonNullList<ItemStack> toStackList(List<StackWrapper> list) {
 		NonNullList<ItemStack> lis = NonNullList.create();
 		for (StackWrapper s : list) {
@@ -152,11 +153,15 @@ public final class StackWrapper {
 	}
 
 	public static void add(StackWrapper wrap, List<StackWrapper> lis) {
+		boolean added = false;
 		for (StackWrapper w : lis)
 			if (ItemHandlerHelper.canItemStacksStack(wrap.stack, w.stack)) {
 				w.size += wrap.size;
+				added = true;
 				break;
 			}
+		if (!added)
+			lis.add(wrap);
 	}
 
 }

@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -153,7 +152,7 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		try {
 			Class<?> clazz = DataPartRegistry.PARTS.get(n.getString("id"));
 			if (clazz != null && DataPart.class.isAssignableFrom(clazz)) {
-				DataPart part = ConstructorUtils.invokeConstructor((Class<? extends DataPart>) clazz);
+				DataPart part = ((Class<? extends DataPart>) clazz).newInstance();
 				if (part != null) {
 					part.setWorld(world);
 					part.readDataFromNBT(n);

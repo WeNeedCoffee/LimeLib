@@ -47,6 +47,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 public class RecipeHelper {
 
+	//TODO change location
 	public static final boolean dev = (boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
 
 	private static Map<String, RecipeHelper> helpers = Maps.newHashMap();

@@ -71,6 +71,7 @@ public class InvHelper {
 	public static boolean contains(IItemHandler inv, Predicate<ItemStack> pred) {
 		if (inv == null)
 			return false;
+		//		return IntStream.range(0, inv.getSlots()).anyMatch(i->pred.test(inv.getStackInSlot(i)));
 		for (int i = 0; i < inv.getSlots(); i++) {
 			if (pred.test(inv.getStackInSlot(i))) {
 				return true;

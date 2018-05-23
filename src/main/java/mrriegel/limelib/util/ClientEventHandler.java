@@ -86,6 +86,7 @@ public class ClientEventHandler {
 		return mc;
 	}
 
+	//TODO remove this
 	public static Map<BlockPos, Pair<Long, Long>> energyTiles = Maps.newHashMap();
 
 	@SubscribeEvent
@@ -222,14 +223,12 @@ public class ClientEventHandler {
 		//datapart
 		DataPartRegistry reg = DataPartRegistry.get(getMC().world);
 		if (reg != null) {
-			Iterator<DataPart> it = reg.getParts().stream().filter(p -> p != null && getMC().player.getDistance(p.getX(), p.getY(), p.getZ()) < 64).collect(Collectors.toList()).iterator();
-			while (it.hasNext()) {
-				DataPart p = it.next();
+			reg.getParts().stream().filter(p -> p != null && getMC().player.getDistance(p.getX(), p.getY(), p.getZ()) < 64).forEach(p -> {
 				@SuppressWarnings("rawtypes")
 				RenderDataPart ren = RenderRegistry.map.get(p.getClass());
 				if (ren != null)
 					ren.render(p, p.getX() - TileEntityRendererDispatcher.staticPlayerX, p.getY() - TileEntityRendererDispatcher.staticPlayerY, p.getZ() - TileEntityRendererDispatcher.staticPlayerZ, event.getPartialTicks());
-			}
+			});
 		}
 	}
 

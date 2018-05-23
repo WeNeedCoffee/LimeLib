@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public interface IHUDProvider {
 
-	public static final String SHADOWFONT = "?~~%z";
+	public static final String SHADOWFONT = "?~_\u6F2B~%z";
 
 	//TODO add player, remove sneak
 	@Nullable
