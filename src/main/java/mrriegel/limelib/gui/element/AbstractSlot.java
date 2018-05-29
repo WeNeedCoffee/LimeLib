@@ -88,10 +88,8 @@ public abstract class AbstractSlot<T> extends GuiElement implements ITooltip {
 			if (square && isMouseOver(mouseX, mouseY)) {
 				// GlStateManager.disableLighting();
 				// GlStateManager.disableDepth();
-				int j1 = x;
-				int k1 = y;
 				GlStateManager.colorMask(true, true, true, false);
-				drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, -2130706433);
+				drawGradientRect(x, y, x + 16, y + 16, -2130706433, -2130706433);
 				GlStateManager.colorMask(true, true, true, true);
 				// GlStateManager.enableLighting();
 				// GlStateManager.enableDepth();

@@ -102,6 +102,7 @@ public abstract class CommonContainer<T> extends Container {
 		initSlots(invPlayer, x, y, 9, 3, 9);
 	}
 
+	//TODO rename addslots
 	protected void initSlots(IInventory inv, int x, int y, int width, int height, int startIndex, Class<? extends Slot> clazz, Object... args) {
 		if (inv == null)
 			return;
