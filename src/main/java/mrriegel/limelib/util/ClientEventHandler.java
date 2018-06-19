@@ -66,6 +66,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -155,7 +156,7 @@ public class ClientEventHandler {
 	public static void render(RenderWorldLastEvent event) {
 		//ihudprovider
 		RayTraceResult rtr = getMC().objectMouseOver;
-		if (rtr != null && rtr.typeOfHit == Type.BLOCK && getMC().inGameHasFocus) {
+		if (rtr != null && rtr.typeOfHit == Type.BLOCK /*&& getMC().inGameHasFocus*/) {
 			TileEntity t = getMC().world.getTileEntity(rtr.getBlockPos());
 			IHUDProvider tile = IHUDProvider.isHUDProvider(t) ? IHUDProvider.getHUDProvider(t) : null;
 			if (tile != null) {
@@ -200,7 +201,8 @@ public class ClientEventHandler {
 					int lineHeight = fontrenderer.FONT_HEIGHT + 1;
 					int oy = (int) -(lineHeight * text.size() * factor);
 					int ysize = -oy;
-					new GuiDrawer(0, 0, 0, 0, 0).drawColoredRectangle(-48, oy, 96, ysize, tile.getBackgroundColor(sneak, face.getOpposite()));
+					int color = tile.getBackgroundColor(sneak, face.getOpposite());
+					GuiUtils.drawGradientRect(0, -48, oy, -48 + 96, ysize + oy, color, color);
 					GlStateManager.translate(0, -text.size() * lineHeight * factor, 0);
 					GlStateManager.scale(factor, factor, factor);
 					for (int j = 0; j < text.size(); ++j) {

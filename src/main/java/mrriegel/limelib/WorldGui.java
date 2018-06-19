@@ -2,6 +2,7 @@ package mrriegel.limelib;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -9,16 +10,26 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import com.google.common.base.Strings;
+
 import mrriegel.limelib.gui.GuiDrawer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -47,6 +58,7 @@ public class WorldGui {
 	}
 
 	public void init() {
+		buttons.clear();
 		double halfWidth = width / 2d, halfHeight = height / 2d;
 		a = pos.add(vec(halfWidth * scale, halfHeight * scale, pitch, yaw));
 		b = pos.add(vec(-halfWidth * scale, halfHeight * scale, pitch, yaw));
@@ -62,6 +74,15 @@ public class WorldGui {
 		for (GuiButton b : buttons)
 			b.drawButton(mc, mouseX, mouseY, 0);
 		mc.fontRenderer.drawString(num + "", 90, 27, Color.BLACK.getRGB());
+		//		GlStateManager.disableDepth();
+		GuiUtils.drawGradientRect(300, 150, 10, 160, 30, 0xFF100010, 0xFF100010);
+		//		GlStateManager.enableDepth();
+		//		GlStateManager.color(1F, 1F, 1F, 1F);
+		RenderHelper.enableGUIStandardItemLighting();
+		mc.getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(Blocks.YELLOW_GLAZED_TERRACOTTA), 100, 15);
+		for (GuiButton b : buttons)
+			if (b.isMouseOver())
+				GuiUtils.drawHoveringText(Arrays.asList("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", Strings.repeat(b.displayString, 8), Strings.repeat(b.displayString, 18)), mouseX, mouseY, width, height, -1, mc.fontRenderer);
 	}
 
 	public void click(int mouse, int mouseX, int mouseY) {
@@ -74,8 +95,9 @@ public class WorldGui {
 			}
 	}
 
+	//	private static WorldGui openGui;
 	private static WorldGui openGui;
-	private static double scale = .005, u, v, maxU, maxV;
+	private static double scale = .0065, u, v, maxU, maxV;
 
 	@SubscribeEvent
 	public static void key(InputEvent.KeyInputEvent event) {
@@ -111,6 +133,18 @@ public class WorldGui {
 
 	@SubscribeEvent
 	public static void click(InputEvent.MouseInputEvent event) {
+		if (openGui != null) {
+			int wheel = Mouse.getEventDWheel();
+			if (wheel > 0) {
+				scale += .00025;
+				openGui.init();
+				Minecraft.getMinecraft().player.inventory.changeCurrentItem(-wheel);
+			} else if (wheel < 0) {
+				scale -= .00025;
+				openGui.init();
+				Minecraft.getMinecraft().player.inventory.changeCurrentItem(-wheel);
+			}
+		}
 		if (openGui != null && Mouse.getEventButtonState() && Mouse.getEventButton() == 1) {
 			if ((u >= 0.0 && u <= maxU && v >= 0.0 && v <= maxV))
 				//TODO math.floor
@@ -146,9 +180,26 @@ public class WorldGui {
 			GlStateManager.rotate(180f, 0, 0, 1);
 			double halfWidth = openGui.width / 2d, halfHeight = openGui.height / 2d;
 			GlStateManager.translate(-halfWidth, -halfHeight, 0);
+			GlStateManager.scale(1, 1, 0);
 			openGui.draw((int) ((openGui.width / maxU) * u), (int) ((openGui.height / maxV) * v));
 			GlStateManager.depthMask(true);
 			GlStateManager.popMatrix();
+		}
+	}
+
+	@SubscribeEvent
+	public static void interact(PlayerInteractEvent event) {
+		System.out.println(event.getClass().getSimpleName() + " " + event.getHand() + " " + (event.getWorld().isRemote ? "Client" : "Server"));
+		if (event.isCancelable() && event.getWorld().isRemote) {
+			event.setCanceled(true);
+			event.setResult(Result.DENY);
+			if (event instanceof LeftClickBlock) {
+				((LeftClickBlock) event).setUseBlock(Result.DENY);
+				((LeftClickBlock) event).setUseItem(Result.DENY);
+			} else if (event instanceof RightClickBlock) {
+				((RightClickBlock) event).setUseBlock(Result.DENY);
+				((RightClickBlock) event).setUseItem(Result.DENY);
+			}
 		}
 	}
 
