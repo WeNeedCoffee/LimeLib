@@ -204,7 +204,7 @@ public class NBTHelper {
 		};
 	}
 
-	private static enum NBTType/*TODO implements INBTable*/ {
+	private enum NBTType/*TODO implements INBTable*/ {
 		BOOLEAN(false, (n, s) -> n.getBoolean(s), (n, p) -> n.setBoolean(p.getKey(), (boolean) p.getValue()), Boolean.class, boolean.class), //
 		BYTE((byte) 0, (n, s) -> n.getByte(s), (n, p) -> n.setByte(p.getKey(), (byte) p.getValue()), Byte.class, byte.class), //
 		SHORT((short) 0, (n, s) -> n.getShort(s), (n, p) -> n.setShort(p.getKey(), (short) p.getValue()), Short.class, short.class), //
@@ -231,7 +231,7 @@ public class NBTHelper {
 			this.setter = setter;
 		}
 
-		public static Map<Class<?>, NBTType> m = new HashMap<Class<?>, NBTType>();
+		public static Map<Class<?>, NBTType> m = new HashMap<>();
 
 		public static boolean validClass(Class<?> clazz) {
 			return Enum.class.isAssignableFrom(clazz) || m.get(clazz) != null;
@@ -275,6 +275,16 @@ public class NBTHelper {
 		return (T) type.get(nbt, name, clazz);
 	}
 
+	@Deprecated
+	//TODO add getoptional
+	private static <T> T get(NBTTagCompound nbt, String name) {
+		try {
+			return (T) get(nbt, name, Class.forName(nbt.getString(name + "_clazz")));
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	//TODO rename to getOptional
 	public static <T> Optional<T> getSafe(NBTTagCompound nbt, String name, Class<T> clazz) {
 		if (nbt == null || nbt.hasKey(name))
@@ -292,13 +302,14 @@ public class NBTHelper {
 		if (type == null)
 			throw new IllegalArgumentException();
 		type.set(nbt, name, value);
+		nbt.setString(name + "_clazz", clazz.getName());
 		return nbt;
 	}
 
 	public static <T> List<T> getList(NBTTagCompound nbt, String name, Class<T> clazz) {
 		if (!NBTType.validClass(clazz))
 			throw new IllegalArgumentException();
-		List<T> values = new ObjectArrayList<T>();
+		List<T> values = new ObjectArrayList<>();
 		if (nbt == null || !nbt.hasKey(name, 10))
 			return values;
 		NBTTagCompound lis = nbt.getCompoundTag(name);

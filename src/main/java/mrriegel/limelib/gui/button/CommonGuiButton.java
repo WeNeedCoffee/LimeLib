@@ -27,7 +27,7 @@ public class CommonGuiButton extends GuiButtonExt implements ITooltip {
 	protected Design design;
 	protected ItemStack stack;
 
-	public static enum Design {
+	public enum Design {
 		NORMAL, SIMPLE, NONE;
 	}
 

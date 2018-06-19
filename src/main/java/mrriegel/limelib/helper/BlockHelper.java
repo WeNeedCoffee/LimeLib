@@ -159,21 +159,17 @@ public class BlockHelper {
 		IBlockState state = world.getBlockState(pos);
 		if (!state.getBlock().isFullCube(state))
 			return false;
+		ItemStack stack = ItemStack.EMPTY;
 		try {
-			ItemStack stack = ItemStack.EMPTY;
-			try {
-				EntityPlayer player = world.isRemote ? LimeLib.proxy.getClientPlayer() : Utils.getFakePlayer((WorldServer) world);
-				stack = getSilkDrop(world, pos, player);
-				if (stack.isEmpty())
-					stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, player);
-				return StackHelper.isOre(stack);
-			} catch (Exception e) {
-				stack = new ItemStack(state.getBlock(), 1, state.getBlock().damageDropped(state));
-				return StackHelper.isOre(stack);
-			}
+			EntityPlayer player = world.isRemote ? LimeLib.proxy.getClientPlayer() : Utils.getFakePlayer((WorldServer) world);
+			stack = getSilkDrop(world, pos, player);
+			if (stack.isEmpty())
+				stack = state.getBlock().getPickBlock(state, new RayTraceResult(new Vec3d(0, 0, 0), EnumFacing.UP), world, pos, player);
+			return StackHelper.isOre(stack);
 		} catch (Exception e) {
+			stack = new ItemStack(state.getBlock(), 1, state.getBlock().damageDropped(state));
+			return StackHelper.isOre(stack);
 		}
-		return false;
 	}
 
 	public static boolean isToolEffective(ItemStack tool, World world, BlockPos pos, boolean reallyEffective) {

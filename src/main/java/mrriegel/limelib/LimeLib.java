@@ -61,7 +61,14 @@ public class LimeLib {
 	public void preInit(FMLPreInitializationEvent event) {
 		LimeConfig.init(event.getSuggestedConfigurationFile());
 		Utils.init();
-		//TODO remove to limecaps
+		/*ideas
+		entity materialzier/dematerializer
+		-range
+		-filter
+		-redstone
+		-fluid and item;
+		*/
+		//TODO move to limecaps
 		CapabilityDataPart.register();
 		LimeCapabilities.register();
 		wailaLoaded = Loader.isModLoaded("waila");
@@ -93,6 +100,7 @@ public class LimeLib {
 			//			UnderWorld.init();
 			MinecraftForge.EVENT_BUS.register(INSTANCE);
 			Connect.init();
+			MinecraftForge.EVENT_BUS.register(WorldGui.class);
 		}
 	}
 

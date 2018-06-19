@@ -5,6 +5,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public abstract class DataPartWorker extends DataPart {
 
+	//TODO remove sides
 	protected abstract boolean workDone(World world, Side side);
 
 	protected abstract boolean canWork(World world, Side side);

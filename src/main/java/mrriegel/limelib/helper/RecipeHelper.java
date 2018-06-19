@@ -202,13 +202,13 @@ public class RecipeHelper {
 			if (o instanceof String)
 				return o.toString();
 			if (o instanceof Item)
-				return ((Item) o).getRegistryName().getResourcePath().toString();
+				return ((Item) o).getRegistryName().getResourcePath();
 			if (o instanceof Block)
-				return ((Block) o).getRegistryName().getResourcePath().toString();
+				return ((Block) o).getRegistryName().getResourcePath();
 			if (o instanceof ItemStack)
-				return ((ItemStack) o).getItem().getRegistryName().getResourcePath().toString();
+				return ((ItemStack) o).getItem().getRegistryName().getResourcePath();
 			if (o instanceof Ingredient)
-				return Joiner.on(" ").join(Arrays.stream(((Ingredient) o).getMatchingStacks()).map(s -> s.getItem().getRegistryName().getResourcePath().toString()).sorted().collect(Collectors.toList()));
+				return Joiner.on(" ").join(Arrays.stream(((Ingredient) o).getMatchingStacks()).map(s -> s.getItem().getRegistryName().getResourcePath()).sorted().collect(Collectors.toList()));
 			return "";
 		}).collect(Collectors.toList());
 		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getResourcePath() + "/" + stack.getItemDamage() + "#" + stack.getCount() + "_" + (Math.abs(lis.hashCode()) % 9999));

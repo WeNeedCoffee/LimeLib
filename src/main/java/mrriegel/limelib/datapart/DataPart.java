@@ -18,6 +18,7 @@ public class DataPart {
 	protected World world;
 	public int ticksExisted;
 
+	//TODO fusion methods
 	public void updateServer(World world) {
 	}
 
@@ -38,6 +39,7 @@ public class DataPart {
 		return false;
 	}
 
+	//TODO make final
 	public boolean clientValid() {
 		return true;
 	}

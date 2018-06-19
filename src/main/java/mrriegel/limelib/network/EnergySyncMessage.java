@@ -32,7 +32,7 @@ public class EnergySyncMessage extends AbstractMessage {
 			}
 		}
 		if (lis1.isEmpty())
-			shouldSend = false;
+			shallSend = false;
 		NBTHelper.setList(nbt, "lis1", lis1);
 		NBTHelper.setList(nbt, "lis2", lis2);
 		NBTHelper.setList(nbt, "lis3", lis3);

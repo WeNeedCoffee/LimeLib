@@ -30,7 +30,7 @@ public class SplitMessage extends AbstractMessage {
 			//TODO
 			for (NBTTagCompound n : ns) {
 				SplitMessage m = new SplitMessage();
-				m.shouldSend = am.shouldSend;
+				m.shallSend = am.shallSend;
 				m.nbt = n;
 				lis.add(m);
 			}

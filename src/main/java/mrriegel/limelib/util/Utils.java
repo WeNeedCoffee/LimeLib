@@ -3,22 +3,13 @@ package mrriegel.limelib.util;
 import java.lang.reflect.Type;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.lang3.Validate;
-
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
-import com.google.gson.TypeAdapter;
 import com.mojang.authlib.GameProfile;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -26,15 +17,11 @@ import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.TypeAdapters.ItemLizer;
 import mrriegel.limelib.util.TypeAdapters.ItemStackLizer;
 import mrriegel.limelib.util.TypeAdapters.NBTLizer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
@@ -69,7 +56,6 @@ public class Utils {
 	}
 
 	public static void registerGsonAdapter(Type type, Object adapter) {
-		Validate.isTrue(adapter instanceof JsonSerializer<?> || adapter instanceof JsonDeserializer<?> || adapter instanceof InstanceCreator<?> || adapter instanceof TypeAdapter<?>);
 		getGSON();
 		GSONBUILDER.registerTypeAdapter(type, adapter);
 		GSON = null;
@@ -77,21 +63,6 @@ public class Utils {
 
 	public static String getCurrentModID() {
 		return new Item().setRegistryName("dummy").getRegistryName().getResourceDomain();
-	}
-
-	@SuppressWarnings({ "rawtypes" })
-	public static List<Enum> getEnums(Class<? extends Enum> clazz) {
-		List<Enum> lis = Lists.newArrayList();
-		EnumSet enums = EnumSet.allOf(clazz);
-		Map<Integer, Enum> map = Maps.newHashMap();
-		for (Object o : enums) {
-			Enum e = (Enum) o;
-			map.put(e.ordinal(), e);
-		}
-		for (int i = 0; i < map.size(); i++) {
-			lis.add(map.get(i));
-		}
-		return lis;
 	}
 
 	public static List<Integer> split(int ii, int splits) {
@@ -147,17 +118,6 @@ public class Utils {
 		FakePlayer player = getFakePlayer(world);
 		player.inventory.mainInventory.set((player.inventory.currentItem = 0), stack);
 		return player;
-	}
-
-	public static RayTraceResult rayTrace(Entity entity, double distance) {
-		Vec3d vec3d = entity.getPositionEyes(0);
-		Vec3d vec3d1 = entity.getLook(0);
-		Vec3d vec3d2 = vec3d.addVector(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
-		return entity.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
-	}
-
-	public static RayTraceResult rayTrace(EntityPlayer player) {
-		return rayTrace(player, player.capabilities.isCreativeMode ? 5F : 4.5F);
 	}
 
 	public static String getModID(IForgeRegistryEntry<?> registerable) {

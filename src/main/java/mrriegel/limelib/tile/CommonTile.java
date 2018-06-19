@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 public class CommonTile extends TileEntity {
 
 	private boolean syncDirty;
+	//TODO rename
 	public Set<EntityPlayer> activePlayers = Sets.newHashSet();
 
 	@Override
@@ -50,6 +51,7 @@ public class CommonTile extends TileEntity {
 		readFromSyncNBT(tag);
 	}
 
+	//TODO make abstract
 	public void readFromSyncNBT(NBTTagCompound compound) {
 		readFromNBT(compound);
 	}
