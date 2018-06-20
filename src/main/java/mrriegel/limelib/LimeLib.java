@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Lists;
 
 import mrriegel.limelib.datapart.CapabilityDataPart;
-import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.plugin.TOP;
@@ -181,8 +180,14 @@ public class LimeLib {
 					}
 
 					@Override
+					public boolean requireFocus() {
+						return true;
+					}
+
+					@Override
 					public int getBackgroundColor(boolean sneak, EnumFacing facing) {
-						return ColorHelper.getRGB(ColorHelper.getRainbow(25), 0x44);
+						return IHUDProvider.super.getBackgroundColor(sneak, facing);
+						//						return ColorHelper.getRGB(ColorHelper.getRainbow(25), 0x84);
 					}
 				};
 

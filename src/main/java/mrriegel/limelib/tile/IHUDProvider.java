@@ -19,7 +19,7 @@ public interface IHUDProvider {
 	List<String> getData(boolean sneak, EnumFacing facing);
 
 	default int getBackgroundColor(boolean sneak, EnumFacing facing) {
-		return 0x44FFFFFF;
+		return 0x44CCCCFF;
 	}
 
 	default Side readingSide() {
@@ -39,6 +39,10 @@ public interface IHUDProvider {
 	}
 
 	default boolean lineBreak(boolean sneak, EnumFacing facing) {
+		return true;
+	}
+
+	default boolean requireFocus() {
 		return true;
 	}
 
