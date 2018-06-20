@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Lists;
 
 import mrriegel.limelib.datapart.CapabilityDataPart;
+import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.plugin.TOP;
@@ -152,23 +153,36 @@ public class LimeLib {
 						return Side.SERVER;
 					}
 
+					//TODO rename to fontscale
 					@Override
 					public double scale(boolean sneak, EnumFacing facing) {
 						int ticks = FMLClientHandler.instance().getClientPlayerEntity().ticksExisted;
 						double k = (Math.sin((ticks + FMLClientHandler.instance().getClient().getRenderPartialTicks()) / 10.) + 1) / 2 + .5;
-						if ("".isEmpty())
+						if (!"".isEmpty())
 							return k;
-						return (System.currentTimeMillis() / 350) % 2 == 0 ? .99 : .97;
+						//						return (System.currentTimeMillis() / 350) % 2 == 0 ? .99 : .97;
+						return 1;
 					}
 
 					@Override
 					public boolean lineBreak(boolean sneak, EnumFacing facing) {
+						if (!"".isEmpty()) {
+							return (System.currentTimeMillis() / 200) % 2 == 0;
+						}
 						return !!!!false;
 					}
 
 					@Override
 					public boolean center(boolean sneak, EnumFacing facing) {
+						if (!"".isEmpty()) {
+							return (System.currentTimeMillis() / 300) % 2 == 0;
+						}
 						return false;
+					}
+
+					@Override
+					public int getBackgroundColor(boolean sneak, EnumFacing facing) {
+						return ColorHelper.getRGB(ColorHelper.getRainbow(25), 0x44);
 					}
 				};
 

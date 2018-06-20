@@ -66,6 +66,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -150,7 +151,7 @@ public class ClientEventHandler {
 		}
 	}
 
-	public static Map<BlockPos, List<String>> supplierTexts = Maps.newHashMap();
+	public static Map<BlockPos, Map<EnumFacing, List<String>>> supplierTexts = Maps.newHashMap();
 
 	@SubscribeEvent
 	public static void render(RenderWorldLastEvent event) {
@@ -167,11 +168,17 @@ public class ClientEventHandler {
 					face = getMC().player.getHorizontalFacing();
 				List<String> tmp = null;
 				if (tile.readingSide().isServer()) {
-					List<String> foo = supplierTexts.get(t.getPos());
-					if (foo != null)
+					Map<EnumFacing, List<String>> faceMap = supplierTexts.get(t.getPos());
+					if (faceMap != null) {
+						List<String> foo = faceMap.get(face.getOpposite());
 						tmp = foo;
-					else
+					} else
 						tmp = tile.getData(sneak, face.getOpposite());
+					//					List<String> foo = supplierTexts.get(t.getPos());
+					//					if (foo != null)
+					//						tmp = foo;
+					//					else
+					//						tmp = tile.getData(sneak, face.getOpposite());
 				} else
 					tmp = tile.getData(sneak, face.getOpposite());
 				if (tmp != null && !tmp.isEmpty()) {
@@ -202,6 +209,10 @@ public class ClientEventHandler {
 					int oy = (int) -(lineHeight * text.size() * factor);
 					int ysize = -oy;
 					int color = tile.getBackgroundColor(sneak, face.getOpposite());
+					int ticks = getMC().player.ticksExisted;
+					double k = (Math.sin((ticks + FMLClientHandler.instance().getClient().getRenderPartialTicks()) / 17.) + 1) / 2 + 1.;
+					double totalScale = tile.totalScale(getMC().player);
+					GlStateManager.scale(totalScale, totalScale, totalScale);
 					GuiUtils.drawGradientRect(0, -48, oy, -48 + 96, ysize + oy, color, color);
 					GlStateManager.translate(0, -text.size() * lineHeight * factor, 0);
 					GlStateManager.scale(factor, factor, factor);
@@ -221,6 +232,7 @@ public class ClientEventHandler {
 							GlStateManager.scale(1. / fac, 1, 1);
 					}
 					GlStateManager.scale(1. / factor, 1. / factor, 1. / factor);
+					GlStateManager.scale(1. / totalScale, 1. / totalScale, 1. / totalScale);
 					GlStateManager.depthMask(true);
 					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 					GlStateManager.popMatrix();

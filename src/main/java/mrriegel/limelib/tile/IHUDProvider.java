@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import mrriegel.limelib.util.LimeCapabilities;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,6 +32,10 @@ public interface IHUDProvider {
 
 	default double scale(boolean sneak, EnumFacing facing) {
 		return .8;
+	}
+
+	default double totalScale(EntityPlayer player) {
+		return 1.;
 	}
 
 	default boolean lineBreak(boolean sneak, EnumFacing facing) {

@@ -38,7 +38,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 public class WorldGui {
 
 	public int width = 250, height = 150;
-	public final Vec3d pos;
+	public final Vec3d guiPos, playerPos;
 	public Vec3d a, b, c, d;
 	public final float yaw, pitch;
 	protected GuiDrawer drawer;
@@ -50,7 +50,8 @@ public class WorldGui {
 	private final Minecraft mc = Minecraft.getMinecraft();
 
 	public WorldGui() {
-		pos = mc.player.getLook(0).add(mc.player.getPositionEyes(0));
+		playerPos = mc.player.getPositionEyes(0);
+		guiPos = mc.player.getLook(0).add(playerPos);
 		yaw = mc.player.rotationYaw;
 		pitch = mc.player.rotationPitch;
 		width = 250;
@@ -60,10 +61,10 @@ public class WorldGui {
 	public void init() {
 		buttons.clear();
 		double halfWidth = width / 2d, halfHeight = height / 2d;
-		a = pos.add(vec(halfWidth * scale, halfHeight * scale, pitch, yaw));
-		b = pos.add(vec(-halfWidth * scale, halfHeight * scale, pitch, yaw));
-		c = pos.add(vec(-halfWidth * scale, -halfHeight * scale, pitch, yaw));
-		d = pos.add(vec(halfWidth * scale, -halfHeight * scale, pitch, yaw));
+		a = guiPos.add(vec(halfWidth * scale, halfHeight * scale, pitch, yaw));
+		b = guiPos.add(vec(-halfWidth * scale, halfHeight * scale, pitch, yaw));
+		c = guiPos.add(vec(-halfWidth * scale, -halfHeight * scale, pitch, yaw));
+		d = guiPos.add(vec(halfWidth * scale, -halfHeight * scale, pitch, yaw));
 		drawer = new GuiDrawer(0, 0, width, height, 0);
 		buttons.add(new GuiButtonExt(0, 13, 13, 30, 30, "+"));
 		buttons.add(new GuiButtonExt(0, 53, 13, 30, 30, "-"));
@@ -71,21 +72,26 @@ public class WorldGui {
 
 	public void draw(int mouseX, int mouseY) {
 		drawer.drawBackgroundTexture();
+		mc.fontRenderer.drawString(num + "", 90, 27, Color.BLACK.getRGB());
 		for (GuiButton b : buttons)
 			b.drawButton(mc, mouseX, mouseY, 0);
-		mc.fontRenderer.drawString(num + "", 90, 27, Color.BLACK.getRGB());
 		//		GlStateManager.disableDepth();
-		GuiUtils.drawGradientRect(300, 150, 10, 160, 30, 0xFF100010, 0xFF100010);
+		GuiUtils.drawGradientRect(0, 15, 10, 160, 30, 0x44100010, 0x44100010);
 		//		GlStateManager.enableDepth();
 		//		GlStateManager.color(1F, 1F, 1F, 1F);
+		GlStateManager.disableLighting();
+		RenderHelper.enableStandardItemLighting();
 		RenderHelper.enableGUIStandardItemLighting();
 		mc.getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(Blocks.YELLOW_GLAZED_TERRACOTTA), 100, 15);
+		RenderHelper.disableStandardItemLighting();
+		GlStateManager.enableLighting();
 		for (GuiButton b : buttons)
 			if (b.isMouseOver())
 				GuiUtils.drawHoveringText(Arrays.asList("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", Strings.repeat(b.displayString, 8), Strings.repeat(b.displayString, 18)), mouseX, mouseY, width, height, -1, mc.fontRenderer);
 	}
 
 	public void click(int mouse, int mouseX, int mouseY) {
+		System.out.println("click " + mc.player.ticksExisted % 1000);
 		for (GuiButton b : buttons)
 			if (b.isMouseOver()) {
 				if (b.displayString.equals("+"))
@@ -95,7 +101,6 @@ public class WorldGui {
 			}
 	}
 
-	//	private static WorldGui openGui;
 	private static WorldGui openGui;
 	private static double scale = .0065, u, v, maxU, maxV;
 
@@ -146,10 +151,15 @@ public class WorldGui {
 			}
 		}
 		if (openGui != null && Mouse.getEventButtonState() && Mouse.getEventButton() == 1) {
-			if ((u >= 0.0 && u <= maxU && v >= 0.0 && v <= maxV))
-				//TODO math.floor
-				openGui.click(Mouse.getEventButton(), (int) ((openGui.width / maxU) * u), (int) ((openGui.height / maxV) * v));
-
+			if ((u >= 0.0 && u <= maxU && v >= 0.0 && v <= maxV)) {
+				Vec3d see = openGui.guiPos.subtract(openGui.playerPos).scale(.1);
+				Vec3d seeN = see.scale(-1);
+				Vec3d front = openGui.guiPos.add(seeN);
+				Vec3d back = openGui.guiPos.add(see);
+				Vec3d p = openGui.mc.player.getPositionEyes(0);
+				if (p.distanceTo(front) < p.distanceTo(back))
+					openGui.click(Mouse.getEventButton(), (int) ((openGui.width / maxU) * u), (int) ((openGui.height / maxV) * v));
+			}
 		}
 	}
 
@@ -168,9 +178,9 @@ public class WorldGui {
 	@SubscribeEvent
 	public static void render(RenderWorldLastEvent event) {
 		if (GuiScreen.isCtrlKeyDown() && openGui != null) {
-			double x = openGui.pos.x - TileEntityRendererDispatcher.staticPlayerX;
-			double y = openGui.pos.y - TileEntityRendererDispatcher.staticPlayerY;
-			double z = openGui.pos.z - TileEntityRendererDispatcher.staticPlayerZ;
+			double x = openGui.guiPos.x - TileEntityRendererDispatcher.staticPlayerX;
+			double y = openGui.guiPos.y - TileEntityRendererDispatcher.staticPlayerY;
+			double z = openGui.guiPos.z - TileEntityRendererDispatcher.staticPlayerZ;
 			GlStateManager.pushMatrix();
 			GlStateManager.depthMask(false);
 			GlStateManager.translate(x, y, z);
@@ -189,7 +199,7 @@ public class WorldGui {
 
 	@SubscribeEvent
 	public static void interact(PlayerInteractEvent event) {
-		System.out.println(event.getClass().getSimpleName() + " " + event.getHand() + " " + (event.getWorld().isRemote ? "Client" : "Server"));
+		//		System.out.println(event.getClass().getSimpleName() + " " + event.getHand() + " " + (event.getWorld().isRemote ? "Client" : "Server"));
 		if (event.isCancelable() && event.getWorld().isRemote) {
 			event.setCanceled(true);
 			event.setResult(Result.DENY);
