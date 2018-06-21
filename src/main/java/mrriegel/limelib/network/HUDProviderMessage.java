@@ -70,19 +70,24 @@ public class HUDProviderMessage extends AbstractMessage {
 	public void handleMessage(EntityPlayer player, NBTTagCompound nbt, Side side) {
 		List<BlockPos> lis1 = NBTHelper.getList(nbt, "lis1", BlockPos.class);
 		List<String> lis2 = NBTHelper.getList(nbt, "lis2", String.class);
-		Map<EnumFacing, List<String>> m = new EnumMap<>(EnumFacing.class);
+		List<Map<EnumFacing, List<String>>> l2 = new ArrayList<>();
 		for (String s : lis2) {
 			String[] l = s.split(SPLIT2);
 			Validate.isTrue(l.length == 4);
+			Map<EnumFacing, List<String>> m = new EnumMap<>(EnumFacing.class);
 			for (int i = 0; i < 4; i++)
 				m.put(EnumFacing.HORIZONTALS[i], Lists.newArrayList(l[i].split(SPLIT)));
+			l2.add(m);
 		}
-		ClientEventHandler.supplierTexts.clear();
+		Validate.isTrue(l2.size() == lis1.size());
+		//		ClientEventHandler.supplierTexts.clear();
 		for (int i = 0; i < lis1.size(); i++) {
 			BlockPos p = lis1.get(i);
 			TileEntity t = player.world.getTileEntity(p);
 			if (t != null)
-				ClientEventHandler.supplierTexts.put(p, m);
+				ClientEventHandler.supplierTexts.put(p, l2.get(i));
+			else
+				ClientEventHandler.supplierTexts.remove(p);
 		}
 	}
 

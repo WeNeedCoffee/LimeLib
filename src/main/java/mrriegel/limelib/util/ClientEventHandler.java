@@ -1,10 +1,13 @@
 package mrriegel.limelib.util;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -155,88 +158,103 @@ public class ClientEventHandler {
 	@SubscribeEvent
 	public static void render(RenderWorldLastEvent event) {
 		//ihudprovider
-		for (TileEntity t : Utils.tiles(getMC().world)) {
-			if (IHUDProvider.isHUDProvider(t) && t.getPos().getDistance((int) mc.player.posX, (int) mc.player.posY, (int) mc.player.posZ) < 24) {
-				IHUDProvider tile = IHUDProvider.getHUDProvider(t);
-				RayTraceResult rtr = getMC().objectMouseOver;
-				if (!tile.requireFocus() || (rtr != null && rtr.typeOfHit == Type.BLOCK && rtr.getBlockPos().equals(t.getPos()))) {
-					boolean sneak = getMC().player.isSneaking();
-					EnumFacing face = rtr.sideHit.getOpposite();
-					boolean playerhorizontal = !false;
-					if (face.getAxis() == Axis.Y || playerhorizontal || !rtr.getBlockPos().equals(t.getPos())) {
-						//						face = getMC().player.getHorizontalFacing();
-						Vec3d v = new Vec3d(t.getPos().getX() + .5, mc.player.getPositionEyes(0).y, t.getPos().getZ() + .5);
-						v = v.subtract(mc.player.getPositionEyes(0));
-						face = EnumFacing.getFacingFromVector((float) v.x, (float) v.y, (float) v.z);
-					}
-					List<String> tmp = null;
-					if (tile.readingSide().isServer()) {
-						Map<EnumFacing, List<String>> faceMap = supplierTexts.get(t.getPos());
-						if (faceMap != null) {
-							List<String> foo = faceMap.get(face.getOpposite());
-							tmp = foo;
+		try {
+			for (TileEntity t : getMC().world.loadedTileEntityList) {
+				if (IHUDProvider.isHUDProvider(t) && t.getPos().getDistance((int) mc.player.posX, (int) mc.player.posY, (int) mc.player.posZ) < 24) {
+					IHUDProvider tile = IHUDProvider.getHUDProvider(t);
+					RayTraceResult rtr = getMC().objectMouseOver;
+					if (!tile.requireFocus() || (rtr != null && rtr.typeOfHit == Type.BLOCK && rtr.getBlockPos().equals(t.getPos()))) {
+						boolean sneak = getMC().player.isSneaking();
+						EnumFacing face = rtr.sideHit.getOpposite();
+						boolean playerhorizontal = !false;
+						if (face.getAxis() == Axis.Y || playerhorizontal || !rtr.getBlockPos().equals(t.getPos())) {
+							//						face = getMC().player.getHorizontalFacing();
+							Vec3d v = new Vec3d(t.getPos().getX() + .5, mc.player.getPositionEyes(0).y, t.getPos().getZ() + .5);
+							v = v.subtract(mc.player.getPositionEyes(0));
+							face = EnumFacing.getFacingFromVector((float) v.x, (float) v.y, (float) v.z);
+						}
+						List<String> tmp = null;
+						if (tile.readingSide().isServer()) {
+							Map<EnumFacing, List<String>> faceMap = supplierTexts.get(t.getPos());
+							if (faceMap != null) {
+								List<String> foo = faceMap.get(face.getOpposite());
+								tmp = foo;
+							} else
+								tmp = tile.getData(sneak, face.getOpposite());
 						} else
 							tmp = tile.getData(sneak, face.getOpposite());
-					} else
-						tmp = tile.getData(sneak, face.getOpposite());
-					if (tmp != null && !tmp.isEmpty()) {
-						double x = t.getPos().getX() - TileEntityRendererDispatcher.staticPlayerX;
-						double y = t.getPos().getY() - TileEntityRendererDispatcher.staticPlayerY;
-						double z = t.getPos().getZ() - TileEntityRendererDispatcher.staticPlayerZ;
-						GlStateManager.pushMatrix();
-						double dx = face.getAxis() == Axis.Z ? 0.5F : Math.max(-0.001, face.getAxisDirection().getOffset() * -1.001);
-						double dz = face.getAxis() == Axis.X ? 0.5F : Math.max(-0.001, face.getAxisDirection().getOffset() * -1.001);
-						GlStateManager.translate((float) x + dx, (float) y + 1F, (float) z + dz);
-						float f1 = face.getHorizontalIndex() * 90f;
-						if (face.getAxis() == Axis.Z)
-							f1 += 180f;
-						GlStateManager.rotate(f1, 0.0F, 1.0F, 0.0F);
-						GlStateManager.enableRescaleNormal();
-						FontRenderer fontrenderer = getMC().fontRenderer;
-						float f3 = 0.010416667F;
-						//					GlStateManager.translate(0.0F, 0.33333334F, 0.046666667F);
-						GlStateManager.scale(f3, -f3, f3);
-						GlStateManager.glNormal3f(0.0F, 0.0F, -f3);
-						GlStateManager.depthMask(false);
-						final int maxWordLength = 93;
-						boolean cutLongLines = tile.lineBreak(sneak, face.getOpposite());
-						final double factor = MathHelper.clamp(tile.scale(sneak, face.getOpposite()), .1, 2.);
-						List<String> text = tmp.stream().filter(s -> s != null)//
-								.flatMap(s -> (!cutLongLines ? Collections.singletonList(s) : fontrenderer.listFormattedStringToWidth(s, (int) (maxWordLength / factor))).stream()).collect(Collectors.toList());
-						int lineHeight = fontrenderer.FONT_HEIGHT + 1;
-						int oy = (int) -(lineHeight * text.size() * factor);
-						int ysize = -oy;
-						int color = tile.getBackgroundColor(sneak, face.getOpposite());
-						double totalScale = tile.totalScale(getMC().player);
-						//						totalScale = mc.player.getPositionVector().distanceTo(new Vec3d(t.getPos())) * .75;
-						GlStateManager.scale(totalScale, totalScale, totalScale);
-						GuiUtils.drawGradientRect(0, -48, oy, -48 + 96, ysize + oy, color, color);
-						GlStateManager.translate(0, -text.size() * lineHeight * factor, 0);
-						GlStateManager.scale(factor, factor, factor);
-						for (int j = 0; j < text.size(); ++j) {
-							String s = text.get(j);
-							boolean shadow = s.contains(IHUDProvider.SHADOWFONT);
-							if (shadow)
-								s = s.replace(IHUDProvider.SHADOWFONT, "");
-							int width = fontrenderer.getStringWidth(s);
-							boolean tooLong = !cutLongLines && width * factor > maxWordLength;
-							double fac = maxWordLength / (width * factor);
-							int xx = tile.center(sneak, face.getOpposite()) || tooLong ? -width / 2 : (int) (-46 / factor);
-							if (tooLong)
-								GlStateManager.scale(fac, 1, 1);
-							fontrenderer.drawString(s, xx, j * 10 + 1, 0xFFFFFFFF, shadow);
-							if (tooLong)
-								GlStateManager.scale(1. / fac, 1, 1);
-						}
-						GlStateManager.scale(1. / factor, 1. / factor, 1. / factor);
-						GlStateManager.scale(1. / totalScale, 1. / totalScale, 1. / totalScale);
-						GlStateManager.depthMask(true);
-						GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-						GlStateManager.popMatrix();
+						if (tmp != null && !tmp.isEmpty()) {
+							tmp.removeIf(Objects::isNull);
+							double x = t.getPos().getX() - TileEntityRendererDispatcher.staticPlayerX;
+							double y = t.getPos().getY() - TileEntityRendererDispatcher.staticPlayerY;
+							double z = t.getPos().getZ() - TileEntityRendererDispatcher.staticPlayerZ;
+							GlStateManager.pushMatrix();
+							double dx = face.getAxis() == Axis.Z ? 0.5F : Math.max(-0.001, face.getAxisDirection().getOffset() * -1.001);
+							double dz = face.getAxis() == Axis.X ? 0.5F : Math.max(-0.001, face.getAxisDirection().getOffset() * -1.001);
+							GlStateManager.translate((float) x + dx, (float) y + 1F, (float) z + dz);
+							float f1 = face.getHorizontalIndex() * 90f;
+							if (face.getAxis() == Axis.Z)
+								f1 += 180f;
+							GlStateManager.rotate(f1, 0.0F, 1.0F, 0.0F);
+							GlStateManager.enableRescaleNormal();
+							FontRenderer fontrenderer = getMC().fontRenderer;
+							float f3 = 0.010416667F;
+							//					GlStateManager.translate(0.0F, 0.33333334F, 0.046666667F);
+							GlStateManager.scale(f3, -f3, f3);
+							GlStateManager.glNormal3f(0.0F, 0.0F, -f3);
+							GlStateManager.depthMask(false);
+							final int maxWordLength = 93;
+							boolean cutLongLines = tile.lineBreak(sneak, face.getOpposite());
+							final double factor = MathHelper.clamp(tile.scale(sneak, face.getOpposite()), .1, 2.);
+							List<String> text = true ? new ArrayList<>()
+									: tmp.stream().filter(s -> s != null)//
+											.flatMap(s -> (!cutLongLines ? Collections.singletonList(s) : fontrenderer.listFormattedStringToWidth(s, (int) (maxWordLength / factor))).stream()).collect(Collectors.toList());
+							text.clear();
+							for (String s : tmp) {
+								boolean shad = s.contains(IHUDProvider.SHADOWFONT);
+								if (!cutLongLines)
+									text.add(s);
+								else {
+									for (String ss : fontrenderer.listFormattedStringToWidth(s, (int) (maxWordLength / factor)))
+										text.add((shad ? IHUDProvider.SHADOWFONT : "") + ss);
+								}
+							}
+							int lineHeight = fontrenderer.FONT_HEIGHT + 1;
+							int oy = (int) -(lineHeight * text.size() * factor);
+							int ysize = -oy;
+							int color = tile.getBackgroundColor(sneak, face.getOpposite());
+							double totalScale = MathHelper.clamp(tile.totalScale(getMC().player), .1, 2.);
+							//						totalScale = mc.player.getPositionVector().distanceTo(new Vec3d(t.getPos())) * .75;
+							GlStateManager.scale(totalScale, totalScale, totalScale);
+							GuiUtils.drawGradientRect(0, -48, oy, -48 + 96, ysize + oy, color, color);
+							GlStateManager.translate(0, -text.size() * lineHeight * factor, 0);
+							GlStateManager.scale(factor, factor, factor);
+							for (int j = 0; j < text.size(); ++j) {
+								String s = text.get(j);
+								boolean shadow = s.contains(IHUDProvider.SHADOWFONT);
+								if (shadow)
+									s = s.replace(IHUDProvider.SHADOWFONT, "");
+								int width = fontrenderer.getStringWidth(s);
+								boolean tooLong = !cutLongLines && width * factor > maxWordLength;
+								double fac = maxWordLength / (width * factor);
+								int xx = tile.center(sneak, face.getOpposite()) || tooLong ? -width / 2 : (int) (-46 / factor);
+								if (tooLong)
+									GlStateManager.scale(fac, 1, 1);
+								fontrenderer.drawString(s, xx, j * 10 + 1, 0xFFFFFFFF, shadow);
+								if (tooLong)
+									GlStateManager.scale(1. / fac, 1, 1);
+							}
+							GlStateManager.scale(1. / factor, 1. / factor, 1. / factor);
+							GlStateManager.scale(1. / totalScale, 1. / totalScale, 1. / totalScale);
+							GlStateManager.depthMask(true);
+							GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+							GlStateManager.popMatrix();
 
+						}
 					}
 				}
 			}
+		} catch (ConcurrentModificationException e) {
 		}
 		RayTraceResult rtr = getMC().objectMouseOver;
 		if (rtr != null && rtr.typeOfHit == Type.BLOCK /*&& getMC().inGameHasFocus*/) {

@@ -200,7 +200,7 @@ public class WorldGui {
 	@SubscribeEvent
 	public static void interact(PlayerInteractEvent event) {
 		//		System.out.println(event.getClass().getSimpleName() + " " + event.getHand() + " " + (event.getWorld().isRemote ? "Client" : "Server"));
-		if (event.isCancelable() && event.getWorld().isRemote) {
+		if (event.isCancelable() && event.getWorld().isRemote && false) {
 			event.setCanceled(true);
 			event.setResult(Result.DENY);
 			if (event instanceof LeftClickBlock) {

@@ -136,7 +136,7 @@ public class LimeLib {
 					@Override
 					public List<String> getData(boolean sneak, EnumFacing facing) {
 						List<String> lis = Lists.newArrayList();
-						lis.add(TextFormatting.RED + IHUDProvider.SHADOWFONT + "Burntime: " + tile.getField(0));
+						lis.add(TextFormatting.RED + "" + TextFormatting.ITALIC + IHUDProvider.SHADOWFONT + "Burntime: " + tile.getField(0));
 						ItemStack in = tile.getStackInSlot(0);
 						lis.add("Input: " + (in.isEmpty() ? "" : (in.getDisplayName() + " " + in.getCount() + "x")));
 						ItemStack out = tile.getStackInSlot(2);
@@ -152,7 +152,6 @@ public class LimeLib {
 						return Side.SERVER;
 					}
 
-					//TODO rename to fontscale
 					@Override
 					public double scale(boolean sneak, EnumFacing facing) {
 						int ticks = FMLClientHandler.instance().getClientPlayerEntity().ticksExisted;
@@ -181,7 +180,7 @@ public class LimeLib {
 
 					@Override
 					public boolean requireFocus() {
-						return true;
+						return !true;
 					}
 
 					@Override
