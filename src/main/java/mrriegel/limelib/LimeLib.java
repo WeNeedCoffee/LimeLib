@@ -61,13 +61,6 @@ public class LimeLib {
 	public void preInit(FMLPreInitializationEvent event) {
 		LimeConfig.init(event.getSuggestedConfigurationFile());
 		Utils.init();
-		/*ideas
-		entity materialzier/dematerializer
-		-range
-		-filter
-		-redstone
-		-fluid and item;
-		*/
 		//TODO move to limecaps
 		CapabilityDataPart.register();
 		LimeCapabilities.register();
@@ -79,6 +72,7 @@ public class LimeLib {
 		if (RecipeHelper.dev) {
 			Connect.preInit();
 		}
+//		int kk=4/0;
 	}
 
 	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded, fluxLoaded;
@@ -100,7 +94,6 @@ public class LimeLib {
 			//			UnderWorld.init();
 			MinecraftForge.EVENT_BUS.register(INSTANCE);
 			Connect.init();
-			MinecraftForge.EVENT_BUS.register(WorldGui.class);
 		}
 	}
 

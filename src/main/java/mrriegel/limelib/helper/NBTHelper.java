@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
@@ -20,12 +22,15 @@ import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.Hash.Strategy;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -87,16 +92,20 @@ public class NBTHelper {
 
 	@Deprecated
 	public static void register(INBTable n) {
-		iNBTs.add(n);
+		if (!iNBTs.contains(n))
+			iNBTs.add(n);
 	}
 
 	public static interface INBTable<T> {
 
+		//TODO replaced by asNBT,pls remove
 		void set(NBTTagCompound nbt, String name, T value);
 
 		T get(NBTTagCompound nbt, String name, Class<T> clazz);
 
 		boolean classValid(Class<T> clazz);
+		
+		NBTBase asNBT(T value);
 
 		default T defaultValue() {
 			return null;
@@ -106,7 +115,7 @@ public class NBTHelper {
 			return new Object2ObjectOpenHashMap<>();
 		}
 
-		default List<?> getEmptyList() {
+		default List<T> getEmptyList() {
 			return new ObjectArrayList<>();
 		}
 
@@ -139,6 +148,11 @@ public class NBTHelper {
 			public boolean classValid(Class<Enum> clazz) {
 				return Enum.class.isAssignableFrom(clazz);
 			}
+
+			@Override
+			public NBTBase asNBT(Enum value) {
+				return new NBTTagInt(value.ordinal());
+			}
 		});
 		register(new INBTable<IForgeRegistryEntry>() {
 
@@ -168,6 +182,14 @@ public class NBTHelper {
 			@Override
 			public boolean classValid(Class<IForgeRegistryEntry> clazz) {
 				return IForgeRegistryEntry.class.isAssignableFrom(clazz);
+			}
+
+			@Override
+			public NBTBase asNBT(IForgeRegistryEntry value) {
+				NBTTagCompound entry = new NBTTagCompound();
+				entry.setString("id", value.getRegistryName().toString());
+				entry.setString("class", value.getRegistryType().getCanonicalName());
+				return entry;
 			}
 		});
 		//		for (NBTType t : NBTType.values())
@@ -199,6 +221,12 @@ public class NBTHelper {
 			@Override
 			public T defaultValue() {
 				return defaultValue;
+			}
+
+			@Override
+			public NBTBase asNBT(T value) {
+				// TODO mach ma
+				return null;
 			}
 
 		};
@@ -302,7 +330,7 @@ public class NBTHelper {
 		if (type == null)
 			throw new IllegalArgumentException();
 		type.set(nbt, name, value);
-		nbt.setString(name + "_clazz", clazz.getName());
+		//		nbt.setString(name + "_clazz", clazz.getName());
 		return nbt;
 	}
 
@@ -325,10 +353,42 @@ public class NBTHelper {
 		return Optional.empty();
 	}
 
-	//TODO change to collection
+	//TODO change parameter to collection
 	public static NBTTagCompound setList(NBTTagCompound nbt, String name, List<?> values) {
 		if (nbt == null || values.isEmpty())
 			return nbt;
+		if (false) {
+			List<Class<?>> classes = values.stream().filter(Objects::nonNull).map(Object::getClass).distinct().collect(Collectors.toList());
+			if (classes.size() != 1)
+				throw new IllegalArgumentException();
+			IntArrayList nulls = new IntArrayList();
+			for (int i = 0; i < values.size(); i++)
+				if (values.get(i) == null)
+					nulls.add(i);
+			Class<?> clazz = classes.get(0);
+			INBTable n=getINBT(clazz);
+			if (n==null)
+				throw new IllegalArgumentException();
+			if (Arrays.asList(Boolean.class, Byte.class).contains(clazz))
+				/*byte array*/;
+			else if (Arrays.asList(Short.class, Integer.class, Float.class).contains(clazz) || clazz.isEnum())
+				/*int array*/;
+			else if (Arrays.asList(Long.class, Double.class).contains(clazz))
+				/*long array*/;
+			else {
+				/*taglist*/;
+				NBTTagList list = new NBTTagList();
+				for(Object v:values) {
+					list.appendTag(n.asNBT(v));
+				}
+				if (clazz == String.class) {
+					;
+				} else {
+					;
+				}
+			}
+		}
+		//TODO use nbttaglist/bytearray/intarray/longarray
 		for (Object o : values)
 			if (o != null) {
 				if (!NBTType.validClass(o.getClass()))
@@ -341,6 +401,11 @@ public class NBTHelper {
 			set(lis, "__" + i, values.get(i));
 		nbt.setTag(name, lis);
 		return nbt;
+	}
+
+	@Deprecated
+	private static <K, V> Map<K, V> getMap(NBTTagCompound nbt, String name, Class<K> keyClazz, Class<V> valClazz, Supplier<Map<K, V>> supp) {
+		return getMap(nbt, name, keyClazz, valClazz);
 	}
 
 	public static <K, V> Map<K, V> getMap(NBTTagCompound nbt, String name, Class<K> keyClazz, Class<V> valClazz) {
@@ -379,5 +444,4 @@ public class NBTHelper {
 		nbt.setTag(name, map);
 		return nbt;
 	}
-
 }

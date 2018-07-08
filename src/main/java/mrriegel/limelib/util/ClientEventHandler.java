@@ -15,11 +15,7 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector4f;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
 import com.google.common.collect.Maps;
 
@@ -39,7 +35,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
@@ -73,7 +68,6 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
@@ -165,9 +159,9 @@ public class ClientEventHandler {
 					RayTraceResult rtr = getMC().objectMouseOver;
 					if (!tile.requireFocus() || (rtr != null && rtr.typeOfHit == Type.BLOCK && rtr.getBlockPos().equals(t.getPos()))) {
 						boolean sneak = getMC().player.isSneaking();
-						EnumFacing face = rtr.sideHit.getOpposite();
+						EnumFacing face = null;
 						boolean playerhorizontal = !false;
-						if (face.getAxis() == Axis.Y || playerhorizontal || !rtr.getBlockPos().equals(t.getPos())) {
+						if (playerhorizontal || face.getAxis() == Axis.Y || !rtr.getBlockPos().equals(t.getPos())) {
 							//						face = getMC().player.getHorizontalFacing();
 							Vec3d v = new Vec3d(t.getPos().getX() + .5, mc.player.getPositionEyes(0).y, t.getPos().getZ() + .5);
 							v = v.subtract(mc.player.getPositionEyes(0));
@@ -266,12 +260,13 @@ public class ClientEventHandler {
 		//datapart
 		DataPartRegistry reg = DataPartRegistry.get(getMC().world);
 		if (reg != null) {
-			reg.getParts().stream().filter(p -> p != null && getMC().player.getDistance(p.getX(), p.getY(), p.getZ()) < 64).forEach(p -> {
-				@SuppressWarnings("rawtypes")
-				RenderDataPart ren = RenderRegistry.map.get(p.getClass());
-				if (ren != null)
-					ren.render(p, p.getX() - TileEntityRendererDispatcher.staticPlayerX, p.getY() - TileEntityRendererDispatcher.staticPlayerY, p.getZ() - TileEntityRendererDispatcher.staticPlayerZ, event.getPartialTicks());
-			});
+			reg.getParts().stream().filter(p -> p != null && getMC().player.getDistance(p.getX(), p.getY(), p.getZ()) < 64).//
+					sorted((b, a) -> Double.compare(getMC().player.getDistance(a.getX(), a.getY(), a.getZ()), getMC().player.getDistance(b.getX(), b.getY(), b.getZ()))).forEach(p -> {
+						@SuppressWarnings("rawtypes")
+						RenderDataPart ren = RenderRegistry.map.get(p.getClass());
+						if (ren != null)
+							ren.render(p, p.getX() - TileEntityRendererDispatcher.staticPlayerX, p.getY() - TileEntityRendererDispatcher.staticPlayerY, p.getZ() - TileEntityRendererDispatcher.staticPlayerZ, event.getPartialTicks());
+					});
 		}
 	}
 
@@ -304,109 +299,6 @@ public class ClientEventHandler {
 			GlStateManager.enableTexture2D();
 			GlStateManager.disableBlend();
 			event.setCanceled(true);
-		}
-	}
-
-	static int width = 100, height = 30;
-	static Vec3d a, b, c, d;
-
-	//	@SubscribeEvent
-	public static void test2(RenderWorldLastEvent event) {
-		if (!RecipeHelper.dev)
-			return;
-		if (GuiScreen.isCtrlKeyDown() /*&& mc.player.motionX == 0 && mc.player.motionZ == 0*/) {
-			float yaw = yawC != 0f ? yawC : (yawC = mc.player.rotationYaw);
-			float pitch = pitchC != 0f ? pitchC : (pitchC = mc.player.rotationPitch);
-			Vec3d vecPos = guiPos != null ? guiPos : (guiPos = mc.player.getLook(event.getPartialTicks()).add(mc.player.getPositionEyes(event.getPartialTicks())));
-			double x = vecPos.x - TileEntityRendererDispatcher.staticPlayerX;
-			double y = vecPos.y - TileEntityRendererDispatcher.staticPlayerY;
-			double z = vecPos.z - TileEntityRendererDispatcher.staticPlayerZ;
-			GlStateManager.pushMatrix();
-			GlStateManager.depthMask(false);
-			GlStateManager.translate(x, y, z);
-			float scale = .005f;
-			GlStateManager.scale(scale, scale, scale);
-			boolean rot = true;
-			if (rot) {
-				GlStateManager.rotate(-MathHelper.wrapDegrees(yaw), 0, 1, 0);
-				GlStateManager.rotate(pitch, 1, 0, 0);
-				GlStateManager.rotate(180f, 0, 0, 1);
-			}
-			double halfWidth = width / 2d, halfHeight = height / 2d;
-			GlStateManager.translate(-halfWidth, -halfHeight, 0);
-			if (a == null) {
-				//				Vec3d see = new Vec3d(-halfWidth * scale, halfHeight * scale, 0);
-				//				Matrix4f m = new Matrix4f();
-				//				m.m03 = (float) see.x;
-				//				m.m13 = (float) see.y;
-				//				m.m23 = (float) see.z;
-				//				if (rot) {
-				//					//					m = m.rotate((float) Math.toRadians(180), new Vector3f(0, 0, 1));
-				//					m = m.rotate((float) Math.toRadians(-pitch), new Vector3f(1, 0, 0));
-				//					m = m.rotate((float) Math.toRadians(-MathHelper.wrapDegrees(-yaw)), new Vector3f(0, 1, 0));
-				//				}
-				//				see = new Vec3d(m.m03, m.m13, m.m23);
-				a = vecPos.add(vec(halfWidth * scale, halfHeight * scale, pitch, yaw));
-				b = vecPos.add(vec(-halfWidth * scale, halfHeight * scale, pitch, yaw));
-				c = vecPos.add(vec(-halfWidth * scale, -halfHeight * scale, pitch, yaw));
-				d = vecPos.add(vec(halfWidth * scale, -halfHeight * scale, pitch, yaw));
-			}
-			//			new GuiDrawer(0, 0, 0, 0, 0).drawColoredRectangle(0, 0, 10, 10, Color.RED.getRGB());
-			new GuiDrawer(0, 0, width, height, 0).drawBackgroundTexture();
-			new GuiButton(0, 100, 100, 80, 20, "Button").drawButton(mc, 0, 0, event.getPartialTicks());
-			//			new CommonGuiButton(0, 0, 0, 40, 10, "masu").drawButton(mc, 0, 0, event.getPartialTicks());
-			GlStateManager.depthMask(true);
-			GlStateManager.popMatrix();
-		}
-	}
-
-	private static Vec3d vec(double x, double y, double pitch, double yaw) {
-		Vec3d v = new Vec3d(x, y, 0);
-		Matrix4f m = new Matrix4f();
-		m.m03 = (float) v.x;
-		m.m13 = (float) v.y;
-		m.m23 = (float) v.z;
-		//		m = m.rotate((float) Math.toRadians(180), new Vector3f(0, 0, 1));
-		m = m.rotate((float) Math.toRadians(-pitch), new Vector3f(1, 0, 0));
-		m = m.rotate((float) Math.toRadians(-MathHelper.wrapDegrees(-yaw)), new Vector3f(0, 1, 0));
-		return new Vec3d(m.m03, m.m13, m.m23);
-	}
-
-	private static Vec3d guiPos;
-	private static float yawC, pitchC;
-
-	//	@SubscribeEvent
-	public static void test(InputEvent.KeyInputEvent event) {
-		if (!Keyboard.getEventKeyState() && Keyboard.getEventKey() == 29) {
-			guiPos = null;
-			yawC = 0f;
-			pitchC = 0f;
-			a = b = c = d = null;
-		}
-	}
-
-	//	@SubscribeEvent
-	public static void test(InputEvent.MouseInputEvent event) {
-		if (guiPos != null && Mouse.getEventButtonState() && Mouse.getEventButton() == 1 && a != null) {
-			boolean res = false;
-			Vec3d d2 = b.subtract(a);
-			Vec3d d3 = d.subtract(a);
-			Vec3d n = d2.crossProduct(d3);
-			Vec3d dr = mc.player.getLook(0);
-			double ndot = n.dotProduct(dr);
-			if (Math.abs(ndot) >= 1e-6d) {
-				double t = -n.dotProduct(mc.player.getPositionEyes(0).subtract(a)) / ndot;
-				Vec3d m = mc.player.getPositionEyes(0).add(dr.scale(t));
-				Vec3d dm = m.subtract(a);
-				double u = dm.dotProduct(d2);
-				double v = dm.dotProduct(d3);
-				double maxU = d2.dotProduct(d2);
-				double maxV = d3.dotProduct(d3);
-				System.out.println("" + (width / maxU) * u);
-				res = (u >= 0.0 && u <= maxU && v >= 0.0 && v <= maxV);
-			}
-			System.out.println(res + "");
-
 		}
 	}
 

@@ -1,5 +1,7 @@
 package mrriegel.limelib.util;
 
+import java.awt.AWTException;
+import java.awt.Robot;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -160,6 +162,7 @@ public class EventHandler {
 			System.out.println("sds");
 			BlockPos pb = new BlockPos(player);
 			TileEntity t = player.world.getTileEntity(pb.down());
+			
 			new Thread(() -> {
 				try {
 					Thread.sleep(3000);
@@ -169,8 +172,8 @@ public class EventHandler {
 				player.world.getMinecraftServer().addScheduledTask(() -> {
 					//					player.world.setBlockState(pb, Blocks.BEDROCK.getDefaultState());
 					ItemStack e = ItemStack.EMPTY;
+					List<Item> list = Lists.newArrayList(ForgeRegistries.ITEMS);
 					while (e.isEmpty()) {
-						List<Item> list = Lists.newArrayList(ForgeRegistries.ITEMS);
 						e = new ItemStack(list.get(player.world.rand.nextInt(list.size())));
 					}
 					Block.spawnAsEntity(player.world, pb, e);
