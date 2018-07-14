@@ -2,6 +2,7 @@ package mrriegel.limelib.particle;
 
 import java.awt.Color;
 import java.util.Random;
+import java.util.function.Function;
 
 import javax.vecmath.Vector4f;
 
@@ -23,7 +24,7 @@ public class CommonParticle extends Particle {
 	protected double flouncing = 0;
 	protected int visibleRange = 32, brightness = -1;
 	protected boolean depth = true, smoothEnd = true;
-	protected IColorCall colors;
+	protected Function<CommonParticle, Vector4f> colors;
 
 	public CommonParticle(double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
 		super(LimeLib.proxy.getClientWorld(), xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed);
@@ -46,6 +47,7 @@ public class CommonParticle extends Particle {
 
 		this.motionY -= 0.04D * this.particleGravity;
 		this.move(this.motionX, this.motionY, this.motionZ);
+		//TODO reduce flounincf
 		this.motionX += (this.rand.nextDouble() - .5) * flouncing;
 		this.motionY += (this.rand.nextDouble() - .5) * flouncing;
 		this.motionZ += (this.rand.nextDouble() - .5) * flouncing;
@@ -67,7 +69,7 @@ public class CommonParticle extends Particle {
 
 	@Override
 	public void renderParticle(BufferBuilder worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		Vector4f color = colors.getColor(this);
+		Vector4f color = colors.apply(this);
 		this.particleRed = color.x;
 		this.particleGreen = color.y;
 		this.particleBlue = color.z;
@@ -90,9 +92,9 @@ public class CommonParticle extends Particle {
 	}
 
 	@Override
-	public int getBrightnessForRender(float p_189214_1_) {
+	public int getBrightnessForRender(float partialTicks) {
 		if (brightness < 0)
-			return super.getBrightnessForRender(p_189214_1_);
+			return super.getBrightnessForRender(partialTicks);
 		int i = MathHelper.clamp(brightness, 0, 15);
 		int j = i;
 		return i << 20 | j << 4;
@@ -178,14 +180,9 @@ public class CommonParticle extends Particle {
 		return this;
 	}
 
-	public CommonParticle setColors(IColorCall colors) {
+	public CommonParticle setColors(Function<CommonParticle, Vector4f> colors) {
 		this.colors = colors;
 		return this;
-	}
-
-	@FunctionalInterface
-	public static interface IColorCall {
-		public Vector4f getColor(CommonParticle par);
 	}
 
 }

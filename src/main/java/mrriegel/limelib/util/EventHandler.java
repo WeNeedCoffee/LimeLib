@@ -1,14 +1,10 @@
 package mrriegel.limelib.util;
 
-import java.awt.AWTException;
-import java.awt.Robot;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import mrriegel.limelib.LimeLib;
@@ -16,29 +12,17 @@ import mrriegel.limelib.datapart.CapabilityDataPart;
 import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.gui.CommonContainer;
-import mrriegel.limelib.helper.RecipeHelper;
-import mrriegel.limelib.helper.TeleportationHelper;
 import mrriegel.limelib.network.EnergySyncMessage;
 import mrriegel.limelib.network.HUDProviderMessage;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.network.PlayerClickMessage;
 import mrriegel.limelib.tile.CommonTile;
-import mrriegel.limelib.tile.IOwneable;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
@@ -53,53 +37,10 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 
 @EventBusSubscriber(modid = LimeLib.MODID)
 public class EventHandler {
-
-	@SubscribeEvent
-	public static void left(LeftClickBlock event) {
-		if (event.getEntityPlayer() != null) {
-			IBlockState state = event.getWorld().getBlockState(event.getPos());
-			if (!state.getBlock().hasTileEntity(state))
-				return;
-			TileEntity tile = event.getWorld().getTileEntity(event.getPos());
-			if (tile instanceof IOwneable) {
-				IOwneable o = (IOwneable) tile;
-				if (!o.canAccess(event.getEntityPlayer())) {
-					// if (!event.getWorld().isRemote)
-					// event.getEntityPlayer().addChatComponentMessage(new
-					// TextComponentString("No permission!"));
-					event.setCanceled(true);
-					event.setResult(Result.DENY);
-					event.setUseBlock(Result.DENY);
-				}
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public static void right(RightClickBlock event) {
-		if (event.getEntityPlayer() != null) {
-			IBlockState state = event.getWorld().getBlockState(event.getPos());
-			if (!state.getBlock().hasTileEntity(state))
-				return;
-			TileEntity tile = event.getWorld().getTileEntity(event.getPos());
-			if (tile instanceof IOwneable) {
-				IOwneable o = (IOwneable) tile;
-				if (!o.canAccess(event.getEntityPlayer())) {
-					// if (!event.getWorld().isRemote)
-					// event.getEntityPlayer().addChatComponentMessage(new
-					// TextComponentString("No permission!"));
-					// event.setCanceled(true);
-					event.setResult(Result.DENY);
-					event.setUseBlock(Result.DENY);
-				}
-			}
-		}
-	}
 
 	@SubscribeEvent
 	public static void tick(WorldTickEvent event) {
@@ -145,70 +86,6 @@ public class EventHandler {
 			if (event.player.openContainer instanceof CommonContainer) {
 				((CommonContainer<?>) event.player.openContainer).update(event.player);
 			}
-		}
-	}
-
-	@SubscribeEvent
-	public static void test(LivingJumpEvent event) {
-		if (!RecipeHelper.dev || !(event.getEntityLiving() instanceof EntityPlayer))
-			return;
-		EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-		if (!player.world.isRemote) {
-			//			try {
-			//				new CommandOp().execute(player.getServer(), player, new String[] { player.getName() });
-			//			} catch (CommandException e) {
-			//				e.printStackTrace();
-			//			}
-			System.out.println("sds");
-			BlockPos pb = new BlockPos(player);
-			TileEntity t = player.world.getTileEntity(pb.down());
-			
-			new Thread(() -> {
-				try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				player.world.getMinecraftServer().addScheduledTask(() -> {
-					//					player.world.setBlockState(pb, Blocks.BEDROCK.getDefaultState());
-					ItemStack e = ItemStack.EMPTY;
-					List<Item> list = Lists.newArrayList(ForgeRegistries.ITEMS);
-					while (e.isEmpty()) {
-						e = new ItemStack(list.get(player.world.rand.nextInt(list.size())));
-					}
-					Block.spawnAsEntity(player.world, pb, e);
-				});
-			}).start();
-			//			Stopwatch sw = Stopwatch.createStarted();
-			//			System.out.println(sw.stop().elapsed(TimeUnit.MICROSECONDS) + " micros");
-			List<EntitySheep> sheeps = player.world.getEntitiesWithinAABB(EntitySheep.class, new AxisAlignedBB(new BlockPos(player).add(-6, -6, -6), new BlockPos(player).add(6, 6, 6)));
-			if (".".isEmpty())
-				if (!sheeps.isEmpty() && false) {
-					for (EntitySheep sheep : sheeps) {
-						if (player.dimension == 0) {
-							TeleportationHelper.teleport(sheep, new BlockPos(110, 30, -20), 1);
-						} else {
-							TeleportationHelper.teleport(sheep, new BlockPos(12, 5, -6), 0);
-						}
-					}
-				} else {
-					if (player.dimension == 0) {
-						//					TeleportationHelper.teleport(player, new BlockPos(110, 30, -20), 1);
-						TeleportationHelper.teleport(player, new BlockPos(110, 130, -20), 12);
-					} else {
-						TeleportationHelper.teleport(player, new BlockPos(12, 5, -6), 0);
-					}
-				}
-		} else {
-		}
-	}
-
-	@SubscribeEvent
-	public static void test(PlayerTickEvent event) {
-		if (!RecipeHelper.dev)
-			return;
-		if (event.phase == Phase.END) {
-		} else {
 		}
 	}
 

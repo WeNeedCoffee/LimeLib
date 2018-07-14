@@ -8,14 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.stream.Collectors;
 
-import javax.vecmath.Vector2d;
-import javax.vecmath.Vector4f;
-
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Maps;
 
@@ -29,7 +24,6 @@ import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.helper.EnergyHelper;
 import mrriegel.limelib.helper.EnergyHelper.Energy;
 import mrriegel.limelib.helper.ParticleHelper;
-import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.tile.IHUDProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCommandBlock;
@@ -38,20 +32,13 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -300,131 +287,6 @@ public class ClientEventHandler {
 			GlStateManager.disableBlend();
 			event.setCanceled(true);
 		}
-	}
-
-	@SubscribeEvent
-	public static void test(RenderWorldLastEvent event) {
-		if (!RecipeHelper.dev)
-			return;
-		EntityPlayer player = Minecraft.getMinecraft().player;
-		Vec3d arr = new Vec3d(9 + .5, 6, 5 + .5);
-		//		arr = new Vec3d(d3, d4, d5).add(player.getLookVec().normalize().scale(2.));
-		//		arr = new Vec3d(arr.x, d4 + 1.5, arr.z);
-		if (arr.distanceTo(player.getPositionVector()) > 32)
-			return;
-		GlStateManager.pushMatrix();
-		GlStateManager.enableBlend();
-		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-		GlStateManager.disableTexture2D();
-		//		GlStateManager.depthMask(false);
-		//		GlStateManager.disableDepth();
-		double d3 = TileEntityRendererDispatcher.staticPlayerX;
-		double d4 = TileEntityRendererDispatcher.staticPlayerY;
-		double d5 = TileEntityRendererDispatcher.staticPlayerZ;
-		int color = 0;
-		GlStateManager.translate(arr.x - d3, arr.y - d4, arr.z - d5);
-		float angle = (System.currentTimeMillis() / 10) % 360;
-		//		angle = -MathHelper.wrapDegrees(player.rotationYaw) - 90;
-		Vector2d arrow = new Vector2d(arr.x, arr.z);
-		Entity e = null;
-		List<EntityLiving> lis = player.world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(arr.addVector(6, 6, 6), arr.addVector(-6, -6, -6)));
-		if (!lis.isEmpty()) {
-			e = lis.get(0);
-			Vector2d play = new Vector2d(e.posX, e.posZ);
-
-		}
-		GlStateManager.rotate(angle, .0f, 1f, .0f);
-		GlStateManager.translate(-.5, 0, -.5);
-		Tessellator tes = Tessellator.getInstance();
-		BufferBuilder bb = tes.getBuffer();
-		GL11.glLineWidth(5f / (float) (arr.distanceTo(new Vec3d(d3, d4, d5))));
-		bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-		bb.pos(.5, -.5, .5).color(.9f, .4f, .7f, 1f).endVertex();
-		bb.pos(.5, 1.5, .5).color(.9f, .4f, .7f, 1f).endVertex();
-		tes.draw();
-		bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		Random ran = new Random(System.identityHashCode(player));
-		Vector4f col = new Vector4f(.1f, .4f, .6f, 1.f);
-		//IndentationError: unexpected indent
-
-		//west
-		float diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(EnumFacing.EAST);
-		bb.pos(.0, .4, .7).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.0, .6, .7).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.0, .6, .3).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.0, .4, .3).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-
-		bb.pos(.6, .4, .9).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .6, .9).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .6, .1).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .4, .1).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-
-		//top                    col.   col.y  col.z  col.w
-		//IndentationError: unexpected indent
-
-		diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(EnumFacing.UP);
-		bb.pos(.0, .6, .7).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .6, .7).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .6, .3).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.0, .6, .3).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		//bottom                 col.   col.y  col.z  col.w
-		//IndentationError: unexpected indent
-
-		diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(EnumFacing.DOWN);
-		bb.pos(.0, .4, .3).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .4, .3).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .4, .7).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.0, .4, .7).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		//north                  col.   col.y  col.z  col.w
-		//IndentationError: unexpected indent
-
-		diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(EnumFacing.NORTH);
-		bb.pos(.0, .4, .3).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.0, .6, .3).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .6, .3).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .4, .3).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		//north-east
-		bb.pos(.6, .4, .1).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .6, .1).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(1., .6, .5).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(1., .4, .5).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		//south                  col.   col.y  col.z  col.w
-		//IndentationError: unexpected indent
-
-		diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(EnumFacing.SOUTH);
-		bb.pos(.6, .4, .7).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .6, .7).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.0, .6, .7).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.0, .4, .7).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		//south-east
-		bb.pos(1., .4, .5).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(1., .6, .5).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .6, .9).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .4, .9).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		tes.draw();
-
-		bb.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_COLOR);
-		//top                    col.   col.y  col.z  col.w
-		//IndentationError: unexpected indent
-
-		diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(EnumFacing.UP);
-		bb.pos(.6, .6, .1).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .6, .9).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(1., .6, .5).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		//bottom                    col.   col.y  col.z  col.w
-		//IndentationError: unexpected indent
-
-		diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(EnumFacing.DOWN);
-		bb.pos(1., .4, .5).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .4, .9).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		bb.pos(.6, .4, .1).color(col.x * diffuse, col.y * diffuse, col.z * diffuse, col.w).endVertex();
-		tes.draw();
-
-		//		GlStateManager.enableDepth();
-		//		GlStateManager.depthMask(true);
-		GlStateManager.enableTexture2D();
-		GlStateManager.disableBlend();
-		GlStateManager.popMatrix();
 	}
 
 }
