@@ -114,6 +114,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		}
 	}
 
+	//TODO use the other method
 	@Override
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 		List<ItemStack> lis = super.getDrops(world, pos, state, fortune);
@@ -128,6 +129,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		return !stack.isEmpty() ? Lists.newArrayList(stack) : lis;
 	}
 
+	//TODO https://twitter.com/McJty/status/1002546886161596416
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
 		if (!isDataKeeper(null, worldIn.getTileEntity(pos)))

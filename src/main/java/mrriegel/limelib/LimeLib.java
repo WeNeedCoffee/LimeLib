@@ -1,7 +1,5 @@
 package mrriegel.limelib;
 
-import java.io.IOException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,6 +55,7 @@ public class LimeLib {
 		if (RecipeHelper.dev) {
 			Dev.preInit();
 			MinecraftForge.EVENT_BUS.register(Dev.class);
+			System.out.println("zip");
 		}
 	}
 
@@ -77,6 +76,8 @@ public class LimeLib {
 
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		if (RecipeHelper.dev) {
+		}
 	}
 
 	@Mod.EventHandler

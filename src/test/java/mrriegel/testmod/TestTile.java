@@ -13,7 +13,6 @@ import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.tile.IDataKeeper;
 import mrriegel.limelib.tile.IHUDProvider;
-import mrriegel.limelib.tile.IOwneable;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -28,7 +27,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 
-public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper, IOwneable, IHUDProvider {
+public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper, IHUDProvider {
 
 	public int k;
 
@@ -130,16 +129,6 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 	@Override
 	public void readFromStack(ItemStack stack) {
 		k = NBTStackHelper.get(stack, "k", Integer.class);
-	}
-
-	@Override
-	public String getOwner() {
-		return null;
-	}
-
-	@Override
-	public boolean canAccess(EntityPlayer player) {
-		return true;
 	}
 
 	@Override

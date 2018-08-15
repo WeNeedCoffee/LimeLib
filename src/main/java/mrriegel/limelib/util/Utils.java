@@ -3,7 +3,6 @@ package mrriegel.limelib.util;
 import java.lang.reflect.Type;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,14 +20,14 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class Utils {
@@ -62,11 +61,11 @@ public class Utils {
 	}
 
 	public static String getCurrentModID() {
-		return new Item().setRegistryName("dummy").getRegistryName().getResourceDomain();
+		return GameData.checkPrefix("").getResourceDomain();
 	}
 
 	public static List<Integer> split(int ii, int splits) {
-		List<Integer> ints = new IntArrayList();
+		IntArrayList ints = new IntArrayList();
 		for (int i = 0; i < splits; i++)
 			ints.add(ii / splits);
 		for (int i = 0; i < ii % splits; i++)
@@ -75,40 +74,42 @@ public class Utils {
 	}
 
 	public static String formatNumber(long value) {
-		if (Math.abs(value) < 1000)
-			return String.valueOf(value);
-		else if (Math.abs(value) < 1000000)
-			return String.valueOf((int) (Math.round(value) / 1000D)) + "K";
-		else if (Math.abs(value) < 1000000000)
-			return String.valueOf((int) (Math.round(value / 1000) / 1000D)) + "M";
+		return formatNumber(value, false);
+	}
+
+	public static String formatNumber(long value, boolean period) {
+		if (value == Long.MIN_VALUE)
+			value++;
+		long abs = Math.abs(value);
+		if (abs < 1000)
+			return value + "";
+		StringBuilder sb = new StringBuilder();
+		if (value < 0)
+			sb.append('-');
+		String absString = abs + "";
+		int digits = ((absString.length() - 1) % 3) + 1;
+		sb.append(absString.substring(0, digits));
+		if (period && absString.charAt(digits) != '0')
+			sb.append("." + absString.charAt(digits));
+		if (abs < 1_000_000)
+			sb.append("K");
+		else if (abs < 1_000_000_000)
+			sb.append("M");
+		else if (abs < 1_000_000_000_000L)
+			sb.append("G");
+		else if (abs < 1_000_000_000_000_000L)
+			sb.append("T");
+		else if (abs < 1_000_000_000_000_000_000L)
+			sb.append("P");
 		else
-			return String.valueOf((int) (Math.round(value / 1000000) / 1000D)) + "G";
+			sb.append("E");
+		return sb.toString();
 	}
 
-	public static Iterable<TileEntity> tiles(World world) {
-		return new Iterable<TileEntity>() {
-
-			@Override
-			public Iterator<TileEntity> iterator() {
-				return new Iterator<TileEntity>() {
-					int index = 0;
-
-					@Override
-					public boolean hasNext() {
-						return world.loadedTileEntityList.size() > index;
-					}
-
-					@Override
-					public TileEntity next() {
-						return world.loadedTileEntityList.get(index++);
-					}
-				};
-			}
-		};
-	}
+	private static UUID fakePlayerUUID = new UUID(0x672ec31127a5449eL, 0x925c69a55980d378L);
 
 	public static FakePlayer getFakePlayer(WorldServer world) {
-		UUID uu = UUID.fromString("672ec311-27a5-449e-925c-69a55980d378");
+		UUID uu = fakePlayerUUID;
 		while (world.getEntityFromUuid(uu) != null)
 			uu = UUID.randomUUID();
 		return FakePlayerFactory.get(world, new GameProfile(uu, LimeLib.MODID + "_fake_player"));
@@ -161,27 +162,15 @@ public class Utils {
 		return (EntityPlayerMP) world.playerEntities.get(world.rand.nextInt(world.playerEntities.size()));
 	}
 
-	public static int storeBytes(byte a, byte b, byte c, byte d) {
-		return (a << 24) ^ (b << 16) ^ (c << 8) ^ d;
-	}
-
-	public static byte[] loadBytes(int a) {
-		return new byte[] { (byte) (a >> 24 & 0xFF), (byte) (a >> 16 & 0xFF), (byte) (a >> 8 & 0xFF), (byte) (a & 0xFF) };
-	}
-
-	public static int storeShorts(short a, short b) {
-		return (a << 16) ^ (b);
-	}
-
-	public static short[] loadShorts(int a) {
-		return new short[] { (short) (a >> 16 & 0xFFFF), (short) (a & 0xFFFF) };
-	}
-
 	public static String toASCII(String text) {
 		return Base64.getEncoder().encodeToString(text.getBytes());
 	}
 
 	public static String fromASCII(String ascii) {
 		return new String(Base64.getDecoder().decode(ascii.getBytes()));
+	}
+
+	public static void runNextTick(Runnable run, IThreadListener itl) {
+		new Thread(() -> itl.addScheduledTask(run)).start();
 	}
 }

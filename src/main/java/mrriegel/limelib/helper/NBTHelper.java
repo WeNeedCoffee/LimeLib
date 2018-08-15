@@ -1,5 +1,10 @@
 package mrriegel.limelib.helper;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,7 +31,9 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import mrriegel.limelib.util.Utils;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
@@ -46,6 +53,10 @@ public class NBTHelper {
 
 	private static Set<INBTable<?>> iNBTs = new ReferenceOpenHashSet<>();
 
+	static {
+			//TODO init;
+	}
+	
 	public static boolean hasTag(NBTTagCompound nbt, String keyName) {
 		return nbt != null && nbt.hasKey(keyName);
 	}
@@ -55,6 +66,26 @@ public class NBTHelper {
 		if (nbt == null)
 			return;
 		nbt.removeTag(keyName);
+	}
+
+	public static String toASCIIString(NBTTagCompound nbt) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
+		try {
+			CompressedStreamTools.write(nbt, dos);
+		} catch (IOException e) {
+		}
+		return Utils.toASCII(baos.toString());
+	}
+
+	public static NBTTagCompound fromASCIIString(String s) {
+		ByteArrayInputStream bais = new ByteArrayInputStream(Utils.fromASCII(s).getBytes());
+		DataInputStream dis = new DataInputStream(bais);
+		try {
+			return CompressedStreamTools.read(dis);
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	public static int getSize(NBTTagCompound nbt) {
@@ -236,7 +267,7 @@ public class NBTHelper {
 		ITEMSTACK(ItemStack.EMPTY, (n, s) -> new ItemStack(n.getCompoundTag(s)), (n, p) -> n.setTag(p.getKey(), ((ItemStack) p.getValue()).writeToNBT(new NBTTagCompound())), ItemStack.class), //
 		BLOCKPOS(null, (n, s) -> BlockPos.fromLong(n.getLong(s)), (n, p) -> n.setLong(p.getKey(), ((BlockPos) p.getValue()).toLong()), BlockPos.class, MutableBlockPos.class), //
 		FLUIDSTACK(null, (n, s) -> FluidStack.loadFluidStackFromNBT(n.getCompoundTag(s)), (n, p) -> n.setTag(p.getKey(), ((FluidStack) p.getValue()).writeToNBT(new NBTTagCompound())), FluidStack.class);
-		//TODO UUID
+		//TODO blockstate,regsitryname,UUID
 		Object defaultValue;
 		Class<?>[] classes;
 		BiFunction<NBTTagCompound, String, Object> getter;

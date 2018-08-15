@@ -11,6 +11,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 
 public class LimeCapabilities {
 
+	//TODO remove both
 	@CapabilityInject(IDataKeeper.class)
 	public static Capability<IDataKeeper> datakeeperCapa = null;
 	@CapabilityInject(IHUDProvider.class)

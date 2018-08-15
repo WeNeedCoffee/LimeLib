@@ -4,7 +4,9 @@ import io.netty.buffer.ByteBuf;
 import mrriegel.limelib.LimeLib;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.IThreadListener;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -47,6 +49,10 @@ public abstract class AbstractMessage implements IMessage, IMessageHandler<Abstr
 		IThreadListener listener = (ctx.side.isClient() ? LimeLib.proxy.getClientListener() : ctx.getServerHandler().player.getServerWorld());
 		listener.addScheduledTask(run);
 		return null;
+	}
+
+	private EntityPlayer getPlayer(MessageContext ctx) {
+		return (ctx.netHandler instanceof NetHandlerPlayServer) ? ctx.getServerHandler().player : FMLClientHandler.instance().getClientPlayerEntity();
 	}
 
 }

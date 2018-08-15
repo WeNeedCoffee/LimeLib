@@ -16,7 +16,6 @@ import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.RegistryHelper;
-import mrriegel.limelib.helper.TeleportationHelper;
 import mrriegel.limelib.tile.IHUDProvider;
 import mrriegel.limelib.util.LimeCapabilities;
 import net.minecraft.block.Block;
@@ -34,8 +33,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -53,6 +52,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.feature.WorldGenLakes;
+import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -77,11 +77,10 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class Dev {
-	
+
 	public static Block colorFluid;
-	
+
 	public static void preInit() {
-		Connect.preInit();
 		Fluid fluid = new Fluid("das", new ResourceLocation(LimeLib.MODID, "fluid/liquid"), new ResourceLocation(LimeLib.MODID, "fluid/liquid_flow"));
 		FluidRegistry.registerFluid(fluid);
 		FluidRegistry.addBucketForFluid(fluid);
@@ -91,15 +90,19 @@ public class Dev {
 		RegistryHelper.register(colorFluid);
 		ModelLoader.setCustomStateMapper(colorFluid, new StateMap.Builder().ignore(BlockFluidBase.LEVEL).build());
 		GameRegistry.registerWorldGenerator((Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) -> {
-			if(random.nextDouble()>.1)
+			if (random.nextDouble() > .1||true)
 				return;
-			BlockPos p = new BlockPos(chunkX * 16, random.nextInt(20) + 54, chunkZ * 16);
+			if(true) {
+				new WorldGenLakes2(Blocks.COAL_BLOCK, random.nextInt(7)+1).generate(world, random, new BlockPos(chunkX * 16, random.nextInt(20) + 64, chunkZ * 16));
+				return;
+			}
+			BlockPos p = new BlockPos(chunkX * 16+random.nextInt(16), random.nextInt(20) + 64, chunkZ * 16+random.nextInt(16));
 			boolean gend = new WorldGenLakes(colorFluid).generate(world, random, p);
 			if (gend != false)
 				System.out.println(p);
 		}, 30);
 	}
-	
+
 	@SubscribeEvent
 	public static void attachTile(AttachCapabilitiesEvent<TileEntity> event) {
 		if (event.getObject() instanceof TileEntityFurnace)
@@ -178,7 +181,6 @@ public class Dev {
 
 			});
 	}
-	
 
 	@SubscribeEvent
 	public static void test(RenderWorldLastEvent event) {
@@ -318,7 +320,7 @@ public class Dev {
 	public static void overlay(RenderGameOverlayEvent event) throws Exception {
 		if (event instanceof RenderGameOverlayEvent.Post && event.getType() == ElementType.TEXT) {
 			int color = 0xff7fff00;
-			Minecraft mc=Minecraft.getMinecraft();
+			Minecraft mc = Minecraft.getMinecraft();
 			RayTraceResult rtr = mc.objectMouseOver;
 			if (rtr == null || rtr.typeOfHit != Type.ENTITY || rtr.entityHit == null)
 				return;
@@ -349,7 +351,6 @@ public class Dev {
 			GuiUtils.drawGradientRect(0, 0, 0, 50, 50, color, color);
 		}
 	}
-	
 
 	@SubscribeEvent
 	public static void test(LivingJumpEvent event) {
@@ -365,7 +366,7 @@ public class Dev {
 			System.out.println("sds");
 			BlockPos pb = new BlockPos(player);
 			TileEntity t = player.world.getTileEntity(pb.down());
-			
+
 			new Thread(() -> {
 				try {
 					Thread.sleep(3000);
@@ -382,26 +383,6 @@ public class Dev {
 					Block.spawnAsEntity(player.world, pb, e);
 				});
 			}).start();
-			//			Stopwatch sw = Stopwatch.createStarted();
-			//			System.out.println(sw.stop().elapsed(TimeUnit.MICROSECONDS) + " micros");
-			List<EntitySheep> sheeps = player.world.getEntitiesWithinAABB(EntitySheep.class, new AxisAlignedBB(new BlockPos(player).add(-6, -6, -6), new BlockPos(player).add(6, 6, 6)));
-			if (".".isEmpty())
-				if (!sheeps.isEmpty() && false) {
-					for (EntitySheep sheep : sheeps) {
-						if (player.dimension == 0) {
-							TeleportationHelper.teleport(sheep, new BlockPos(110, 30, -20), 1);
-						} else {
-							TeleportationHelper.teleport(sheep, new BlockPos(12, 5, -6), 0);
-						}
-					}
-				} else {
-					if (player.dimension == 0) {
-						//					TeleportationHelper.teleport(player, new BlockPos(110, 30, -20), 1);
-						TeleportationHelper.teleport(player, new BlockPos(110, 130, -20), 12);
-					} else {
-						TeleportationHelper.teleport(player, new BlockPos(12, 5, -6), 0);
-					}
-				}
 		} else {
 		}
 	}
@@ -411,6 +392,39 @@ public class Dev {
 		if (event.phase == Phase.END) {
 		} else {
 		}
+	}
+
+	private static class WorldGenLakes2 extends WorldGenerator {
+
+		final private IBlockState state;
+		final private int radius;
+
+		public WorldGenLakes2(Block block, int radius) {
+			this(block.getDefaultState(), radius);
+		}
+
+		public WorldGenLakes2(IBlockState state, int radius) {
+			super();
+			this.state = state;
+			this.radius = radius;
+		}
+
+		@Override
+		public boolean generate(World worldIn, Random rand, BlockPos position) {
+			if (radius < 8) {
+				int x = position.getX() & 15, z = position.getZ() & 15;
+				int diffX = radius - x, diffZ = radius - z;
+				position = position.add(diffX, 0, diffZ);
+			}
+			for(BlockPos p:BlockPos.getAllInBox(position.add(-radius, 0, -radius), position.add(radius, 0, radius)))
+				worldIn.setBlockState(p, state, 2);
+			for(int i=0;i<radius;i++) {
+				position=position.up();
+				worldIn.setBlockState(position, Blocks.REDSTONE_BLOCK.getDefaultState(), 2);
+			}
+			return false;
+		}
+
 	}
 
 }

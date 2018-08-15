@@ -165,7 +165,6 @@ public class ClientEventHandler {
 						} else
 							tmp = tile.getData(sneak, face.getOpposite());
 						if (tmp != null && !tmp.isEmpty()) {
-							tmp.removeIf(Objects::isNull);
 							double x = t.getPos().getX() - TileEntityRendererDispatcher.staticPlayerX;
 							double y = t.getPos().getY() - TileEntityRendererDispatcher.staticPlayerY;
 							double z = t.getPos().getZ() - TileEntityRendererDispatcher.staticPlayerZ;
@@ -188,7 +187,7 @@ public class ClientEventHandler {
 							boolean cutLongLines = tile.lineBreak(sneak, face.getOpposite());
 							final double factor = MathHelper.clamp(tile.scale(sneak, face.getOpposite()), .1, 2.);
 							List<String> text = true ? new ArrayList<>()
-									: tmp.stream().filter(s -> s != null)//
+									: tmp.stream().filter(Objects::nonNull)//
 											.flatMap(s -> (!cutLongLines ? Collections.singletonList(s) : fontrenderer.listFormattedStringToWidth(s, (int) (maxWordLength / factor))).stream()).collect(Collectors.toList());
 							text.clear();
 							for (String s : tmp) {
@@ -236,13 +235,6 @@ public class ClientEventHandler {
 				}
 			}
 		} catch (ConcurrentModificationException e) {
-		}
-		RayTraceResult rtr = getMC().objectMouseOver;
-		if (rtr != null && rtr.typeOfHit == Type.BLOCK /*&& getMC().inGameHasFocus*/) {
-			TileEntity t = getMC().world.getTileEntity(rtr.getBlockPos());
-			IHUDProvider tile = IHUDProvider.isHUDProvider(t) ? IHUDProvider.getHUDProvider(t) : null;
-			if (tile != null) {
-			}
 		}
 		//datapart
 		DataPartRegistry reg = DataPartRegistry.get(getMC().world);
