@@ -29,10 +29,11 @@ public class Article {
 	public Article(String name, Impl<?>... impls) {
 		this(name);
 		for (Impl<?> impl : impls) {
-			if (impl instanceof Item && this.stacks.size() < maxItems)
-				this.stacks.add(new ItemStack((Item) impl));
-			else if (impl instanceof Block && this.stacks.size() < maxItems)
-				this.stacks.add(new ItemStack((Block) impl));
+			if (this.stacks.size() < maxItems)
+				if (impl instanceof Item)
+					this.stacks.add(new ItemStack((Item) impl));
+				else if (impl instanceof Block)
+					this.stacks.add(new ItemStack((Block) impl));
 		}
 	}
 

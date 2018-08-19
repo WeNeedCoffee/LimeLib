@@ -69,7 +69,7 @@ public class Utils {
 		for (int i = 0; i < splits; i++)
 			ints.add(ii / splits);
 		for (int i = 0; i < ii % splits; i++)
-			ints.set(i, ints.get(i) + 1);
+			ints.set(i, ints.getInt(i) + 1);
 		return ints;
 	}
 

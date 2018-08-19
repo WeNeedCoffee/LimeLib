@@ -21,18 +21,18 @@ public class Chapter {
 		this.name = name;
 	}
 
+	public Chapter(String name, List<Article> articles) {
+		this.name = name;
+		for (Article c : articles)
+			addArticle(c);
+	}
+
 	public void addArticle(Article c) {
 		c.index = articles.size();
 		articles.add(c);
 		for (ItemStack s : c.stacks)
 			if (!s.isEmpty())
 				implMap.put(Block.getBlockFromItem(s.getItem()) != null ? Block.getBlockFromItem(s.getItem()) : s.getItem(), c);
-	}
-
-	public Chapter(String name, List<Article> articles) {
-		this.name = name;
-		for (Article c : articles)
-			addArticle(c);
 	}
 
 	@Override

@@ -4,8 +4,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.Validate;
 
@@ -13,7 +14,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTHelper;
@@ -22,13 +22,12 @@ import mrriegel.limelib.network.PacketHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 
@@ -45,7 +44,7 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		if (reg != null) {
 			if (reg.world == null)
 				reg.world = world;
-			for (DataPart part : reg.getParts())
+			for (DataPart part : reg.partMap.values())
 				if (part.world == null)
 					part.world = world;
 		}
@@ -53,25 +52,30 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public static void register(String name, Class<? extends DataPart> clazz) {
+		Validate.isTrue(!DataPartRegistry.PARTS.containsKey(name) && !DataPartRegistry.PARTS.containsValue(clazz), "already registered");
+		Validate.isTrue(Stream.of(clazz.getConstructors()).anyMatch(c -> c.getParameterCount() == 0), "empty constructor required");
 		DataPartRegistry.PARTS.put(name, clazz);
 	}
 
 	public DataPart getDataPart(BlockPos pos) {
+		world.getChunkFromBlockCoords(pos);
 		return partMap.get(pos);
 	}
 
 	public BlockPos nextPos(BlockPos pos) {
-		Set<BlockPos> set = Sets.newHashSet();
-		int count = 0;
-		while (getDataPart(pos) != null) {
-			count++;
-			if (count > 1000)
-				return null;
-			set.add(pos);
-			while (set.contains(pos))
-				pos = pos.offset(EnumFacing.VALUES[world.rand.nextInt(6)]);
+		Chunk chunk = world.getChunkFromBlockCoords(pos);
+		List<BlockPos> posses = StreamSupport.stream(BlockPos.getAllInBox(pos.add(7, 7, 7), pos.add(-7, -7, -7)).spliterator(), false).//
+				filter(p -> world.getChunkFromBlockCoords(p) == chunk).sorted((p1, p2) -> {
+					int res = Double.compare(p1.distanceSq(pos), p2.distanceSq(pos));
+					if (res != 0)
+						return res;
+					return Integer.compare(p2.getY(), p1.getY());
+				}).collect(Collectors.toList());
+		for (BlockPos p : posses) {
+			if (getDataPart(p) == null)
+				return p;
 		}
-		return pos;
+		return null;
 	}
 
 	public boolean addDataPart(BlockPos pos, DataPart part, boolean force) {
@@ -82,22 +86,16 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		}
 		if (world.isRemote && !part.clientValid())
 			return false;
+		pos = pos.toImmutable();
 		part.pos = pos;
 		part.world = world;
-		if (partMap.get(pos) != null) {
-			if (force) {
-				partMap.put(pos, part);
-				part.onAdded();
-				sync(pos, true);
-				return true;
-			}
-			return false;
-		} else {
+		if (partMap.get(pos) == null || force) {
 			partMap.put(pos, part);
 			part.onAdded();
 			sync(pos, true);
 			return true;
 		}
+		return false;
 	}
 
 	public void removeDataPart(BlockPos pos) {
@@ -117,8 +115,9 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public void sync(BlockPos pos, boolean toAllPlayers) {
-		if (world != null && !world.isRemote && (getDataPart(pos) == null || getDataPart(pos).clientValid())) {
-			IMessage message = new DataPartSyncMessage(getDataPart(pos), pos, partMap.values().stream().map(DataPart::getPos).collect(Collectors.toList()));
+		DataPart dp = getDataPart(pos);
+		if (world != null && !world.isRemote && (dp == null || dp.clientValid())) {
+			DataPartSyncMessage message = new DataPartSyncMessage(dp, pos, partMap.values().stream().map(DataPart::getPos).collect(Collectors.toList()));
 			if (toAllPlayers)
 				for (EntityPlayer player : world.playerEntities)
 					PacketHandler.sendTo(message, (EntityPlayerMP) player);

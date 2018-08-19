@@ -10,6 +10,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.EnumFacing;
@@ -21,11 +22,15 @@ public class BakedQuadBuilder {
 	private Vertex[] vertices = new Vertex[4];
 	private int tint = -1;
 	private EnumFacing face;
-	private boolean diffuse;
+	private boolean diffuse = true;
 
 	public BakedQuadBuilder(VertexFormat format, TextureAtlasSprite sprite) {
 		this.format = Objects.requireNonNull(format);
 		this.sprite = Objects.requireNonNull(sprite);
+	}
+
+	public BakedQuadBuilder(TextureAtlasSprite sprite) {
+		this(DefaultVertexFormats.ITEM, sprite);
 	}
 
 	public BakedQuad build() {
@@ -82,7 +87,7 @@ public class BakedQuadBuilder {
 		IntBuffer ib = bb.asIntBuffer();
 		int[] ints = new int[ib.remaining()];
 		ib.get(ints);
-		return new BakedQuad(ints, tint, face, Objects.requireNonNull(sprite, "texture required"), diffuse, format);
+		return new BakedQuad(ints, tint, face, sprite, diffuse, format);
 	}
 
 	private static void nope() {
@@ -148,7 +153,7 @@ public class BakedQuadBuilder {
 			}
 
 			public Vertex build() {
-				
+
 				Vertex v = new Vertex();
 				v.color = vertex.color;
 				v.pos = Objects.requireNonNull(vertex.pos, "pos required");

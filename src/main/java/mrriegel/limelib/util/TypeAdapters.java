@@ -1,5 +1,6 @@
 package mrriegel.limelib.util;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 
 import com.google.gson.JsonDeserializationContext;
@@ -9,6 +10,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.item.Item;
@@ -43,6 +47,35 @@ public class TypeAdapters {
 		public abstract NBTTagCompound serialize(T t, JsonSerializationContext context);
 
 		public abstract T deserialize(NBTTagCompound nbt, JsonDeserializationContext context);
+
+	}
+
+	private abstract static class JSONAdapter<T> extends TypeAdapter<T> {
+
+		@Override
+		public final void write(JsonWriter out, T value) throws IOException {
+			out.beginObject();
+			out.name("ÑBT").value(serialize(value).toString());
+			out.endObject();
+		}
+
+		@Override
+		public final T read(JsonReader in) throws IOException {
+			T value = null;
+			in.beginObject();
+			if (in.hasNext() && in.nextName().equals("ÑBT"))
+				try {
+					value = deserialize(JsonToNBT.getTagFromJson(in.nextString()));
+				} catch (NBTException e) {
+					e.printStackTrace();
+				}
+			in.endObject();
+			return value;
+		}
+
+		protected abstract NBTTagCompound serialize(T value);
+
+		protected abstract T deserialize(NBTTagCompound nbt);
 
 	}
 

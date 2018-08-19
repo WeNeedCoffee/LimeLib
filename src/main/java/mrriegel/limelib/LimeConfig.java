@@ -18,6 +18,7 @@ public class LimeConfig {
 		//TODO remove
 		showEnergy = config.getBoolean("showEnergy", Configuration.CATEGORY_CLIENT, false, "");
 		energyConfigHint = config.getBoolean("energyConfigHint", Configuration.CATEGORY_CLIENT, true, "");
+		//TODO categroy general 
 		commandBlockCreativeTab = config.getBoolean("commandBlockCreativeTab", Configuration.CATEGORY_CLIENT, true, "Command blocks are available in redstone creative tab.");
 
 		if (config.hasChanged())

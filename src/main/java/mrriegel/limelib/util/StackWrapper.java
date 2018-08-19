@@ -3,6 +3,8 @@ package mrriegel.limelib.util;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.Validate;
+
 import com.google.common.collect.Lists;
 
 import net.minecraft.item.ItemStack;
@@ -16,8 +18,7 @@ public final class StackWrapper {
 
 	public StackWrapper(ItemStack stack, int size) {
 		super();
-		if (stack.isEmpty())
-			throw new IllegalArgumentException();
+		Validate.isTrue(!stack.isEmpty());
 		this.stack = stack.copy();
 		this.size = size;
 	}
@@ -61,8 +62,7 @@ public final class StackWrapper {
 	}
 
 	public void setStack(ItemStack stack) {
-		if (stack.isEmpty())
-			throw new NullPointerException();
+		Validate.isTrue(!stack.isEmpty());
 		this.stack = stack.copy();
 	}
 
@@ -75,7 +75,7 @@ public final class StackWrapper {
 	}
 
 	public StackWrapper copy() {
-		return new StackWrapper(stack.copy(), size);
+		return new StackWrapper(stack, size);
 	}
 
 	public boolean canInsert(ItemStack stack) {
@@ -105,28 +105,22 @@ public final class StackWrapper {
 		return !wrap.getStack().isEmpty() ? wrap : null;
 	}
 
-	/**
-	 * WRONG!!!
-	 */
-	@Deprecated
-	//TODO wrong
 	public static NonNullList<ItemStack> toStackList(List<StackWrapper> list) {
 		NonNullList<ItemStack> lis = NonNullList.create();
 		for (StackWrapper s : list) {
 			if (s == null || s.getStack().isEmpty())
 				continue;
-			final int maxstacksize = s.getStack().getMaxStackSize();
-			int stacks = s.size / maxstacksize + (s.size % maxstacksize != 0 ? 1 : 0);
-			for (int i = 0; i < stacks; i++) {
-				ItemStack toAdd = s.getStack().copy();
-				toAdd.setCount(s.size == maxstacksize ? maxstacksize : (i < stacks - 1 ? maxstacksize : s.size % maxstacksize));
-				lis.add(toAdd);
+			int value = s.size;
+			int max = s.stack.getMaxStackSize();
+			while (value > 0) {
+				int f = Math.min(max, value);
+				lis.add(ItemHandlerHelper.copyStackWithSize(s.stack, f));
+				value -= f;
 			}
 		}
 		return lis;
 	}
 
-	@Deprecated
 	public static NonNullList<ItemStack> toStackList(StackWrapper wrap) {
 		return toStackList(Collections.singletonList(wrap));
 	}

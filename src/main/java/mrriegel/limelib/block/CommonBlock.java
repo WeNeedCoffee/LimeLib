@@ -3,6 +3,7 @@ package mrriegel.limelib.block;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.RegistryHelper;
 import mrriegel.limelib.item.CommonItemBlock;
+import mrriegel.limelib.tile.CommonTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -15,12 +16,16 @@ import net.minecraft.world.World;
 public class CommonBlock extends Block {
 
 	protected ItemBlock itemblock;
+	protected final boolean hasTile;
+	protected final Class<? extends CommonTile> tileClass;
 
 	public CommonBlock(Material materialIn, String name) {
 		super(materialIn);
 		setRegistryName(name);
 		setUnlocalizedName(getRegistryName().toString());
 		itemblock = new CommonItemBlock(this);
+		hasTile = false;
+		tileClass = null;
 	}
 
 	public void registerBlock() {

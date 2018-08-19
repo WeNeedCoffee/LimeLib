@@ -54,8 +54,11 @@ public abstract class AbstractSlot<T> extends GuiElement implements ITooltip {
 				ScaledResolution sr = new ScaledResolution(mc);
 				NBTTagCompound n = stack.hasTagCompound() ? stack.getTagCompound().copy() : null;
 				List<String> tips = getTooltip(GuiScreen.isShiftKeyDown());
-				if (tips != null)
+				if (tips != null) {
+					GuiUtils.preItemToolTip(stack);
 					GuiUtils.drawHoveringText(tips, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
+					GuiUtils.postItemToolTip();
+				}
 				stack.setTagCompound(n);
 				GlStateManager.popMatrix();
 				GlStateManager.enableLighting();

@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.storage.ThreadedFileIOBase;
 import net.minecraftforge.common.DimensionManager;
 
 public abstract class ServerData {
@@ -23,27 +22,21 @@ public abstract class ServerData {
 	}
 
 	public static void start(MinecraftServer server) {
-//		ThreadedFileIOBase.getThreadedIOInstance().queueIO(() -> {
-			ServerData.server = server;
-			File dir = DimensionManager.getCurrentSaveRootDirectory();
-			if (dir == null)
-				dir = server.getActiveAnvilConverter().getSaveLoader(server.getFolderName(), false).getWorldDirectory();
-			dir.mkdirs();
-			mainDir = dir;
-			for (ServerData data : datas) {
-				data.read();
-			}
-//			return false;
-//		});
+		ServerData.server = server;
+		File dir = DimensionManager.getCurrentSaveRootDirectory();
+		if (dir == null)
+			dir = server.getActiveAnvilConverter().getSaveLoader(server.getFolderName(), false).getWorldDirectory();
+		dir.mkdirs();
+		mainDir = dir;
+		for (ServerData data : datas) {
+			data.read();
+		}
 	}
 
 	public static void stop() {
-//		ThreadedFileIOBase.getThreadedIOInstance().queueIO(() -> {
-			for (ServerData data : datas) {
-				data.write();
-			}
-//			return false;
-//		});
+		for (ServerData data : datas) {
+			data.write();
+		}
 	}
 
 	protected abstract void read();

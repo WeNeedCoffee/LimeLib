@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 public class CommonTile extends TileEntity {
 
 	private boolean syncDirty;
+	//TODO protected final boolean keepData
 	//TODO rename
 	public Set<EntityPlayer> activePlayers = Sets.newHashSet();
 
@@ -113,6 +114,13 @@ public class CommonTile extends TileEntity {
 	}
 
 	public void neighborChanged(IBlockState state, Block block, BlockPos fromPos) {
+	}
+
+	//TODO add to commonblockcontainer
+	public void writeDataToStack(ItemStack stack) {
+	}
+
+	public void readDataFromStack(ItemStack stack) {
 	}
 
 	public final int getX() {

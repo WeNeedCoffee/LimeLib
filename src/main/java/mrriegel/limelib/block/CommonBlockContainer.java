@@ -38,6 +38,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 /*TODO remove generic*/
+//TODO merge to CommonBlock
 public abstract class CommonBlockContainer<T extends CommonTile> extends CommonBlock {
 
 	protected boolean clearRecipe = true;

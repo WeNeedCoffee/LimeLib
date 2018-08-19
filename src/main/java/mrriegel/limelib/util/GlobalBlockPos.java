@@ -8,9 +8,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class GlobalBlockPos {
-	private BlockPos pos;
-	private int dimension;
-	private World world;
+	private final BlockPos pos;
+	private final int dimension;
+	private transient World world;
 
 	public GlobalBlockPos(BlockPos pos, int dimension) {
 		this.pos = pos;
@@ -19,9 +19,6 @@ public class GlobalBlockPos {
 
 	public GlobalBlockPos(BlockPos pos, World world) {
 		this(pos, world.provider.getDimension());
-	}
-
-	private GlobalBlockPos() {
 	}
 
 	@Override
@@ -61,17 +58,8 @@ public class GlobalBlockPos {
 		return pos;
 	}
 
-	public void setPos(BlockPos pos) {
-		this.pos = pos;
-	}
-
 	public int getDimension() {
 		return dimension;
-	}
-
-	public void setDimension(int dimension) {
-		this.dimension = dimension;
-		this.world = null;
 	}
 
 	public World getWorld() {
@@ -90,14 +78,6 @@ public class GlobalBlockPos {
 		return getWorld().getBlockState(getPos());
 	}
 
-	public void readFromNBT(NBTTagCompound compound) {
-		if (compound.hasKey("Gpos"))
-			pos = BlockPos.fromLong(compound.getLong("Gpos"));
-		else
-			pos = null;
-		dimension = compound.getInteger("Gdim");
-	}
-
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		if (pos != null)
 			compound.setLong("Gpos", pos.toLong());
@@ -106,8 +86,9 @@ public class GlobalBlockPos {
 	}
 
 	public static GlobalBlockPos loadGlobalPosFromNBT(NBTTagCompound nbt) {
-		GlobalBlockPos pos = new GlobalBlockPos();
-		pos.readFromNBT(nbt);
+		if (!nbt.hasKey("Gpos") || !nbt.hasKey("Gdim"))
+			return null;
+		GlobalBlockPos pos = new GlobalBlockPos(BlockPos.fromLong(nbt.getLong("Gpos")), nbt.getInteger("Gdim"));
 		return pos.getPos() != null ? pos : null;
 	}
 
