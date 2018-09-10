@@ -9,14 +9,11 @@ import com.google.common.collect.Lists;
 import mrriegel.limelib.helper.BlockHelper;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
-import mrriegel.limelib.helper.NBTStackHelper;
 import mrriegel.limelib.tile.CommonTileInventory;
-import mrriegel.limelib.tile.IDataKeeper;
 import mrriegel.limelib.tile.IHUDProvider;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -27,7 +24,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 
-public class TestTile extends CommonTileInventory implements ITickable, IDataKeeper, IHUDProvider {
+public class TestTile extends CommonTileInventory implements ITickable, IHUDProvider {
 
 	public int k;
 
@@ -119,16 +116,6 @@ public class TestTile extends CommonTileInventory implements ITickable, IDataKee
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		NBTHelper.set(compound, "k", k);
 		return super.writeToNBT(compound);
-	}
-
-	@Override
-	public void writeToStack(ItemStack stack) {
-		NBTStackHelper.set(stack, "k", k);
-	}
-
-	@Override
-	public void readFromStack(ItemStack stack) {
-		k = NBTStackHelper.get(stack, "k", Integer.class);
 	}
 
 	@Override
