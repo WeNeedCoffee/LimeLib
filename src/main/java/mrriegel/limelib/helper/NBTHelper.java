@@ -6,8 +6,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -15,14 +15,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -34,11 +33,12 @@ import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
@@ -51,6 +51,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -59,7 +61,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class NBTHelper {
 
-	private static Set<INBTable<?>> iNBTs = new ReferenceOpenHashSet<>();
+	private static Map<INBTable<?>, Integer> iNBTs = new Reference2IntOpenHashMap<>();
 
 	static {
 		//TODO init;
@@ -121,8 +123,9 @@ public class NBTHelper {
 
 	@Deprecated
 	public static void register(INBTable<?> n) {
-		if (!iNBTs.contains(n))
-			iNBTs.add(n);
+		Validate.isTrue(!Loader.instance().hasReachedState(LoaderState.AVAILABLE), "register before");
+		if (!iNBTs.containsKey(n))
+			iNBTs.put(n, iNBTs.size());
 	}
 
 	public static interface INBTable<T> {
@@ -148,21 +151,13 @@ public class NBTHelper {
 			return new ObjectArrayList<>();
 		}
 
-		default Object getCollection(Collection<T> col) {
-			NBTTagList l = new NBTTagList();
-			for (T t : col)
-				l.appendTag(t == null ? new NBTNull() : asNBT(t));
-			return l;
-		}
-
-		//TODO getMap & getList classes
 	}
 
 	private static INBTable<?> getINBT(Class<?> clazz) {
-		for (INBTable<?> n : iNBTs)
+		for (INBTable<?> n : iNBTs.keySet())
 			if (n.classValid(clazz))
 				return n;
-		return null;
+		throw new IllegalArgumentException("Cannot add " + clazz.getName() + " object to NBT.");
 	}
 
 	static {
@@ -182,17 +177,6 @@ public class NBTHelper {
 			@Override
 			public NBTBase asNBT(Enum value) {
 				return new NBTTagInt(value.ordinal());
-			}
-
-			@Override
-			public Object getCollection(Collection<Enum> col) {
-				int[] ret = new int[col.size()];
-				int i = 0;
-				for (Enum e : col) {
-					ret[i] = e.ordinal();
-					i++;
-				}
-				return ret;
 			}
 
 		});
@@ -228,7 +212,8 @@ public class NBTHelper {
 
 		});
 		register(of(false, (n, s) -> n.getBoolean(s), v -> new NBTTagByte((byte) (v ? 1 : 0)), c -> c == Boolean.class || c == boolean.class));
-		register(of(null, (n, s) -> n.getCompoundTag(s), v -> v, NBTTagCompound.class));
+		//		register(of(null, (n, s) -> n.getCompoundTag(s), v -> v, NBTTagCompound.class));
+		register(of(null, (n, s) -> n.getTag(s), v -> v, NBTBase.class));
 		//		for (NBTType t : NBTType.values())
 		//			register(of(t.defaultValue, t.getter, t.setter, t.classes));
 	}
@@ -258,12 +243,6 @@ public class NBTHelper {
 			@Override
 			public NBTBase asNBT(T value) {
 				return setter.apply(value);
-			}
-
-			@Override
-			public Object getCollection(Collection<T> col) {
-				// TODO Auto-generated method stub
-				return null;
 			}
 
 		};
@@ -371,10 +350,15 @@ public class NBTHelper {
 		return nbt;
 	}
 
+	@Deprecated
+	private static <T> List<T> getList(NBTTagCompound nbt, String name, Class<T> clazz, Supplier<List<T>> supp) {
+		return getList(nbt, name, clazz);
+	}
+
 	public static <T> List<T> getList(NBTTagCompound nbt, String name, Class<T> clazz) {
 		if (false) {
 			if (nbt.hasKey(name + "_n0llNum", 3)) {
-				return Collections.nCopies(nbt.getInteger(name + "_n0llNum"), null);
+				return new ArrayList<>(Collections.nCopies(nbt.getInteger(name + "_n0llNum"), null));
 			}
 		}
 		if (!NBTType.validClass(clazz))
@@ -400,77 +384,56 @@ public class NBTHelper {
 		if (nbt == null || values.isEmpty())
 			return nbt;
 		if (false) {
-			List<Class<?>> classes = values.stream().filter(Objects::nonNull).map(Object::getClass).distinct().collect(Collectors.toList());
-			if (classes.isEmpty()) {
+			List<INBTable> nbts = values.stream().filter(Objects::nonNull).map(o -> getINBT(o.getClass())).distinct().collect(Collectors.toList());
+			if (nbts.isEmpty()) {
 				//only nulls
 				nbt.setInteger(name + "_n0llNum", values.size());
 				return nbt;
 			}
-			if (classes.size() != 1)
-				throw new IllegalArgumentException();
+			if (nbts.size() != 1)
+				throw new IllegalArgumentException("Cannot add list with multiple types " + values.stream().filter(Objects::nonNull).map(o -> o.getClass().getName()).distinct().collect(Collectors.toList()) + " to NBT.");
 			IntArrayList nulls = new IntArrayList();
 			for (int i = 0; i < values.size(); i++)
 				if (values.get(i) == null)
 					nulls.add(i);
+			if (false) {
+				nulls.clear();
+				int[] nullsAr = IntStream.range(0, values.size()).filter(i -> values.get(i) == null).toArray();
+			}
 			if (!nulls.isEmpty()) {
 				nbt.setIntArray(name + "_n0lls", nulls.toIntArray());
 				values = values.stream().filter(Objects::nonNull).collect(Collectors.toList());
 			}
-			Class<?> clazz = classes.get(0);
-			if (ClassUtils.isPrimitiveWrapper(clazz) && values.contains(null))
-				throw new IllegalArgumentException();
-			INBTable n = getINBT(clazz);
-			if (n == null)
-				throw new IllegalArgumentException();
-			List<?> nonNullValues = values.stream().filter(Objects::nonNull).collect(Collectors.toList());
+			INBTable n = nbts.get(0);
+			List<?> nonNullValues = values;
 			NBTBase base = n.asNBT(nonNullValues.get(0));
 			if (base instanceof NBTTagByte) {
 				byte[] arr = new byte[nonNullValues.size()];
 				for (int i = 0; i < nonNullValues.size(); i++)
 					arr[i] = ((NBTTagByte) n.asNBT(nonNullValues.get(i))).getByte();
-
+				nbt.setByteArray(name, arr);
 			} else if (base instanceof NBTTagShort || base instanceof NBTTagInt || base instanceof NBTTagFloat) {
-
-			} else if (base instanceof NBTTagLong || base instanceof NBTTagDouble) {
-
-			} else {
-
-			}
-			if (Arrays.asList(Boolean.class, Byte.class).contains(clazz))
-				/*byte array*/;
-			else if (Arrays.asList(Short.class, Integer.class, Float.class).contains(clazz) || clazz.isEnum())
-				/*int array*/;
-			else if (Arrays.asList(Long.class, Double.class).contains(clazz))
-				/*long array*/;
-			else {
-				/*taglist*/;
-				NBTTagList list = new NBTTagList();
-				for (Object v : values) {
-					if (v != null)
-						list.appendTag(n.asNBT(v));
+				int[] arr = new int[nonNullValues.size()];
+				for (int i = 0; i < nonNullValues.size(); i++)
+					if (base instanceof NBTTagShort || base instanceof NBTTagInt)
+						arr[i] = ((NBTPrimitive) n.asNBT(nonNullValues.get(i))).getInt();
 					else
-						list.appendTag(new NBTNull());
-				}
-				if (clazz == String.class) {
-					;
-				} else {
-					;
-				}
+						arr[i] = Float.floatToRawIntBits(((NBTTagFloat) n.asNBT(nonNullValues.get(i))).getFloat());
+				nbt.setIntArray(name, arr);
+			} else if (base instanceof NBTTagLong || base instanceof NBTTagDouble) {
+				long[] arr = new long[nonNullValues.size()];
+				for (int i = 0; i < nonNullValues.size(); i++)
+					if (base instanceof NBTTagLong)
+						arr[i] = ((NBTPrimitive) n.asNBT(nonNullValues.get(i))).getLong();
+					else
+						arr[i] = Double.doubleToRawLongBits(((NBTTagDouble) n.asNBT(nonNullValues.get(i))).getDouble());
+				nbt.setTag(name, new NBTTagLongArray(arr));
+			} else {
+				NBTTagList arr = new NBTTagList();
+				for (int i = 0; i < nonNullValues.size(); i++)
+					arr.appendTag(n.asNBT(nonNullValues.get(i)));
+				nbt.setTag(name, arr);
 			}
-			Object col = n.getCollection(values);
-			if (col instanceof NBTTagList) {
-				//...
-			} else if (col.getClass().isArray()) {
-				if (col instanceof byte[]) {
-
-				} else if (col instanceof int[]) {
-
-				} else if (col instanceof long[]) {
-
-				} else
-					throw new RuntimeException("help");
-			} else
-				throw new RuntimeException("WTF?");
 		}
 		//TODO use nbttaglist/bytearray/intarray/longarray
 		for (Object o : values)
