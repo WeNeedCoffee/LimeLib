@@ -90,7 +90,7 @@ public class TestMod implements IGuiHandler {
 	public static Fluid customFluid;
 	public static Block customFluidBlock;
 	public static final String id = "lalal";
-	//	public TestBook book = new TestBook();
+//	public TestBook book = new TestBook();
 
 	public static final boolean ENABLE = !false;
 
@@ -331,12 +331,12 @@ public class TestMod implements IGuiHandler {
 			ItemStack held = player.getHeldItemMainhand();
 			if (held != null)
 				held.canEditBlocks();
-			//			book.init();
-			//			if (!player.world.isRemote && !player.isSneaking()) {
-			//				if (!held.isEmpty()) {
-			//					book.openGuiAt(held.getItem(), true);
-			//				}
-			//			}
+			//						book.init();
+			//						if (!player.world.isRemote && !player.isSneaking()) {
+			//							if (!held.isEmpty()) {
+			//								book.openGuiAt(held.getItem(), true);
+			//							}
+			//						}
 			if (!player.world.isRemote) {
 				PlayerMainInvWrapper pmiw = new PlayerMainInvWrapper(player.inventory);
 				NonNullList<ItemStack> nnl = NonNullList.create();
