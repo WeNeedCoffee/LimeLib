@@ -1,4 +1,4 @@
-package mrriegel.limelib.datapart;
+package mrriegel.limelib.farm;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,30 +10,30 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
-public class CapabilityDataPart {
+public class CapaPE {
 
-	@CapabilityInject(DataPartRegistry.class)
-	public static Capability<DataPartRegistry> DATAPART = null;
+	@CapabilityInject(PseudoEntityRegistry.class)
+	public static Capability<PseudoEntityRegistry> PSEUDOENTITY = null;
 
 	public static void register() {
-		CapabilityManager.INSTANCE.register(DataPartRegistry.class, new IStorage<DataPartRegistry>() {
+		CapabilityManager.INSTANCE.register(PseudoEntityRegistry.class, new IStorage<PseudoEntityRegistry>() {
 			@Override
-			public NBTBase writeNBT(Capability<DataPartRegistry> capability, DataPartRegistry instance, EnumFacing side) {
+			public NBTBase writeNBT(Capability<PseudoEntityRegistry> capability, PseudoEntityRegistry instance, EnumFacing side) {
 				return instance.serializeNBT();
 			}
 
 			@Override
-			public void readNBT(Capability<DataPartRegistry> capability, DataPartRegistry instance, EnumFacing side, NBTBase nbt) {
+			public void readNBT(Capability<PseudoEntityRegistry> capability, PseudoEntityRegistry instance, EnumFacing side, NBTBase nbt) {
 				if (nbt instanceof NBTTagCompound) {
 					instance.deserializeNBT((NBTTagCompound) nbt);
 				}
 			}
-		}, () -> new DataPartRegistry());
+		}, PseudoEntityRegistry::new);
 	}
 
 	public static class CapaProvider implements ICapabilitySerializable<NBTTagCompound> {
 
-		DataPartRegistry instance = DATAPART.getDefaultInstance();
+		PseudoEntityRegistry instance = PSEUDOENTITY.getDefaultInstance();
 
 		public CapaProvider(World world) {
 			instance.world = world;
@@ -41,22 +41,23 @@ public class CapabilityDataPart {
 
 		@Override
 		public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-			return capability == DATAPART;
+			return capability == PSEUDOENTITY;
 		}
 
 		@Override
 		public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-			return hasCapability(capability, facing) ? DATAPART.cast(instance) : null;
+			return hasCapability(capability, facing) ? PSEUDOENTITY.cast(instance) : null;
 		}
 
 		@Override
 		public NBTTagCompound serializeNBT() {
-			return (NBTTagCompound) DATAPART.getStorage().writeNBT(DATAPART, instance, null);
+			return (NBTTagCompound) PSEUDOENTITY.getStorage().writeNBT(PSEUDOENTITY, instance, null);
 		}
 
 		@Override
 		public void deserializeNBT(NBTTagCompound nbt) {
-			DATAPART.getStorage().readNBT(DATAPART, instance, null, nbt);
+			PSEUDOENTITY.getStorage().readNBT(PSEUDOENTITY, instance, null, nbt);
 		}
 	}
+
 }

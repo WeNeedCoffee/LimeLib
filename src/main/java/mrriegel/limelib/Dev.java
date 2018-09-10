@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import mrriegel.limelib.helper.ColorHelper;
 import mrriegel.limelib.helper.RegistryHelper;
+import mrriegel.limelib.particle.CommonParticle;
 import mrriegel.limelib.tile.IHUDProvider;
 import mrriegel.limelib.util.LimeCapabilities;
 import net.minecraft.block.Block;
@@ -80,6 +81,11 @@ public class Dev {
 
 	public static Block colorFluid;
 
+	/**
+	 * ho
+	 * 
+	 * @see <a href="https://get.webgl.org/">webgl</a>
+	 */
 	public static void preInit() {
 		Fluid fluid = new Fluid("das", new ResourceLocation(LimeLib.MODID, "fluid/liquid"), new ResourceLocation(LimeLib.MODID, "fluid/liquid_flow"));
 		FluidRegistry.registerFluid(fluid);
@@ -90,13 +96,13 @@ public class Dev {
 		RegistryHelper.register(colorFluid);
 		ModelLoader.setCustomStateMapper(colorFluid, new StateMap.Builder().ignore(BlockFluidBase.LEVEL).build());
 		GameRegistry.registerWorldGenerator((Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) -> {
-			if (random.nextDouble() > .1||true)
+			if (random.nextDouble() > .1 || true)
 				return;
-			if(true) {
-				new WorldGenLakes2(Blocks.COAL_BLOCK, random.nextInt(7)+1).generate(world, random, new BlockPos(chunkX * 16, random.nextInt(20) + 64, chunkZ * 16));
+			if (true) {
+				new WorldGenLakes2(Blocks.COAL_BLOCK, random.nextInt(7) + 1).generate(world, random, new BlockPos(chunkX * 16, random.nextInt(20) + 64, chunkZ * 16));
 				return;
 			}
-			BlockPos p = new BlockPos(chunkX * 16+random.nextInt(16), random.nextInt(20) + 64, chunkZ * 16+random.nextInt(16));
+			BlockPos p = new BlockPos(chunkX * 16 + random.nextInt(16), random.nextInt(20) + 64, chunkZ * 16 + random.nextInt(16));
 			boolean gend = new WorldGenLakes(colorFluid).generate(world, random, p);
 			if (gend != false)
 				System.out.println(p);
@@ -185,7 +191,7 @@ public class Dev {
 	@SubscribeEvent
 	public static void test(RenderWorldLastEvent event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
-		Vec3d arr = new Vec3d(9 + .5, 6, 5 + .5);
+		Vec3d arr = new Vec3d(9 + .5, 5, 5 + .5);
 		//		arr = new Vec3d(d3, d4, d5).add(player.getLookVec().normalize().scale(2.));
 		//		arr = new Vec3d(arr.x, d4 + 1.5, arr.z);
 		if (arr.distanceTo(player.getPositionVector()) > 32)
@@ -380,10 +386,19 @@ public class Dev {
 					while (e.isEmpty()) {
 						e = new ItemStack(list.get(player.world.rand.nextInt(list.size())));
 					}
-					Block.spawnAsEntity(player.world, pb, e);
+					//					Block.spawnAsEntity(player.world, pb, e);
 				});
 			}).start();
 		} else {
+			//			Thread.dumpStack();
+			CommonParticle p = new CommonParticle(player.posX, player.posY + 1, player.posZ);
+			p.setMotions(pp -> {
+				int age = pp.getAge() % 360;
+				double r = 1;
+				return new Vec3d(Math.cos(age / 4), 0, Math.sin(age / 4));
+			});
+			p.setMaxAge2(360);
+			//			LimeLib.proxy.renderParticle(p);
 		}
 	}
 
@@ -416,10 +431,10 @@ public class Dev {
 				int diffX = radius - x, diffZ = radius - z;
 				position = position.add(diffX, 0, diffZ);
 			}
-			for(BlockPos p:BlockPos.getAllInBox(position.add(-radius, 0, -radius), position.add(radius, 0, radius)))
+			for (BlockPos p : BlockPos.getAllInBox(position.add(-radius, 0, -radius), position.add(radius, 0, radius)))
 				worldIn.setBlockState(p, state, 2);
-			for(int i=0;i<radius;i++) {
-				position=position.up();
+			for (int i = 0; i < radius; i++) {
+				position = position.up();
 				worldIn.setBlockState(position, Blocks.REDSTONE_BLOCK.getDefaultState(), 2);
 			}
 			return false;

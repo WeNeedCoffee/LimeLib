@@ -29,6 +29,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+//TODO rename
 public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 
 	public static final ResourceLocation LOCATION = new ResourceLocation(LimeLib.MODID + ":datapart");
@@ -52,9 +53,9 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public static void register(String name, Class<? extends DataPart> clazz) {
-		Validate.isTrue(!DataPartRegistry.PARTS.containsKey(name) && !DataPartRegistry.PARTS.containsValue(clazz), "already registered");
+		Validate.isTrue(!PARTS.containsKey(name) && !PARTS.containsValue(clazz), "already registered");
 		Validate.isTrue(Stream.of(clazz.getConstructors()).anyMatch(c -> c.getParameterCount() == 0), "empty constructor required");
-		DataPartRegistry.PARTS.put(name, clazz);
+		PARTS.put(name, clazz);
 	}
 
 	public DataPart getDataPart(BlockPos pos) {
@@ -149,7 +150,7 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 
 	public void createPart(NBTTagCompound n) {
 		try {
-			Class<?> clazz = DataPartRegistry.PARTS.get(n.getString("id"));
+			Class<?> clazz = PARTS.get(n.getString("id"));
 			if (clazz != null && DataPart.class.isAssignableFrom(clazz)) {
 				DataPart part = ((Class<? extends DataPart>) clazz).newInstance();
 				if (part != null) {

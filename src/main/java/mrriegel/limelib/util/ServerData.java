@@ -1,7 +1,8 @@
 package mrriegel.limelib.util;
 
 import java.io.File;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Set;
 
 import net.minecraft.server.MinecraftServer;
@@ -9,7 +10,7 @@ import net.minecraftforge.common.DimensionManager;
 
 public abstract class ServerData {
 
-	private static final Set<ServerData> datas = new HashSet<>();
+	private static final Set<ServerData> datas = Collections.newSetFromMap(new IdentityHashMap<>());
 	protected static MinecraftServer server;
 	protected static File mainDir;
 

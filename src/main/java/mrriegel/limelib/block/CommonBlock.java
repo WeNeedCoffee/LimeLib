@@ -10,6 +10,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -51,6 +52,13 @@ public class CommonBlock extends Block {
 				world.markBlockRangeForRenderUpdate(pos, pos);
 			}
 		}
+	}
+
+	@Override
+	public TileEntity createTileEntity(World world, IBlockState state) {
+		//		if (hasTileEntity(state))
+		//			throw new RuntimeException("override it");
+		return super.createTileEntity(world, state);
 	}
 
 }

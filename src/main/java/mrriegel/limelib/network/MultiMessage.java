@@ -13,19 +13,19 @@ public class MultiMessage extends AbstractMessage {
 
 	public static enum Act {
 		TEST((os, n) -> {
-			for(Object o:os)
-				NBTHelper.set(n,o.hashCode()+"",o);
+			for (Object o : os)
+				NBTHelper.set(n, o.hashCode() + "", o);
 		}, (p, n) -> {
 			System.out.println(n);
 		});
 
-	private Act(BiConsumer<Object[], NBTTagCompound> constructor, BiConsumer<EntityPlayer, NBTTagCompound> consumer) {
+		private Act(BiConsumer<Object[], NBTTagCompound> constructor, BiConsumer<EntityPlayer, NBTTagCompound> consumer) {
 			this.constructor = constructor;
 			this.consumer = consumer;
 		}
 
-	BiConsumer<Object[], NBTTagCompound> constructor;
-	BiConsumer<EntityPlayer, NBTTagCompound> consumer;
+		BiConsumer<Object[], NBTTagCompound> constructor;
+		BiConsumer<EntityPlayer, NBTTagCompound> consumer;
 	}
 
 	public MultiMessage() {

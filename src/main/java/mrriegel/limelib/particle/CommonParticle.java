@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class CommonParticle extends Particle {
 
@@ -25,6 +26,7 @@ public class CommonParticle extends Particle {
 	protected int visibleRange = 32, brightness = -1;
 	protected boolean depth = true, smoothEnd = true;
 	protected Function<CommonParticle, Vector4f> colors;
+	protected Function<CommonParticle, Vec3d> motions;
 
 	public CommonParticle(double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
 		super(LimeLib.proxy.getClientWorld(), xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed);
@@ -45,17 +47,25 @@ public class CommonParticle extends Particle {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 
-		this.motionY -= 0.04D * this.particleGravity;
-		this.move(this.motionX, this.motionY, this.motionZ);
-		//TODO reduce flounincf
-		this.motionX += (this.rand.nextDouble() - .5) * flouncing;
-		this.motionY += (this.rand.nextDouble() - .5) * flouncing;
-		this.motionZ += (this.rand.nextDouble() - .5) * flouncing;
+		if (motions != null) {
+			Vec3d v = motions.apply(this);
+			this.motionX = v.x;
+			this.motionY = v.y;
+			this.motionZ = v.z;
+		} else {
+			this.motionY -= 0.04D * this.particleGravity;
+			//TODO reduce flounincf
+			this.motionX += (this.rand.nextDouble() - .5) * flouncing;
+			this.motionY += (this.rand.nextDouble() - .5) * flouncing;
+			this.motionZ += (this.rand.nextDouble() - .5) * flouncing;
 
-		if (this.onGround) {
-			this.motionX *= 0.699999988079071D;
-			this.motionZ *= 0.699999988079071D;
+			if (this.onGround) {
+				this.motionX *= 0.699999988079071D;
+				this.motionZ *= 0.699999988079071D;
+			}
 		}
+		this.move(this.motionX, this.motionY, this.motionZ);
+
 		if (smoothEnd) {
 			float percent = (float) particleAge / (float) particleMaxAge;
 			if (percent > .7F) {
@@ -126,6 +136,10 @@ public class CommonParticle extends Particle {
 		return this;
 	}
 
+	public int getAge() {
+		return particleAge;
+	}
+
 	public CommonParticle setColor(int color, int alpha, int diff) {
 		return setColor(ColorHelper.getRGB(color, alpha), diff);
 	}
@@ -182,6 +196,11 @@ public class CommonParticle extends Particle {
 
 	public CommonParticle setColors(Function<CommonParticle, Vector4f> colors) {
 		this.colors = colors;
+		return this;
+	}
+
+	public CommonParticle setMotions(Function<CommonParticle, Vec3d> motions) {
+		this.motions = motions;
 		return this;
 	}
 
