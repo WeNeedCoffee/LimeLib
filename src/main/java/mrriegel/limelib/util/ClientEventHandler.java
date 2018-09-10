@@ -1,6 +1,5 @@
 package mrriegel.limelib.util;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
@@ -10,8 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.google.common.collect.Maps;
 
 import mrriegel.limelib.LimeConfig;
@@ -20,17 +17,12 @@ import mrriegel.limelib.datapart.DataPart;
 import mrriegel.limelib.datapart.DataPartRegistry;
 import mrriegel.limelib.datapart.RenderRegistry;
 import mrriegel.limelib.datapart.RenderRegistry.RenderDataPart;
-import mrriegel.limelib.gui.GuiDrawer;
-import mrriegel.limelib.helper.EnergyHelper;
-import mrriegel.limelib.helper.EnergyHelper.Energy;
 import mrriegel.limelib.helper.ParticleHelper;
 import mrriegel.limelib.tile.IHUDProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -46,8 +38,6 @@ import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.Post;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -75,45 +65,6 @@ public class ClientEventHandler {
 		if (mc == null)
 			mc = Minecraft.getMinecraft();
 		return mc;
-	}
-
-	//TODO remove this
-	public static Map<BlockPos, Pair<Long, Long>> energyTiles = Maps.newHashMap();
-
-	@SubscribeEvent
-	public static void renderEnergy(Post event) {
-		Minecraft mc = getMC();
-		if (!LimeConfig.showEnergy || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK || mc.objectMouseOver.getBlockPos() == null || mc.world.getTileEntity(mc.objectMouseOver.getBlockPos()) == null || energyTiles.isEmpty())
-			return;
-		BlockPos p = mc.objectMouseOver.getBlockPos();
-		if (event.getType() == ElementType.TEXT && energyTiles.containsKey(p)) {
-			Energy energyType = null;
-			if ((energyType = EnergyHelper.isEnergyContainer(mc.world.getTileEntity(p), null)) == null) {
-				energyTiles.remove(p);
-				return;
-			}
-			ScaledResolution sr = event.getResolution();
-			GlStateManager.pushMatrix();
-			GlStateManager.enableBlend();
-			GuiDrawer drawer = new GuiDrawer(0, 0, 0, 0, 0);
-			int color = 0;
-			drawer.drawColoredRectangle(0, 0, 44, 44, color);
-			long energy = energyTiles.get(p).getLeft(), max = energyTiles.get(p).getRight();
-			String text = (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(energy) : energy) + "/" + (!GuiScreen.isShiftKeyDown() ? Utils.formatNumber(max) : max) + " " + energyType.unit;
-			int lenght = 90/* mc.fontRenderer.getStringWidth(text) */;
-			mc.fontRenderer.drawString(text, (sr.getScaledWidth() - mc.fontRenderer.getStringWidth(text)) / 2f, (sr.getScaledHeight() - 15 - mc.fontRenderer.FONT_HEIGHT) / 2f, GuiScreen.isShiftKeyDown() ? 0xffff00 : 0x80ffff00, true);
-			if (LimeConfig.energyConfigHint) {
-				boolean before = mc.fontRenderer.getUnicodeFlag();
-				mc.fontRenderer.setUnicodeFlag(true);
-				String config = LimeConfig.CONFIGHINT;
-				mc.fontRenderer.drawString(config, (sr.getScaledWidth() - mc.fontRenderer.getStringWidth(config)) / 2f, (sr.getScaledHeight() + 40 - mc.fontRenderer.FONT_HEIGHT) / 2f, 0x40ffff00, true);
-				mc.fontRenderer.setUnicodeFlag(before);
-			}
-			drawer.drawEnergyBarH((sr.getScaledWidth() - lenght) / 2, (sr.getScaledHeight() + 20 - 8) / 2, lenght, (float) ((double) energy / (double) max));
-			drawer.drawFrame((sr.getScaledWidth() - lenght) / 2 - 1, (sr.getScaledHeight() + 20 - 8) / 2 - 1, lenght + 2, 9, 1, Color.BLACK.getRGB());
-			GlStateManager.disableBlend();
-			GlStateManager.popMatrix();
-		}
 	}
 
 	@SubscribeEvent

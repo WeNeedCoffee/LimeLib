@@ -38,7 +38,6 @@ public class PacketHandler {
 		registerMessage(TileMessage.class, Side.SERVER);
 		registerMessage(TileGuiMessage.class, Side.SERVER);
 		registerMessage(TileSyncMessage.class);
-		registerMessage(EnergySyncMessage.class, Side.CLIENT);
 		registerMessage(DataPartSyncMessage.class, Side.CLIENT);
 		registerMessage(OpenGuiMessage.class, Side.SERVER);
 		registerMessage(PlayerClickMessage.class, Side.SERVER);
