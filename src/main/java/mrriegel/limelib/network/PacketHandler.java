@@ -43,7 +43,6 @@ public class PacketHandler {
 		registerMessage(PlayerClickMessage.class, Side.SERVER);
 		registerMessage(HUDProviderMessage.class, Side.CLIENT);
 		registerMessage(RenderUpdateMessage.class, Side.CLIENT);
-		registerMessage(TeleportMessage.class, Side.CLIENT);
 		registerMessage(SplitMessage.class);
 	}
 

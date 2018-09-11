@@ -121,16 +121,6 @@ public class StackHelper {
 		return stacks;
 	}
 
-	public static ItemStack getStackFromBlock(World world, BlockPos pos, EntityPlayer player) {
-		if (!world.isRemote) {
-			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), new RayTraceResult(Vec3d.ZERO, EnumFacing.UP), world, pos, FakePlayerFactory.getMinecraft((WorldServer) world
-			// DimensionManager.getWorld(0)
-			));
-		} else {
-			return world.getBlockState(pos).getBlock().getPickBlock(world.getBlockState(pos), LimeLib.proxy.getClientRayTrace(), world, pos, player);
-		}
-	}
-
 	public static boolean isWrench(ItemStack stack) {
 		if (stack.isEmpty() || stack.getItem() instanceof ItemBlock)
 			return false;
