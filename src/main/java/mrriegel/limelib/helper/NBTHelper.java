@@ -15,12 +15,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,32 +28,35 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.util.GlobalBlockPos;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
+import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagFloat;
 import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
+import net.minecraft.nbt.NBTTagLongArray;
 import net.minecraft.nbt.NBTTagShort;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -61,7 +64,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class NBTHelper {
 
-	private static Map<INBTable<?>, Integer> iNBTs = new Reference2IntOpenHashMap<>();
+	private static Set<INBTable<?>> iNBTs = new ReferenceOpenHashSet<>();
 
 	static {
 		//TODO init;
@@ -99,9 +102,13 @@ public class NBTHelper {
 	}
 
 	public static int getSize(NBTTagCompound nbt) {
-		ByteBuf buf = Unpooled.buffer();
-		ByteBufUtils.writeTag(buf, nbt);
-		return buf.readableBytes();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
+		try {
+			CompressedStreamTools.write(nbt, dos);
+		} catch (IOException e) {
+		}
+		return baos.size();
 	}
 
 	public static Pair<NBTTagCompound, NBTTagCompound> split(NBTTagCompound nbt) {
@@ -124,8 +131,9 @@ public class NBTHelper {
 	@Deprecated
 	public static void register(INBTable<?> n) {
 		Validate.isTrue(!Loader.instance().hasReachedState(LoaderState.AVAILABLE), "register before");
-		if (!iNBTs.containsKey(n))
-			iNBTs.put(n, iNBTs.size());
+		if (!iNBTs.contains(n)) {
+			iNBTs.add(n);
+		}
 	}
 
 	public static interface INBTable<T> {
@@ -133,17 +141,20 @@ public class NBTHelper {
 		//TODO replaced by asNBT,pls remove
 		//		void set(NBTTagCompound nbt, String name, T value);
 
-		T get(NBTTagCompound nbt, String name, Class<T> clazz);
+		//		@Deprecated
+		//		T get(NBTTagCompound nbt, String name, Class<T> clazz);
 
 		boolean classValid(Class<?> clazz);
 
-		NBTBase asNBT(T value);
+		NBTBase toNBT(T value);
+
+		T toValue(NBTBase nbt, Class<T> clazz);
 
 		default T defaultValue() {
 			return null;
 		}
 
-		default Map<?, ?> getEmptyMap() {
+		default Map<T, ?> getEmptyMap() {
 			return new Object2ObjectOpenHashMap<>();
 		}
 
@@ -154,37 +165,70 @@ public class NBTHelper {
 	}
 
 	private static INBTable<?> getINBT(Class<?> clazz) {
-		for (INBTable<?> n : iNBTs.keySet())
+		for (INBTable<?> n : iNBTs)
 			if (n.classValid(clazz))
 				return n;
-		throw new IllegalArgumentException("Cannot add " + clazz.getName() + " object to NBT.");
+		throw null;
 	}
 
 	static {
 		//enum
 		register(new INBTable<Enum>() {
 
-			@Override
-			public Enum<?> get(NBTTagCompound nbt, String name, Class<Enum> clazz) {
-				return clazz.getEnumConstants()[nbt.getInteger(name)];
-			}
+			//			@Override
+			//			public Enum<?> get(NBTTagCompound nbt, String name, Class<Enum> clazz) {
+			//				return clazz.getEnumConstants()[nbt.getInteger(name)];
+			//			}
 
 			@Override
 			public boolean classValid(Class<?> clazz) {
-				return Enum.class.isAssignableFrom(clazz);
+				return clazz.isEnum();
 			}
 
 			@Override
-			public NBTBase asNBT(Enum value) {
+			public NBTBase toNBT(Enum value) {
 				return new NBTTagInt(value.ordinal());
+			}
+
+			@Override
+			public Enum toValue(NBTBase nbt, Class<Enum> clazz) {
+				return clazz.getEnumConstants()[((NBTPrimitive) nbt).getInt()];
 			}
 
 		});
 		register(new INBTable<IForgeRegistryEntry>() {
 
+			//			@Override
+			//			public IForgeRegistryEntry get(NBTTagCompound nbt, String name, Class<IForgeRegistryEntry> clazz) {
+			//				NBTTagCompound entry = nbt.getCompoundTag(name);
+			//				String id = entry.getString("id"), clas = entry.getString("class");
+			//				try {
+			//					IForgeRegistry reg = GameRegistry.findRegistry((Class<IForgeRegistryEntry>) Class.forName(clas));
+			//					if (reg != null) {
+			//						return reg.getValue(new ResourceLocation(id));
+			//					}
+			//				} catch (ClassNotFoundException e) {
+			//					return null;
+			//				}
+			//				return null;
+			//			}
+
 			@Override
-			public IForgeRegistryEntry get(NBTTagCompound nbt, String name, Class<IForgeRegistryEntry> clazz) {
-				NBTTagCompound entry = nbt.getCompoundTag(name);
+			public boolean classValid(Class<?> clazz) {
+				return IForgeRegistryEntry.class.isAssignableFrom(clazz);
+			}
+
+			@Override
+			public NBTBase toNBT(IForgeRegistryEntry value) {
+				NBTTagCompound entry = new NBTTagCompound();
+				entry.setString("id", value.getRegistryName().toString());
+				entry.setString("class", value.getRegistryType().getCanonicalName());
+				return entry;
+			}
+
+			@Override
+			public IForgeRegistryEntry toValue(NBTBase nbt, Class<IForgeRegistryEntry> clazz) {
+				NBTTagCompound entry = (NBTTagCompound) nbt;
 				String id = entry.getString("id"), clas = entry.getString("class");
 				try {
 					IForgeRegistry reg = GameRegistry.findRegistry((Class<IForgeRegistryEntry>) Class.forName(clas));
@@ -197,38 +241,31 @@ public class NBTHelper {
 				return null;
 			}
 
-			@Override
-			public boolean classValid(Class<?> clazz) {
-				return IForgeRegistryEntry.class.isAssignableFrom(clazz);
-			}
-
-			@Override
-			public NBTBase asNBT(IForgeRegistryEntry value) {
-				NBTTagCompound entry = new NBTTagCompound();
-				entry.setString("id", value.getRegistryName().toString());
-				entry.setString("class", value.getRegistryType().getCanonicalName());
-				return entry;
-			}
-
 		});
-		register(of(false, (n, s) -> n.getBoolean(s), v -> new NBTTagByte((byte) (v ? 1 : 0)), c -> c == Boolean.class || c == boolean.class));
+		register(of(false, n -> ((NBTTagByte) n).getByte() == 1, v -> new NBTTagByte((byte) (v ? 1 : 0)), c -> c == Boolean.class || c == boolean.class));
 		//		register(of(null, (n, s) -> n.getCompoundTag(s), v -> v, NBTTagCompound.class));
-		register(of(null, (n, s) -> n.getTag(s), v -> v, NBTBase.class));
+		register(of(null, n -> n, v -> v, NBTBase.class));
+		register(of(null, n -> {
+			long[] arr = getLongArray((NBTTagLongArray) n);
+			return new GlobalBlockPos(BlockPos.fromLong(arr[0]), (int) arr[1]);
+		}, v -> new NBTTagLongArray(new long[] { v.getPos().toLong(), v.getDimension() }), GlobalBlockPos.class));
+		register(of(ItemStack.EMPTY, n -> new ItemStack((NBTTagCompound) n), v -> v.writeToNBT(new NBTTagCompound()), ItemStack.class));
+		register(of("", n -> ((NBTTagString) n).getString(), v -> new NBTTagString(v), String.class));
 		//		for (NBTType t : NBTType.values())
 		//			register(of(t.defaultValue, t.getter, t.setter, t.classes));
 	}
 
-	public static <T> INBTable<T> of(T defaultValue, BiFunction<NBTTagCompound, String, T> getter, Function<T, NBTBase> setter, Class<?>... classes) {
+	public static <T> INBTable<T> of(T defaultValue, Function<NBTBase, T> getter, Function<T, NBTBase> setter, Class<?>... classes) {
 		return of(defaultValue, getter, setter, clazz -> Arrays.stream(classes).anyMatch(c -> clazz == c));
 	}
 
-	public static <T> INBTable<T> of(T defaultValue, BiFunction<NBTTagCompound, String, T> getter, Function<T, NBTBase> setter, Predicate<Class<?>> pred) {
+	public static <T> INBTable<T> of(T defaultValue, Function<NBTBase, T> getter, Function<T, NBTBase> setter, Predicate<Class<?>> pred) {
 		return new INBTable<T>() {
 
-			@Override
-			public T get(NBTTagCompound nbt, String name, Class<T> clazz) {
-				return getter.apply(nbt, name);
-			}
+			//			@Override
+			//			public T get(NBTTagCompound nbt, String name, Class<T> clazz) {
+			//				return getter.apply(nbt, name);
+			//			}
 
 			@Override
 			public boolean classValid(Class<?> clazz) {
@@ -241,8 +278,13 @@ public class NBTHelper {
 			}
 
 			@Override
-			public NBTBase asNBT(T value) {
+			public NBTBase toNBT(T value) {
 				return setter.apply(value);
+			}
+
+			@Override
+			public T toValue(NBTBase nbt, Class<T> clazz) {
+				return getter.apply(nbt);
 			}
 
 		};
@@ -360,6 +402,64 @@ public class NBTHelper {
 			if (nbt.hasKey(name + "_n0llNum", 3)) {
 				return new ArrayList<>(Collections.nCopies(nbt.getInteger(name + "_n0llNum"), null));
 			}
+			INBTable n = getINBT(clazz);
+			if (n == null) {
+				LimeLib.log.warn("no nbt way found.");
+				return Collections.emptyList();
+			}
+			List<T> values = n.getEmptyList();
+			NBTBase coll = nbt.getTag(name);
+			if (coll instanceof NBTTagByteArray) {
+				byte[] arr = ((NBTTagByteArray) coll).getByteArray();
+				for (byte b : arr)
+					values.add((T) n.toValue(new NBTTagByte(b), clazz));
+			} else if (coll instanceof NBTTagIntArray) {
+				int[] arr = ((NBTTagIntArray) coll).getIntArray();
+				byte type = nbt.getByte(name + "_type");
+				for (int i : arr) {
+					switch (type) {
+					case 2:
+						values.add((T) n.toValue(new NBTTagShort((short) i), clazz));
+						break;
+					case 3:
+						values.add((T) n.toValue(new NBTTagInt(i), clazz));
+						break;
+					case 5:
+						values.add((T) n.toValue(new NBTTagFloat(Float.intBitsToFloat(i)), clazz));
+						break;
+					default:
+						throw new RuntimeException("call da police");
+					}
+				}
+			} else if (coll instanceof NBTTagLongArray) {
+				long[] arr = getLongArray((NBTTagLongArray) coll);
+				byte type = nbt.getByte(name + "_type");
+				for (long l : arr) {
+					switch (type) {
+					case 4:
+						values.add((T) n.toValue(new NBTTagLong(l), clazz));
+						break;
+					case 6:
+						values.add((T) n.toValue(new NBTTagDouble(Double.longBitsToDouble(l)), clazz));
+						break;
+					default:
+						throw new RuntimeException("call da police");
+					}
+				}
+
+			} else if (coll instanceof NBTTagList) {
+				for (NBTBase nb : (NBTTagList) coll) {
+					values.add((T) n.toValue(nb, clazz));
+				}
+			} else
+				new RuntimeException("something went really wrong");
+
+			int[] nulls = nbt.hasKey(name + "_n0lls", 11) ? nbt.getIntArray(name + "_n0lls") : new int[0];
+			for (int i : nulls) {
+				values.add(i, null);
+			}
+			return values;
+
 		}
 		if (!NBTType.validClass(clazz))
 			throw new IllegalArgumentException();
@@ -384,7 +484,7 @@ public class NBTHelper {
 		if (nbt == null || values.isEmpty())
 			return nbt;
 		if (false) {
-			List<INBTable> nbts = values.stream().filter(Objects::nonNull).map(o -> getINBT(o.getClass())).distinct().collect(Collectors.toList());
+			List<INBTable> nbts = values.stream().filter(Objects::nonNull).map(o -> Objects.requireNonNull(getINBT(o.getClass()), "Cannot add " + o.getClass().getName() + " object to NBT.")).distinct().collect(Collectors.toList());
 			if (nbts.isEmpty()) {
 				//only nulls
 				nbt.setInteger(name + "_n0llNum", values.size());
@@ -393,45 +493,47 @@ public class NBTHelper {
 			if (nbts.size() != 1)
 				throw new IllegalArgumentException("Cannot add list with multiple types " + values.stream().filter(Objects::nonNull).map(o -> o.getClass().getName()).distinct().collect(Collectors.toList()) + " to NBT.");
 			IntArrayList nulls = new IntArrayList();
-			for (int i = 0; i < values.size(); i++)
-				if (values.get(i) == null)
-					nulls.add(i);
-			if (false) {
-				nulls.clear();
-				int[] nullsAr = IntStream.range(0, values.size()).filter(i -> values.get(i) == null).toArray();
+			int k = 0;
+			for (Object o : values) {
+				if (o == null)
+					nulls.add(k);
+				k++;
 			}
+			List<?> nonNullValues;
 			if (!nulls.isEmpty()) {
 				nbt.setIntArray(name + "_n0lls", nulls.toIntArray());
-				values = values.stream().filter(Objects::nonNull).collect(Collectors.toList());
-			}
+				nonNullValues = values.stream().filter(Objects::nonNull).collect(Collectors.toList());
+			} else
+				nonNullValues = new ArrayList<>(values);
 			INBTable n = nbts.get(0);
-			List<?> nonNullValues = values;
-			NBTBase base = n.asNBT(nonNullValues.get(0));
+			NBTBase base = n.toNBT(nonNullValues.get(0));
 			if (base instanceof NBTTagByte) {
 				byte[] arr = new byte[nonNullValues.size()];
 				for (int i = 0; i < nonNullValues.size(); i++)
-					arr[i] = ((NBTTagByte) n.asNBT(nonNullValues.get(i))).getByte();
+					arr[i] = ((NBTTagByte) n.toNBT(nonNullValues.get(i))).getByte();
 				nbt.setByteArray(name, arr);
 			} else if (base instanceof NBTTagShort || base instanceof NBTTagInt || base instanceof NBTTagFloat) {
 				int[] arr = new int[nonNullValues.size()];
 				for (int i = 0; i < nonNullValues.size(); i++)
 					if (base instanceof NBTTagShort || base instanceof NBTTagInt)
-						arr[i] = ((NBTPrimitive) n.asNBT(nonNullValues.get(i))).getInt();
+						arr[i] = ((NBTPrimitive) n.toNBT(nonNullValues.get(i))).getInt();
 					else
-						arr[i] = Float.floatToRawIntBits(((NBTTagFloat) n.asNBT(nonNullValues.get(i))).getFloat());
+						arr[i] = Float.floatToRawIntBits(((NBTTagFloat) n.toNBT(nonNullValues.get(i))).getFloat());
 				nbt.setIntArray(name, arr);
+				nbt.setByte(name + "_type", base.getId());
 			} else if (base instanceof NBTTagLong || base instanceof NBTTagDouble) {
 				long[] arr = new long[nonNullValues.size()];
 				for (int i = 0; i < nonNullValues.size(); i++)
 					if (base instanceof NBTTagLong)
-						arr[i] = ((NBTPrimitive) n.asNBT(nonNullValues.get(i))).getLong();
+						arr[i] = ((NBTPrimitive) n.toNBT(nonNullValues.get(i))).getLong();
 					else
-						arr[i] = Double.doubleToRawLongBits(((NBTTagDouble) n.asNBT(nonNullValues.get(i))).getDouble());
+						arr[i] = Double.doubleToRawLongBits(((NBTTagDouble) n.toNBT(nonNullValues.get(i))).getDouble());
 				nbt.setTag(name, new NBTTagLongArray(arr));
+				nbt.setByte(name + "_type", base.getId());
 			} else {
 				NBTTagList arr = new NBTTagList();
 				for (int i = 0; i < nonNullValues.size(); i++)
-					arr.appendTag(n.asNBT(nonNullValues.get(i)));
+					arr.appendTag(n.toNBT(nonNullValues.get(i)));
 				nbt.setTag(name, arr);
 			}
 		}
@@ -492,38 +594,16 @@ public class NBTHelper {
 		return nbt;
 	}
 
-	private static class NBTNull extends NBTTagByte {
+	private static Field dataField = ReflectionHelper.findField(NBTTagLongArray.class, "data", "field_193587_b");
 
-		private NBTNull() {
-			super((byte) 0);
-		}
-
-		@Override
-		public byte getId() {
-			return 10;
-		}
-
-	}
-
-	private static class NBTTagLongArray extends net.minecraft.nbt.NBTTagLongArray {
-
-		private static Field dataField = ReflectionHelper.findField(net.minecraft.nbt.NBTTagLongArray.class, "data", "field_193587_b");
-
-		public NBTTagLongArray(List<Long> list) {
-			super(list);
-		}
-
-		public NBTTagLongArray(long[] array) {
-			super(array);
-		}
-
-		public long[] getLongArray() {
-			try {
-				return (long[]) dataField.get(this);
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				return new long[0];
-			}
+	private static long[] getLongArray(NBTTagLongArray nbt) {
+		try {
+			return (long[]) dataField.get(nbt);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+			return new long[0];
 		}
 
 	}
+
 }
