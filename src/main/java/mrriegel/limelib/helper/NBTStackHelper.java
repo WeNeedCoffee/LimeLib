@@ -18,8 +18,9 @@ public class NBTStackHelper {
 		return NBTHelper.hasTag(stack.getTagCompound(), keyName);
 	}
 
-	public static void removeTag(ItemStack stack, String keyName) {
+	public static ItemStack removeTag(ItemStack stack, String keyName) {
 		NBTHelper.removeTag(stack.getTagCompound(), keyName);
+		return stack;
 	}
 
 	public static <T> T get(ItemStack stack, String name, Class<T> clazz) {

@@ -1,11 +1,5 @@
 package mrriegel.limelib;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,9 +12,6 @@ import mrriegel.limelib.util.ServerData;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagLongArray;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Loader;
@@ -33,7 +24,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 @Mod(modid = LimeLib.MODID, name = LimeLib.NAME, version = LimeLib.VERSION, acceptedMinecraftVersions = "[1.12,1.13)")
 public class LimeLib {
@@ -87,32 +77,6 @@ public class LimeLib {
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		if (RecipeHelper.dev) {
-			ByteArrayOutputStream baos=new ByteArrayOutputStream();
-			DataOutputStream dos=new DataOutputStream(baos);
-			Method m=ReflectionHelper.findMethod(NBTBase.class, "write", null, DataOutput.class);
-			NBTTagCompound nbt=new NBTTagCompound();
-			nbt.setLong("pos", 3L);
-			nbt.setInteger("dim", 4);
-			try {
-				m.invoke(nbt, dos);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println(nbt);
-			System.out.println("s1: "+baos.size());
-			baos=new ByteArrayOutputStream();
-			dos=new DataOutputStream(baos);
-			NBTTagLongArray n=new NBTTagLongArray(new long[] {3L,4L});
-			try {
-				m.invoke(n, dos);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println(n);
-			System.out.println("s2: "+baos.size());
-			
 		}
 	}
 
@@ -129,6 +93,7 @@ public class LimeLib {
 	static {
 		if (RecipeHelper.dev)
 			FluidRegistry.enableUniversalBucket();
+		
 	}
 
 }
