@@ -1,7 +1,9 @@
 package mrriegel.limelib.tile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import com.google.common.collect.Sets;
 
@@ -29,6 +31,7 @@ public class CommonTile extends TileEntity {
 	//TODO protected final boolean keepData
 	//TODO rename
 	public Set<EntityPlayer> activePlayers = Sets.newHashSet();
+	public static Set<CommonTile> syncs = Collections.newSetFromMap(new WeakHashMap<>());
 
 	@Override
 	public NBTTagCompound getUpdateTag() {

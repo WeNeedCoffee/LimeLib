@@ -1,9 +1,12 @@
 package mrriegel.limelib;
 
+import java.util.Arrays;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import mrriegel.limelib.datapart.CapabilityDataPart;
+import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.network.PacketHandler;
 import mrriegel.limelib.plugin.TOP;
@@ -12,6 +15,7 @@ import mrriegel.limelib.util.ServerData;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Loader;
@@ -52,10 +56,14 @@ public class LimeLib {
 		teslaLoaded = Loader.isModLoaded("tesla");
 		topLoaded = Loader.isModLoaded("theoneprobe");
 		fluxLoaded = Loader.isModLoaded("redstoneflux");
+		NBTHelper.hasTag(null, null); //init
 		if (RecipeHelper.dev) {
 			Dev.preInit();
 			MinecraftForge.EVENT_BUS.register(Dev.class);
 			System.out.println("zip");
+			RecipeHelper.addCraftingRecipe(Items.REDSTONE, null, false, "red", Items.APPLE, Arrays.asList(Items.CHORUS_FRUIT_POPPED, Blocks.BEDROCK));
+			RecipeHelper.addCraftingRecipe(Items.GOLD_INGOT, "equal", true, "X X", " o ", 'X', Arrays.asList("das", "ist", "lustig", Items.WOODEN_AXE, Blocks.CACTUS), 'o', Blocks.PUMPKIN);
+			RecipeHelper.addSmeltingRecipe(Items.ROTTEN_FLESH, Items.COAL, 10.2, 100);
 		}
 	}
 
@@ -65,6 +73,8 @@ public class LimeLib {
 	public void init(FMLInitializationEvent event) {
 		PacketHandler.init();
 		RecipeHelper.generateConstants();
+		if (RecipeHelper.dev)
+			RecipeHelper.init();
 		if (LimeConfig.commandBlockCreativeTab) {
 			Blocks.COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
 			Blocks.CHAIN_COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
@@ -93,7 +103,7 @@ public class LimeLib {
 	static {
 		if (RecipeHelper.dev)
 			FluidRegistry.enableUniversalBucket();
-		
+
 	}
 
 }

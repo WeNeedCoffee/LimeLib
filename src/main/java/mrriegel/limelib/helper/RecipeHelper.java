@@ -1,19 +1,26 @@
 package mrriegel.limelib.helper;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.Validate;
 
@@ -37,6 +44,7 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
@@ -190,7 +198,7 @@ public class RecipeHelper {
 		//		String suffix = stack.getItem().getHasSubtypes() ? "_" + stack.getItemDamage() : "";
 		//		File f = new File(DIR, stack.getItem().getRegistryName().getResourcePath() + suffix + ".json");
 		if (!stack.isEmpty()) {
-			File f = new File(DIR, rl.getResourcePath().replace('/', '|') + ".json");
+			File f = new File(DIR, rl.getResourcePath().replace('/', '_') + ".json");
 			writeToFile(f, json);
 		} else
 			LimeLib.log.warn("ItemStack is empty. Can't create a recipe. " + Arrays.toString(input));
@@ -211,7 +219,8 @@ public class RecipeHelper {
 				return Joiner.on(" ").join(Arrays.stream(((Ingredient) o).getMatchingStacks()).map(s -> s.getItem().getRegistryName().getResourcePath()).sorted().collect(Collectors.toList()));
 			return "";
 		}).collect(Collectors.toList());
-		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getResourcePath() + "/" + stack.getItemDamage() + "#" + stack.getCount() + "_" + (Math.abs(lis.hashCode()) % 9999));
+		//TODO fix the # and |
+		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getResourcePath() + "/" + stack.getItemDamage() + "_" + stack.getCount() + "_" + (Math.abs(lis.hashCode()) % 9999));
 	}
 
 	public static Ingredient getIngredient(Object obj) {
@@ -308,4 +317,137 @@ public class RecipeHelper {
 		}
 
 	}
+
+	//1.13
+
+	private final static Map<String, List<String>> recipes = new HashMap<>();
+
+	public static void init() {
+		if (!dev)
+			return;
+		try {
+			File f = new File("tmp.html");
+			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+			final char ente = '"';
+			for (Entry<String, List<String>> e : recipes.entrySet()) {
+				bw.write("<h2>" + e.getKey() + "</h2>");
+				File jar = Loader.instance().getIndexedModList().get(e.getKey()).getSource();
+				if (!jar.getPath().endsWith(".jar"))
+					for (String s : e.getValue()) {
+						int index = s.indexOf('{');
+						String name = s.substring(0, index);
+						s = s.substring(index);
+						bw.write("<p>" + name + ".json</p>");
+						List<String> lis = Arrays.asList(s.split("[\\r\\n]+"));
+						int maxLength = lis.stream().mapToInt(String::length).max().getAsInt();
+						bw.write("<textarea rows=" + ente + (lis.size() + 1) + ente + " cols=" + ente + (maxLength + 2) + ente + " style=" + ente + "resize:none" + ente + ">");
+						for (String ss : lis) {
+							bw.write(ss);
+							bw.newLine();
+						}
+						bw.write("</textarea>");
+					}
+			}
+			Runtime.getRuntime().exec("xdg-open " + f.getAbsolutePath());
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static Object serializeItem2(Object o, boolean count) {
+		Objects.requireNonNull(o);
+		if (o instanceof String) {
+			Map<String, Object> ret = new LinkedHashMap<>();
+			ret.put("tag", o);
+			return ret;
+		}
+		if (o instanceof ResourceLocation) {
+			Map<String, Object> ret = new LinkedHashMap<>();
+			ret.put("tag", o.toString());
+			return ret;
+		}
+		if (o instanceof Item) {
+			Map<String, Object> ret = new LinkedHashMap<>();
+			ret.put("item", ((Item) o).getRegistryName().toString());
+			return ret;
+		}
+		if (o instanceof Block) {
+			Map<String, Object> ret = new LinkedHashMap<>();
+			ret.put("item", ((Block) o).getRegistryName().toString());
+			return ret;
+		}
+		if (o instanceof ItemStack) {
+			Validate.isTrue(!((ItemStack) o).isEmpty(), "ItemStack is empty.");
+			Map<String, Object> ret = new LinkedHashMap<>();
+			ret.put("item", ((ItemStack) o).getItem().getRegistryName().toString());
+			if (count && ((ItemStack) o).getCount() > 1)
+				ret.put("count", ((ItemStack) o).getCount());
+			return ret;
+		}
+		if (o instanceof Collection) {
+			return ((Collection<Object>) o).stream().map(oo -> serializeItem2(oo, count)).collect(Collectors.toList());
+		}
+		if (o instanceof Object[]) {
+			return Arrays.stream((Object[]) o).map(oo -> serializeItem2(oo, count)).collect(Collectors.toList());
+		}
+		throw new IllegalArgumentException("Argument of type " + o.getClass().getName() + " is invalid.");
+
+	}
+
+	public static void addCraftingRecipe(Item result, @Nullable String group, boolean shaped, Object... input) {
+		Map<String, Object> json = new LinkedHashMap<>();
+		json.put("type", shaped ? "crafting_shaped" : "crafting_shapeless");
+		if (!StringUtils.isNullOrEmpty(group))
+			json.put("group", group);
+		if (shaped) {
+			List<String> pattern = new ArrayList<>();
+			int i = 0;
+			while (i < input.length && input[i] instanceof String) {
+				pattern.add((String) input[i]);
+				i++;
+			}
+			json.put("pattern", pattern);
+
+			Map<String, Object> key = new LinkedHashMap<>();
+			Character curKey = null;
+			for (; i < input.length; i++) {
+				Object o = input[i];
+				if (o instanceof Character) {
+					if (curKey != null)
+						throw new IllegalArgumentException("Provided two char keys in a row");
+					curKey = (Character) o;
+				} else {
+					if (curKey == null)
+						throw new IllegalArgumentException("Providing object without a char key");
+					key.put(Character.toString(curKey), serializeItem2(o, false));
+					curKey = null;
+				}
+			}
+			json.put("key", key);
+		} else {
+			json.put("ingredients", Arrays.stream(input).map(o -> serializeItem2(o, false)).collect(Collectors.toList()));
+		}
+		json.put("result", serializeItem2(result, true));
+		String id = Utils.getCurrentModID();
+		List<String> recs = recipes.get(id);
+		if (recs == null)
+			recipes.put(id, recs = new ArrayList<>());
+		recs.add(result.getRegistryName().getResourcePath() + Utils.getGSON().toJson(json));
+	}
+
+	public static void addSmeltingRecipe(Item result, Object input, double exp, int time) {
+		Map<String, Object> json = new LinkedHashMap<>();
+		json.put("type", "smelting");
+		json.put("ingredient", serializeItem2(input, false));
+		json.put("result", result.getRegistryName().toString());
+		json.put("experience", exp);
+		json.put("cookingtime", time);
+		String id = Utils.getCurrentModID();
+		List<String> recs = recipes.get(id);
+		if (recs == null)
+			recipes.put(id, recs = new ArrayList<>());
+		recs.add(result.getRegistryName().getResourcePath() + Utils.getGSON().toJson(json));
+	}
+
 }

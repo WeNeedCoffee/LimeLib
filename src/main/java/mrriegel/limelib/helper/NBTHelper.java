@@ -7,7 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +23,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -36,6 +39,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.GlobalBlockPos;
+import mrriegel.limelib.util.StackWrapper;
 import mrriegel.limelib.util.Utils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -57,6 +61,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -131,7 +137,7 @@ public class NBTHelper {
 
 	@Deprecated
 	public static void register(INBTable<?> n) {
-		//	TODO	Validate.isTrue(!Loader.instance().hasReachedState(LoaderState.AVAILABLE), "register before");
+		Validate.isTrue(!Loader.instance().hasReachedState(LoaderState.AVAILABLE), "register before");
 		if (!iNBTs.contains(n)) {
 			iNBTs.add(n);
 		}
@@ -143,9 +149,9 @@ public class NBTHelper {
 
 		NBTBase toNBT(T value);
 
-		T toValue(NBTBase nbt, Class<T> clazz);
+		T toValue(NBTBase nbt, Class<? extends T> clazz);
 
-		default T defaultValue(Class<T> clazz) {
+		default T defaultValue(Class<? extends T> clazz) {
 			return null;
 		}
 
@@ -175,55 +181,102 @@ public class NBTHelper {
 	}
 
 	static {
-		register(new INBTable<Enum<?>>() {
+		register(new INBTable<Object>() {
+			private Object2ByteOpenHashMap<Object> class2id = new Object2ByteOpenHashMap<>();
+			{
+				byte id = 1;
+				class2id.put(boolean.class, id++);
+				class2id.put(byte.class, id++);
+				class2id.put(char.class, id++);
+				class2id.put(short.class, id++);
+				class2id.put(int.class, id++);
+				class2id.put(float.class, id++);
+				class2id.put(long.class, id++);
+				class2id.put(double.class, id++);
+			}
 
 			@Override
 			public boolean classValid(Class<?> clazz) {
-				return clazz.isEnum();
+				return class2id.containsKey(clazz);
 			}
 
 			@Override
-			public NBTBase toNBT(Enum<?> value) {
-				return new NBTTagInt(value.ordinal());
-			}
-
-			@Override
-			public Enum<?> toValue(NBTBase nbt, Class<Enum<?>> clazz) {
-				return clazz.getEnumConstants()[((NBTPrimitive) nbt).getInt()];
-			}
-
-		});
-		register(new INBTable<IForgeRegistryEntry<?>>() {
-
-			@Override
-			public boolean classValid(Class<?> clazz) {
-				return IForgeRegistryEntry.class.isAssignableFrom(clazz);
-			}
-
-			@Override
-			public NBTBase toNBT(IForgeRegistryEntry<?> value) {
-				NBTTagCompound entry = new NBTTagCompound();
-				entry.setString("id", value.getRegistryName().toString());
-				entry.setString("class", value.getRegistryType().getCanonicalName());
-				return entry;
-			}
-
-			@Override
-			public IForgeRegistryEntry<?> toValue(NBTBase nbt, Class<IForgeRegistryEntry<?>> clazz) {
-				NBTTagCompound entry = (NBTTagCompound) nbt;
-				String id = entry.getString("id"), clas = entry.getString("class");
-				try {
-					@SuppressWarnings("rawtypes")
-					IForgeRegistry<?> reg = GameRegistry.findRegistry((Class<IForgeRegistryEntry>) Class.forName(clas));
-					if (reg != null) {
-						return reg.getValue(new ResourceLocation(id));
-					}
-				} catch (ClassNotFoundException e) {
-					return null;
+			public NBTBase toNBT(Object value) {
+				switch (class2id.getByte(value.getClass())) {
+				case 0:
+					throw new RuntimeException("primitives1");
+				case 1:
+					return new NBTTagByte((byte) (((boolean) value) ? 1 : 0));
+				case 2:
+					return new NBTTagByte((byte) value);
+				case 3:
+					return new NBTTagShort((short) (((int) value) + Short.MIN_VALUE));
+				case 4:
+					return new NBTTagShort((short) value);
+				case 5:
+					return new NBTTagInt((int) value);
+				case 6:
+					return new NBTTagInt(Float.floatToRawIntBits((float) value));
+				case 7:
+					return new NBTTagLong((long) value);
+				case 8:
+					return new NBTTagLong(Double.doubleToRawLongBits((double) value));
+				default:
+					throw new RuntimeException("primitives2");
 				}
-				return null;
 			}
 
+			@Override
+			public Object toValue(NBTBase nbt, Class<? extends Object> clazz) {
+				switch (class2id.getByte(clazz)) {
+				case 0:
+					throw new RuntimeException("primitives1");
+				case 1:
+					return ((NBTTagByte) nbt).getByte() != 0;
+				case 2:
+					return ((NBTTagByte) nbt).getByte();
+				case 3:
+					return (char) (((int) ((NBTTagShort) nbt).getShort()) - Short.MIN_VALUE);
+				case 4:
+					return ((NBTTagShort) nbt).getShort();
+				case 5:
+					return ((NBTTagInt) nbt).getInt();
+				case 6:
+					return Float.intBitsToFloat(((NBTTagInt) nbt).getInt());
+				case 7:
+					return ((NBTTagLong) nbt).getLong();
+				case 8:
+					return Double.longBitsToDouble(((NBTTagLong) nbt).getLong());
+				default:
+					throw new RuntimeException("primitives2");
+				}
+			}
+
+			@Override
+			public Object defaultValue(Class<? extends Object> clazz) {
+				switch (class2id.getByte(clazz)) {
+				case 0:
+					throw new RuntimeException("primitives1");
+				case 1:
+					return false;
+				case 2:
+					return (byte) 0;
+				case 3:
+					return (char) 0;
+				case 4:
+					return (short) 0;
+				case 5:
+					return 0;
+				case 6:
+					return 0F;
+				case 7:
+					return 0L;
+				case 8:
+					return 0D;
+				default:
+					throw new RuntimeException("primitives2");
+				}
+			}
 		});
 		register(new INBTable<Object>() {
 			private Object2ByteOpenHashMap<Object> class2id = new Object2ByteOpenHashMap<>();
@@ -231,6 +284,7 @@ public class NBTHelper {
 				byte id = 1;
 				class2id.put(boolean[].class, id++);
 				class2id.put(byte[].class, id++);
+				class2id.put(char[].class, id++);
 				class2id.put(short[].class, id++);
 				class2id.put(int[].class, id++);
 				class2id.put(float[].class, id++);
@@ -250,29 +304,40 @@ public class NBTHelper {
 					throw new RuntimeException("arrays1");
 				case 1:
 					boolean[] arrB = (boolean[]) value;
-					byte[] retB = new byte[arrB.length];
+					BitSet bs = new BitSet(arrB.length);
 					for (int i = 0; i < arrB.length; i++)
-						retB[i] = (byte) (arrB[i] ? 1 : 0);
-					return new NBTTagByteArray(retB);
+						bs.set(i, arrB[i]);
+					NBTTagCompound nbt = new NBTTagCompound();
+					if (arrB.length <= Byte.MAX_VALUE) {
+						nbt.setByte("s", (byte) arrB.length);
+					} else if (arrB.length <= Short.MAX_VALUE) {
+						nbt.setShort("s", (short) arrB.length);
+					} else {
+						nbt.setInteger("s", arrB.length);
+					}
+					nbt.setTag("v", new NBTTagByteArray(bs.toByteArray()));
+					return nbt;
 				case 2:
 					return new NBTTagByteArray((byte[]) value);
 				case 3:
+					return new NBTTagString(new String((char[]) value));
+				case 4:
 					short[] arrS = (short[]) value;
 					int[] retS = new int[arrS.length];
 					for (int i = 0; i < arrS.length; i++)
 						retS[i] = arrS[i];
 					return new NBTTagIntArray(retS);
-				case 4:
-					return new NBTTagIntArray((int[]) value);
 				case 5:
+					return new NBTTagIntArray((int[]) value);
+				case 6:
 					float[] arrF = (float[]) value;
 					int[] retF = new int[arrF.length];
 					for (int i = 0; i < arrF.length; i++)
 						retF[i] = Float.floatToRawIntBits(arrF[i]);
 					return new NBTTagIntArray(retF);
-				case 6:
-					return new NBTTagLongArray((long[]) value);
 				case 7:
+					return new NBTTagLongArray((long[]) value);
+				case 8:
 					double[] arrD = (double[]) value;
 					long[] retD = new long[arrD.length];
 					for (int i = 0; i < arrD.length; i++)
@@ -284,35 +349,42 @@ public class NBTHelper {
 			}
 
 			@Override
-			public Object toValue(NBTBase nbt, Class<Object> clazz) {
+			public Object toValue(NBTBase nbt, Class<? extends Object> clazz) {
 				switch (class2id.getByte(clazz)) {
 				case 0:
 					throw new RuntimeException("arrays1");
 				case 1:
-					byte[] arrB = ((NBTTagByteArray) nbt).getByteArray();
-					boolean[] retB = new boolean[arrB.length];
-					for (int i = 0; i < arrB.length; i++)
-						retB[i] = arrB[i] != 0;
-					return retB;
+					NBTTagCompound tag = (NBTTagCompound) nbt;
+					int num = tag.getInteger("s");
+					BitSet bs = BitSet.valueOf(tag.getByteArray("v"));
+					int diff = bs.length() - num;
+					boolean[] ret = new boolean[num];
+					for (int i = 0; i < num; i++) {
+						ret[i] = bs.get(i + diff/* is diff necessary?*/);
+						//TODO test
+					}
+					return ret;
 				case 2:
 					return ((NBTTagByteArray) nbt).getByteArray();
 				case 3:
+					return ((NBTTagString) nbt).getString().toCharArray();
+				case 4:
 					int[] arrS = ((NBTTagIntArray) nbt).getIntArray();
 					short[] retS = new short[arrS.length];
 					for (int i = 0; i < arrS.length; i++)
 						retS[i] = (short) arrS[i];
 					return retS;
-				case 4:
-					return ((NBTTagIntArray) nbt).getIntArray();
 				case 5:
+					return ((NBTTagIntArray) nbt).getIntArray();
+				case 6:
 					int[] arrF = ((NBTTagIntArray) nbt).getIntArray();
 					float[] retF = new float[arrF.length];
 					for (int i = 0; i < arrF.length; i++)
 						retF[i] = Float.intBitsToFloat(arrF[i]);
 					return retF;
-				case 6:
-					return getLongArray((NBTTagLongArray) nbt);
 				case 7:
+					return getLongArray((NBTTagLongArray) nbt);
+				case 8:
 					long[] arrD = getLongArray((NBTTagLongArray) nbt);
 					double[] retD = new double[arrD.length];
 					for (int i = 0; i < arrD.length; i++)
@@ -324,7 +396,7 @@ public class NBTHelper {
 			}
 
 			@Override
-			public Object defaultValue(Class<Object> clazz) {
+			public Object defaultValue(Class<? extends Object> clazz) {
 				switch (class2id.getByte(clazz)) {
 				case 0:
 					throw new RuntimeException("arrays1");
@@ -333,51 +405,68 @@ public class NBTHelper {
 				case 2:
 					return new byte[0];
 				case 3:
-					return new short[0];
+					return new char[0];
 				case 4:
-					return new int[0];
+					return new short[0];
 				case 5:
-					return new float[0];
+					return new int[0];
 				case 6:
-					return new long[0];
+					return new float[0];
 				case 7:
+					return new long[0];
+				case 8:
 					return new double[0];
 				default:
 					throw new RuntimeException("arrays2");
 				}
 			}
 		});
-		register(of(false, n -> ((NBTTagByte) n).getByte() == 1, v -> new NBTTagByte((byte) (v ? 1 : 0)), c -> c == Boolean.class || c == boolean.class));
+		register(of(null, (n, c) -> c.getEnumConstants()[((NBTTagShort) n).getShort()], v -> new NBTTagShort((short) ((Enum<?>) v).ordinal()), c -> c.isEnum()));
+		register(of(null, (n, c) -> {
+			NBTTagCompound entry = (NBTTagCompound) n;
+			String id = entry.getString("id"), clas = entry.getString("class");
+			try {
+				@SuppressWarnings("rawtypes")
+				IForgeRegistry<?> reg = GameRegistry.findRegistry((Class<IForgeRegistryEntry>) Class.forName(clas));
+				if (reg != null) {
+					return reg.getValue(new ResourceLocation(id));
+				}
+			} catch (ClassNotFoundException e) {
+				return null;
+			}
+			return null;
+		}, v -> {
+			NBTTagCompound entry = new NBTTagCompound();
+			entry.setString("id", v.getRegistryName().toString());
+			entry.setString("class", v.getRegistryType().getCanonicalName());
+			return entry;
+		}, c -> IForgeRegistryEntry.class.isAssignableFrom(c)));
 		//		register(of(null, (n, s) -> n.getCompoundTag(s), v -> v, NBTTagCompound.class));
-		register(of(null, n -> n, v -> v, NBTBase.class));
-		register(of(null, n -> BlockPos.fromLong(((NBTTagLong) n).getLong()), v -> new NBTTagLong(v.toLong()), BlockPos.class, MutableBlockPos.class));
-		register(of(null, n -> {
+		register(of(null, (n, c) -> n, v -> v, c -> NBTBase.class.isAssignableFrom(c)));
+		register(of(null, (n, c) -> BlockPos.fromLong(((NBTTagLong) n).getLong()), v -> new NBTTagLong(v.toLong()), BlockPos.class, MutableBlockPos.class));
+		register(of(null, (n, c) -> {
 			long[] arr = getLongArray((NBTTagLongArray) n);
 			return new GlobalBlockPos(BlockPos.fromLong(arr[0]), (int) arr[1]);
 		}, v -> new NBTTagLongArray(new long[] { v.getPos().toLong(), v.getDimension() }), GlobalBlockPos.class));
-		register(of(ItemStack.EMPTY, n -> new ItemStack((NBTTagCompound) n), v -> v.writeToNBT(new NBTTagCompound()), ItemStack.class));
-		register(of(null, n -> {
+		register(of(c -> ItemStack.EMPTY, (n, c) -> new ItemStack((NBTTagCompound) n), v -> v.writeToNBT(new NBTTagCompound()), ItemStack.class));
+		register(of(null, (n, c) -> {
 			long[] l = getLongArray((NBTTagLongArray) n);
 			return new UUID(l[0], l[1]);
 		}, v -> new NBTTagLongArray(new long[] { v.getMostSignificantBits(), v.getLeastSignificantBits() }), UUID.class));
-		register(of(null, n -> new ResourceLocation(((NBTTagString) n).getString()), v -> new NBTTagString(v.toString()), ResourceLocation.class));
-		register(of(null, n -> FluidStack.loadFluidStackFromNBT((NBTTagCompound) n), v -> v.writeToNBT(new NBTTagCompound()), FluidStack.class));
-		register(of("", n -> ((NBTTagString) n).getString(), v -> new NBTTagString(v), String.class));
+		register(of(null, (n, c) -> new ResourceLocation(((NBTTagString) n).getString()), v -> new NBTTagString(v.toString()), ResourceLocation.class));
+		register(of(null, (n, c) -> FluidStack.loadFluidStackFromNBT((NBTTagCompound) n), v -> v.writeToNBT(new NBTTagCompound()), FluidStack.class));
+		register(of(c -> "", (n, c) -> ((NBTTagString) n).getString(), v -> new NBTTagString(v), String.class));
+		register(of(null, (n, c) -> StackWrapper.loadStackWrapperFromNBT((NBTTagCompound) n), v -> v.writeToNBT(new NBTTagCompound()), StackWrapper.class));
 		//		for (NBTType t : NBTType.values())
 		//			register(of(t.defaultValue, t.getter, t.setter, t.classes));
 	}
 
-	public static <T> INBTable<T> of(T defaultValue, Function<NBTBase, T> getter, Function<T, NBTBase> setter, Class<?>... classes) {
-		return of(defaultValue, getter, setter, clazz -> Arrays.stream(classes).anyMatch(c -> clazz == c));
+	public static <T> INBTable<T> of(@Nullable Function<Class<? extends T>, T> defaultValue, BiFunction<NBTBase, Class<?>, T> getter, Function<T, NBTBase> setter, Class<?>... classes) {
+		return of(defaultValue, getter, setter, clazz -> ArrayUtils.contains(classes, clazz));
 	}
 
-	public static <T> INBTable<T> of(T defaultValue, Function<NBTBase, T> getter, Function<T, NBTBase> setter, Predicate<Class<?>> pred) {
+	public static <T> INBTable<T> of(@Nullable Function<Class<? extends T>, T> defaultValue, BiFunction<NBTBase, Class<?>, T> getter, Function<T, NBTBase> setter, Predicate<Class<?>> pred) {
 		return new INBTable<T>() {
-
-			//			@Override
-			//			public T get(NBTTagCompound nbt, String name, Class<T> clazz) {
-			//				return getter.apply(nbt, name);
-			//			}
 
 			@Override
 			public boolean classValid(Class<?> clazz) {
@@ -385,8 +474,8 @@ public class NBTHelper {
 			}
 
 			@Override
-			public T defaultValue(Class<T> clazz) {
-				return defaultValue;
+			public T defaultValue(Class<? extends T> clazz) {
+				return defaultValue != null ? defaultValue.apply(clazz) : null;
 			}
 
 			@Override
@@ -395,11 +484,11 @@ public class NBTHelper {
 			}
 
 			@Override
-			public T toValue(NBTBase nbt, Class<T> clazz) {
+			public T toValue(NBTBase nbt, Class<? extends T> clazz) {
 				try {
-					return getter.apply(nbt);
+					return getter.apply(nbt, clazz);
 				} catch (ClassCastException e) {
-					return defaultValue;
+					return defaultValue(clazz);
 				}
 			}
 
@@ -507,13 +596,14 @@ public class NBTHelper {
 		return nbt;
 	}
 
+	@SuppressWarnings("unused")
 	@Deprecated
 	private static <T> List<T> getList(NBTTagCompound nbt, String name, Class<T> clazz, Supplier<List<T>> supp) {
 		return getList(nbt, name, clazz);
 	}
 
 	public static <T> List<T> getList(NBTTagCompound nbt, String name, Class<T> clazz) {
-		if (false) {
+		if (!"".isEmpty()) {
 			if (nbt.hasKey(name + "_n0llNum", 3)) {
 				return new ArrayList<>(Collections.nCopies(nbt.getInteger(name + "_n0llNum"), null));
 			}
@@ -567,7 +657,7 @@ public class NBTHelper {
 					values.add((T) n.toValue(nb, clazz));
 				}
 			} else
-				new RuntimeException("something went really wrong");
+				throw new RuntimeException("something went really wrong");
 
 			int[] nulls = nbt.hasKey(name + "_n0lls", 11) ? nbt.getIntArray(name + "_n0lls") : new int[0];
 			for (int i : nulls) {
@@ -598,7 +688,7 @@ public class NBTHelper {
 	public static NBTTagCompound setList(NBTTagCompound nbt, String name, List<?> values) {
 		if (nbt == null || values.isEmpty())
 			return nbt;
-		if (false) {
+		if (!"".isEmpty()) {
 			List<INBTable> nbts = values.stream().filter(Objects::nonNull).map(o -> Objects.requireNonNull(getINBT(o.getClass()), "Cannot add " + o.getClass().getName() + " object to NBT.")).distinct().collect(Collectors.toList());
 			if (nbts.isEmpty()) {
 				//only nulls
@@ -666,6 +756,7 @@ public class NBTHelper {
 		return nbt;
 	}
 
+	@SuppressWarnings("unused")
 	@Deprecated
 	private static <K, V> Map<K, V> getMap(NBTTagCompound nbt, String name, Class<K> keyClazz, Class<V> valClazz, Supplier<Map<K, V>> supp) {
 		return getMap(nbt, name, keyClazz, valClazz);

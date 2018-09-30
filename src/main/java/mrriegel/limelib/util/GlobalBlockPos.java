@@ -19,6 +19,7 @@ public class GlobalBlockPos {
 
 	public GlobalBlockPos(BlockPos pos, World world) {
 		this(pos, world.provider.getDimension());
+		//TODO Validate.isTrue(!world.isRemote);
 	}
 
 	@Override
