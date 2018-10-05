@@ -9,6 +9,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+@Deprecated
 public class ShapelessRecipeExt extends ShapelessOreRecipe {
 
 	public ShapelessRecipeExt(ResourceLocation group, Block result, Object... recipe) {

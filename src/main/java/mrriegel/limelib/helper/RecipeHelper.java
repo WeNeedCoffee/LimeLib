@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
@@ -219,7 +220,6 @@ public class RecipeHelper {
 				return Joiner.on(" ").join(Arrays.stream(((Ingredient) o).getMatchingStacks()).map(s -> s.getItem().getRegistryName().getResourcePath()).sorted().collect(Collectors.toList()));
 			return "";
 		}).collect(Collectors.toList());
-		//TODO fix the # and |
 		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getResourcePath() + "/" + stack.getItemDamage() + "_" + stack.getCount() + "_" + (Math.abs(lis.hashCode()) % 9999));
 	}
 
@@ -320,23 +320,42 @@ public class RecipeHelper {
 
 	//1.13
 
-	private final static Map<String, List<String>> recipes = new HashMap<>();
+	private final static Map<String, List<Pair<String, String>>> recipes = new HashMap<>();
 
 	public static void init() {
 		if (!dev)
+			return;
+		if (true)
 			return;
 		try {
 			File f = new File("tmp.html");
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 			final char ente = '"';
-			for (Entry<String, List<String>> e : recipes.entrySet()) {
+			for (Entry<String, List<Pair<String, String>>> e : recipes.entrySet()) {
 				bw.write("<h2>" + e.getKey() + "</h2>");
 				File jar = Loader.instance().getIndexedModList().get(e.getKey()).getSource();
-				if (!jar.getPath().endsWith(".jar"))
-					for (String s : e.getValue()) {
-						int index = s.indexOf('{');
-						String name = s.substring(0, index);
-						s = s.substring(index);
+				if (!jar.getPath().endsWith(".jar")) {
+					List<String> names = new ArrayList<>();
+					for (Pair<String, String> p : e.getValue()) {
+						String name = p.getLeft();
+						int i = 1;
+						while (names.contains(name)) {
+							name = p.getLeft() + i++;
+						}
+						names.add(name);
+					}
+					File dir = new File("").toPath().resolve("../src/main/resources/data/" + e.getKey() + "/recipes/").toFile();
+					if (!dir.exists())
+						dir.mkdirs();
+					for (int i = 0; i < names.size(); i++) {
+						File file = new File(dir, names.get(i) + ".json");
+						FileWriter fw = new FileWriter(file);
+						fw.write(e.getValue().get(i).getRight());
+						fw.close();
+					}
+					for (Pair<String, String> p : e.getValue()) {
+						String name = p.getLeft();
+						String s = p.getRight();
 						bw.write("<p>" + name + ".json</p>");
 						List<String> lis = Arrays.asList(s.split("[\\r\\n]+"));
 						int maxLength = lis.stream().mapToInt(String::length).max().getAsInt();
@@ -347,8 +366,9 @@ public class RecipeHelper {
 						}
 						bw.write("</textarea>");
 					}
+				}
 			}
-			Runtime.getRuntime().exec("xdg-open " + f.getAbsolutePath());
+			//			Runtime.getRuntime().exec("xdg-open " + f.getAbsolutePath());
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -395,9 +415,15 @@ public class RecipeHelper {
 
 	}
 
-	public static void addCraftingRecipe(Item result, @Nullable String group, boolean shaped, Object... input) {
+	private static void validate(ItemStack stack) {
+		Validate.isTrue(!stack.isEmpty(), "result must not be empty");
+		//		Validate.isTrue(Loader.instance().hasReachedState(LoaderState.INITIALIZATION), "register after preInit");
+	}
+
+	public static void addCraftingRecipe(ItemStack result, @Nullable String group, boolean shaped, Object... input) {
+		validate(result);
 		Map<String, Object> json = new LinkedHashMap<>();
-		json.put("type", shaped ? "crafting_shaped" : "crafting_shapeless");
+		json.put("type", shaped ? "minecraft:crafting_shaped" : "minecraft:crafting_shapeless");
 		if (!StringUtils.isNullOrEmpty(group))
 			json.put("group", group);
 		if (shaped) {
@@ -430,24 +456,25 @@ public class RecipeHelper {
 		}
 		json.put("result", serializeItem2(result, true));
 		String id = Utils.getCurrentModID();
-		List<String> recs = recipes.get(id);
+		List<Pair<String, String>> recs = recipes.get(id);
 		if (recs == null)
 			recipes.put(id, recs = new ArrayList<>());
-		recs.add(result.getRegistryName().getResourcePath() + Utils.getGSON().toJson(json));
+		recs.add(Pair.of(result.getItem().getRegistryName().getResourcePath(), Utils.getGSON().toJson(json)));
 	}
 
-	public static void addSmeltingRecipe(Item result, Object input, double exp, int time) {
+	public static void addSmeltingRecipe(ItemStack result, Object input, double exp, int time) {
+		validate(result);
 		Map<String, Object> json = new LinkedHashMap<>();
 		json.put("type", "smelting");
 		json.put("ingredient", serializeItem2(input, false));
-		json.put("result", result.getRegistryName().toString());
+		json.put("result", result.getItem().getRegistryName().toString());
 		json.put("experience", exp);
 		json.put("cookingtime", time);
 		String id = Utils.getCurrentModID();
-		List<String> recs = recipes.get(id);
+		List<Pair<String, String>> recs = recipes.get(id);
 		if (recs == null)
 			recipes.put(id, recs = new ArrayList<>());
-		recs.add(result.getRegistryName().getResourcePath() + Utils.getGSON().toJson(json));
+		recs.add(Pair.of(result.getItem().getRegistryName().getResourcePath(), Utils.getGSON().toJson(json)));
 	}
 
 }

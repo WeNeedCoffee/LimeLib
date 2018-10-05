@@ -16,6 +16,7 @@ import mrriegel.limelib.util.Utils;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Loader;
@@ -61,9 +62,7 @@ public class LimeLib {
 			Dev.preInit();
 			MinecraftForge.EVENT_BUS.register(Dev.class);
 			System.out.println("zip");
-			RecipeHelper.addCraftingRecipe(Items.REDSTONE, null, false, "red", Items.APPLE, Arrays.asList(Items.CHORUS_FRUIT_POPPED, Blocks.BEDROCK));
-			RecipeHelper.addCraftingRecipe(Items.GOLD_INGOT, "equal", true, "X X", " o ", 'X', Arrays.asList("das", "ist", "lustig", Items.WOODEN_AXE, Blocks.CACTUS), 'o', Blocks.PUMPKIN);
-			RecipeHelper.addSmeltingRecipe(Items.ROTTEN_FLESH, Items.COAL, 10.2, 100);
+
 		}
 	}
 
@@ -73,8 +72,13 @@ public class LimeLib {
 	public void init(FMLInitializationEvent event) {
 		PacketHandler.init();
 		RecipeHelper.generateConstants();
-		if (RecipeHelper.dev)
-			RecipeHelper.init();
+		if (RecipeHelper.dev) {
+			RecipeHelper.addCraftingRecipe(new ItemStack(Items.REDSTONE), null, false, Items.GLOWSTONE_DUST, Items.APPLE, Arrays.asList(Items.CHORUS_FRUIT_POPPED, Blocks.BEDROCK));
+			RecipeHelper.addCraftingRecipe(new ItemStack(Items.GOLD_INGOT), "equal", true, "X X", " o ", 'X', Arrays.asList("das", "ist", "lustig", Items.WOODEN_AXE, Blocks.CACTUS), 'o', Blocks.PUMPKIN);
+			RecipeHelper.addSmeltingRecipe(new ItemStack(Items.ROTTEN_FLESH), Items.COAL, 10.2, 100);
+			RecipeHelper.addCraftingRecipe(new ItemStack(Items.REDSTONE), null, false, Items.CARROT);
+			RecipeHelper.addCraftingRecipe(new ItemStack(Items.REDSTONE), null, false, Items.BEETROOT);
+		}
 		if (LimeConfig.commandBlockCreativeTab) {
 			Blocks.COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
 			Blocks.CHAIN_COMMAND_BLOCK.setCreativeTab(CreativeTabs.REDSTONE);
@@ -87,6 +91,7 @@ public class LimeLib {
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		if (RecipeHelper.dev) {
+			RecipeHelper.init();
 		}
 	}
 

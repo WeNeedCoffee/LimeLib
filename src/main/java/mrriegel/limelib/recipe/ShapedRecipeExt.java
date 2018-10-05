@@ -17,6 +17,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
+@Deprecated
 public class ShapedRecipeExt extends ShapedOreRecipe {
 
 	public ShapedRecipeExt(ResourceLocation group, Block result, Object... recipe) {

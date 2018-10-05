@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,11 +33,24 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
+import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.chars.CharArrayList;
+import it.unimi.dsi.fastutil.doubles.Double2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.floats.Float2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.ShortArrayList;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.util.GlobalBlockPos;
 import mrriegel.limelib.util.StackWrapper;
@@ -155,14 +169,6 @@ public class NBTHelper {
 			return null;
 		}
 
-		default Map<T, ?> getEmptyMap() {
-			return new Object2ObjectOpenHashMap<>();
-		}
-
-		default List<T> getEmptyList() {
-			return new ObjectArrayList<>();
-		}
-
 	}
 
 	private static Map<Class<?>, INBTable<?>> cache = new HashMap<>();
@@ -236,7 +242,7 @@ public class NBTHelper {
 				case 2:
 					return ((NBTTagByte) nbt).getByte();
 				case 3:
-					return (char) (((int) ((NBTTagShort) nbt).getShort()) - Short.MIN_VALUE);
+					return (char) ((((NBTTagShort) nbt).getShort()) - Short.MIN_VALUE);
 				case 4:
 					return ((NBTTagShort) nbt).getShort();
 				case 5:
@@ -277,6 +283,7 @@ public class NBTHelper {
 					throw new RuntimeException("primitives2");
 				}
 			}
+
 		});
 		register(new INBTable<Object>() {
 			private Object2ByteOpenHashMap<Object> class2id = new Object2ByteOpenHashMap<>();
@@ -598,7 +605,7 @@ public class NBTHelper {
 
 	@SuppressWarnings("unused")
 	@Deprecated
-	private static <T> List<T> getList(NBTTagCompound nbt, String name, Class<T> clazz, Supplier<List<T>> supp) {
+	private static <T> Collection<T> getCollection(NBTTagCompound nbt, String name, Class<T> clazz, Supplier<Collection<T>> supp) {
 		return getList(nbt, name, clazz);
 	}
 
@@ -612,7 +619,27 @@ public class NBTHelper {
 				LimeLib.log.warn("no nbt way found.");
 				return Collections.emptyList();
 			}
-			List<T> values = n.getEmptyList();
+			Collection<T> values = new ArrayList<>();
+			if (!"".isEmpty()) {
+				if (clazz == boolean.class || clazz == Boolean.class) {
+					values = (List<T>) new BooleanArrayList();
+				} else if (clazz == byte.class || clazz == Byte.class) {
+					values = (List<T>) new ByteArrayList();
+				} else if (clazz == char.class || clazz == Character.class) {
+					values = (List<T>) new CharArrayList();
+				} else if (clazz == short.class || clazz == Short.class) {
+					values = (List<T>) new ShortArrayList();
+				} else if (clazz == int.class || clazz == Integer.class) {
+					values = (List<T>) new IntArrayList();
+				} else if (clazz == float.class || clazz == Float.class) {
+					values = (List<T>) new FloatArrayList();
+				} else if (clazz == long.class || clazz == Long.class) {
+					values = (List<T>) new LongArrayList();
+				} else if (clazz == double.class || clazz == Double.class) {
+					values = (List<T>) new DoubleArrayList();
+				} else
+					values = new ArrayList<>();
+			}
 			NBTBase coll = nbt.getTag(name);
 			if (coll instanceof NBTTagByteArray) {
 				byte[] arr = ((NBTTagByteArray) coll).getByteArray();
@@ -660,10 +687,13 @@ public class NBTHelper {
 				throw new RuntimeException("something went really wrong");
 
 			int[] nulls = nbt.hasKey(name + "_n0lls", 11) ? nbt.getIntArray(name + "_n0lls") : new int[0];
-			for (int i : nulls) {
-				values.add(i, null);
-			}
-			return values;
+			if (values instanceof List)
+				for (int i : nulls) {
+					((List<T>) values).add(i, null);
+				}
+			else
+				values.addAll(Collections.nCopies(nulls.length, null));
+			return (List<T>) values;
 
 		}
 		if (!NBTType.validClass(clazz))
@@ -765,7 +795,27 @@ public class NBTHelper {
 	public static <K, V> Map<K, V> getMap(NBTTagCompound nbt, String name, Class<K> keyClazz, Class<V> valClazz) {
 		if (!NBTType.validClass(keyClazz) || !NBTType.validClass(valClazz))
 			throw new IllegalArgumentException();
-		Map<K, V> values = new Object2ObjectOpenHashMap<>();
+		Map<K, V> values = new HashMap<>();
+		if (!"".isEmpty()) {
+			if (keyClazz == boolean.class || keyClazz == Boolean.class) {
+				values = new HashMap<>();
+			} else if (keyClazz == byte.class || keyClazz == Byte.class) {
+				values = (Map<K, V>) new Byte2ObjectOpenHashMap<>();
+			} else if (keyClazz == char.class || keyClazz == Character.class) {
+				values = (Map<K, V>) new Char2ObjectOpenHashMap<>();
+			} else if (keyClazz == short.class || keyClazz == Short.class) {
+				values = (Map<K, V>) new Short2ObjectOpenHashMap<>();
+			} else if (keyClazz == int.class || keyClazz == Integer.class) {
+				values = (Map<K, V>) new Int2ObjectOpenHashMap<>();
+			} else if (keyClazz == float.class || keyClazz == Float.class) {
+				values = (Map<K, V>) new Float2ObjectOpenHashMap<>();
+			} else if (keyClazz == long.class || keyClazz == Long.class) {
+				values = (Map<K, V>) new Long2ObjectOpenHashMap<>();
+			} else if (keyClazz == double.class || keyClazz == Double.class) {
+				values = (Map<K, V>) new Double2ObjectOpenHashMap<>();
+			} else
+				values = new HashMap<>();
+		}
 		if (nbt == null || !nbt.hasKey(name, 10))
 			return values;
 		NBTTagCompound map = nbt.getCompoundTag(name);
@@ -793,6 +843,10 @@ public class NBTHelper {
 			entries.add(o);
 		}
 		NBTTagCompound map = new NBTTagCompound();
+		if (!"".isEmpty()) {
+			setList(map, "key", new ArrayList<>(values.keySet()));
+			setList(map, "value", new ArrayList<>(values.values()));
+		}
 		setList(map, "key", entries.stream().map(e -> e.getKey()).collect(Collectors.toList()));
 		setList(map, "value", entries.stream().map(e -> e.getValue()).collect(Collectors.toList()));
 		nbt.setTag(name, map);
