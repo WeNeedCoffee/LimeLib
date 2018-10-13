@@ -4,10 +4,7 @@ import io.netty.buffer.ByteBuf;
 import mrriegel.limelib.LimeLib;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -43,11 +40,11 @@ public abstract class AbstractMessage implements IMessage, IMessageHandler<Abstr
 	public IMessage onMessage(final AbstractMessage message, final MessageContext ctx) {
 		this.nbt = message.nbt.copy();
 		//TODO
-		if (false) {
-			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
-				//				handleMessage(ctx.side.isServer()?ctx.getServerHandler().player:FMLClientHandler.instance().getClientPlayerEntity(), null, null);
-			});
-		}
+		//		if (false) {
+		//			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
+		//				//				handleMessage(ctx.side.isServer()?ctx.getServerHandler().player:FMLClientHandler.instance().getClientPlayerEntity(), null, null);
+		//			});
+		//		}
 		Runnable run = () -> {
 			EntityPlayer player = (ctx.side.isClient() ? LimeLib.proxy.getClientPlayer() : ctx.getServerHandler().player);
 			message.handleMessage(player, message.nbt.copy(), ctx.side);
@@ -57,8 +54,8 @@ public abstract class AbstractMessage implements IMessage, IMessageHandler<Abstr
 		return null;
 	}
 
-	private EntityPlayer getPlayer(MessageContext ctx) {
-		return (ctx.netHandler instanceof NetHandlerPlayServer) ? ctx.getServerHandler().player : FMLClientHandler.instance().getClientPlayerEntity();
-	}
+	//	private EntityPlayer getPlayer(MessageContext ctx) {
+	//		return (ctx.netHandler instanceof NetHandlerPlayServer) ? ctx.getServerHandler().player : FMLClientHandler.instance().getClientPlayerEntity();
+	//	}
 
 }

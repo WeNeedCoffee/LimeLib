@@ -1,6 +1,5 @@
 package mrriegel.limelib.helper;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -322,17 +321,13 @@ public class RecipeHelper {
 
 	private final static Map<String, List<Pair<String, String>>> recipes = new HashMap<>();
 
-	public static void init() {
+	public static void generateFiles() {
 		if (!dev)
 			return;
 		if (true)
 			return;
 		try {
-			File f = new File("tmp.html");
-			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-			final char ente = '"';
 			for (Entry<String, List<Pair<String, String>>> e : recipes.entrySet()) {
-				bw.write("<h2>" + e.getKey() + "</h2>");
 				File jar = Loader.instance().getIndexedModList().get(e.getKey()).getSource();
 				if (!jar.getPath().endsWith(".jar")) {
 					List<String> names = new ArrayList<>();
@@ -353,23 +348,8 @@ public class RecipeHelper {
 						fw.write(e.getValue().get(i).getRight());
 						fw.close();
 					}
-					for (Pair<String, String> p : e.getValue()) {
-						String name = p.getLeft();
-						String s = p.getRight();
-						bw.write("<p>" + name + ".json</p>");
-						List<String> lis = Arrays.asList(s.split("[\\r\\n]+"));
-						int maxLength = lis.stream().mapToInt(String::length).max().getAsInt();
-						bw.write("<textarea rows=" + ente + (lis.size() + 1) + ente + " cols=" + ente + (maxLength + 2) + ente + " style=" + ente + "resize:none" + ente + ">");
-						for (String ss : lis) {
-							bw.write(ss);
-							bw.newLine();
-						}
-						bw.write("</textarea>");
-					}
 				}
 			}
-			//			Runtime.getRuntime().exec("xdg-open " + f.getAbsolutePath());
-			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -398,11 +378,12 @@ public class RecipeHelper {
 			return ret;
 		}
 		if (o instanceof ItemStack) {
-			Validate.isTrue(!((ItemStack) o).isEmpty(), "ItemStack is empty.");
+			ItemStack s = (ItemStack) o;
+			Validate.isTrue(!s.isEmpty(), "ItemStack is empty.");
 			Map<String, Object> ret = new LinkedHashMap<>();
-			ret.put("item", ((ItemStack) o).getItem().getRegistryName().toString());
-			if (count && ((ItemStack) o).getCount() > 1)
-				ret.put("count", ((ItemStack) o).getCount());
+			ret.put("item", s.getItem().getRegistryName().toString());
+			if (count && s.getCount() > 1)
+				ret.put("count", s.getCount());
 			return ret;
 		}
 		if (o instanceof Collection) {
@@ -420,7 +401,13 @@ public class RecipeHelper {
 		//		Validate.isTrue(Loader.instance().hasReachedState(LoaderState.INITIALIZATION), "register after preInit");
 	}
 
+	private static boolean valid() {
+		return dev && !Loader.instance().activeModContainer().getSource().getPath().endsWith(".jar");
+	}
+
 	public static void addCraftingRecipe(ItemStack result, @Nullable String group, boolean shaped, Object... input) {
+		if (!dev)
+			return;
 		validate(result);
 		Map<String, Object> json = new LinkedHashMap<>();
 		json.put("type", shaped ? "minecraft:crafting_shaped" : "minecraft:crafting_shapeless");
@@ -455,14 +442,12 @@ public class RecipeHelper {
 			json.put("ingredients", Arrays.stream(input).map(o -> serializeItem2(o, false)).collect(Collectors.toList()));
 		}
 		json.put("result", serializeItem2(result, true));
-		String id = Utils.getCurrentModID();
-		List<Pair<String, String>> recs = recipes.get(id);
-		if (recs == null)
-			recipes.put(id, recs = new ArrayList<>());
-		recs.add(Pair.of(result.getItem().getRegistryName().getResourcePath(), Utils.getGSON().toJson(json)));
+		addRecipe(result.getItem().getRegistryName().getResourcePath(), json);
 	}
 
 	public static void addSmeltingRecipe(ItemStack result, Object input, double exp, int time) {
+		if (!dev)
+			return;
 		validate(result);
 		Map<String, Object> json = new LinkedHashMap<>();
 		json.put("type", "smelting");
@@ -470,11 +455,15 @@ public class RecipeHelper {
 		json.put("result", result.getItem().getRegistryName().toString());
 		json.put("experience", exp);
 		json.put("cookingtime", time);
+		addRecipe(result.getItem().getRegistryName().getResourcePath(), json);
+	}
+
+	private static void addRecipe(String name, Object json) {
 		String id = Utils.getCurrentModID();
 		List<Pair<String, String>> recs = recipes.get(id);
 		if (recs == null)
 			recipes.put(id, recs = new ArrayList<>());
-		recs.add(Pair.of(result.getItem().getRegistryName().getResourcePath(), Utils.getGSON().toJson(json)));
+		recs.add(Pair.of(name, Utils.getGSON().toJson(json)));
 	}
 
 }

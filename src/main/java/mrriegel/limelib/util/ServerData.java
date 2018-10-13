@@ -38,6 +38,7 @@ public abstract class ServerData {
 		for (ServerData data : datas) {
 			data.write();
 		}
+		server = null;
 	}
 
 	protected abstract void read();

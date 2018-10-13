@@ -11,6 +11,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -176,12 +177,20 @@ public class NBTHelper {
 	private static INBTable<?> getINBT(Class<?> clazz) {
 		if (cache.containsKey(clazz))
 			return cache.get(clazz);
+		Set<INBTable<?>> ns = new HashSet<>();
+		for (INBTable<?> n : iNBTs) {
+			if (n.classValid(clazz))
+				ns.add(n);
+		}
+
+		Validate.isTrue(ns.size() < 2, "too many ways found " + ns);
 		INBTable<?> ret = null;
-		for (INBTable<?> n : iNBTs)
-			if (n.classValid(clazz)) {
-				ret = n;
-				break;
-			}
+		ret = iNBTs.stream().filter(n -> n.classValid(clazz)).findFirst().orElse(null);
+		//		for (INBTable<?> n : iNBTs)
+		//			if (n.classValid(clazz)) {
+		//				ret = n;
+		//				break;
+		//			}
 		cache.put(clazz, ret);
 		return ret;
 	}
@@ -428,7 +437,15 @@ public class NBTHelper {
 				}
 			}
 		});
-		register(of(null, (n, c) -> c.getEnumConstants()[((NBTTagShort) n).getShort()], v -> new NBTTagShort((short) ((Enum<?>) v).ordinal()), c -> c.isEnum()));
+		register(of(null, (n, c) -> {
+			Object[] enums = c.getEnumConstants();
+			int index = ((NBTTagShort) n).getShort();
+			if (index < 0 || index >= enums.length) {
+				LimeLib.log.warn("index " + index + " is out of range for " + c.getName());
+				return null;
+			}
+			return enums[index];
+		}, v -> new NBTTagShort((short) ((Enum<?>) v).ordinal()), c -> c.isEnum()));
 		register(of(null, (n, c) -> {
 			NBTTagCompound entry = (NBTTagCompound) n;
 			String id = entry.getString("id"), clas = entry.getString("class");
@@ -559,6 +576,8 @@ public class NBTHelper {
 	}
 
 	public static <T> T get(NBTTagCompound nbt, String name, Class<T> clazz) {
+		//		if(!"".isEmpty())
+		//			return getSafe(nbt, name, clazz).orElse(getINBT(clazz).defaultValue(clazz));
 		if (Enum.class.isAssignableFrom(clazz)) {
 			Optional<Integer> o = getSafe(nbt, name, Integer.class);
 			return o.isPresent() ? clazz.getEnumConstants()[o.get()] : null;
@@ -584,6 +603,14 @@ public class NBTHelper {
 
 	//TODO rename to getOptional
 	public static <T> Optional<T> getSafe(NBTTagCompound nbt, String name, Class<T> clazz) {
+		if (!"".isEmpty()) {
+			if (!nbt.hasKey(name))
+				return Optional.empty();
+			INBTable n = getINBT(clazz);
+			if (n == null)
+				throw new IllegalArgumentException("No type found for " + clazz.getName());
+			return (Optional<T>) Optional.of(n.toValue(nbt.getTag(name), clazz));
+		}
 		if (nbt == null || nbt.hasKey(name))
 			return Optional.of(get(nbt, name, clazz));
 		return Optional.empty();
@@ -592,6 +619,12 @@ public class NBTHelper {
 	public static NBTTagCompound set(NBTTagCompound nbt, String name, Object value) {
 		if (nbt == null || value == null)
 			return nbt;
+		if (!"".isEmpty()) {
+			INBTable n = getINBT(value.getClass());
+			if (n == null)
+				throw new IllegalArgumentException("No type found for " + value.getClass().getName());
+			nbt.setTag(name, n.toNBT(value));
+		}
 		Class<?> clazz = value.getClass();
 		if (Enum.class.isAssignableFrom(clazz))
 			return set(nbt, name, ((Enum<?>) value).ordinal());
@@ -685,14 +718,15 @@ public class NBTHelper {
 				}
 			} else
 				throw new RuntimeException("something went really wrong");
-
-			int[] nulls = nbt.hasKey(name + "_n0lls", 11) ? nbt.getIntArray(name + "_n0lls") : new int[0];
-			if (values instanceof List)
-				for (int i : nulls) {
-					((List<T>) values).add(i, null);
-				}
-			else
-				values.addAll(Collections.nCopies(nulls.length, null));
+			if (nbt.hasKey(name + "_n0lls", 11)) {
+				int[] nulls = nbt.getIntArray(name + "_n0lls");
+				if (values instanceof List)
+					for (int i : nulls) {
+						((List<T>) values).add(i, null);
+					}
+				else
+					values.addAll(Collections.nCopies(nulls.length, null));
+			}
 			return (List<T>) values;
 
 		}
@@ -771,6 +805,7 @@ public class NBTHelper {
 					arr.appendTag(n.toNBT(nonNullValues.get(i)));
 				nbt.setTag(name, arr);
 			}
+			return nbt;
 		}
 		for (Object o : values)
 			if (o != null) {

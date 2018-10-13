@@ -50,6 +50,7 @@ public class RegistryHelper {
 		}
 	}
 
+	//TODO add return entry
 	public static <T extends IForgeRegistryEntry<T>> void register(IForgeRegistryEntry<T> entry) {
 		entries.add(entry);
 	}

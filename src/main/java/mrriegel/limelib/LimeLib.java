@@ -19,6 +19,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -59,10 +60,11 @@ public class LimeLib {
 		fluxLoaded = Loader.isModLoaded("redstoneflux");
 		NBTHelper.hasTag(null, null); //init
 		if (RecipeHelper.dev) {
-			Dev.preInit();
-			MinecraftForge.EVENT_BUS.register(Dev.class);
+			if (FMLCommonHandler.instance().getSide().isClient()) {
+				Dev.preInit();
+				MinecraftForge.EVENT_BUS.register(Dev.class);
+			}
 			System.out.println("zip");
-
 		}
 	}
 
@@ -91,7 +93,7 @@ public class LimeLib {
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		if (RecipeHelper.dev) {
-			RecipeHelper.init();
+			RecipeHelper.generateFiles();
 		}
 	}
 
