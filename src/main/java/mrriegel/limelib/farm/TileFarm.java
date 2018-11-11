@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 
@@ -81,7 +82,7 @@ public class TileFarm extends TileEntity implements ITickable {
 	public void update() {
 		if (farmers.isEmpty()) {
 			farmers.add(new Farmer(world, pos.getX() + 1.5, pos.getY() + .5, pos.getZ() + .5, this, "axe"));
-			farmers.add(new Farmer(world, pos.getX() - .5, pos.getY() + .5, pos.getZ() + .5, this, "hoe"));
+			//			farmers.add(new Farmer(world, pos.getX() - .5, pos.getY() + .5, pos.getZ() + .5, this, "hoe"));
 		}
 		for (Farmer f : farmers)
 			f.update();
@@ -111,7 +112,14 @@ public class TileFarm extends TileEntity implements ITickable {
 		@Override
 		public void update() {
 			super.update();
-			if (world.getTotalWorldTime() % 10 == 0 && !moving) {
+			if (!world.isRemote && world.getTotalWorldTime() % 10 == 0 && mover == null) {
+				if (true) {
+					move(Stream.of(tile.pos.add(6, 6, 6), tile.pos.add(-6, 3, -6)).sorted((p1, p2) -> Double.compare(getPosition().distanceTo(new Vec3d(p2)), getPosition().distanceTo(new Vec3d(p1)))).findFirst().orElse(null), 2);
+					if (mover != null)
+						FarmMod.INSTANCE.snw.sendToDimension(new MessageToC(tile), world.provider.getDimension());
+					return;
+				}
+				BlockPos pp1 = tile.pos.add(6, 10, 6), pp2 = tile.pos.add(-6, 6, -6);
 				List<BlockPos> valids = new ArrayList<>();
 				for (BlockPos p : BlockPos.getAllInBox(tile.pos.add(-11, -11, -11), tile.pos.add(11, 11, 11))) {
 					if (harvestPred.test(p)) {
@@ -121,6 +129,8 @@ public class TileFarm extends TileEntity implements ITickable {
 				valids.sort((p2, p1) -> Double.compare(getPosition().distanceTo(new Vec3d(p2)), getPosition().distanceTo(new Vec3d(p1))));
 				if (!valids.isEmpty()) {
 					move(valids.get(0), 2);
+					if (mover != null)
+						FarmMod.INSTANCE.snw.sendToDimension(new MessageToC(tile), world.provider.getDimension());
 				}
 			}
 		}
@@ -167,6 +177,9 @@ public class TileFarm extends TileEntity implements ITickable {
 						}
 					}
 				};
+				worker = (p, inv) -> {
+				};
+				harvestPred = p -> world.rand.nextDouble() < .002;
 			} else if (clas.equals("hoe")) {
 				s = new ItemStack(Items.DIAMOND_HOE);
 				harvestPred = p -> {

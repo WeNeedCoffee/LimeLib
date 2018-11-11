@@ -4,7 +4,10 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.Validate;
 
+import it.unimi.dsi.fastutil.ints.Int2LongMap;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -13,11 +16,11 @@ import net.minecraftforge.common.util.INBTSerializable;
 public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
 
 	protected final World world;
-	public double posX, posY, posZ, lastX, lastY, lastZ;
-	protected double speed, totalDistance;
-	protected boolean moving;
-	protected Vec3d dest, dir;
 	public int id;
+	public double posX, posY, posZ, lastX, lastY, lastZ;
+	protected Mover mover;
+	protected float pitch, yaw;
+	private Int2LongMap syncMap = new Int2LongOpenHashMap();
 
 	public PseudoEntity(World world, double posX, double posY, double posZ) {
 		super();
@@ -25,6 +28,7 @@ public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
 		this.posX = posX;
 		this.posY = posY;
 		this.posZ = posZ;
+		this.syncMap.defaultReturnValue(Long.MAX_VALUE);
 	}
 
 	@Override
@@ -33,19 +37,8 @@ public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
 		nbt.setDouble("x", posX);
 		nbt.setDouble("y", posY);
 		nbt.setDouble("z", posZ);
-		nbt.setDouble("speed", speed);
-		nbt.setDouble("dist", totalDistance);
-		nbt.setBoolean("moving", moving);
-		if (dest != null) {
-			nbt.setDouble("ax", dest.x);
-			nbt.setDouble("ay", dest.y);
-			nbt.setDouble("az", dest.z);
-		}
-		if (dir != null) {
-			nbt.setDouble("bx", dir.x);
-			nbt.setDouble("by", dir.y);
-			nbt.setDouble("bz", dir.z);
-		}
+		if (mover != null)
+			nbt.setTag("mover", mover.serializeNBT());
 		return nbt;
 	}
 
@@ -54,41 +47,32 @@ public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
 		posX = lastX = nbt.getDouble("x");
 		posY = lastY = nbt.getDouble("y");
 		posZ = lastZ = nbt.getDouble("z");
-		speed = nbt.getDouble("speed");
-		totalDistance = nbt.getDouble("dist");
-		moving = nbt.getBoolean("moving");
-		if (nbt.hasKey("ax")) {
-			dest = new Vec3d(nbt.getDouble("ax"), nbt.getDouble("ay"), nbt.getDouble("az"));
-		}
-		if (nbt.hasKey("bx")) {
-			dir = new Vec3d(nbt.getDouble("bx"), nbt.getDouble("by"), nbt.getDouble("bz"));
-		}
+		if (nbt.hasKey("mover"))
+			mover = Mover.of(nbt.getCompoundTag("mover"));
 	}
 
 	public void update() {
 		lastX = posX;
 		lastY = posY;
 		lastZ = posZ;
-		if (moving) {
+		if (mover != null) {
 			Vec3d current = new Vec3d(posX, posY, posZ);
-			double distance = current.distanceTo(dest);
-			double distancePerTick = speed / 10;
-			double percent = distance / totalDistance;
+			double distance = current.distanceTo(mover.dest);
+			double distancePerTick = mover.speed / 10;
+			double percent = distance / mover.distance;
 			double diff2Max = Math.abs(.5 - percent) * -1 + 1;
 			distancePerTick *= diff2Max * 1.5;
 			if (distance < distancePerTick) {
-				posX = dest.x;
-				posY = dest.y;
-				posZ = dest.z;
-				moving = false;
-				dest = null;
-				dir = null;
+				posX = mover.dest.x;
+				posY = mover.dest.y;
+				posZ = mover.dest.z;
 				onArrival();
+				mover = null;
 			} else {
-				double scale = distancePerTick / dir.lengthVector();
-				posX += dir.x * scale;
-				posY += dir.y * scale;
-				posZ += dir.z * scale;
+				double scale = distancePerTick / mover.distance;
+				posX += mover.dir.x * scale;
+				posY += mover.dir.y * scale;
+				posZ += mover.dir.z * scale;
 			}
 		}
 	}
@@ -112,16 +96,71 @@ public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public void move(double x, double y, double z, double speed) {
+		Validate.isTrue(!world.isRemote, " don't move on client");
 		Validate.isTrue(speed > 0, "speed must not be negative");
-		this.dest = new Vec3d(x, y, z);
-		this.speed = speed;
-		this.dir = dest.subtract(posX, posY, posZ);
-		this.totalDistance = getPosition().distanceTo(dest);
-		this.moving = totalDistance > 0;
-		if (!moving) {
-			dest = null;
-			dir = null;
+		mover = Mover.of(getPosition(), new Vec3d(x, y, z), speed);
+		if (mover == null) {
 			onArrival();
+		} else {
+			//TODO send move to client
+			sync(SyncType.MOVEMENT);
+			yaw = (float) (Math.atan2(0, 0) - Math.atan2(mover.dir.z, mover.dir.x));
+
+		}
+	}
+
+	public void sync(SyncType type) {
+		syncMap.put(type.ordinal(), System.currentTimeMillis());
+	}
+
+	public AxisAlignedBB hitbox() {
+		return null;
+	}
+
+	protected enum SyncType {
+		POSITION, MOVEMENT;
+	}
+
+	public static class Mover {
+		public final double speed, distance;
+		public final Vec3d dest, dir;
+
+		public static Mover of(Vec3d pos, Vec3d dest, double speed) {
+			double distance = pos.distanceTo(dest);
+			if (distance <= 0)
+				return null;
+			return new Mover(speed, distance, dest, dest.subtract(pos));
+		}
+
+		public static Mover of(NBTTagCompound nbt) {
+			return new Mover(nbt);
+		}
+
+		private Mover(double speed, double distance, Vec3d dest, Vec3d dir) {
+			this.speed = speed;
+			this.distance = distance;
+			this.dest = dest;
+			this.dir = dir;
+		}
+
+		private Mover(NBTTagCompound nbt) {
+			this.speed = nbt.getDouble("speed");
+			this.distance = nbt.getDouble("dist");
+			this.dest = new Vec3d(nbt.getDouble("dex"), nbt.getDouble("dey"), nbt.getDouble("dez"));
+			this.dir = new Vec3d(nbt.getDouble("dix"), nbt.getDouble("diy"), nbt.getDouble("diz"));
+		}
+
+		public NBTTagCompound serializeNBT() {
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setDouble("speed", speed);
+			nbt.setDouble("dist", distance);
+			nbt.setDouble("dex", dest.x);
+			nbt.setDouble("dey", dest.y);
+			nbt.setDouble("dez", dest.z);
+			nbt.setDouble("dix", dir.x);
+			nbt.setDouble("diy", dir.y);
+			nbt.setDouble("diz", dir.z);
+			return nbt;
 		}
 	}
 

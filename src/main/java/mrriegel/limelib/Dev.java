@@ -2,6 +2,8 @@ package mrriegel.limelib;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -11,6 +13,7 @@ import javax.vecmath.Vector4f;
 
 import org.lwjgl.opengl.GL11;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -21,6 +24,9 @@ import mrriegel.limelib.tile.IHUDProvider;
 import mrriegel.limelib.util.LimeCapabilities;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -31,16 +37,26 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -59,9 +75,21 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.model.animation.Animation;
+import net.minecraftforge.client.model.animation.AnimationTESR;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.animation.Event;
+import net.minecraftforge.common.animation.TimeValues;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.model.animation.CapabilityAnimation;
+import net.minecraftforge.common.model.animation.IAnimationStateMachine;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.common.property.Properties;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.BlockFluidClassic;
@@ -69,6 +97,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -107,6 +136,17 @@ public class Dev {
 			if (gend != false)
 				System.out.println(p);
 		}, 30);
+		GameRegistry.registerWorldGenerator((Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) -> {
+			if (random.nextDouble() > .2 || !false)
+				return;
+			int y = random.nextInt(10) + 99;
+			BlockPos pos = new BlockPos(chunkX * 16, y, chunkZ * 16).add(1, 0, 1);
+			int size = random.nextInt(3) + 4;
+			for (int x = 0; x < size; x++)
+				for (int z = 0; z < size; z++) {
+					world.setBlockState(pos.add(x, 0, z), Blocks.PLANKS.getDefaultState(), 2);
+				}
+		}, 20);
 	}
 
 	@SubscribeEvent
@@ -186,6 +226,180 @@ public class Dev {
 				}
 
 			});
+	}
+
+	public static class TT extends TileEntity {
+
+		IAnimationStateMachine asm;
+		TimeValues.VariableValue trigger = new TimeValues.VariableValue(4);
+
+		public TT() {
+			asm = ModelLoaderRegistry.loadASM(new ResourceLocation(LimeLib.MODID, "asms/block/rott.json"), ImmutableMap.of("trigger", trigger));
+		}
+
+		@Override
+		public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+			return capability == CapabilityAnimation.ANIMATION_CAPABILITY || super.hasCapability(capability, facing);
+		}
+
+		@Override
+		public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+			if (capability == CapabilityAnimation.ANIMATION_CAPABILITY) {
+				if (world.rand.nextDouble() < .01) {
+					//					System.out.println("newww");
+					asm = ModelLoaderRegistry.loadASM(new ResourceLocation(LimeLib.MODID, "asms/block/rott.json"), ImmutableMap.of("trigger", trigger));
+				}
+				return (T) asm;
+			}
+			return super.getCapability(capability, facing);
+		}
+
+		public void change() {
+			if (world.isRemote) {
+				trigger.setValue(Animation.getWorldTime(world, Animation.getPartialTickTime()));
+			}
+		}
+
+		@Override
+		public boolean hasFastRenderer() {
+			return true;
+		}
+
+	}
+
+	@SubscribeEvent
+	public static void register(Register event) {
+		if (event.getGenericType() == Block.class) {
+			Block b = new Block(Material.SPONGE) {
+				@Override
+				public TileEntity createTileEntity(World world, IBlockState state) {
+					return new TT();
+				}
+
+				@Override
+				public boolean hasTileEntity(IBlockState state) {
+					return true;
+				}
+
+				@Override
+				public EnumBlockRenderType getRenderType(IBlockState state) {
+					return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+				}
+
+				@Override
+				public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
+					return false;
+				}
+
+				@Override
+				public boolean isOpaqueCube(IBlockState state) {
+					return false;
+				}
+
+				@Override
+				public boolean isFullCube(IBlockState state) {
+					return false;
+				}
+
+				@Override
+				public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+					if (worldIn.isRemote && hand == EnumHand.MAIN_HAND) {
+						((TT) worldIn.getTileEntity(pos)).change();
+					}
+					return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+				}
+
+				@Override
+				protected BlockStateContainer createBlockState() {
+					return new ExtendedBlockState(this, new IProperty[] {}, new IUnlistedProperty[] { Properties.AnimationProperty });
+				}
+			};
+			b.setRegistryName("rott");
+			b.setUnlocalizedName("test block");
+			event.getRegistry().register(b);
+			GameRegistry.registerTileEntity(TT.class, b.getRegistryName());
+			ClientRegistry.bindTileEntitySpecialRenderer(TT.class, new AnimationTESR<TT>() {
+				@Override
+				public void handleEvents(TT te, float time, Iterable<Event> pastEvents) {
+					//					System.out.println(time + " zecke " + pastEvents.getClass());
+				}
+			});
+			bb = new Block(Material.ROCK) {
+				{
+					setDefaultState(getDefaultState().withProperty(master, true));
+				}
+
+				@Override
+				protected BlockStateContainer createBlockState() {
+					return new BlockStateContainer(this, master);
+				}
+
+				@Override
+				public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+					if (state.getValue(master)) {
+						worldIn.removeTileEntity(pos);
+						if (worldIn.getBlockState(pos.up()).getBlock() == this)
+							worldIn.destroyBlock(pos.up(), true);
+					} else {
+						worldIn.destroyBlock(pos.down(), true);
+					}
+				}
+
+				@Override
+				public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+					if (state.getValue(master)) {
+						if (worldIn.isAirBlock(pos.up()))
+							worldIn.setBlockState(pos.up(), getDefaultState().withProperty(master, false));
+						else
+							worldIn.destroyBlock(pos, true);
+					}
+				}
+
+				@Override
+				public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+					return worldIn.isAirBlock(pos.up());
+				}
+
+				@Override
+				public EnumBlockRenderType getRenderType(IBlockState state) {
+					return state.getValue(master) ? EnumBlockRenderType.MODEL : EnumBlockRenderType.INVISIBLE;
+				}
+
+				@Override
+				public int getMetaFromState(IBlockState state) {
+					return 0;
+				}
+
+				@Override
+				public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+					return state.getValue(master) ? Collections.singletonList(new ItemStack(this)) : Collections.emptyList();
+				}
+
+				@Override
+				public TileEntity createTileEntity(World world, IBlockState state) {
+					return state.getValue(master) ? new TTT() : null;
+				}
+
+				@Override
+				public boolean hasTileEntity(IBlockState state) {
+					return state.getValue(master);
+				}
+			};
+			bb.setRegistryName("double");
+			bb.setUnlocalizedName("double block");
+			bb.setCreativeTab(CreativeTabs.COMBAT);
+			GameRegistry.registerTileEntity(TTT.class, bb.getRegistryName());
+
+		} else if (event.getGenericType() == Item.class) {
+			event.getRegistry().register(new ItemBlock(bb).setRegistryName(bb.getRegistryName()).setUnlocalizedName(bb.getUnlocalizedName()));
+		}
+	}
+
+	private static final PropertyBool master = PropertyBool.create("master");
+	static Block bb;
+
+	public static class TTT extends TileEntity {
+
 	}
 
 	@SubscribeEvent
@@ -351,6 +565,8 @@ public class Dev {
 							count++;
 						}
 					}
+				if (count == 0)
+					throw new RuntimeException("out");
 				color = new Color((red / count), (green / count), (blue / count)).getRGB();
 				colorMap.put(ec, color);
 			}
@@ -372,7 +588,26 @@ public class Dev {
 			System.out.println("sds");
 			BlockPos pb = new BlockPos(player);
 			TileEntity t = player.world.getTileEntity(pb.down());
-
+			try {
+				NBTTagCompound creep = new EntityCreeper(player.world).serializeNBT();
+				EntityLivingBase en = (EntityLivingBase) EntityList.createEntityFromNBT(creep, player.world);
+				int looting = 1;
+				boolean recentHit = true;
+				en.captureDrops = true;
+				en.capturedDrops.clear();
+				boolean canDrop = (boolean) ReflectionHelper.findMethod(EntityLivingBase.class, "canDropLoot", "func_146066_aG").invoke(en);
+				if (canDrop && player.world.getGameRules().getBoolean("doMobLoot")) {
+					ReflectionHelper.findMethod(EntityLivingBase.class, "dropLoot", "func_184610_a", boolean.class, int.class, DamageSource.class).invoke(en, recentHit, looting, DamageSource.GENERIC);
+				}
+				en.captureDrops = false;
+				if (!ForgeHooks.onLivingDrops(en, DamageSource.GENERIC, en.capturedDrops, looting, recentHit)) {
+					for (EntityItem item : en.capturedDrops) {
+						player.inventory.addItemStackToInventory(item.getItem());
+					}
+				}
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
+				e1.printStackTrace();
+			}
 			new Thread(() -> {
 				try {
 					Thread.sleep(3000);
@@ -389,7 +624,9 @@ public class Dev {
 					//					Block.spawnAsEntity(player.world, pb, e);
 				});
 			}).start();
+			player.world.spawnParticle(EnumParticleTypes.FLAME, player.posX, player.posY, player.posZ, 0, 0, 0);
 		} else {
+			System.out.println("particle");
 			//			Thread.dumpStack();
 			CommonParticle p = new CommonParticle(player.posX, player.posY + 1, player.posZ);
 			p.setMotions(pp -> {
@@ -399,6 +636,7 @@ public class Dev {
 			});
 			p.setMaxAge2(360);
 			//			LimeLib.proxy.renderParticle(p);
+
 		}
 	}
 

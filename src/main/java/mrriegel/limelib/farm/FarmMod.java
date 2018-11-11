@@ -27,7 +27,9 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 //@Mod(modid = "farmmod", name = "Farmer", version = "1.0.0")
 //@EventBusSubscriber
@@ -36,8 +38,11 @@ public class FarmMod {
 	@Instance("farmmod")
 	public static FarmMod INSTANCE;
 
+	public final SimpleNetworkWrapper snw = new SimpleNetworkWrapper("farm");
+
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		snw.registerMessage(MessageToC.class, MessageToC.class, 0, Side.CLIENT);
 	}
 
 	@Mod.EventHandler
@@ -56,6 +61,7 @@ public class FarmMod {
 				if (t instanceof TileFarm) {
 					TileFarm tf = (TileFarm) t;
 					for (Farmer ent : tf.farmers) {
+						//						System.out.println(ent.posX+" "+ent.lastX);
 						double x = (ent.lastX + (ent.posX - ent.lastX) * event.getPartialTicks()) - TileEntityRendererDispatcher.staticPlayerX;
 						double y = (ent.lastY + (ent.posY - ent.lastY) * event.getPartialTicks()) - TileEntityRendererDispatcher.staticPlayerY;
 						double z = (ent.lastZ + (ent.posZ - ent.lastZ) * event.getPartialTicks()) - TileEntityRendererDispatcher.staticPlayerZ;

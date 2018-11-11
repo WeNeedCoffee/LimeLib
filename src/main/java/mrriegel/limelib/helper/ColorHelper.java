@@ -2,9 +2,10 @@ package mrriegel.limelib.helper;
 
 import java.awt.Color;
 
+import org.apache.commons.lang3.Validate;
+
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.math.MathHelper;
 
 public class ColorHelper {
 
@@ -17,9 +18,8 @@ public class ColorHelper {
 	}
 
 	public static int getRGB(int color, int alpha) {
-		alpha = MathHelper.clamp(alpha, 0, 255);
-		Color c = new Color(color, true);
-		return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha).getRGB();
+		Validate.isTrue(alpha >= 0 && alpha <= 255, "alpha out of range " + alpha);
+		return new Color(getRed(color), getGreen(color), getBlue(color), alpha).getRGB();
 	}
 
 	public static void glColor(int color) {

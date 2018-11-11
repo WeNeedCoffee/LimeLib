@@ -5,11 +5,11 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.util.vector.Vector3f;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -21,7 +21,8 @@ import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 
 public class BakedQuadBuilder {
 
-	private static Map<Vector3f, EnumFacing> dirMap = new Object2ObjectArrayMap<>();
+	private static Map<Vector3f, EnumFacing> dirMap //= new Object2ObjectArrayMap<>(6);
+			= new TreeMap<>((v1, v2) -> Integer.compare((v1.x + "" + v1.y + "" + v1.z).hashCode(), (v2.x + "" + v2.y + "" + v2.z).hashCode()));
 	static {
 		for (EnumFacing f : EnumFacing.VALUES) {
 			Vec3i v = f.getDirectionVec();
@@ -36,7 +37,7 @@ public class BakedQuadBuilder {
 	private int tint = -1;
 	private EnumFacing face;
 	private boolean diffuse = true;
-	private Rotation rotation = Rotation.D_0;
+	private Rotation textureRotation = Rotation.D_0;
 
 	public BakedQuadBuilder(VertexFormat format, TextureAtlasSprite sprite) {
 		this.format = Objects.requireNonNull(format);
@@ -50,6 +51,18 @@ public class BakedQuadBuilder {
 
 	public BakedQuad build(boolean unpacked) {
 		Validate.isTrue(vertCount == 4, "too few vertices");
+		Vector3f normal = Vector3f.cross(Vector3f.sub(vertices[2].pos, vertices[1].pos, null), Vector3f.sub(vertices[0].pos, vertices[1].pos, null), null).normalise(null);
+		double degree = 1000;
+		Vector3f tmp = null;
+		for (Vector3f f : dirMap.keySet()) {
+			double d = Math.acos(Vector3f.dot(normal, f));
+			if (d < degree) {
+				degree = d;
+				tmp = f;
+			}
+		}
+		face = dirMap.get(tmp);
+		Validate.isTrue(face != null, "no face set");
 		ByteBuffer bb = null;
 		UnpackedBakedQuad.Builder builder = null;
 		if (unpacked) {
@@ -61,25 +74,13 @@ public class BakedQuadBuilder {
 		} else
 			bb = ByteBuffer.allocate(format.getSize() * 4);
 		Vertex temp;
-		for (int i = 0; i < rotation.t; i++) {
+		for (int i = 0; i < textureRotation.t; i++) {
 			temp = vertices[0];
 			for (int j = 0; j < vertices.length - 1; j++) {
 				vertices[j] = vertices[j + 1];
 			}
 			vertices[vertices.length - 1] = temp;
 		}
-		Vector3f normal = Vector3f.cross(Vector3f.sub(vertices[2].pos, vertices[1].pos, null), Vector3f.sub(vertices[0].pos, vertices[1].pos, null), null).normalise(null);
-		float degree = 1000;
-		Vector3f tmp = null;
-		for (Vector3f f : dirMap.keySet()) {
-			float d = Vector3f.dot(normal, f);
-			if (d < degree) {
-				degree = d;
-				tmp = f;
-			}
-		}
-		face = dirMap.get(tmp);
-		Validate.isTrue(face != null, "no face set");
 		for (int i = 0; i < vertices.length; i++) {
 			Vertex v = vertices[i];
 			float[] colors = { ColorHelper.getRed(v.color) / 255f, ColorHelper.getGreen(v.color) / 255f, ColorHelper.getBlue(v.color) / 255f, ColorHelper.getAlpha(v.color) / 255f };
@@ -162,7 +163,13 @@ public class BakedQuadBuilder {
 		IntBuffer ib = bb.asIntBuffer();
 		int[] ints = new int[ib.remaining()];
 		ib.get(ints);
-		return new BakedQuad(ints, tint, face, sprite, diffuse, format);
+		BakedQuad quad = new BakedQuad(ints, tint, face, sprite, diffuse, format);
+		if (unpacked) {
+			builder = new UnpackedBakedQuad.Builder(format);
+			quad.pipe(builder);
+			return builder.build();
+		}
+		return quad;
 	}
 
 	private static void nope() {
@@ -192,8 +199,8 @@ public class BakedQuadBuilder {
 		return this;
 	}
 
-	public BakedQuadBuilder setRotation(Rotation rotation) {
-		this.rotation = Objects.requireNonNull(rotation);
+	public BakedQuadBuilder setTextureRotation(Rotation rotation) {
+		this.textureRotation = Objects.requireNonNull(rotation);
 		return this;
 	}
 
@@ -224,6 +231,11 @@ public class BakedQuadBuilder {
 
 			public Builder setPos(Vector3f pos) {
 				vertex.pos = pos;
+				return this;
+			}
+
+			public Builder setPos(float x, float y, float z) {
+				vertex.pos = new Vector3f(x, y, z);
 				return this;
 			}
 

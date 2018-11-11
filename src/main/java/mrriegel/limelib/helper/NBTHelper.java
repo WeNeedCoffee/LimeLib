@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -172,7 +173,7 @@ public class NBTHelper {
 
 	}
 
-	private static Map<Class<?>, INBTable<?>> cache = new HashMap<>();
+	private static Map<Class<?>, INBTable<?>> cache = new IdentityHashMap<>();
 
 	private static INBTable<?> getINBT(Class<?> clazz) {
 		if (cache.containsKey(clazz))

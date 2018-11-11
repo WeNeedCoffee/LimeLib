@@ -343,10 +343,11 @@ public class RecipeHelper {
 					if (!dir.exists())
 						dir.mkdirs();
 					for (int i = 0; i < names.size(); i++) {
-						File file = new File(dir, names.get(i) + ".json");
-						FileWriter fw = new FileWriter(file);
-						fw.write(e.getValue().get(i).getRight());
-						fw.close();
+						//						File file = new File(dir, names.get(i) + ".json");
+						//						FileWriter fw = new FileWriter(file);
+						//						fw.write(e.getValue().get(i).getRight());
+						//						fw.close();
+						Files.write(new File(dir, names.get(i) + ".json").toPath(), e.getValue().get(i).getRight().getBytes());
 					}
 				}
 			}
@@ -458,7 +459,7 @@ public class RecipeHelper {
 		addRecipe(result.getItem().getRegistryName().getResourcePath(), json);
 	}
 
-	private static void addRecipe(String name, Object json) {
+	private static void addRecipe(String name, Map<String, Object> json) {
 		String id = Utils.getCurrentModID();
 		List<Pair<String, String>> recs = recipes.get(id);
 		if (recs == null)
