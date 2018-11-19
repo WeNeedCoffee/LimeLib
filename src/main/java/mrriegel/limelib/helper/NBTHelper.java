@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -49,6 +51,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
@@ -197,6 +200,7 @@ public class NBTHelper {
 	}
 
 	static {
+		System.out.println("kloppo");
 		register(new INBTable<Object>() {
 			private Object2ByteOpenHashMap<Object> class2id = new Object2ByteOpenHashMap<>();
 			{
@@ -295,7 +299,8 @@ public class NBTHelper {
 			}
 
 		});
-		register(new INBTable<Object>() {
+		INBTable<Object> nn;
+		register(nn = new INBTable<Object>() {
 			private Object2ByteOpenHashMap<Object> class2id = new Object2ByteOpenHashMap<>();
 			{
 				byte id = 1;
@@ -325,13 +330,14 @@ public class NBTHelper {
 					for (int i = 0; i < arrB.length; i++)
 						bs.set(i, arrB[i]);
 					NBTTagCompound nbt = new NBTTagCompound();
-					if (arrB.length <= Byte.MAX_VALUE) {
-						nbt.setByte("s", (byte) arrB.length);
-					} else if (arrB.length <= Short.MAX_VALUE) {
-						nbt.setShort("s", (short) arrB.length);
-					} else {
-						nbt.setInteger("s", arrB.length);
-					}
+					if (arrB.length % 8 != 0)
+						if (arrB.length <= Byte.MAX_VALUE) {
+							nbt.setByte("s", (byte) arrB.length);
+						} else if (arrB.length <= Short.MAX_VALUE) {
+							nbt.setShort("s", (short) arrB.length);
+						} else {
+							nbt.setInteger("s", arrB.length);
+						}
 					nbt.setTag("v", new NBTTagByteArray(bs.toByteArray()));
 					return nbt;
 				case 2:
@@ -372,12 +378,12 @@ public class NBTHelper {
 					throw new RuntimeException("arrays1");
 				case 1:
 					NBTTagCompound tag = (NBTTagCompound) nbt;
-					int num = tag.getInteger("s");
-					BitSet bs = BitSet.valueOf(tag.getByteArray("v"));
-					int diff = bs.length() - num;
+					byte[] arr = tag.getByteArray("v");
+					int num = tag.hasKey("s") ? tag.getInteger("s") : arr.length << 3;
+					BitSet bs = BitSet.valueOf(arr);
 					boolean[] ret = new boolean[num];
 					for (int i = 0; i < num; i++) {
-						ret[i] = bs.get(i + diff/* is diff necessary?*/);
+						ret[i] = bs.get(i);
 						//TODO test
 					}
 					return ret;
@@ -438,6 +444,21 @@ public class NBTHelper {
 				}
 			}
 		});
+		Random ran = new Random();
+		for (int i = 0; i < 20 && false; i++) {
+			int[] a1 = ran.ints((ran.nextInt(3) + 1) * 8).toArray();
+			boolean[] r1 = new boolean[a1.length];
+			for (int j = 0; j < a1.length; j++)
+				r1[j] = a1[j] % 2 == 0;
+			System.out.println("-------------------------");
+			System.out.println(Arrays.toString(r1));
+			NBTBase nb = nn.toNBT(r1);
+			boolean[] r2 = (boolean[]) nn.toValue(nb, boolean[].class);
+			System.out.println(Arrays.toString(r2));
+			System.out.println(nb);
+		}
+		if (!true)
+			System.out.println(5 / 0);
 		register(of(null, (n, c) -> {
 			Object[] enums = c.getEnumConstants();
 			int index = ((NBTTagShort) n).getShort();
@@ -721,6 +742,7 @@ public class NBTHelper {
 				throw new RuntimeException("something went really wrong");
 			if (nbt.hasKey(name + "_n0lls", 11)) {
 				int[] nulls = nbt.getIntArray(name + "_n0lls");
+				//TODO support queue
 				if (values instanceof List)
 					for (int i : nulls) {
 						((List<T>) values).add(i, null);
@@ -834,7 +856,7 @@ public class NBTHelper {
 		Map<K, V> values = new HashMap<>();
 		if (!"".isEmpty()) {
 			if (keyClazz == boolean.class || keyClazz == Boolean.class) {
-				values = new HashMap<>();
+				values = new Object2ObjectArrayMap<>(2);
 			} else if (keyClazz == byte.class || keyClazz == Byte.class) {
 				values = (Map<K, V>) new Byte2ObjectOpenHashMap<>();
 			} else if (keyClazz == char.class || keyClazz == Character.class) {

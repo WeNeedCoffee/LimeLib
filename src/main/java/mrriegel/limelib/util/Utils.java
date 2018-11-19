@@ -5,7 +5,13 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -172,6 +178,16 @@ public class Utils {
 
 	public static void runNextTick(Runnable run, IThreadListener itl) {
 		new Thread(() -> itl.addScheduledTask(run)).start();
+	}
+
+	private static Cache<String, Logger> loggers = CacheBuilder.newBuilder().build();
+
+	public static Logger logger() {
+		try {
+			return loggers.get(getCurrentModID(), () -> LogManager.getLogger(getCurrentModID()));
+		} catch (ExecutionException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

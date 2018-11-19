@@ -7,26 +7,22 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -109,27 +105,4 @@ public class FarmMod {
 		}
 
 	}
-
-	@SubscribeEvent
-	public static void tick(TickEvent event) {
-		//		if (ent != null && ent.world.isRemote && event.phase == Phase.END) {
-		//			ent.update();
-		//		}
-	}
-
-	@SubscribeEvent
-	public static void jump(LivingJumpEvent event) {
-		if (event.getEntityLiving() instanceof EntityPlayerSP) {
-			EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-			//			if (ent == null) {
-			//				ent = new PseudoEntity(player.world, player.posX, player.posY, player.posZ);
-			//			} else {
-			//				Random ran = new Random();
-			//				BlockPos p = player.getPosition().add(Math.sin(ran.nextDouble()) * 4, Math.sin(ran.nextDouble()) * 4, Math.sin(ran.nextDouble()) * 4);
-			//				//				ent.move(player.posX, player.posY+.5, player.posZ, .2);
-			//				ent.move(p, .25);
-			//			}
-		}
-	}
-
 }

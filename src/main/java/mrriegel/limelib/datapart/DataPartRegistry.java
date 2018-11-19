@@ -19,8 +19,6 @@ import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.network.DataPartSyncMessage;
 import mrriegel.limelib.network.PacketHandler;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -64,6 +62,8 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public BlockPos nextPos(BlockPos pos) {
+		if (getDataPart(pos) == null)
+			return pos;
 		Chunk chunk = world.getChunkFromBlockCoords(pos);
 		List<BlockPos> posses = StreamSupport.stream(BlockPos.getAllInBox(pos.add(7, 7, 7), pos.add(-7, -7, -7)).spliterator(), false).//
 				filter(p -> world.getChunkFromBlockCoords(p) == chunk).sorted((p1, p2) -> {
@@ -120,8 +120,7 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 		if (world != null && !world.isRemote && (dp == null || dp.clientValid())) {
 			DataPartSyncMessage message = new DataPartSyncMessage(dp, pos, partMap.values().stream().map(DataPart::getPos).collect(Collectors.toList()));
 			if (toAllPlayers)
-				for (EntityPlayer player : world.playerEntities)
-					PacketHandler.sendTo(message, (EntityPlayerMP) player);
+				PacketHandler.sendToDimension(message, world.provider.getDimension());
 			else
 				PacketHandler.sendToAllAround(message, new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 18));
 		}

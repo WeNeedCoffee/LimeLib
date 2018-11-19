@@ -49,7 +49,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
 
-@EventBusSubscriber(modid = LimeLib.MODID, value = { Side.CLIENT })
+@EventBusSubscriber(modid = LimeLib.MODID, value = Side.CLIENT)
 public class ClientEventHandler {
 
 	@SubscribeEvent

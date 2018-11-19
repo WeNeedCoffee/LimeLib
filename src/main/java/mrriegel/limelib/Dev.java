@@ -356,6 +356,14 @@ public class Dev {
 				}
 
 				@Override
+				public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+					if (!state.getValue(master) && worldIn.getBlockState(pos.down()).getBlock() == this) {
+						return onBlockActivated(worldIn, pos.down(), worldIn.getBlockState(pos.down()), playerIn, hand, facing, hitX, hitY, hitZ);
+					}
+					return false;
+				}
+
+				@Override
 				public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
 					return worldIn.isAirBlock(pos.up());
 				}

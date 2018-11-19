@@ -28,7 +28,6 @@ public class WorldAddition implements INBTSerializable<NBTTagCompound> {
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@CapabilityInject(WorldAddition.class)
@@ -53,7 +52,7 @@ public class WorldAddition implements INBTSerializable<NBTTagCompound> {
 		}, WorldAddition::new);
 	}
 
-	public static WorldAddition getAdditions(World world) {
+	public static WorldAddition getAddition(World world) {
 		return (world == null || !world.hasCapability(CAPA, null)) ? null : world.getCapability(CAPA, null);
 	}
 

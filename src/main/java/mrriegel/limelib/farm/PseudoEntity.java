@@ -1,8 +1,12 @@
 package mrriegel.limelib.farm;
 
 import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
 
 import org.apache.commons.lang3.Validate;
+
+import com.mojang.authlib.GameProfile;
 
 import it.unimi.dsi.fastutil.ints.Int2LongMap;
 import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
@@ -11,6 +15,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
@@ -21,14 +27,23 @@ public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
 	protected Mover mover;
 	protected float pitch, yaw;
 	private Int2LongMap syncMap = new Int2LongOpenHashMap();
+	protected FakePlayer fakePlayer;
+
+	public PseudoEntity(World world) {
+		this(world, 0, 0, 0);
+	}
 
 	public PseudoEntity(World world, double posX, double posY, double posZ) {
-		super();
 		this.world = Objects.requireNonNull(world);
 		this.posX = posX;
 		this.posY = posY;
 		this.posZ = posZ;
 		this.syncMap.defaultReturnValue(Long.MAX_VALUE);
+		if (!world.isRemote) {
+			Random ran = new Random(hashCode());
+			UUID uuid = new UUID(ran.nextLong(), ran.nextLong());
+			this.fakePlayer = new FakePlayer((WorldServer) world, new GameProfile(uuid, "[" + uuid.toString() + "]"));
+		}
 	}
 
 	@Override
@@ -60,8 +75,10 @@ public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
 			double distance = current.distanceTo(mover.dest);
 			double distancePerTick = mover.speed / 10;
 			double percent = distance / mover.distance;
+			if (percent > 1)
+				throw new RuntimeException("position was changed while moving");
 			double diff2Max = Math.abs(.5 - percent) * -1 + 1;
-			distancePerTick *= diff2Max * 1.5;
+			distancePerTick *= diff2Max;
 			if (distance < distancePerTick) {
 				posX = mover.dest.x;
 				posY = mover.dest.y;
@@ -81,6 +98,16 @@ public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
 	}
 
 	protected void onDeath() {
+	}
+
+	public void setPosition(Vec3d pos) {
+		setPosition(pos.x, pos.y, pos.z);
+	}
+
+	public void setPosition(double x, double y, double z) {
+		posX = x;
+		posY = y;
+		posZ = z;
 	}
 
 	public Vec3d getPosition() {
@@ -103,7 +130,8 @@ public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
 			onArrival();
 		} else {
 			//TODO send move to client
-			sync(SyncType.MOVEMENT);
+			if (mover.distance > 0)
+				sync(SyncType.MOVEMENT);
 			yaw = (float) (Math.atan2(0, 0) - Math.atan2(mover.dir.z, mover.dir.x));
 
 		}
@@ -126,8 +154,10 @@ public class PseudoEntity implements INBTSerializable<NBTTagCompound> {
 		public final Vec3d dest, dir;
 
 		public static Mover of(Vec3d pos, Vec3d dest, double speed) {
+			if (pos.equals(dest))
+				return new Mover(speed, 0, dest, Vec3d.ZERO);
 			double distance = pos.distanceTo(dest);
-			if (distance <= 0)
+			if (distance <= 0 && false)
 				return null;
 			return new Mover(speed, distance, dest, dest.subtract(pos));
 		}
