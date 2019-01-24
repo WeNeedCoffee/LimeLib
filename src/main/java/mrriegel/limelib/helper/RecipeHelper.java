@@ -319,7 +319,7 @@ public class RecipeHelper {
 
 	//1.13
 
-	private final static Map<String, List<Pair<String, String>>> recipes = new HashMap<>();
+	private static final Map<String, List<Pair<String, String>>> recipes = new HashMap<>();
 
 	public static void generateFiles() {
 		if (!dev)
@@ -459,12 +459,17 @@ public class RecipeHelper {
 		addRecipe(result.getItem().getRegistryName().getResourcePath(), json);
 	}
 
-	private static void addRecipe(String name, Map<String, Object> json) {
+	public static void addRecipe(String name, Map<String, Object> json) {
 		String id = Utils.getCurrentModID();
-		List<Pair<String, String>> recs = recipes.get(id);
-		if (recs == null)
-			recipes.put(id, recs = new ArrayList<>());
-		recs.add(Pair.of(name, Utils.getGSON().toJson(json)));
+		recipes.computeIfAbsent(id, s -> {
+			List<Pair<String, String>> list = new ArrayList<>();
+			list.add(Pair.of(name, Utils.getGSON().toJson(json)));
+			return list;
+		});
+		//		List<Pair<String, String>> recs = recipes.get(id);
+		//		if (recs == null)
+		//			recipes.put(id, recs = new ArrayList<>());
+		//		recs.add(Pair.of(name, Utils.getGSON().toJson(json)));
 	}
 
 }

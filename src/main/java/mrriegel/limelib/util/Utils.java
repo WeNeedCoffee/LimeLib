@@ -38,22 +38,24 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class Utils {
 
-	private static GsonBuilder GSONBUILDER;
-	private static Gson GSON;
+	private static GsonBuilder gsonBuilder;
+	private static Gson gson;
 
 	public static void init() {
+		//dummy
+		Utils.class.hashCode();
 	}
 
 	public static Gson getGSON() {
-		if (GSON != null)
-			return GSON;
-		if (GSONBUILDER == null)
+		if (gson != null)
+			return gson;
+		if (gsonBuilder == null)
 			registerDefaultAdapters();
-		return GSON = GSONBUILDER.create();
+		return gson = gsonBuilder.create();
 	}
 
 	private static void registerDefaultAdapters() {
-		GSONBUILDER = new GsonBuilder().setPrettyPrinting().//
+		gsonBuilder = new GsonBuilder().setPrettyPrinting().//
 				registerTypeAdapter(NBTTagCompound.class, new NBTLizer()).//
 				registerTypeAdapter(Item.class, new ItemLizer()).//
 				//				registerTypeAdapter(IForgeRegistryEntry.class, new RegistryEntryLizer()).//
@@ -62,8 +64,8 @@ public class Utils {
 
 	public static void registerGsonAdapter(Type type, Object adapter) {
 		getGSON();
-		GSONBUILDER.registerTypeAdapter(type, adapter);
-		GSON = null;
+		gsonBuilder.registerTypeAdapter(type, adapter);
+		gson = null;
 	}
 
 	public static String getCurrentModID() {

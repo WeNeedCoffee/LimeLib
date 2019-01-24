@@ -25,7 +25,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 public class InvHelper {
-
+	
 	public static boolean hasItemHandler(TileEntity tile, EnumFacing side) {
 		if (tile == null)
 			return false;

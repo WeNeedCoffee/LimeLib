@@ -61,7 +61,7 @@ public abstract class CommonContainer<T> extends Container {
 
 	protected List<Area> allowedSlots(ItemStack stack, IItemHandler inv, int index) {
 		return null;
-	};
+	}
 
 	public void update(EntityPlayer player) {
 	}

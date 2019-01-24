@@ -35,7 +35,7 @@ public class TypeAdapters {
 		}
 
 		@Override
-		public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
 			try {
 				return deserialize(JsonToNBT.getTagFromJson(json.getAsJsonObject().get("NBTNBT").getAsString()), context);
 			} catch (NBTException e) {

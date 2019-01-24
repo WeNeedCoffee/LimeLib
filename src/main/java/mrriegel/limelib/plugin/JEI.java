@@ -18,10 +18,6 @@ public class JEI implements IModPlugin {
 	private static IJeiRuntime runtime;
 
 	@Override
-	public void register(IModRegistry registry) {
-	}
-
-	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		runtime = jeiRuntime;
 	}

@@ -207,7 +207,7 @@ public class BakedQuadBuilder {
 	public enum Rotation {
 		D_0(0), D_90(1), D_180(2), D_270(3);
 
-		public int t;
+		int t;
 
 		Rotation(int t) {
 			this.t = t;

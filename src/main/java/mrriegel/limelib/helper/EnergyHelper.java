@@ -22,7 +22,7 @@ public class EnergyHelper {
 		FORGE("FE"), //
 		TESLA("Tesla");
 
-		public String unit;
+		String unit;
 
 		private Energy(String unit) {
 			this.unit = unit;
