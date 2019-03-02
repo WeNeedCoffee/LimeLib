@@ -1,4 +1,4 @@
-package kdp.limelib.helper;
+package kdp.limelib.helper.nbt;
 
 import java.util.Objects;
 
@@ -56,6 +56,11 @@ public class NBTBuilder {
 
 	public NBTBuilder set(String key, double value) {
 		nbt.setDouble(key, value);
+		return this;
+	}
+
+	public NBTBuilder set(String key, Object value) {
+		NBTHelper.set(nbt, key, value);
 		return this;
 	}
 }
