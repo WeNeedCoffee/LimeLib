@@ -1,5 +1,7 @@
 package kdp.limelib.helper.nbt;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,6 +36,11 @@ public class NBTBuilder {
 		return this;
 	}
 
+	public NBTBuilder set(String key, char value) {
+		set(key, (Object) value);
+		return this;
+	}
+
 	public NBTBuilder set(String key, short value) {
 		nbt.setShort(key, value);
 		return this;
@@ -61,6 +68,16 @@ public class NBTBuilder {
 
 	public NBTBuilder set(String key, Object value) {
 		NBTHelper.set(nbt, key, value);
+		return this;
+	}
+
+	public NBTBuilder setCollection(String key, Collection<?> values) {
+		NBTHelper.setCollection(nbt, key, values);
+		return this;
+	}
+
+	public NBTBuilder setMap(String key, Map<?, ?> values) {
+		NBTHelper.setMap(nbt, key, values);
 		return this;
 	}
 }

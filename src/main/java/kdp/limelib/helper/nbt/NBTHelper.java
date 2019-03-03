@@ -28,6 +28,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -91,6 +92,10 @@ public class NBTHelper {
 	public static final String VALUES = "_vAlUeS";
 	private static Set<INBTConverter<?>> converters = new ReferenceOpenHashSet<>();
 	private static Map<Class<?>, INBTConverter<?>> converterCache = new IdentityHashMap<>();
+
+	static {
+		init();
+	}
 
 	public static boolean hasTag(NBTTagCompound nbt, String key) {
 		return nbt != null && nbt.hasKey(key);
@@ -545,12 +550,14 @@ public class NBTHelper {
 		}
 	}
 
-	private static INBTConverter<?> getConverter(Class<?> clazz) {
+	private static @Nonnull INBTConverter<?> getConverter(Class<?> clazz) {
 		if (converterCache.containsKey(clazz))
 			return converterCache.get(clazz);
 		List<INBTConverter<?>> cons = converters.stream().filter(c -> c.classValid(clazz)).collect(Collectors.toList());
 		Validate.isTrue(cons.size() < 2, "More than one converter found for " + clazz.getName());
-		INBTConverter<?> con = cons.isEmpty() ? null : cons.get(0);
+		if (cons.isEmpty())
+			throw new IllegalArgumentException("No converter found for " + clazz.getName());
+		INBTConverter<?> con = cons.get(0);
 		converterCache.put(clazz, con);
 		return con;
 	}
@@ -561,8 +568,6 @@ public class NBTHelper {
 		if (clazz == UUID.class)
 			return (T) nbt.getUniqueId(key);
 		INBTConverter<T> converter = (INBTConverter<T>) getConverter(clazz);
-		if (converter == null)
-			throw new IllegalArgumentException("No converter found for " + clazz.getName());
 		if (!nbt.hasKey(key))
 			return converter.defaultValue(clazz).get();
 		return converter.toValue(nbt.getTag(key), clazz);
@@ -576,8 +581,6 @@ public class NBTHelper {
 		if (!nbt.hasKey(key))
 			return Optional.empty();
 		INBTConverter<T> converter = (INBTConverter<T>) getConverter(clazz);
-		if (converter == null)
-			throw new IllegalArgumentException("No converter found for " + clazz.getName());
 		return Optional.of(converter.toValue(nbt.getTag(key), clazz));
 	}
 
@@ -589,8 +592,6 @@ public class NBTHelper {
 			return nbt;
 		}
 		INBTConverter<T> converter = (INBTConverter<T>) getConverter(value.getClass());
-		if (converter == null)
-			throw new IllegalArgumentException("No converter found for " + value.getClass().getName());
 		nbt.setTag(key, converter.toNBT(value));
 		return nbt;
 	}
@@ -631,8 +632,6 @@ public class NBTHelper {
 			return result;
 		}
 		INBTConverter<T> converter = (INBTConverter<T>) getConverter(clazz);
-		if (converter == null)
-			throw new IllegalArgumentException("No converter found for " + clazz.getName());
 		INBTBase n = collectionTag.getTag(LIST);
 		List<T> tmpResults = new ArrayList<>();
 		if (n instanceof NBTTagByteArray) {
@@ -708,8 +707,6 @@ public class NBTHelper {
 		for (Object o : values)
 			if (o != null) {
 				INBTConverter<T> converter = (INBTConverter<T>) getConverter(o.getClass());
-				if (converter == null)
-					throw new IllegalArgumentException("No converter found for " + o.getClass().getName());
 				converters.add(converter);
 			} else {
 				nullIndices.add(tmp++);
