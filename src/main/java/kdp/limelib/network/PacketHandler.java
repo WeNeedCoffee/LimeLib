@@ -2,21 +2,28 @@ package kdp.limelib.network;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
 
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.GameData;
 
 public class PacketHandler {
 
 	private static final String VERSION = "1.0";
-	public static SimpleChannel channel = NetworkRegistry.newSimpleChannel(GameData.checkPrefix("ch1"), () -> VERSION,
+	private static SimpleChannel channel = NetworkRegistry.newSimpleChannel(GameData.checkPrefix("ch1"), () -> VERSION,
 			v -> VERSION.equals(v), v -> VERSION.equals(v));
 	private static int index = 0;
 
 	public static void init() {
+
 	}
 
 	public static void register(Class<? extends AbstractMessage> classMessage) {
@@ -33,7 +40,30 @@ public class PacketHandler {
 				throw new RuntimeException(e);
 			}
 		}, (m, c) -> m.handleMessage(m, c.get()));
+	}
 
+	public static void sendToServer(AbstractMessage message) {
+		channel.send(PacketDistributor.SERVER.noArg(), message);
+	}
+
+	public static void sendToPlayers(AbstractMessage message, EntityPlayerMP... players) {
+		channel.send(
+				PacketDistributor.NMLIST.with(
+						() -> Arrays.stream(players).map(p -> p.connection.netManager).collect(Collectors.toList())),
+				message);
+	}
+
+	public static void sendToPlayers(AbstractMessage message, Predicate<EntityPlayerMP> pred) {
+		sendToPlayers(message, ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
+				.filter(pred).toArray(EntityPlayerMP[]::new));
+	}
+
+	public static void sendToDimension(AbstractMessage message, DimensionType dimension) {
+		channel.send(PacketDistributor.DIMENSION.with(() -> dimension), message);
+	}
+
+	public static void sendToAll(AbstractMessage message) {
+		channel.send(PacketDistributor.ALL.noArg(), message);
 	}
 
 }

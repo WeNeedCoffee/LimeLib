@@ -46,10 +46,14 @@ public abstract class AbstractMessage {
 
 	public final void handleMessage(AbstractMessage message, Context context) {
 		nbt = message.nbt;
+		//Thread.dumpStack();
 		context.enqueueWork(() -> {
+			System.out.println(
+					context.getDirection().getReceptionSide() + " " + context.getDirection().getOriginationSide());
 			EntityPlayer player = context.getDirection().getReceptionSide() == LogicalSide.SERVER ? context.getSender()
 					: getClientPlayer().get().get();
 			handleMessage(player);
+			context.setPacketHandled(true);
 		});
 	}
 
