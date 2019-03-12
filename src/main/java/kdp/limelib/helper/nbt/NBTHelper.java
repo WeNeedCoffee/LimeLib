@@ -117,7 +117,7 @@ public class NBTHelper {
 			return Optional.empty();
 		INBTBase n = nbt.getTag(key);
 		if (clazz.isAssignableFrom(
-				Objects.requireNonNull(n, "Who the heck put null into the NBTTagCompound?").getClass()))
+				Objects.requireNonNull(n, () -> "Who the heck put null into the NBTTagCompound?").getClass()))
 			return (Optional<T>) Optional.of(n);
 		else
 			return Optional.empty();
@@ -155,7 +155,7 @@ public class NBTHelper {
 	}
 
 	public static void init() {
-		// Primitives
+		// Primitives + wrappers
 		register(new INBTConverter<Object>() {
 			private Object2ByteOpenHashMap<Object> class2id = new Object2ByteOpenHashMap<>();
 			{
@@ -587,7 +587,7 @@ public class NBTHelper {
 	public static <T> NBTTagCompound set(NBTTagCompound nbt, String key, T value) {
 		if (nbt == null)
 			return null;
-		if (Objects.requireNonNull(value, "No null value allowed. key: " + key).getClass() == UUID.class) {
+		if (Objects.requireNonNull(value, () -> "No null value allowed. key: " + key).getClass() == UUID.class) {
 			nbt.setUniqueId(key, (UUID) value);
 			return nbt;
 		}
@@ -708,6 +708,7 @@ public class NBTHelper {
 			if (o != null) {
 				INBTConverter<T> converter = (INBTConverter<T>) getConverter(o.getClass());
 				converters.add(converter);
+				tmp++;
 			} else {
 				nullIndices.add(tmp++);
 			}
@@ -806,7 +807,5 @@ public class NBTHelper {
 		setCollection(mapTag, KEYS, values.keySet());
 		setCollection(mapTag, VALUES, values.values());
 		return nbt;
-
 	}
-
 }

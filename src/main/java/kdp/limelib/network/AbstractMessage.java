@@ -7,12 +7,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.function.Supplier;
 
+import kdp.limelib.ClientHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public abstract class AbstractMessage {
@@ -46,10 +48,7 @@ public abstract class AbstractMessage {
 
 	public final void handleMessage(AbstractMessage message, Context context) {
 		nbt = message.nbt;
-		//Thread.dumpStack();
 		context.enqueueWork(() -> {
-			System.out.println(
-					context.getDirection().getReceptionSide() + " " + context.getDirection().getOriginationSide());
 			EntityPlayer player = context.getDirection().getReceptionSide() == LogicalSide.SERVER ? context.getSender()
 					: getClientPlayer().get().get();
 			handleMessage(player);
@@ -60,6 +59,7 @@ public abstract class AbstractMessage {
 	public abstract void handleMessage(EntityPlayer player);
 
 	private static Supplier<Supplier<EntityPlayer>> getClientPlayer() {
-		return () -> () -> Minecraft.getInstance().player;
+		return ()->()->ClientHelper.getClientPlayer();
+		//return () -> () -> ((Minecraft)(LogicalSidedProvider.INSTANCE.get(LogicalSide.CLIENT))).player;
 	}
 }

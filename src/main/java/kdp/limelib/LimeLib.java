@@ -39,6 +39,7 @@ public class LimeLib {
 		RecipeHelper.generateFiles();
 
 		PacketHandler.register(M.class);
+		//throw new RuntimeException(LogicalSidedProvider.INSTANCE.get(LogicalSide.CLIENT).getClass().toString());
 	}
 
 	public static class M extends AbstractMessage {
@@ -51,6 +52,7 @@ public class LimeLib {
 		@Override
 		public void handleMessage(EntityPlayer player) {
 			// TODO Auto-generated method stub
+			System.out.println(player);
 			System.out.println(player.getClass() + " " + Thread.currentThread());
 			System.out.println(EffectiveSide.get() + ": " + nbt);
 

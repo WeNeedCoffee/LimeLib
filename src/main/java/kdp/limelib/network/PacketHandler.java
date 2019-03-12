@@ -27,9 +27,8 @@ public class PacketHandler {
 	}
 
 	public static void register(Class<? extends AbstractMessage> classMessage) {
-		Validate.isTrue(
-				Arrays.stream(classMessage.getConstructors())
-						.anyMatch(c -> c.getParameterCount() == 0 && Modifier.isPublic(c.getModifiers())),
+		Validate.isTrue(Arrays.stream(classMessage.getConstructors()).//
+				anyMatch(c -> c.getParameterCount() == 0 && Modifier.isPublic(c.getModifiers())),
 				classMessage + " needs a public default constructor.");
 		channel.registerMessage(index++, (Class<AbstractMessage>) classMessage, (m, b) -> m.encode(b), b -> {
 			try {
@@ -47,10 +46,9 @@ public class PacketHandler {
 	}
 
 	public static void sendToPlayers(AbstractMessage message, EntityPlayerMP... players) {
-		channel.send(
-				PacketDistributor.NMLIST.with(
-						() -> Arrays.stream(players).map(p -> p.connection.netManager).collect(Collectors.toList())),
-				message);
+		for (EntityPlayerMP player : players) {
+			channel.send(PacketDistributor.PLAYER.with(() -> player), message);
+		}
 	}
 
 	public static void sendToPlayers(AbstractMessage message, Predicate<EntityPlayerMP> pred) {
