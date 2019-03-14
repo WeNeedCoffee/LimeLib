@@ -761,7 +761,7 @@ public class NBTHelper {
 		collectionTag.setTag(LIST, collection);
 		return nbt;
 	}
-
+	
 	public static <K, V> Map<K, V> getMap(NBTTagCompound nbt, String key, Class<K> keyClazz, Class<V> valClazz) {
 		Supplier<Map<K, V>> supplier = null;
 		if (keyClazz == boolean.class || keyClazz == Boolean.class) {
@@ -791,8 +791,8 @@ public class NBTHelper {
 		if (nbt == null)
 			return result;
 		NBTTagCompound mapTag = nbt.getCompound(key);
-		List<K> keys = getCollection(mapTag, KEYS, keyClazz, ArrayList::new);
-		List<V> values = getCollection(mapTag, VALUES, valClazz, ArrayList::new);
+		List<K> keys = getCollection(mapTag, KEYS, keyClazz);
+		List<V> values = getCollection(mapTag, VALUES, valClazz);
 		Validate.isTrue(keys.size() == values.size(), "No equal amount of keys and values." + System.lineSeparator()
 				+ keys + System.lineSeparator() + values);
 		IntStream.range(0, keys.size()).forEach(i -> result.put(keys.get(i), values.get(i)));
