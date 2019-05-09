@@ -3,7 +3,6 @@ package kdp.limelib.network;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
 

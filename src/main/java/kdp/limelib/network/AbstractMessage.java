@@ -8,13 +8,11 @@ import java.io.IOException;
 import java.util.function.Supplier;
 
 import kdp.limelib.ClientHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public abstract class AbstractMessage {
@@ -27,7 +25,7 @@ public abstract class AbstractMessage {
 		this.nbt = nbt;
 	}
 
-	public void encode(PacketBuffer buffer) {
+	public final void encode(PacketBuffer buffer) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		try {
@@ -37,7 +35,7 @@ public abstract class AbstractMessage {
 		buffer.writeByteArray(baos.toByteArray());
 	}
 
-	public void decode(PacketBuffer buffer) {
+	public final void decode(PacketBuffer buffer) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(buffer.readByteArray());
 		DataInputStream dis = new DataInputStream(bais);
 		try {
@@ -59,7 +57,6 @@ public abstract class AbstractMessage {
 	public abstract void handleMessage(EntityPlayer player);
 
 	private static Supplier<Supplier<EntityPlayer>> getClientPlayer() {
-		return ()->()->ClientHelper.getClientPlayer();
-		//return () -> () -> ((Minecraft)(LogicalSidedProvider.INSTANCE.get(LogicalSide.CLIENT))).player;
+		return () -> () -> ClientHelper.getClientPlayer();
 	}
 }
