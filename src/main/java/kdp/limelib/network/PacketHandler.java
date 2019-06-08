@@ -4,7 +4,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -44,16 +44,16 @@ public class PacketHandler {
         channel.send(PacketDistributor.SERVER.noArg(), message);
     }
 
-    public static void sendToPlayers(AbstractMessage message, EntityPlayerMP... players) {
-        for (EntityPlayerMP player : players) {
+    public static void sendToPlayers(AbstractMessage message, ServerPlayerEntity... players) {
+        for (ServerPlayerEntity player : players) {
             channel.send(PacketDistributor.PLAYER.with(() -> player), message);
         }
     }
 
-    public static void sendToPlayers(AbstractMessage message, Predicate<EntityPlayerMP> pred) {
+    public static void sendToPlayers(AbstractMessage message, Predicate<ServerPlayerEntity> pred) {
         sendToPlayers(message,
                 ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream().filter(pred)
-                        .toArray(EntityPlayerMP[]::new));
+                        .toArray(ServerPlayerEntity[]::new));
     }
 
     public static void sendToDimension(AbstractMessage message, DimensionType dimension) {

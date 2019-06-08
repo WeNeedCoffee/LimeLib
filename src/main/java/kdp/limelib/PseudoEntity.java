@@ -6,10 +6,10 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 
 import it.unimi.dsi.fastutil.ints.Int2LongMap;
@@ -37,7 +37,7 @@ public class PseudoEntity {
         if (!world.isRemote) {
             Random ran = new Random(hashCode());
             UUID uuid = new UUID(ran.nextLong(), ran.nextLong());
-            this.fakePlayer = new FakePlayer((WorldServer) world, new GameProfile(uuid, "[" + uuid.toString() + "]"));
+            this.fakePlayer = new FakePlayer((ServerWorld) world, new GameProfile(uuid, "[" + uuid.toString() + "]"));
         }
     }
 
@@ -54,7 +54,7 @@ public class PseudoEntity {
             return new Mover(speed, distance, dest, dest.subtract(pos));
         }
 
-        public static Mover of(NBTTagCompound nbt) {
+        public static Mover of(CompoundNBT nbt) {
             return new Mover(nbt);
         }
 
@@ -65,23 +65,23 @@ public class PseudoEntity {
             this.dir = dir;
         }
 
-        private Mover(NBTTagCompound nbt) {
+        private Mover(CompoundNBT nbt) {
             this.speed = nbt.getDouble("speed");
             this.distance = nbt.getDouble("dist");
             this.dest = new Vec3d(nbt.getDouble("dex"), nbt.getDouble("dey"), nbt.getDouble("dez"));
             this.dir = new Vec3d(nbt.getDouble("dix"), nbt.getDouble("diy"), nbt.getDouble("diz"));
         }
 
-        public NBTTagCompound serializeNBT() {
-            NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setDouble("speed", speed);
-            nbt.setDouble("dist", distance);
-            nbt.setDouble("dex", dest.x);
-            nbt.setDouble("dey", dest.y);
-            nbt.setDouble("dez", dest.z);
-            nbt.setDouble("dix", dir.x);
-            nbt.setDouble("diy", dir.y);
-            nbt.setDouble("diz", dir.z);
+        public CompoundNBT serializeNBT() {
+            CompoundNBT nbt = new CompoundNBT();
+            nbt.putDouble("speed", speed);
+            nbt.putDouble("dist", distance);
+            nbt.putDouble("dex", dest.x);
+            nbt.putDouble("dey", dest.y);
+            nbt.putDouble("dez", dest.z);
+            nbt.putDouble("dix", dir.x);
+            nbt.putDouble("diy", dir.y);
+            nbt.putDouble("diz", dir.z);
             return nbt;
         }
     }

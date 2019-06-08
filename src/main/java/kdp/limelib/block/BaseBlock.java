@@ -1,7 +1,9 @@
 package kdp.limelib.block;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockReader;
 
@@ -15,13 +17,13 @@ public class BaseBlock extends Block {
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state) {
+    public boolean hasTileEntity(BlockState state) {
         return hasTile;
     }
 
+    @Nullable
     @Override
-    public TileEntity createTileEntity(IBlockState state, IBlockReader world) {
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return super.createTileEntity(state, world);
     }
-
 }

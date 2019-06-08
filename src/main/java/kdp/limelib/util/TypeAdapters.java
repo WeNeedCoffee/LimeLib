@@ -7,8 +7,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class TypeAdapters {
     private abstract static class JSONAdapter<T> extends TypeAdapter<T> {
@@ -34,9 +34,9 @@ public class TypeAdapters {
             return value;
         }
 
-        protected abstract NBTTagCompound serialize(T value);
+        protected abstract CompoundNBT serialize(T value);
 
-        protected abstract T deserialize(NBTTagCompound nbt);
+        protected abstract T deserialize(CompoundNBT nbt);
 
     }
 }

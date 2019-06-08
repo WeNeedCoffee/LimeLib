@@ -7,9 +7,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.function.Supplier;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
@@ -17,12 +17,12 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 import kdp.limelib.ClientHelper;
 
 public abstract class AbstractMessage {
-    protected NBTTagCompound nbt = new NBTTagCompound();
+    protected CompoundNBT nbt = new CompoundNBT();
 
     public AbstractMessage() {
     }
 
-    public AbstractMessage(NBTTagCompound nbt) {
+    public AbstractMessage(CompoundNBT nbt) {
         this.nbt = nbt;
     }
 
@@ -48,7 +48,7 @@ public abstract class AbstractMessage {
     public final void handleMessage(AbstractMessage message, Context context) {
         nbt = message.nbt;
         context.enqueueWork(() -> {
-            EntityPlayer player = context.getDirection().getReceptionSide() == LogicalSide.SERVER ?
+            PlayerEntity player = context.getDirection().getReceptionSide() == LogicalSide.SERVER ?
                     context.getSender() :
                     getClientPlayer().get().get();
             handleMessage(player);
@@ -56,9 +56,9 @@ public abstract class AbstractMessage {
         });
     }
 
-    public abstract void handleMessage(EntityPlayer player);
+    public abstract void handleMessage(PlayerEntity player);
 
-    private static Supplier<Supplier<EntityPlayer>> getClientPlayer() {
+    private static Supplier<Supplier<PlayerEntity>> getClientPlayer() {
         return () -> () -> ClientHelper.getClientPlayer();
     }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -30,17 +30,17 @@ public final class StackWrapper {
     private StackWrapper() {
     }
 
-    public void readFromNBT(NBTTagCompound compound) {
-        NBTTagCompound c = compound.getCompound("stack");
+    public void readFromNBT(CompoundNBT compound) {
+        CompoundNBT c = compound.getCompound("stack");
         stack = ItemStack.read(c);
         size = compound.getInt("size");
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        NBTTagCompound c = new NBTTagCompound();
+    public CompoundNBT writeToNBT(CompoundNBT compound) {
+        CompoundNBT c = new CompoundNBT();
         stack.write(c);
-        compound.setTag("stack", c);
-        compound.setInt("size", size);
+        compound.func_218657_a("stack", c);
+        compound.putInt("size", size);
         return compound;
     }
 
@@ -99,7 +99,7 @@ public final class StackWrapper {
 
     }
 
-    public static StackWrapper loadStackWrapperFromNBT(NBTTagCompound nbt) {
+    public static StackWrapper loadStackWrapperFromNBT(CompoundNBT nbt) {
         StackWrapper wrap = new StackWrapper();
         wrap.readFromNBT(nbt);
         return !wrap.getStack().isEmpty() ? wrap : null;

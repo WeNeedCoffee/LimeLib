@@ -5,13 +5,13 @@ import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import kdp.limelib.helper.nbt.NBTHelper;
 
-public class ItemFilter implements Predicate<ItemStack>, IItemHandlerModifiable, INBTSerializable<NBTTagCompound> {
+public class ItemFilter implements Predicate<ItemStack>, IItemHandlerModifiable, INBTSerializable<CompoundNBT> {
 
     private List<ItemStack> items;
     private boolean whiteList, nbt, damage, ore, mod;
@@ -76,12 +76,12 @@ public class ItemFilter implements Predicate<ItemStack>, IItemHandlerModifiable,
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return NBTHelper.setCollection(new NBTTagCompound(), "items", items);
+    public CompoundNBT serializeNBT() {
+        return NBTHelper.setCollection(new CompoundNBT(), "items", items);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(CompoundNBT nbt) {
         items = NBTHelper.getCollection(nbt, "items", ItemStack.class);
     }
 

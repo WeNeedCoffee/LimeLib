@@ -1,7 +1,7 @@
 package kdp.limelib;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
@@ -23,49 +23,49 @@ import kdp.limelib.util.EventHandler;
 @Mod("limelib")
 public class LimeLib {
 
-	public static final Logger LOG = LogManager.getLogger(LimeLib.class);
+    public static final Logger LOG = LogManager.getLogger(LimeLib.class);
 
-	public LimeLib() {
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-		MinecraftForge.EVENT_BUS.register(EventHandler.class);
-		MinecraftForge.EVENT_BUS.addListener((LivingJumpEvent event) -> {
-			if (event.getEntityLiving() instanceof EntityPlayer) {
-				if (event.getEntityLiving().world.isRemote) {
-					PacketHandler.sendToServer(new M());
-				} else {
-					EntityPlayerMP player = (EntityPlayerMP) event.getEntityLiving();
-					PacketHandler.sendToPlayers(new M(), player);
-				}
-			}
-		});
-	}
+    public LimeLib() {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        MinecraftForge.EVENT_BUS.register(EventHandler.class);
+        MinecraftForge.EVENT_BUS.addListener((LivingJumpEvent event) -> {
+            if (event.getEntityLiving() instanceof PlayerEntity) {
+                if (event.getEntityLiving().world.isRemote) {
+                    PacketHandler.sendToServer(new M());
+                } else {
+                    ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
+                    PacketHandler.sendToPlayers(new M(), player);
+                }
+            }
+        });
+    }
 
-	private void setup(final FMLCommonSetupEvent event) {
-		WorldAddition.register();
-		System.out.println("~~~~~~~~~~~~~~~~~~~~~~+++");
-		//RecipeHelper.addCraftingRecipe(new ItemStack(Items.APPLE, 3), null, true, "rtr"," r ",'r',Items.BAKED_POTATO,'t',Blocks.EMERALD_BLOCK);
-		//RecipeHelper.addSmeltingRecipe(new ItemStack(Blocks.EMERALD_BLOCK), Items.EMERALD, 3., 35);
-		RecipeHelper.generateFiles();
+    private void setup(final FMLCommonSetupEvent event) {
+        WorldAddition.register();
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~+++");
+        //RecipeHelper.addCraftingRecipe(new ItemStack(Items.APPLE, 3), null, true, "rtr"," r ",'r',Items.BAKED_POTATO,'t',Blocks.EMERALD_BLOCK);
+        //RecipeHelper.addSmeltingRecipe(new ItemStack(Blocks.EMERALD_BLOCK), Items.EMERALD, 3., 35);
+        RecipeHelper.generateFiles();
 
-		PacketHandler.register(M.class);
-		PacketHandler.init();
-		//throw new RuntimeException(LogicalSidedProvider.INSTANCE.get(LogicalSide.CLIENT).getClass().toString());
-	}
+        PacketHandler.register(M.class);
+        PacketHandler.init();
+        //throw new RuntimeException(LogicalSidedProvider.INSTANCE.get(LogicalSide.CLIENT).getClass().toString());
+    }
 
-	public static class M extends AbstractMessage {
+    public static class M extends AbstractMessage {
 
-		public M() {
-			NBTBuilder.of(nbt).set("eins", RandomStringUtils.randomNumeric(5))
-					.set("zwei", new BlockPos(3, 88, -1000000));
-		}
+        public M() {
+            NBTBuilder.of(nbt).set("eins", RandomStringUtils.randomNumeric(5))
+                    .set("zwei", new BlockPos(3, 88, -1000000));
+        }
 
-		@Override
-		public void handleMessage(EntityPlayer player) {
-			System.out.println(player);
-			System.out.println(player.getClass() + " " + Thread.currentThread());
-			System.out.println(EffectiveSide.get() + ": " + nbt);
+        @Override
+        public void handleMessage(PlayerEntity player) {
+            System.out.println(player);
+            System.out.println(player.getClass() + " " + Thread.currentThread());
+            System.out.println(EffectiveSide.get() + ": " + nbt);
 
-		}
+        }
 
-	}
+    }
 }

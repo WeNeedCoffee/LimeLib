@@ -11,17 +11,17 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 public class TagHelper {
 
-	private static Map<Item, Stream<Tag<Item>>> itemCache = new Reference2ObjectOpenHashMap<>();
+    private static Map<Item, Stream<Tag<Item>>> itemCache = new Reference2ObjectOpenHashMap<>();
 
-	//TODO call in reload event
-	public static void clearCache() {
-		itemCache.clear();
-	}
+    //TODO call in reload event
+    public static void clearCache() {
+        itemCache.clear();
+    }
 
-	public static Stream<Tag<Item>> getTagsFor(Item item) {
-		Stream<Tag<Item>> result = itemCache.computeIfAbsent(item,
-				k -> ItemTags.getCollection().getTagMap().values().stream().filter(t -> t.contains(k)));
-		return Stream.concat(result, Stream.empty());
-	}
+    public static Stream<Tag<Item>> getTagsFor(Item item) {
+        Stream<Tag<Item>> result = itemCache.computeIfAbsent(item,
+                k -> ItemTags.getCollection().getTagMap().values().stream().filter(t -> t.contains(k)));
+        return Stream.concat(result, Stream.empty());
+    }
 
 }

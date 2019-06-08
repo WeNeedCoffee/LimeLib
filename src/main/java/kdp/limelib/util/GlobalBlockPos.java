@@ -3,8 +3,8 @@ package kdp.limelib.util;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -72,21 +72,20 @@ public class GlobalBlockPos {
         return getWorld().getTileEntity(getPos());
     }
 
-    public IBlockState getBlockState() {
+    public BlockState getBlockState() {
         return getWorld().getBlockState(getPos());
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        if (pos != null)
-            compound.setLong("Gpos", pos.toLong());
-        compound.setInt("Gdim", dimension);
+    public CompoundNBT writeToNBT(CompoundNBT compound) {
+        compound.putLong("Gpos", pos.func_218275_a());
+        compound.putInt("Gdim", dimension);
         return compound;
     }
 
-    public static GlobalBlockPos loadGlobalPosFromNBT(NBTTagCompound nbt) {
-        if (!nbt.hasKey("Gpos") || !nbt.hasKey("Gdim"))
+    public static GlobalBlockPos loadGlobalPosFromNBT(CompoundNBT nbt) {
+        if (!nbt.contains("Gpos") || !nbt.contains("Gdim"))
             return null;
-        GlobalBlockPos pos = new GlobalBlockPos(BlockPos.fromLong(nbt.getLong("Gpos")), nbt.getInt("Gdim"));
+        GlobalBlockPos pos = new GlobalBlockPos(BlockPos.func_218283_e(nbt.getLong("Gpos")), nbt.getInt("Gdim"));
         return pos.getPos() != null ? pos : null;
     }
 

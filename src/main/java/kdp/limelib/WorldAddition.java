@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.nbt.INBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -34,20 +34,20 @@ public class WorldAddition {
         CapabilityManager.INSTANCE.register(WorldAddition.class, new IStorage<WorldAddition>() {
 
             @Override
-            public INBTBase writeNBT(Capability<WorldAddition> capability, WorldAddition instance, EnumFacing side) {
+            public INBT writeNBT(Capability<WorldAddition> capability, WorldAddition instance, Direction side) {
                 return NBTBuilder.of().build();
             }
 
             @Override
-            public void readNBT(Capability<WorldAddition> capability, WorldAddition instance, EnumFacing side,
-                    INBTBase nbt) {
+            public void readNBT(Capability<WorldAddition> capability, WorldAddition instance, Direction side,
+                    INBT nbt) {
             }
         }, WorldAddition::new);
     }
 
     @SubscribeEvent
     public static void attach(AttachCapabilitiesEvent<World> event) {
-        event.addCapability(LOCATION, new ICapabilitySerializable<NBTTagCompound>() {
+        event.addCapability(LOCATION, new ICapabilitySerializable<CompoundNBT>() {
 
             WorldAddition wa = CAP.getDefaultInstance();
 
@@ -58,19 +58,19 @@ public class WorldAddition {
             LazyOptional<WorldAddition> lo = LazyOptional.of(() -> wa);
 
             @Override
-            public <T> LazyOptional<T> getCapability(Capability<T> cap, EnumFacing side) {
+            public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
                 if (cap != CAP)
                     return LazyOptional.empty();
                 return lo.cast();
             }
 
             @Override
-            public NBTTagCompound serializeNBT() {
-                return (NBTTagCompound) CAP.getStorage().writeNBT(CAP, wa, null);
+            public CompoundNBT serializeNBT() {
+                return (CompoundNBT) CAP.getStorage().writeNBT(CAP, wa, null);
             }
 
             @Override
-            public void deserializeNBT(NBTTagCompound nbt) {
+            public void deserializeNBT(CompoundNBT nbt) {
                 CAP.getStorage().readNBT(CAP, wa, null, nbt);
             }
         });
