@@ -77,7 +77,7 @@ public class GlobalBlockPos {
     }
 
     public CompoundNBT writeToNBT(CompoundNBT compound) {
-        compound.putLong("Gpos", pos.func_218275_a());
+        compound.putLong("Gpos", pos.toLong());
         compound.putInt("Gdim", dimension);
         return compound;
     }
@@ -85,7 +85,7 @@ public class GlobalBlockPos {
     public static GlobalBlockPos loadGlobalPosFromNBT(CompoundNBT nbt) {
         if (!nbt.contains("Gpos") || !nbt.contains("Gdim"))
             return null;
-        GlobalBlockPos pos = new GlobalBlockPos(BlockPos.func_218283_e(nbt.getLong("Gpos")), nbt.getInt("Gdim"));
+        GlobalBlockPos pos = new GlobalBlockPos(BlockPos.fromLong(nbt.getLong("Gpos")), nbt.getInt("Gdim"));
         return pos.getPos() != null ? pos : null;
     }
 

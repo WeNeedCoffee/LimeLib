@@ -45,14 +45,14 @@ public class DataPart extends ForgeRegistryEntry<DataPart> {
     }
 
     public final void readDataFromNBT(CompoundNBT compound) {
-        pos = BlockPos.func_218283_e(compound.getLong("poS"));
+        pos = BlockPos.fromLong(compound.getLong("poS"));
         readFromNBT(compound);
     }
 
     public final CompoundNBT writeDataToNBT(CompoundNBT compound) {
         writeToNBT(compound);
         //TODO compound.setString("id", DataPartRegistry.PARTS.inverse().get(getClass()));
-        compound.putLong("poS", pos.func_218275_a());
+        compound.putLong("poS", pos.toLong());
         return compound;
     }
 

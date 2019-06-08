@@ -12,14 +12,14 @@ public class OpenGuiMessage extends AbstractMessage {
 
     public OpenGuiMessage(String modID, int guiID, @Nullable BlockPos pos) {
         if (pos != null)
-            nbt.putLong("pos", pos.func_218275_a());
+            nbt.putLong("pos", pos.toLong());
         nbt.putString("modid", modID);
         nbt.putInt("guiid", guiID);
     }
 
     @Override
     public void handleMessage(PlayerEntity player) {
-        BlockPos p = nbt.contains("pos") ? BlockPos.func_218283_e(nbt.getLong("pos")) : BlockPos.ORIGIN;
+        BlockPos p = nbt.contains("pos") ? BlockPos.fromLong(nbt.getLong("pos")) : BlockPos.ZERO;
 
     }
 

@@ -18,9 +18,8 @@ public final class StackWrapper {
 
     public StackWrapper(ItemStack stack, int size) {
         super();
-        Validate.isTrue(!stack.isEmpty());
-        this.stack = stack.copy();
-        this.size = size;
+        setSize(size);
+        setStack(stack);
     }
 
     public StackWrapper(ItemStack stack) {
@@ -39,7 +38,7 @@ public final class StackWrapper {
     public CompoundNBT writeToNBT(CompoundNBT compound) {
         CompoundNBT c = new CompoundNBT();
         stack.write(c);
-        compound.func_218657_a("stack", c);
+        compound.put("stack", c);
         compound.putInt("size", size);
         return compound;
     }
@@ -63,7 +62,7 @@ public final class StackWrapper {
 
     public void setStack(ItemStack stack) {
         Validate.isTrue(!stack.isEmpty());
-        this.stack = stack.copy();
+        this.stack = ItemHandlerHelper.copyStackWithSize(stack, Math.min(size, stack.getItem().getMaxStackSize()));
     }
 
     public int getSize() {
@@ -72,6 +71,7 @@ public final class StackWrapper {
 
     public void setSize(int size) {
         this.size = size;
+        setStack(stack);
     }
 
     public StackWrapper copy() {

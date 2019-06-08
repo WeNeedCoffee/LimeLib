@@ -479,15 +479,15 @@ public class NBTHelper {
         register(of(null, (n, c) -> n, v -> v, INBT.class::isAssignableFrom));
         // BlockPos
         register(of(null,
-                (n, c) -> BlockPos.func_218283_e(((LongNBT) n).getLong()),
-                v -> new LongNBT(v.func_218275_a()),
+                (n, c) -> BlockPos.fromLong(((LongNBT) n).getLong()),
+                v -> new LongNBT(v.toLong()),
                 BlockPos.class,
                 MutableBlockPos.class));
         // GlobalBlockPos
         register(of(null, (n, c) -> {
             long[] arr = ((LongArrayNBT) n).getAsLongArray();
-            return new GlobalBlockPos(BlockPos.func_218283_e(arr[0]), (int) arr[1]);
-        }, v -> new LongArrayNBT(new long[] { v.getPos().func_218275_a(), v.getDimension() }), GlobalBlockPos.class));
+            return new GlobalBlockPos(BlockPos.fromLong(arr[0]), (int) arr[1]);
+        }, v -> new LongArrayNBT(new long[] { v.getPos().toLong(), v.getDimension() }), GlobalBlockPos.class));
         // ItemStack
         register(of(c -> ItemStack.EMPTY,
                 (n, c) -> ItemStack.read((CompoundNBT) n),
@@ -605,7 +605,7 @@ public class NBTHelper {
             return nbt;
         }
         INBTConverter<T> converter = (INBTConverter<T>) getConverter(value.getClass());
-        nbt.func_218657_a(key, converter.toNBT(value));
+        nbt.put(key, converter.toNBT(value));
         return nbt;
     }
 
@@ -709,7 +709,7 @@ public class NBTHelper {
         if (nbt == null)
             return null;
         CompoundNBT collectionTag = new CompoundNBT();
-        nbt.func_218657_a(key, collectionTag);
+        nbt.put(key, collectionTag);
         int nullAmount = Collections.frequency(values, null);
         if (values.isEmpty() || values.size() == nullAmount) {
             collectionTag.putInt(NULL_AMOUNT, nullAmount);
@@ -772,7 +772,7 @@ public class NBTHelper {
             }
             collection = list;
         }
-        collectionTag.func_218657_a(LIST, collection);
+        collectionTag.put(LIST, collection);
         return nbt;
     }
 
@@ -818,7 +818,7 @@ public class NBTHelper {
         if (nbt == null || values.isEmpty())
             return null;
         CompoundNBT mapTag = new CompoundNBT();
-        nbt.func_218657_a(key, mapTag);
+        nbt.put(key, mapTag);
         setCollection(mapTag, KEYS, values.keySet());
         setCollection(mapTag, VALUES, values.values());
         return nbt;

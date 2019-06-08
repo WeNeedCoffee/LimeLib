@@ -17,7 +17,8 @@ public class EventHandler {
 
             try {
                 if (event.world.getWorldInfo().getGameTime() % 4 == 0) {
-
+                    if (event.world.rand.nextBoolean())
+                        System.out.println("benz");
                 }
             } catch (ConcurrentModificationException e) {
             }
