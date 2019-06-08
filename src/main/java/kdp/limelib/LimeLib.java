@@ -27,7 +27,6 @@ public class LimeLib {
 	public LimeLib() {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		MinecraftForge.EVENT_BUS.register(EventHandler.class);
-		WorldAddition.register();
 		MinecraftForge.EVENT_BUS.addListener((LivingJumpEvent event) -> {
 			if (event.getEntityLiving() instanceof EntityPlayer) {
 				if (event.getEntityLiving().world.isRemote) {
@@ -41,6 +40,7 @@ public class LimeLib {
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
+		WorldAddition.register();
 		System.out.println("~~~~~~~~~~~~~~~~~~~~~~+++");
 		//RecipeHelper.addCraftingRecipe(new ItemStack(Items.APPLE, 3), null, true, "rtr"," r ",'r',Items.BAKED_POTATO,'t',Blocks.EMERALD_BLOCK);
 		//RecipeHelper.addSmeltingRecipe(new ItemStack(Blocks.EMERALD_BLOCK), Items.EMERALD, 3., 35);
@@ -60,7 +60,6 @@ public class LimeLib {
 
 		@Override
 		public void handleMessage(EntityPlayer player) {
-			// TODO Auto-generated method stub
 			System.out.println(player);
 			System.out.println(player.getClass() + " " + Thread.currentThread());
 			System.out.println(EffectiveSide.get() + ": " + nbt);

@@ -62,7 +62,7 @@ public class DataPart extends ForgeRegistryEntry<DataPart> {
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		return compound;
 	}
-	
+
 	protected final WorldAddition getWorldAddition() {
 		return WorldAddition.getWorldAddition(world);
 	}

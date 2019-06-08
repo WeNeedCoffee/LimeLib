@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 
 public abstract class ServerData {
@@ -39,7 +38,7 @@ public abstract class ServerData {
 		}
 		server = null;
 	}
-	
+
 	protected abstract void read();
 
 	protected abstract void write();

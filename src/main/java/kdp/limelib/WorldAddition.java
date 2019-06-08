@@ -41,7 +41,7 @@ public class WorldAddition {
 			public void readNBT(Capability<WorldAddition> capability, WorldAddition instance, EnumFacing side,
 					INBTBase nbt) {
 			}
-		}, () -> new WorldAddition());
+		}, WorldAddition::new);
 	}
 
 	@SubscribeEvent
@@ -72,21 +72,21 @@ public class WorldAddition {
 			}
 		});
 	}
-	
+
 	public static WorldAddition getWorldAddition(World world) {
 		return world.getCapability(CAP).orElseThrow(NullPointerException::new);
 	}
 
 	private World world;
-	private Map<BlockPos, DataPart> partMap=new HashMap<>();
-	private Set<PseudoEntity> pseudoEntities=new HashSet<>();
-	private int ID=0;
-	
+	private Map<BlockPos, DataPart> partMap = new HashMap<>();
+	private Set<PseudoEntity> pseudoEntities = new HashSet<>();
+	private int ID = 0;
+
 	public DataPart getDataPart(BlockPos pos) {
 		world.getChunk(pos);
 		return partMap.get(pos);
 	}
-	
+
 	public boolean addEntity(PseudoEntity ent) {
 		/*if (!PARTS.inverse().containsKey(ent.getClass())) {
 			LimeLib.log.error(ent.getClass() + " not registered.");
@@ -98,7 +98,6 @@ public class WorldAddition {
 		entMap.put(ent.id, ent);*/
 		//sync
 		return true;
-}
-	
-	
+	}
+
 }
