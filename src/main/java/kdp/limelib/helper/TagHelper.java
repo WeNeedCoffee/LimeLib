@@ -3,10 +3,11 @@ package kdp.limelib.helper;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.item.Item;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
+
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 public class TagHelper {
 

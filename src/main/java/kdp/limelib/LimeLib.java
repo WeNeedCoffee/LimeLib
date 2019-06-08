@@ -1,14 +1,5 @@
 package kdp.limelib;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import kdp.limelib.helper.RecipeHelper;
-import kdp.limelib.helper.nbt.NBTBuilder;
-import kdp.limelib.network.AbstractMessage;
-import kdp.limelib.network.PacketHandler;
-import kdp.limelib.util.EventHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +9,16 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import kdp.limelib.helper.RecipeHelper;
+import kdp.limelib.helper.nbt.NBTBuilder;
+import kdp.limelib.network.AbstractMessage;
+import kdp.limelib.network.PacketHandler;
+import kdp.limelib.util.EventHandler;
 
 @Mod("limelib")
 public class LimeLib {
@@ -54,8 +55,8 @@ public class LimeLib {
 	public static class M extends AbstractMessage {
 
 		public M() {
-			NBTBuilder.of(nbt).set("eins", RandomStringUtils.randomNumeric(5)).set("zwei",
-					new BlockPos(3, 88, -1000000));
+			NBTBuilder.of(nbt).set("eins", RandomStringUtils.randomNumeric(5))
+					.set("zwei", new BlockPos(3, 88, -1000000));
 		}
 
 		@Override

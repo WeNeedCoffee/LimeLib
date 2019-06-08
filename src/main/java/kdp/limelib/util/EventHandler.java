@@ -11,27 +11,27 @@ import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 
 public class EventHandler {
 
-	@SubscribeEvent
-	public static void tick(WorldTickEvent event) {
-		if (event.phase == Phase.END && event.side == LogicalSide.SERVER) {
+    @SubscribeEvent
+    public static void tick(WorldTickEvent event) {
+        if (event.phase == Phase.END && event.side == LogicalSide.SERVER) {
 
-			try {
-				if (event.world.getWorldInfo().getGameTime() % 4 == 0) {
+            try {
+                if (event.world.getWorldInfo().getGameTime() % 4 == 0) {
 
-				}
-			} catch (ConcurrentModificationException e) {
-			}
-		}
-	}
+                }
+            } catch (ConcurrentModificationException e) {
+            }
+        }
+    }
 
-	@SubscribeEvent
-	public void serverAboutToStart(FMLServerAboutToStartEvent event) {
-		ServerData.start(event.getServer());
-	}
+    @SubscribeEvent
+    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+        ServerData.start(event.getServer());
+    }
 
-	@SubscribeEvent
-	public void serverStopping(FMLServerStoppingEvent event) {
-		ServerData.stop();
-	}
+    @SubscribeEvent
+    public void serverStopping(FMLServerStoppingEvent event) {
+        ServerData.stop();
+    }
 
 }

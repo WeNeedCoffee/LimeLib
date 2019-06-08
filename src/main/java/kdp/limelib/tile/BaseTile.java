@@ -5,8 +5,8 @@ import net.minecraft.tileentity.TileEntityType;
 
 public class BaseTile extends TileEntity {
 
-	public BaseTile(TileEntityType<?> tileEntityTypeIn) {
-		super(tileEntityTypeIn);
-	}
+    public BaseTile(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
+    }
 
 }
