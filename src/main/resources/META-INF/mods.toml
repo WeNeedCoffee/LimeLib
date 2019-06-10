@@ -1,10 +1,10 @@
 modLoader="javafml"
-loaderVersion="[25,)"
+loaderVersion="[26,)"
 issueTrackerURL="http://my.issue.tracker/"
 
 [[mods]]
 modId="limelib"
-version="${file.jarVersion}"
+version="1.0.0"
 displayName="LimeLib"
 displayURL="https://minecraft.curseforge.com/projects/limelib"
 credits="Thanks for this example mod goes to Java"
@@ -16,7 +16,7 @@ A Library for my other mods
 [[dependencies.limelib]]
     modId="forge"
     mandatory=true
-    versionRange="[25,)"
+    versionRange="[26,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.limelib]]
