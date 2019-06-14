@@ -4,14 +4,16 @@ import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.BlockItem;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockReader;
 
-public class BaseBlock extends Block {
+public class GenericBlock extends Block {
 
     protected boolean hasTile = false;
+    protected BlockItem blockItem;
 
-    public BaseBlock(Properties properties, String name) {
+    public GenericBlock(Properties properties, String name) {
         super(properties);
         setRegistryName(name);
     }

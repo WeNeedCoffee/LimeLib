@@ -1,12 +1,14 @@
 package kdp.limelib.util;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
 
@@ -22,7 +24,7 @@ public class TypeAdapters {
 
         @Override
         public final T read(JsonReader in) throws IOException {
-            T value = null;
+            T value = defaultValue().get();
             in.beginObject();
             if (in.hasNext() && in.nextName().equals("ÑBT"))
                 try {
@@ -38,5 +40,25 @@ public class TypeAdapters {
 
         protected abstract T deserialize(CompoundNBT nbt);
 
+        protected abstract Supplier<T> defaultValue();
+
+    }
+
+    public static class ItemStackAdapter extends JSONAdapter<ItemStack> {
+
+        @Override
+        protected CompoundNBT serialize(ItemStack value) {
+            return value.serializeNBT();
+        }
+
+        @Override
+        protected ItemStack deserialize(CompoundNBT nbt) {
+            return ItemStack.read(nbt);
+        }
+
+        @Override
+        protected Supplier<ItemStack> defaultValue() {
+            return () -> ItemStack.EMPTY;
+        }
     }
 }

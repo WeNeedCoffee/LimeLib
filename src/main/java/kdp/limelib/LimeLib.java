@@ -22,8 +22,10 @@ import kdp.limelib.network.PacketHandler;
 import kdp.limelib.util.ClientEventHandler;
 import kdp.limelib.util.EventHandler;
 
-@Mod("limelib")
+@Mod(LimeLib.MOD_ID)
 public class LimeLib {
+
+    public static final String MOD_ID = "limelib";
 
     public static final Logger LOG = LogManager.getLogger(LimeLib.class);
 
