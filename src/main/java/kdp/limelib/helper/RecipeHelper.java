@@ -24,7 +24,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 
@@ -34,8 +33,19 @@ import org.apache.commons.lang3.tuple.Pair;
 public class RecipeHelper {
 
     private static final Map<String, List<Pair<String, String>>> recipes = new HashMap<>();
-    private static final boolean dev = World.class.getSimpleName().equals("World");
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final boolean dev;
+
+    static {
+        boolean dev1;
+        try {
+            Class.forName("net.minecraft.world.World");
+            dev1 = true;
+        } catch (ClassNotFoundException e) {
+            dev1 = false;
+        }
+        dev = dev1;
+    }
 
     public static void generateFiles() {
         if (!dev)

@@ -28,7 +28,7 @@ public class PacketHandler {
     public static void register(Class<? extends AbstractMessage> classMessage) {
         Validate.isTrue(Arrays.stream(classMessage.getConstructors()).//
                         anyMatch(c -> c.getParameterCount() == 0 && Modifier.isPublic(c.getModifiers())),
-                classMessage + " needs a public default constructor.");
+                classMessage.getName() + " needs a public default constructor.");
         channel.registerMessage(index++, (Class<AbstractMessage>) classMessage, AbstractMessage::encode, b -> {
             try {
                 AbstractMessage m = classMessage.newInstance();

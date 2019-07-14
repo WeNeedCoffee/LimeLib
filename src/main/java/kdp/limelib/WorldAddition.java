@@ -23,7 +23,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 import kdp.limelib.helper.nbt.NBTBuilder;
 
-@EventBusSubscriber(modid = "limelib")
+//@EventBusSubscriber(modid = "limelib")
 public class WorldAddition {
 
     @CapabilityInject(WorldAddition.class)

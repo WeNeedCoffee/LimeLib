@@ -13,7 +13,7 @@ import org.apache.commons.lang3.Validate;
 
 import kdp.limelib.LimeLib;
 
-@Mod.EventBusSubscriber(modid = LimeLib.MOD_ID)
+//@Mod.EventBusSubscriber(modid = LimeLib.MOD_ID)
 public class RegistryHelper {
     private static final Set<IForgeRegistryEntry<?>> ENTRIES = Collections.newSetFromMap(new IdentityHashMap<>());
     private static boolean registered = false;

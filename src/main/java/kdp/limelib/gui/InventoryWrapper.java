@@ -15,7 +15,7 @@ public class InventoryWrapper {
     private final IInventory inventory;
     private final IItemHandler itemHandler;
 
-    private final static Map<Object, InventoryWrapper> CACHE = new MapMaker().weakKeys().makeMap();
+    private static final Map<Object, InventoryWrapper> CACHE = new MapMaker().weakKeys().makeMap();
 
     private InventoryWrapper(Object inventory) {
         this.inventory = Objects.requireNonNull(inventory) instanceof IInventory ? (IInventory) inventory : null;
@@ -23,7 +23,7 @@ public class InventoryWrapper {
     }
 
     public static InventoryWrapper of(Object inventory) {
-        return CACHE.computeIfAbsent(inventory, k -> new InventoryWrapper(k));
+        return CACHE.computeIfAbsent(inventory, InventoryWrapper::new);
     }
 
     public boolean isItemHandler() {

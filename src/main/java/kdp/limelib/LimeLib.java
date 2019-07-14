@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -70,7 +71,6 @@ public class LimeLib {
 
         @Override
         public void handleMessage(PlayerEntity player) {
-            System.out.println(player);
             System.out.println(player.getClass() + " " + Thread.currentThread());
             System.out.println(EffectiveSide.get() + ": " + nbt);
 

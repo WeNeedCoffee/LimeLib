@@ -7,10 +7,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.function.Supplier;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
@@ -50,7 +53,8 @@ public abstract class AbstractMessage {
         context.enqueueWork(() -> {
             PlayerEntity player = context.getDirection().getReceptionSide() == LogicalSide.SERVER ?
                     context.getSender() :
-                    getClientPlayer().get().get();
+                    DistExecutor.callWhenOn(Dist.CLIENT,
+                            () -> () -> Minecraft.getInstance().player) /*getClientPlayer().get().get()*/;
             handleMessage(player);
             context.setPacketHandled(true);
         });
@@ -58,6 +62,7 @@ public abstract class AbstractMessage {
 
     public abstract void handleMessage(PlayerEntity player);
 
+    @Deprecated
     private static Supplier<Supplier<PlayerEntity>> getClientPlayer() {
         return () -> () -> ClientHelper.getClientPlayer();
     }
