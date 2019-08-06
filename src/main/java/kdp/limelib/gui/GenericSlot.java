@@ -1,5 +1,6 @@
 package kdp.limelib.gui;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,6 +20,7 @@ public class GenericSlot extends Slot {
     public final IItemHandler itemHandler;
     //cached wrapper
     private InventoryWrapper wrapper;
+    private Consumer<? super GenericSlot> changeConsumer;
 
     public GenericSlot(IInventory inventory, int index, int xPosition, int yPosition) {
         this((Object) inventory, index, xPosition, yPosition);
@@ -53,6 +55,11 @@ public class GenericSlot extends Slot {
     public GenericSlot setImmutable(ItemStack stack) {
         this.immutable = true;
         this.stack = stack.copy();
+        return this;
+    }
+
+    public GenericSlot onChange(Consumer<? super GenericSlot> changeConsumer) {
+        this.changeConsumer = changeConsumer;
         return this;
     }
 
@@ -159,6 +166,9 @@ public class GenericSlot extends Slot {
         }
         if (!isItemHandler()) {
             super.onSlotChanged();
+        }
+        if (changeConsumer != null) {
+            changeConsumer.accept(this);
         }
     }
 

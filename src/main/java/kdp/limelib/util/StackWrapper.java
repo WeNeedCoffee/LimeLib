@@ -48,18 +48,11 @@ public final class StackWrapper {
         return "[" + size + "x" + stack.getItem().getTranslationKey() + "]";
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof StackWrapper))
-            return false;
-        StackWrapper o = (StackWrapper) obj;
-        return ItemHandlerHelper.canItemStacksStack(stack, o.stack);
-    }
-
     public ItemStack getStack() {
         return stack;
     }
 
+    @SuppressWarnings("deprecation")
     public void setStack(ItemStack stack) {
         Validate.isTrue(!stack.isEmpty());
         this.stack = ItemHandlerHelper.copyStackWithSize(stack, Math.min(size, stack.getItem().getMaxStackSize()));

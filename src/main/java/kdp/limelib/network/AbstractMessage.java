@@ -17,6 +17,8 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
+import org.apache.commons.lang3.Validate;
+
 import kdp.limelib.ClientHelper;
 
 public abstract class AbstractMessage {
@@ -51,6 +53,10 @@ public abstract class AbstractMessage {
     public final void handleMessage(AbstractMessage message, Context context) {
         nbt = message.nbt;
         context.enqueueWork(() -> {
+            Validate.isTrue(context.getDirection().getReceptionSide() != context.getDirection().getOriginationSide(),
+                    "Why from %s to %s?",
+                    context.getDirection().getOriginationSide().toString(),
+                    context.getDirection().getReceptionSide().toString());
             PlayerEntity player = context.getDirection().getReceptionSide() == LogicalSide.SERVER ?
                     context.getSender() :
                     DistExecutor.callWhenOn(Dist.CLIENT,

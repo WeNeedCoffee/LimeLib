@@ -59,7 +59,7 @@ public class InventoryArea {
         return getAreaForInv(container, inv, 0, inv.getSlots());
     }
 
-    public static InventoryArea getAreaForInv(GenericContainer container, Object inv, int start, int total) {
+    private static InventoryArea getAreaForInv(GenericContainer container, Object inv, int start, int total) {
         IntArrayList l = container.getAllSlots()
                 .filter(s -> inv == s.getWrapper().getInv() && s.getSlotIndex() >= start && s
                         .getSlotIndex() < total + start).mapToInt(Slot::getSlotIndex).sorted()

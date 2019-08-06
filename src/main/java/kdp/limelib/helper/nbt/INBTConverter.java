@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import net.minecraft.nbt.INBT;
 
 public interface INBTConverter<T> {
+
     boolean classValid(Class<?> clazz);
 
     INBT toNBT(T value);

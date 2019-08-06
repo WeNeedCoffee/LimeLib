@@ -272,7 +272,7 @@ public abstract class GenericContainer extends Container {
         };
     }
 
-    public static interface GenericSlotConstructor {
+    public interface GenericSlotConstructor {
         GenericSlot construct(Object inventory, int index, int x, int y);
     }
 

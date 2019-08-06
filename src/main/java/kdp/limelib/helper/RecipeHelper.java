@@ -34,7 +34,7 @@ public class RecipeHelper {
 
     private static final Map<String, List<Pair<String, String>>> recipes = new HashMap<>();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private static final boolean dev;
+    private static final boolean DEV;
 
     static {
         boolean dev1;
@@ -44,11 +44,11 @@ public class RecipeHelper {
         } catch (ClassNotFoundException e) {
             dev1 = false;
         }
-        dev = dev1;
+        DEV = dev1;
     }
 
     public static void generateFiles() {
-        if (!dev)
+        if (!DEV)
             return;
         try {
             for (Entry<String, List<Pair<String, String>>> e : recipes.entrySet()) {
@@ -126,7 +126,7 @@ public class RecipeHelper {
     }
 
     public static void addCraftingRecipe(ItemStack result, @Nullable String group, boolean shaped, Object... input) {
-        if (!dev)
+        if (!DEV)
             return;
         validate(result);
         Map<String, Object> json = new LinkedHashMap<>();
@@ -167,7 +167,7 @@ public class RecipeHelper {
     }
 
     public static void addSmeltingRecipe(ItemStack result, Object input, double exp, int time) {
-        if (!dev)
+        if (!DEV)
             return;
         validate(result);
         Map<String, Object> json = new LinkedHashMap<>();

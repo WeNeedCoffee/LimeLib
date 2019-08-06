@@ -92,6 +92,7 @@ public class NBTHelper {
     public static final String VALUES = "_vAlUeS";
     private static Set<INBTConverter<?>> converters = new ReferenceOpenHashSet<>();
     private static Map<Class<?>, INBTConverter<?>> converterCache = new IdentityHashMap<>();
+    private static boolean initd = false;
 
     static {
         init();
@@ -154,6 +155,10 @@ public class NBTHelper {
     }
 
     public static void init() {
+        if (initd) {
+            return;
+        }
+        initd = true;
         // Primitives + wrappers
         register(new INBTConverter<Object>() {
             private Object2ByteOpenHashMap<Object> class2id = new Object2ByteOpenHashMap<>();
@@ -668,7 +673,7 @@ public class NBTHelper {
                 func = i -> new FloatNBT(Float.intBitsToFloat(i));
                 break;
             default:
-                break;
+                throw new IllegalStateException();
             }
             for (int i : array) {
                 tmpResults.add(converter.toValue(func.apply(i), clazz));
@@ -685,7 +690,7 @@ public class NBTHelper {
                 func = l -> new DoubleNBT(Double.longBitsToDouble(l));
                 break;
             default:
-                break;
+                throw new IllegalStateException();
             }
             for (long l : array) {
                 tmpResults.add(converter.toValue(func.apply(l), clazz));
