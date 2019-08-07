@@ -30,25 +30,15 @@ import net.minecraftforge.fml.ModLoadingContext;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
+import kdp.limelib.LimeLib;
+
 public class RecipeHelper {
 
     private static final Map<String, List<Pair<String, String>>> recipes = new HashMap<>();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private static final boolean DEV;
-
-    static {
-        boolean dev1;
-        try {
-            Class.forName("net.minecraft.world.World");
-            dev1 = true;
-        } catch (ClassNotFoundException e) {
-            dev1 = false;
-        }
-        DEV = dev1;
-    }
 
     public static void generateFiles() {
-        if (!DEV)
+        if (!LimeLib.DEV)
             return;
         try {
             for (Entry<String, List<Pair<String, String>>> e : recipes.entrySet()) {
@@ -83,7 +73,7 @@ public class RecipeHelper {
         Objects.requireNonNull(o);
         if (o instanceof String) {
             Map<String, Object> ret = new LinkedHashMap<>();
-            ret.put("tag", o);
+            ret.put("tag", new ResourceLocation((String) o).toString());
             return ret;
         }
         if (o instanceof ResourceLocation) {
@@ -126,7 +116,7 @@ public class RecipeHelper {
     }
 
     public static void addCraftingRecipe(ItemStack result, @Nullable String group, boolean shaped, Object... input) {
-        if (!DEV)
+        if (!LimeLib.DEV)
             return;
         validate(result);
         Map<String, Object> json = new LinkedHashMap<>();
@@ -167,7 +157,7 @@ public class RecipeHelper {
     }
 
     public static void addSmeltingRecipe(ItemStack result, Object input, double exp, int time) {
-        if (!DEV)
+        if (!LimeLib.DEV)
             return;
         validate(result);
         Map<String, Object> json = new LinkedHashMap<>();

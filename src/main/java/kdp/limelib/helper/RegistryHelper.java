@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -13,11 +14,12 @@ import org.apache.commons.lang3.Validate;
 
 import kdp.limelib.LimeLib;
 
-//@Mod.EventBusSubscriber(modid = LimeLib.MOD_ID)
+@Mod.EventBusSubscriber(modid = LimeLib.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RegistryHelper {
     private static final Set<IForgeRegistryEntry<?>> ENTRIES = Collections.newSetFromMap(new IdentityHashMap<>());
     private static boolean registered = false;
 
+    @SubscribeEvent
     public static void registerEvent(RegistryEvent.Register event) {
         registered = true;
         Class<?> clazz = (Class<?>) event.getGenericType();

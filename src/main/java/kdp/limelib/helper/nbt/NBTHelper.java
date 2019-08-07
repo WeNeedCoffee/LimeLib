@@ -87,7 +87,7 @@ public class NBTHelper {
     public static final String NULL_INDICES = "_n0lL";
     public static final String NULL_AMOUNT = "_n0lL+";
     public static final String TYPE = "_tYpE";
-    public static final String LIST = "_lIsT";
+    public static final String COLLECTION = "_lIsT";
     public static final String KEYS = "_kEyS";
     public static final String VALUES = "_vAlUeS";
     private static Set<INBTConverter<?>> converters = new ReferenceOpenHashSet<>();
@@ -562,7 +562,7 @@ public class NBTHelper {
     public static void register(INBTConverter<?> converter) {
         Validate.isTrue(ModLoadingContext.get().getActiveContainer().getCurrentState()
                 .ordinal() < ModLoadingStage.COMPLETE.ordinal(), "Register the converter earlier.");
-        if (!converters.contains(converter)) {
+        if (!converters.contains(Objects.requireNonNull(converter))) {
             converters.add(converter);
         }
     }
@@ -651,7 +651,7 @@ public class NBTHelper {
             return result;
         }
         INBTConverter<T> converter = (INBTConverter<T>) getConverter(clazz);
-        INBT n = collectionTag.get(LIST);
+        INBT n = collectionTag.get(COLLECTION);
         List<T> tmpResults = new ArrayList<>();
         if (n instanceof ByteArrayNBT) {
             byte[] array = ((ByteArrayNBT) n).getByteArray();
@@ -723,14 +723,15 @@ public class NBTHelper {
         Set<INBTConverter<T>> converters = new ReferenceOpenHashSet<>();
         IntArrayList nullIndices = new IntArrayList();
         int tmp = 0;
-        for (Object o : values)
+        for (Object o : values) {
             if (o != null) {
                 INBTConverter<T> converter = (INBTConverter<T>) getConverter(o.getClass());
                 converters.add(converter);
-                tmp++;
             } else {
-                nullIndices.add(tmp++);
+                nullIndices.add(tmp);
             }
+            tmp++;
+        }
         if (converters.size() != 1)
             throw new IllegalArgumentException("Found " + converters.size() + " converters for " + values.stream()
                     .filter(Objects::nonNull).map(Object::getClass).distinct()
@@ -777,7 +778,7 @@ public class NBTHelper {
             }
             collection = list;
         }
-        collectionTag.put(LIST, collection);
+        collectionTag.put(COLLECTION, collection);
         return nbt;
     }
 

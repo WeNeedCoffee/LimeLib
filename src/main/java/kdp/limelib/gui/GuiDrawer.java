@@ -16,6 +16,7 @@ import kdp.limelib.LimeLib;
 public class GuiDrawer {
 
     public static final ResourceLocation COMMON_TEXTURES = new ResourceLocation(LimeLib.MOD_ID + ":textures/gui/base.png");
+    public static final ResourceLocation BARRIER_TEXTURES = new ResourceLocation("textures/item/barrier.png");
 
     public int guiLeft, guiTop, xSize, ySize;
     public float zLevel = 0;
@@ -235,8 +236,15 @@ public class GuiDrawer {
     }
 
     public void drawStopSign(int x, int y) {
-        bindTexture();
-        GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 12, 36, 12, 12, zLevel);
+        /*bindTexture();
+        GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 12, 36, 12, 12, zLevel);*/
+        mc.getTextureManager().bindTexture(BARRIER_TEXTURES);
+        GlStateManager.clearColor(1F, 1F, 1F, 1F);
+        GlStateManager.translated(x + guiLeft, y + guiTop, 0);
+        GlStateManager.scaled(1 / 16d, 1 / 16d, 1 / 16d);
+        GuiUtils.drawTexturedModalRect(0, 0, 0, 0, 256, 256, 0);
+        GlStateManager.scaled(16, 16, 16);
+        GlStateManager.translated(-(x + guiLeft), -(y + guiTop), 0);
     }
 
     private void bindTexture() {

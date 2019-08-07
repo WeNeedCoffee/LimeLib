@@ -22,7 +22,7 @@ public class PacketHandler {
     private static int index = 0;
 
     public static void init() {
-        register(OpenGuiMessage.class);
+        register(GenericTileMessage.class);
     }
 
     public static void register(Class<? extends AbstractMessage> classMessage) {

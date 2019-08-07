@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "grg",
+    "g g",
+    "ggg"
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:gold_ingot"
+    },
+    "r": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "result": {
+    "item": "limelib:raiser"
+  }
+}

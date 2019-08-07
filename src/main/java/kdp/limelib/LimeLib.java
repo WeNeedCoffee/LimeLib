@@ -1,13 +1,17 @@
 package kdp.limelib;
 
 import java.awt.*;
+import java.util.UUID;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -24,6 +28,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import kdp.limelib.block.GenericBlock;
 import kdp.limelib.gui.GenericButton;
 import kdp.limelib.gui.GenericScreen;
 import kdp.limelib.gui.GuiDrawer;
@@ -34,13 +39,25 @@ import kdp.limelib.network.AbstractMessage;
 import kdp.limelib.network.PacketHandler;
 import kdp.limelib.util.ClientEventHandler;
 import kdp.limelib.util.EventHandler;
+import kdp.limelib.util.LimeUtils;
 
 @Mod(LimeLib.MOD_ID)
 public class LimeLib {
 
     public static final String MOD_ID = "limelib";
-
+    public static final boolean DEV;
     public static final Logger LOG = LogManager.getLogger(LimeLib.class);
+
+    static {
+        boolean dev1;
+        try {
+            Class.forName("net.minecraft.world.World");
+            dev1 = true;
+        } catch (ClassNotFoundException e) {
+            dev1 = false;
+        }
+        DEV = dev1;
+    }
 
     public LimeLib() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
@@ -55,6 +72,18 @@ public class LimeLib {
                 }
             }
         });
+        GenericBlock raiser = new GenericBlock(Block.Properties.create(Material.BAMBOO), "raiser");
+        raiser.register();
+        RecipeHelper.addCraftingRecipe(new ItemStack(() -> raiser.getBlockItem()),
+                null,
+                true,
+                "grg",
+                "g g",
+                "ggg",
+                'g',
+                Items.GOLD_INGOT,
+                'r',
+                "wool");
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -79,15 +108,18 @@ public class LimeLib {
 
         public M() {
             NBTBuilder.of(nbt).set("eins", RandomStringUtils.randomNumeric(5))
-                    .set("zwei", new BlockPos(3, 88, -1000000));
+                    .set("zwei", new BlockPos(3, 88, -1000000)).set("fear", UUID.randomUUID())
+                    .set("snib", NBTBuilder.of().set("dam", 43).set(String.valueOf(Math.E), 2.000000300034F).build());
+
         }
 
         @Override
         public void handleMessage(PlayerEntity player) {
-            System.out.println(player.getClass() + " " + Thread.currentThread());
-            System.out.println(EffectiveSide.get() + ": " + nbt);
             if (player instanceof ClientPlayerEntity) {
+                System.out.println(EffectiveSide.get() + ": " + nbt);
                 Minecraft.getInstance().displayGuiScreen(new Sc());
+                LOG.fatal(LimeUtils.getGSON().toJson(nbt));
+                LOG.warn(LimeUtils.getGSON().toJson(NBTHelper.toASCIIString(nbt)));
             }
         }
 
@@ -125,10 +157,11 @@ public class LimeLib {
                             12,
                             "new",
                             bb -> {
+                                System.out.println(bb.x+"|"+bb.y);
                             }));
                 }));
-                addButton(new GenericButton(2, 100, 60, 20, "Hell", null).setDesign(GenericButton.Design.SIMPLE)
-                        .setButtonColor(0x528B8B));
+                addButton(new GenericButton(-20 + guiLeft, 100 + guiTop, 60, 20, "Hell", null)
+                        .setDesign(GenericButton.Design.SIMPLE).setButtonColor(0xDD528B8B));
 
             }
         }
