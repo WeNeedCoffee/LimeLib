@@ -483,20 +483,15 @@ public class NBTHelper {
         // INBT
         register(of(null, (n, c) -> n, v -> v, INBT.class::isAssignableFrom));
         // BlockPos
-        register(of(null,
-                (n, c) -> BlockPos.fromLong(((LongNBT) n).getLong()),
-                v -> new LongNBT(v.toLong()),
-                BlockPos.class,
-                MutableBlockPos.class));
+        register(of(null, (n, c) -> BlockPos.fromLong(((LongNBT) n).getLong()), v -> new LongNBT(v.toLong()),
+                BlockPos.class, MutableBlockPos.class));
         // GlobalBlockPos
         register(of(null, (n, c) -> {
             long[] arr = ((LongArrayNBT) n).getAsLongArray();
             return new GlobalBlockPos(BlockPos.fromLong(arr[0]), (int) arr[1]);
         }, v -> new LongArrayNBT(new long[] { v.getPos().toLong(), v.getDimension() }), GlobalBlockPos.class));
         // ItemStack
-        register(of(c -> ItemStack.EMPTY,
-                (n, c) -> ItemStack.read((CompoundNBT) n),
-                v -> v.write(new CompoundNBT()),
+        register(of(c -> ItemStack.EMPTY, (n, c) -> ItemStack.read((CompoundNBT) n), v -> v.write(new CompoundNBT()),
                 ItemStack.class));
         // UUID
         register(of(null, (n, c) -> {
@@ -505,22 +500,16 @@ public class NBTHelper {
         }, v -> new LongArrayNBT(new long[] { v.getMostSignificantBits(), v.getLeastSignificantBits()
         }), UUID.class));
         // ResourceLocation
-        register(of(null,
-                (n, c) -> new ResourceLocation(((StringNBT) n).getString()),
-                v -> new StringNBT(v.toString()),
+        register(of(null, (n, c) -> new ResourceLocation(((StringNBT) n).getString()), v -> new StringNBT(v.toString()),
                 ResourceLocation.class));
         // FluidStack
-        register(of(null,
-                (n, c) -> FluidStack.loadFluidStackFromNBT((CompoundNBT) n),
-                v -> v.writeToNBT(new CompoundNBT()),
-                FluidStack.class));
+        register(of(null, (n, c) -> FluidStack.loadFluidStackFromNBT((CompoundNBT) n),
+                v -> v.writeToNBT(new CompoundNBT()), FluidStack.class));
         // String
         register(of(c -> "", (n, c) -> ((StringNBT) n).getString(), StringNBT::new, String.class));
         // StackWrapper
-        register(of(null,
-                (n, c) -> StackWrapper.loadStackWrapperFromNBT((CompoundNBT) n),
-                v -> v.writeToNBT(new CompoundNBT()),
-                StackWrapper.class));
+        register(of(null, (n, c) -> StackWrapper.loadStackWrapperFromNBT((CompoundNBT) n),
+                v -> v.writeToNBT(new CompoundNBT()), StackWrapper.class));
     }
 
     public static <T> INBTConverter<T> of(@Nullable Function<Class<? extends T>, T> defaultValue,
@@ -560,8 +549,9 @@ public class NBTHelper {
     }
 
     public static void register(INBTConverter<?> converter) {
-        Validate.isTrue(ModLoadingContext.get().getActiveContainer().getCurrentState()
-                .ordinal() < ModLoadingStage.COMPLETE.ordinal(), "Register the converter earlier.");
+        Validate.isTrue(
+                ModLoadingContext.get().getActiveContainer().getCurrentState().ordinal() < ModLoadingStage.COMPLETE
+                        .ordinal(), "Register the converter earlier.");
         if (!converters.contains(Objects.requireNonNull(converter))) {
             converters.add(converter);
         }
@@ -733,9 +723,9 @@ public class NBTHelper {
             tmp++;
         }
         if (converters.size() != 1)
-            throw new IllegalArgumentException("Found " + converters.size() + " converters for " + values.stream()
-                    .filter(Objects::nonNull).map(Object::getClass).distinct()
-                    .collect(Collectors.toList()) + ". Only 1 allowed.");
+            throw new IllegalArgumentException(
+                    "Found " + converters.size() + " converters for " + values.stream().filter(Objects::nonNull)
+                            .map(Object::getClass).distinct().collect(Collectors.toList()) + ". Only 1 allowed.");
         INBTConverter<T> converter = converters.iterator().next();
         if (!nullIndices.isEmpty()) {
             collectionTag.putIntArray(NULL_INDICES, nullIndices.toIntArray());

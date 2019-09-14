@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class LimeUtils {
 

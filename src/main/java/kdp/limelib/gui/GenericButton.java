@@ -36,39 +36,20 @@ public class GenericButton extends GuiButtonExt {
             this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             int k = this.getYImage(this.isHovered);
             if (design == Design.NORMAL) {
-                GuiUtils.drawContinuousTexturedBox(WIDGETS_LOCATION,
-                        this.x,
-                        this.y,
-                        0,
-                        46 + k * 20,
-                        this.width,
-                        this.height,
-                        200,
-                        20,
-                        2,
-                        3,
-                        2,
-                        2,
-                        this.blitOffset);
+                GuiUtils.drawContinuousTexturedBox(WIDGETS_LOCATION, this.x, this.y, 0, 46 + k * 20, this.width,
+                        this.height, 200, 20, 2, 3, 2, 2, this.blitOffset);
             } else if (design == Design.SIMPLE) {
                 drawer.drawFrame(x, y, width - 1, height - 1, 1, frameColor);
-                drawer.drawColoredRectangle(x + 1,
-                        y + 1,
-                        width - 2,
-                        height - 2,
-                        active ?
-                                isHovered && !mc.mouseHelper.isLeftDown() ?
-                                        ColorHelper.brighter(buttonColor, 0.10) :
-                                        buttonColor :
-                                ColorHelper.darker(buttonColor, 0.10));
+                drawer.drawColoredRectangle(x + 1, y + 1, width - 2, height - 2, active ?
+                        isHovered && !mc.mouseHelper.isLeftDown() ?
+                                ColorHelper.brighter(buttonColor, 0.10) :
+                                buttonColor :
+                        ColorHelper.darker(buttonColor, 0.10));
             } else if (design == Design.NONE) {
                 ;//NO-OP
             }
             if (overlayColor != Integer.MAX_VALUE) {
-                fill(x + 0,
-                        y + 0,
-                        x + width - 0,
-                        y + height - 0,
+                fill(x + 0, y + 0, x + width - 0, y + height - 0,
                         ColorHelper.getRGB(overlayColor, 140 + (k == 2 ? 60 : 0)));
             }
             this.renderBg(mc, mouseX, mouseY);
@@ -89,11 +70,8 @@ public class GenericButton extends GuiButtonExt {
             if (strWidth > width - 6 && strWidth > ellipsisWidth)
                 buttonText = mc.fontRenderer.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
 
-            this.drawCenteredString(mc.fontRenderer,
-                    buttonText,
-                    this.x + this.width / 2,
-                    this.y + (this.height - 8) / 2,
-                    color);
+            this.drawCenteredString(mc.fontRenderer, buttonText, this.x + this.width / 2,
+                    this.y + (this.height - 8) / 2, color);
         }
     }
 

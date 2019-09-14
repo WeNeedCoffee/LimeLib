@@ -5,20 +5,23 @@ import java.util.Arrays;
 import java.util.function.Predicate;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import net.minecraftforge.registries.GameData;
 
 import org.apache.commons.lang3.Validate;
+
+import kdp.limelib.LimeLib;
 
 public class PacketHandler {
 
     private static final String VERSION = "1.0";
     private static SimpleChannel channel = NetworkRegistry
-            .newSimpleChannel(GameData.checkPrefix("ch1", false), () -> VERSION, VERSION::equals, VERSION::equals);
+            .newSimpleChannel(new ResourceLocation(LimeLib.MOD_ID, "ch1"), () -> VERSION, VERSION::equals,
+                    VERSION::equals);
     private static int index = 0;
 
     public static void init() {

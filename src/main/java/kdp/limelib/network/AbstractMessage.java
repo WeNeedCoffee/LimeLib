@@ -1,9 +1,6 @@
 package kdp.limelib.network;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.function.Supplier;
 
@@ -19,6 +16,8 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 import org.apache.commons.lang3.Validate;
 
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 import kdp.limelib.ClientHelper;
 
 public abstract class AbstractMessage {
@@ -32,18 +31,16 @@ public abstract class AbstractMessage {
     }
 
     public final void encode(PacketBuffer buffer) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
+        ByteBufOutputStream bbos = new ByteBufOutputStream(buffer);
         try {
-            CompressedStreamTools.write(nbt, dos);
+            CompressedStreamTools.write(nbt, bbos);
         } catch (IOException e) {
         }
-        buffer.writeByteArray(baos.toByteArray());
     }
 
     public final void decode(PacketBuffer buffer) {
-        ByteArrayInputStream bais = new ByteArrayInputStream(buffer.readByteArray());
-        DataInputStream dis = new DataInputStream(bais);
+        ByteBufInputStream bbis = new ByteBufInputStream(buffer);
+        DataInputStream dis = new DataInputStream(bbis);
         try {
             nbt = CompressedStreamTools.read(dis);
         } catch (IOException e) {
@@ -54,8 +51,7 @@ public abstract class AbstractMessage {
         nbt = message.nbt;
         context.enqueueWork(() -> {
             Validate.isTrue(context.getDirection().getReceptionSide() != context.getDirection().getOriginationSide(),
-                    "Why from %s to %s?",
-                    context.getDirection().getOriginationSide().toString(),
+                    "Why from %s to %s?", context.getDirection().getOriginationSide().toString(),
                     context.getDirection().getReceptionSide().toString());
             PlayerEntity player = context.getDirection().getReceptionSide() == LogicalSide.SERVER ?
                     context.getSender() :

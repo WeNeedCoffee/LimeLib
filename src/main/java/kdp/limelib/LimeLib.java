@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -39,7 +38,6 @@ import kdp.limelib.network.AbstractMessage;
 import kdp.limelib.network.PacketHandler;
 import kdp.limelib.util.ClientEventHandler;
 import kdp.limelib.util.EventHandler;
-import kdp.limelib.util.LimeUtils;
 
 @Mod(LimeLib.MOD_ID)
 public class LimeLib {
@@ -74,16 +72,9 @@ public class LimeLib {
         });
         GenericBlock raiser = new GenericBlock(Block.Properties.create(Material.BAMBOO), "raiser");
         raiser.register();
-        RecipeHelper.addCraftingRecipe(new ItemStack(() -> raiser.getBlockItem()),
-                null,
-                true,
-                "grg",
-                "g g",
-                "ggg",
-                'g',
-                Items.GOLD_INGOT,
-                'r',
-                "wool");
+        RecipeHelper.addCraftingRecipe(new ItemStack(raiser.getBlockItem()), null, true, "grg", "g g", "ggg", 'g',
+                Items.GOLD_INGOT, 'r', "wool");
+
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -117,54 +108,44 @@ public class LimeLib {
         public void handleMessage(PlayerEntity player) {
             if (player instanceof ClientPlayerEntity) {
                 System.out.println(EffectiveSide.get() + ": " + nbt);
-                Minecraft.getInstance().displayGuiScreen(new Sc());
-                LOG.fatal(LimeUtils.getGSON().toJson(nbt));
-                LOG.warn(LimeUtils.getGSON().toJson(NBTHelper.toASCIIString(nbt)));
+                //Minecraft.getInstance().displayGuiScreen(new Sc());
             }
         }
+    }
 
-        class Sc extends GenericScreen {
+    static class Sc extends GenericScreen {
 
-            protected Sc() {
-                super(new StringTextComponent(TextFormatting.BLUE + "IrO"));
-                xSize = 250;
-                ySize = 150;
-            }
+        protected Sc() {
+            super(new StringTextComponent(TextFormatting.BLUE + "IrO"));
+            xSize = 250;
+            ySize = 150;
+        }
 
-            @Override
-            public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
-                drawer.drawBackgroundTexture();
-                super.render(p_render_1_, p_render_2_, p_render_3_);
-                drawer.drawSlot(30, 30);
-                drawer.drawFrame(50, 30, 12, 19, 1, Color.green.getRGB());
-                drawer.drawEnergyBarH(10, 60, 134, .999f - ((System.currentTimeMillis() / 8) % 100) / 100f);
-                drawer.drawItemStack(new ItemStack(Items.EMERALD), 100, 2);
-                drawer.drawProgressArrow(2,
-                        80,
-                        ((System.currentTimeMillis() / 16) % 100) / 100f,
-                        GuiDrawer.Direction.LEFT);
-                drawer.drawStopSign(100, 100);
-                drawer.drawFlame(130, 130, .7f);
-            }
+        @Override
+        public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
+            drawer.drawBackgroundTexture();
+            super.render(p_render_1_, p_render_2_, p_render_3_);
+            drawer.drawSlot(30, 30);
+            drawer.drawFrame(50, 30, 12, 19, 1, Color.green.getRGB());
+            drawer.drawEnergyBarH(10, 60, 134, .999f - ((System.currentTimeMillis() / 8) % 100) / 100f);
+            drawer.drawItemStack(new ItemStack(Items.EMERALD), 100, 2);
+            drawer.drawProgressArrow(2, 80, ((System.currentTimeMillis() / 16) % 100) / 100f, GuiDrawer.Direction.LEFT);
+            drawer.drawStopSign(100, 100);
+            drawer.drawFlame(130, 130, .7f);
+        }
 
-            @Override
-            protected void init() {
-                super.init();
-                addButton(new GuiButtonExt(20 + guiLeft, 2 + guiTop, 200, 10, "Eber", b -> {
-                    addButton(new GuiButtonExt(Minecraft.getInstance().world.rand.nextInt(100) + guiLeft,
-                            Minecraft.getInstance().world.rand.nextInt(100) + guiTop,
-                            44,
-                            12,
-                            "new",
-                            bb -> {
-                                System.out.println(bb.x+"|"+bb.y);
-                            }));
+        @Override
+        protected void init() {
+            super.init();
+            addButton(new GuiButtonExt(20 + guiLeft, 2 + guiTop, 200, 10, "Eber", b -> {
+                addButton(new GuiButtonExt(Minecraft.getInstance().world.rand.nextInt(100) + guiLeft,
+                        Minecraft.getInstance().world.rand.nextInt(100) + guiTop, 44, 12, "new", bb -> {
+                    System.out.println(bb.x + "|" + bb.y);
                 }));
-                addButton(new GenericButton(-20 + guiLeft, 100 + guiTop, 60, 20, "Hell", null)
-                        .setDesign(GenericButton.Design.SIMPLE).setButtonColor(0xDD528B8B));
+            }));
+            addButton(new GenericButton(-20 + guiLeft, 100 + guiTop, 60, 20, "Hell", null)
+                    .setDesign(GenericButton.Design.SIMPLE).setButtonColor(0xDD528B8B));
 
-            }
         }
-
     }
 }

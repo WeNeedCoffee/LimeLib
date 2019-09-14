@@ -15,7 +15,8 @@ import kdp.limelib.LimeLib;
 
 public class GuiDrawer {
 
-    public static final ResourceLocation COMMON_TEXTURES = new ResourceLocation(LimeLib.MOD_ID + ":textures/gui/base.png");
+    public static final ResourceLocation COMMON_TEXTURES = new ResourceLocation(
+            LimeLib.MOD_ID + ":textures/gui/base.png");
     public static final ResourceLocation BARRIER_TEXTURES = new ResourceLocation("textures/item/barrier.png");
 
     public int guiLeft, guiTop, xSize, ySize;
@@ -88,13 +89,8 @@ public class GuiDrawer {
     }
 
     public void drawColoredRectangle(int x, int y, int width, int height, int color) {
-        GuiUtils.drawGradientRect((int) zLevel,
-                x + guiLeft,
-                y + guiTop,
-                x + width + guiLeft,
-                y + height + guiTop,
-                color,
-                color);
+        GuiUtils.drawGradientRect((int) zLevel, x + guiLeft, y + guiTop, x + width + guiLeft, y + height + guiTop,
+                color, color);
     }
 
     public void drawFrame(int x, int y, int width, int height, int frame, int color) {
@@ -145,7 +141,7 @@ public class GuiDrawer {
         int renderAmount = Math.max(height, 1);
         int posY = y + height - renderAmount;
 
-        mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
         int color = fluid.getFluid().getColor(fluid);
         GL11.glColor3ub((byte) (color >> 16 & 0xFF), (byte) (color >> 8 & 0xFF), (byte) (color & 0xFF));
 
@@ -196,13 +192,8 @@ public class GuiDrawer {
             break;
         case LEFT:
             GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 40, 0, 22, 15, zLevel);
-            GuiUtils.drawTexturedModalRect(x + guiLeft + (totalLength - currentLength),
-                    y + guiTop,
-                    40 + (totalLength - currentLength),
-                    15,
-                    currentLength,
-                    16,
-                    zLevel);
+            GuiUtils.drawTexturedModalRect(x + guiLeft + (totalLength - currentLength), y + guiTop,
+                    40 + (totalLength - currentLength), 15, currentLength, 16, zLevel);
             break;
         case RIGHT:
             GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 18, 0, 22, 15, zLevel);
@@ -210,13 +201,8 @@ public class GuiDrawer {
             break;
         case UP:
             GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 78, 0, 15, 22, zLevel);
-            GuiUtils.drawTexturedModalRect(x + guiLeft - 1,
-                    y + guiTop + (totalLength - currentLength),
-                    62,
-                    0 + (totalLength - currentLength),
-                    16,
-                    currentLength,
-                    zLevel);
+            GuiUtils.drawTexturedModalRect(x + guiLeft - 1, y + guiTop + (totalLength - currentLength), 62,
+                    0 + (totalLength - currentLength), 16, currentLength, zLevel);
             break;
         }
     }
@@ -226,13 +212,8 @@ public class GuiDrawer {
         GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 24, 31, 13, 13, zLevel);
         int totalHeight = 13;
         int currentHeight = (int) (totalHeight * percent);
-        GuiUtils.drawTexturedModalRect(x + guiLeft,
-                y + guiTop + (totalHeight - currentHeight),
-                37,
-                31 + (totalHeight - currentHeight),
-                13,
-                13,
-                zLevel);
+        GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + (totalHeight - currentHeight), 37,
+                31 + (totalHeight - currentHeight), 13, 13, zLevel);
     }
 
     public void drawStopSign(int x, int y) {
@@ -274,12 +255,7 @@ public class GuiDrawer {
     }*/
 
     public static void renderToolTip(List<String> list, int x, int y) {
-        GuiUtils.drawHoveringText(list,
-                x,
-                y,
-                mc.mainWindow.getScaledWidth(),
-                mc.mainWindow.getScaledHeight(),
-                -1,
+        GuiUtils.drawHoveringText(list, x, y, mc.mainWindow.getScaledWidth(), mc.mainWindow.getScaledHeight(), -1,
                 mc.fontRenderer);
     }
 

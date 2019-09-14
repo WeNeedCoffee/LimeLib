@@ -13,15 +13,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import kdp.limelib.helper.nbt.NBTBuilder;
-import kdp.limelib.helper.nbt.NBTHelper;
 
 public class TypeAdapters {
     private abstract static class JSONAdapter<T> extends TypeAdapter<T> {
 
-        private static final String KEY="Ñ‘Ŧ";
+        private static final String KEY = "Ñ‘Ŧ";
 
         @Override
         public final void write(JsonWriter out, T value) throws IOException {

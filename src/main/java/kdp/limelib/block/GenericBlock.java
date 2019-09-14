@@ -53,21 +53,19 @@ public class GenericBlock extends Block {
         return blockItem;
     }
 
-    public void register() {
+    public GenericBlock register() {
         RegistryHelper.register(this);
         RegistryHelper.register(getBlockItem());
         if (LimeLib.DEV) {
             List<LinkedHashMap<String, Object>> pools = getPools();
             if (pools != null) {
-                //boolean notAJar = ModList.get().getModContainerById(getRegistryName().getNamespace()).get().getMod()
-                //        .getClass().getProtectionDomain().getCodeSource().getLocation() == null;
-                //if (notAJar) {
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 LinkedHashMap<String, Object> json = new LinkedHashMap<>();
                 json.put("type", "minecraft:block");
                 json.put("pools", pools);
-                File dir = new File("").toPath().resolve("../src/main/resources/data/" + getRegistryName()
-                        .getNamespace() + "/loot_tables/blocks/").toFile();
+                File dir = new File("").toPath().resolve(
+                        "../src/main/resources/data/" + getRegistryName().getNamespace() + "/loot_tables/blocks/")
+                        .toFile();
                 if (!dir.exists())
                     dir.mkdirs();
                 try {
@@ -83,6 +81,7 @@ public class GenericBlock extends Block {
         if (tileClass != null && !Stream.of(tileClass.getConstructors()).anyMatch((c) -> c.getParameterCount() == 0))
             throw new IllegalStateException(tileClass + " needs a public default constructor.");
         //TODO RegistryHelper.register(tileClass);
+        return this;
     }
 
     @Nullable
@@ -124,8 +123,8 @@ public class GenericBlock extends Block {
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             getTile(worldIn, pos).ifPresent(t -> {
-                t.getDroppingItems()
-                        .forEach(s -> InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), s));
+                Optional.ofNullable(t.getDroppingItems()).ifPresent(l -> l.forEach(
+                        s -> InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), s)));
                 worldIn.updateComparatorOutputLevel(pos, this);
                 worldIn.removeTileEntity(pos);
             });

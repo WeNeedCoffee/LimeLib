@@ -2,7 +2,8 @@ package kdp.limelib.util;
 
 import java.util.ConcurrentModificationException;
 
-import net.minecraftforge.event.TickEvent.*;
+import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.event.TickEvent.WorldTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
@@ -16,7 +17,7 @@ public class EventHandler {
 
             try {
                 if (event.world.getWorldInfo().getGameTime() % 4 == 0) {
-                    if (event.world.rand.nextBoolean()&&false)
+                    if (event.world.rand.nextBoolean() && false)
                         System.out.println("benz");
                 }
             } catch (ConcurrentModificationException e) {

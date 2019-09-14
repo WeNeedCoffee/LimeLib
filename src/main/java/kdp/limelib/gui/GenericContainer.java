@@ -33,8 +33,8 @@ public abstract class GenericContainer extends Container {
             Map<String, Object> inventories) {
         super(type, id);
         this.playerInventory = playerInventory;
-        Validate.isTrue(inventories.values().stream()
-                .allMatch(o -> o instanceof IInventory || o instanceof IItemHandler));
+        Validate.isTrue(
+                inventories.values().stream().allMatch(o -> o instanceof IInventory || o instanceof IItemHandler));
         this.inventories = inventories != null ? inventories : Collections.emptyMap();
         this.modifyInventories();
         this.initSlots();

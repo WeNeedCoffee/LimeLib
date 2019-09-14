@@ -1,6 +1,5 @@
 package kdp.limelib.gui;
 
-
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.entity.player.PlayerInventory;
@@ -20,11 +19,13 @@ public class GenericContainerScreen extends ContainerScreen {
         super.init();
         drawer = new GuiDrawer(guiLeft, guiTop, xSize, ySize);
     }
+
     @Override
     public void tick() {
         super.tick();
         buttons.stream().filter(w -> w instanceof ITickable).forEach(w -> ((ITickable) w).tick());
     }
+
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 

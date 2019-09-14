@@ -78,8 +78,9 @@ public abstract class GenericTile extends TileEntity {
         }*/
     }
 
+    @Nullable
     public List<ItemStack> getDroppingItems() {
-        return Collections.emptyList();
+        return null;
     }
 
     public List<ItemStack> editDrops(List<ItemStack> drops, LootContext.Builder stacks) {

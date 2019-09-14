@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[27,)"
+loaderVersion="[28,)"
 issueTrackerURL="http://my.issue.tracker/"
 
 [[mods]]
@@ -16,7 +16,7 @@ A Library for my other mods
 [[dependencies.limelib]]
     modId="forge"
     mandatory=true
-    versionRange="[27,)"
+    versionRange="[28,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.limelib]]
