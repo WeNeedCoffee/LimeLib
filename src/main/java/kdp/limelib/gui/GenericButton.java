@@ -7,6 +7,7 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 import kdp.limelib.helper.ColorHelper;
+import kdp.limelib.util.LimeUtils;
 
 public class GenericButton extends GuiButtonExt {
 
@@ -17,16 +18,11 @@ public class GenericButton extends GuiButtonExt {
     protected Design design = Design.NORMAL;
 
     public GenericButton(int x, int y, int width, int height, String text, IPressable onPress) {
-        super(x, y, width, height, text, onPress);
+
+        super(x, y, width, height, text, LimeUtils.orElse(onPress, $ -> {
+        }));
         mc = Minecraft.getInstance();
         drawer = new GuiDrawer(0, 0, 0, 0);
-    }
-
-    @Override
-    public void onPress() {
-        if (onPress != null) {
-            onPress.onPress(this);
-        }
     }
 
     @Override

@@ -23,7 +23,7 @@ public class GlobalBlockPos {
         this.dimension = dimension;
     }
 
-    public GlobalBlockPos(BlockPos pos, World world) {
+    public GlobalBlockPos(@Nonnull BlockPos pos, World world) {
         this(pos, world.dimension.getType().getId());
         Validate.isTrue(!world.isRemote);
     }

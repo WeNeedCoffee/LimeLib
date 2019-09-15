@@ -1,7 +1,6 @@
 package kdp.limelib.util;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.google.gson.TypeAdapter;
@@ -30,7 +29,7 @@ public class TypeAdapters {
 
         @Override
         public final T read(JsonReader in) throws IOException {
-            T value = Optional.ofNullable(defaultValue()).map(Supplier::get).orElse(null);
+            T value = LimeUtils.orElse(defaultValue(), null, Supplier::get);
             in.beginObject();
             if (in.hasNext() && in.nextName().equals(KEY))
                 try {

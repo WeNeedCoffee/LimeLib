@@ -6,12 +6,18 @@ import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
+import org.lwjgl.opengl.GL11;
+
 import kdp.limelib.LimeLib;
+import kdp.limelib.helper.ColorHelper;
 
 public class GuiDrawer {
 
@@ -100,34 +106,113 @@ public class GuiDrawer {
         drawColoredRectangle(x + width - (frame - 1), y, frame, height, color);
     }
 
+    @Deprecated
     public void drawEnergyBarV(int x, int y, int height, float percent) {
-        bindTexture();
-        for (int i = 0; i < height + 1; i++)
-            if (i % 2 == 0)
-                GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + i, 0, 36, 8, 1, zLevel);
-            else
-                GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + i, 0, 37, 8, 1, zLevel);
-        for (int i = 0; i < (height + 1) * (1f - percent); i++)
-            if (i % 2 == 0)
-                GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + i, 0, 38, 8, 1, zLevel);
-            else
-                GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop + i, 0, 39, 8, 1, zLevel);
+        drawProgressbar(x, y, 8, height, 0xFF0000, percent, false, true);
     }
 
+    @Deprecated
     public void drawEnergyBarH(int x, int y, int width, float percent) {
-        bindTexture();
-        for (int i = 0; i < width + 1; i++)
-            if (i % 2 == 0)
-                GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 8, 36, 1, 8, zLevel);
-            else
-                GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 9, 36, 1, 8, zLevel);
-        for (int i = 0; i < (width + 1) * (percent); i++)
-            if (i % 2 == 0)
-                GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 10, 36, 1, 8, zLevel);
-            else
-                GuiUtils.drawTexturedModalRect(x + guiLeft + i, y + guiTop, 11, 36, 1, 8, zLevel);
+        drawProgressbar(x, y, width, 8, 0xFF0000, percent, true, true);
     }
 
+    public void drawProgressbar(int x, int y, int width, int height, int color, float percent, boolean horizontal,
+            boolean dotted) {
+        final int midColorOn = 0xFF000000 | color;
+        final int outColorOn = ColorHelper.darker(midColorOn, .15);
+        final int midColorOff = ColorHelper.darker(midColorOn, .4);
+        final int outColorOff = ColorHelper.darker(outColorOn, .4);
+        final int midColorOnDotted = dotted ? ColorHelper.darker(midColorOn, .1) : 0;
+        final int outColorOnDotted = dotted ? ColorHelper.darker(outColorOn, .1) : 0;
+        final int midColorOffDotted = dotted ? ColorHelper.darker(midColorOff, .1) : 0;
+        final int outColorOffDotted = dotted ? ColorHelper.darker(outColorOff, .1) : 0;
+        int tX = x + guiLeft;
+        int tY = y + guiTop;
+        if (horizontal) {
+            final boolean even = height % 2 == 0;
+            final int upperHeight = even ? height / 2 : height / 2 + 1;
+            final int lowerHeight = even ? height / 2 : height / 2;
+            GuiUtils.drawGradientRect(0, tX, tY, tX + width, tY + upperHeight, outColorOff, midColorOff);
+            GuiUtils.drawGradientRect(0, tX, tY + lowerHeight, tX + width, tY + lowerHeight + upperHeight, midColorOff,
+                    outColorOff);
+            int filledWidth = Math.round(width * percent);
+            GuiUtils.drawGradientRect(0, tX, tY, tX + filledWidth, tY + upperHeight, outColorOn, midColorOn);
+            GuiUtils.drawGradientRect(0, tX, tY + lowerHeight, tX + filledWidth, tY + lowerHeight + upperHeight,
+                    midColorOn, outColorOn);
+            if (dotted) {
+                for (int i = tX + 1; i < tX + width; i += 2) {
+                    GuiUtils.drawGradientRect(0, i, tY, i + 1, tY + upperHeight, outColorOffDotted, midColorOffDotted);
+                    GuiUtils.drawGradientRect(0, i, tY + lowerHeight, i + 1, tY + lowerHeight + upperHeight,
+                            midColorOffDotted, outColorOffDotted);
+                }
+                for (int i = tX + 1; i < tX + filledWidth; i += 2) {
+                    GuiUtils.drawGradientRect(0, i, tY, i + 1, tY + upperHeight, outColorOnDotted, midColorOnDotted);
+                    GuiUtils.drawGradientRect(0, i, tY + lowerHeight, i + 1, tY + lowerHeight + upperHeight,
+                            midColorOnDotted, outColorOnDotted);
+                }
+            }
+        } else {
+            final boolean even = width % 2 == 0;
+            final int leftWidth = even ? width / 2 : width / 2 + 1;
+            final int rightWidth = even ? width / 2 : width / 2;
+            percent = 1f - percent;
+            drawGradientRect2(0, tX, tY, tX + leftWidth, tY + height, outColorOff, midColorOff);
+            drawGradientRect2(0, tX + leftWidth, tY, tX + leftWidth + rightWidth, tY + height, midColorOff,
+                    outColorOff);
+            int filledHeight = Math.round(height * percent);
+            drawGradientRect2(0, tX, tY + filledHeight, tX + leftWidth, tY + height, outColorOn, midColorOn);
+            drawGradientRect2(0, tX + leftWidth, tY + filledHeight, tX + leftWidth + rightWidth, tY + height,
+                    midColorOn, outColorOn);
+            if (dotted) {
+                for (int i = tY + height - 1; i >= tY; i -= 2) {
+                    drawGradientRect2(0, tX, i, tX + leftWidth, i + 1, outColorOffDotted, midColorOffDotted);
+                    drawGradientRect2(0, tX + leftWidth, i, tX + leftWidth + rightWidth, i + 1, midColorOffDotted,
+                            outColorOffDotted);
+                }
+                for (int i = tY + height - 1; i >= tY + filledHeight; i -= 2) {
+                    drawGradientRect2(0, tX, i, tX + leftWidth, i + 1, outColorOnDotted, midColorOnDotted);
+                    drawGradientRect2(0, tX + leftWidth, i, tX + leftWidth + rightWidth, i + 1, midColorOnDotted,
+                            outColorOnDotted);
+                }
+            }
+        }
+    }
+
+    public static void drawGradientRect2(int zLevel, int left, int top, int right, int bottom, int startColor,
+            int endColor) {
+        float startAlpha = (float) (startColor >> 24 & 255) / 255.0F;
+        float startRed = (float) (startColor >> 16 & 255) / 255.0F;
+        float startGreen = (float) (startColor >> 8 & 255) / 255.0F;
+        float startBlue = (float) (startColor & 255) / 255.0F;
+        float endAlpha = (float) (endColor >> 24 & 255) / 255.0F;
+        float endRed = (float) (endColor >> 16 & 255) / 255.0F;
+        float endGreen = (float) (endColor >> 8 & 255) / 255.0F;
+        float endBlue = (float) (endColor & 255) / 255.0F;
+
+        GlStateManager.disableTexture();
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlphaTest();
+        GlStateManager
+                .blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                        GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.shadeModel(GL11.GL_SMOOTH);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        buffer.pos(right, top, zLevel).color(endRed, endGreen, endBlue, endAlpha).endVertex();
+        buffer.pos(left, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
+        buffer.pos(left, bottom, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
+        buffer.pos(right, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).endVertex();
+        tessellator.draw();
+
+        GlStateManager.shadeModel(GL11.GL_FLAT);
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlphaTest();
+        GlStateManager.enableTexture();
+    }
+
+    //TODO enable
     /*public void drawFluidRect(int x, int y, int width, int height, FluidStack fluid) {
         if (fluid == null || fluid.getFluid() == null) {
             return;
@@ -217,8 +302,6 @@ public class GuiDrawer {
     }
 
     public void drawStopSign(int x, int y) {
-        /*bindTexture();
-        GuiUtils.drawTexturedModalRect(x + guiLeft, y + guiTop, 12, 36, 12, 12, zLevel);*/
         mc.getTextureManager().bindTexture(BARRIER_TEXTURES);
         GlStateManager.clearColor(1F, 1F, 1F, 1F);
         GlStateManager.translated(x + guiLeft, y + guiTop, 0);

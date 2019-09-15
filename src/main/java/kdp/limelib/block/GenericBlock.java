@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import com.google.gson.Gson;
@@ -23,6 +22,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -35,12 +35,12 @@ import net.minecraft.world.storage.loot.LootParameters;
 import kdp.limelib.LimeLib;
 import kdp.limelib.helper.RegistryHelper;
 import kdp.limelib.tile.GenericTile;
+import kdp.limelib.util.LimeUtils;
 
 public class GenericBlock extends Block {
 
-    protected boolean hasTile = false;
     protected BlockItem blockItem;
-    protected Class<? extends GenericTile> tileClass;
+    protected TileEntityType<? extends GenericTile> tileEntityType;
 
     public GenericBlock(Properties properties, String name) {
         super(properties);
@@ -56,6 +56,9 @@ public class GenericBlock extends Block {
     public GenericBlock register() {
         RegistryHelper.register(this);
         RegistryHelper.register(getBlockItem());
+        if (tileEntityType != null) {
+            RegistryHelper.register(tileEntityType);
+        }
         if (LimeLib.DEV) {
             List<LinkedHashMap<String, Object>> pools = getPools();
             if (pools != null) {
@@ -77,16 +80,15 @@ public class GenericBlock extends Block {
                 //}
             }
         }
-
-        if (tileClass != null && !Stream.of(tileClass.getConstructors()).anyMatch((c) -> c.getParameterCount() == 0))
+        /*if (tileClass != null && !Stream.of(tileClass.getConstructors()).anyMatch((c) -> c.getParameterCount() == 0))
             throw new IllegalStateException(tileClass + " needs a public default constructor.");
-        //TODO RegistryHelper.register(tileClass);
+        //TODO RegistryHelper.register(tileClass);*/
         return this;
     }
 
     @Nullable
     public List<LinkedHashMap<String, Object>> getPools() {
-        ResourceLocation rl = Optional.ofNullable(getBlockItem()).map(Item::getRegistryName).orElse(null);
+        ResourceLocation rl = LimeUtils.orElse(getBlockItem(), null, Item::getRegistryName);
         if (rl == null) {
             return null;
         }
@@ -103,13 +105,14 @@ public class GenericBlock extends Block {
 
     @Override
     public boolean hasTileEntity(BlockState state) {
-        return tileClass != null;
+        return tileEntityType != null;
     }
 
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        if (tileClass != null) {
+        return tileEntityType != null ? tileEntityType.create() : null;
+        /*if (tileClass != null) {
             try {
                 return tileClass.newInstance();
             } catch (Exception e) {
@@ -117,7 +120,7 @@ public class GenericBlock extends Block {
                 return null;
             }
         }
-        return null;
+        return null;*/
     }
 
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
@@ -152,6 +155,9 @@ public class GenericBlock extends Block {
         GenericTile tile = Optional.ofNullable(builder.get(LootParameters.BLOCK_ENTITY))
                 .filter(GenericTile.class::isInstance).map(GenericTile.class::cast).orElse(null);
         if (tile != null) {
+            if (drops.size() == 1 && drops.get(0).getItem() == ((GenericBlock) state.getBlock()).getBlockItem()) {
+                tile.writeToStack(drops.get(0));
+            }
             return tile.editDrops(drops, builder);
         }
         return drops;

@@ -18,7 +18,15 @@ public class ColorHelper {
 
     public static int getRGB(int color, int alpha) {
         Validate.isTrue(alpha >= 0 && alpha <= 255, "alpha out of range " + alpha);
-        return new Color(getRed(color), getGreen(color), getBlue(color), alpha).getRGB();
+        return getRGB(getRed(color), getGreen(color), getBlue(color), alpha);
+    }
+
+    public static int getRGB(int red, int green, int blue, int alpha) {
+        return ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 0);
+    }
+
+    public static int getRGB(int red, int green, int blue) {
+        return getRGB(red, green, blue, 0xFF);
     }
 
     /*public static void glColor(int color) {
@@ -27,22 +35,18 @@ public class ColorHelper {
 
     public static int getRed(int color) {
         return ((0xFF000000 | color) >> 16) & 0xFF;
-        // return new Color(color,true).getRed();
     }
 
     public static int getGreen(int color) {
         return ((0xFF000000 | color) >> 8) & 0xFF;
-        // return new Color(color,true).getGreen();
     }
 
     public static int getBlue(int color) {
         return ((0xFF000000 | color) >> 0) & 0xFF;
-        // return new Color(color,true).getBlue();
     }
 
     public static int getAlpha(int color) {
         return ((color) >> 24) & 0xFF;
-        // return new Color(color,true).getAlpha();
     }
 
     public static int getRainbow(int frequence) {

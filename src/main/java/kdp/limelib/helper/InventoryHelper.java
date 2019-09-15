@@ -80,6 +80,7 @@ public class InventoryHelper {
                     if (extracted.isEmpty()) {
                         extracted = ex.copy();
                         pred = s -> ItemHandlerHelper.canItemStacksStack(s, ex);
+                        missing = Math.min(missing, extracted.getMaxStackSize());
                     } else {
                         extracted.grow(ex.getCount());
                     }

@@ -14,7 +14,7 @@ import kdp.limelib.helper.nbt.NBTHelper;
 public class ItemFilter implements Predicate<ItemStack>, IItemHandlerModifiable, INBTSerializable<CompoundNBT> {
 
     private List<ItemStack> items;
-    private boolean whiteList, nbt, damage, ore, mod;
+    private boolean whiteList, nbt, damage, tag, mod;
 
     @Override
     public int getSlots() {
@@ -58,9 +58,9 @@ public class ItemFilter implements Predicate<ItemStack>, IItemHandlerModifiable,
     @Override
     public boolean test(ItemStack t) {
         return items.stream().filter(s -> !s.isEmpty()).anyMatch(s -> {
-            /*
-             * if(ore) { return ItemTags.ACACIA_LOGS.contains(null) }
-             */
+            if (tag) {
+                return t.getItem().getTags().stream().anyMatch(r->s.getItem().getTags().contains(r));
+            }
             if (mod) {
                 return s.getItem().getRegistryName().getNamespace()
                         .equals(t.getItem().getRegistryName().getNamespace());

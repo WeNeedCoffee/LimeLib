@@ -1,6 +1,5 @@
 package kdp.limelib.tile;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -18,7 +17,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.storage.loot.LootContext;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import kdp.limelib.block.GenericBlock;
 import kdp.limelib.network.GenericTileMessage;
 import kdp.limelib.network.PacketHandler;
 
@@ -83,10 +81,7 @@ public abstract class GenericTile extends TileEntity {
         return null;
     }
 
-    public List<ItemStack> editDrops(List<ItemStack> drops, LootContext.Builder stacks) {
-        if (drops.size() == 1 && drops.get(0).getItem() == ((GenericBlock) getBlockState().getBlock()).getBlockItem()) {
-            writeToStack(drops.get(0));
-        }
+    public List<ItemStack> editDrops(List<ItemStack> drops, LootContext.Builder builder) {
         return drops;
     }
 

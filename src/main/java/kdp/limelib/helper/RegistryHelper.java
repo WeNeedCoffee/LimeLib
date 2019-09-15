@@ -3,6 +3,7 @@ package kdp.limelib.helper;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
 import net.minecraftforge.event.RegistryEvent;
@@ -36,13 +37,13 @@ public class RegistryHelper {
 
     public static <T extends IForgeRegistryEntry<T>> T register(T entry) {
         Validate.isTrue(!registered, "Too late to register entries");
-        ENTRIES.add(entry);
+        ENTRIES.add(Objects.requireNonNull(entry, "entry must not be null"));
         return entry;
     }
 
     public static <T extends IForgeRegistryEntry<T>> T unregister(T entry) {
         Validate.isTrue(!registered, "Too late to unregister entries");
-        ENTRIES.remove(entry);
+        ENTRIES.remove(Objects.requireNonNull(entry, "entry must not be null"));
         return entry;
     }
 }

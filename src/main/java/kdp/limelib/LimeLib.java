@@ -1,6 +1,7 @@
 package kdp.limelib;
 
 import java.awt.*;
+import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -108,7 +109,7 @@ public class LimeLib {
         public void handleMessage(PlayerEntity player) {
             if (player instanceof ClientPlayerEntity) {
                 System.out.println(EffectiveSide.get() + ": " + nbt);
-                //Minecraft.getInstance().displayGuiScreen(new Sc());
+                Minecraft.getInstance().displayGuiScreen(new Sc());
             }
         }
     }
@@ -127,9 +128,17 @@ public class LimeLib {
             super.render(p_render_1_, p_render_2_, p_render_3_);
             drawer.drawSlot(30, 30);
             drawer.drawFrame(50, 30, 12, 19, 1, Color.green.getRGB());
-            drawer.drawEnergyBarH(10, 60, 134, .999f - ((System.currentTimeMillis() / 8) % 100) / 100f);
-            drawer.drawItemStack(new ItemStack(Items.EMERALD), 100, 2);
-            drawer.drawProgressArrow(2, 80, ((System.currentTimeMillis() / 16) % 100) / 100f, GuiDrawer.Direction.LEFT);
+            drawer.drawEnergyBarH(10, 60, 134, true ? .6f : .999f - ((System.currentTimeMillis() / 8) % 100) / 100f);
+            Random ran = new Random(hashCode());
+            for (int i = 0; i < 5; i++) {
+                drawer.drawProgressbar(10, 70 + (i * 10), 130, 8, ran.nextInt(),
+                        true ? .6f : .999f - ((System.currentTimeMillis() / 8) % 100) / 100f, true, true);
+            }
+            drawer.drawProgressbar(149, 75, 15, 60, 0x00868B,
+                    ((float) Math.cos(System.currentTimeMillis() / 800d)) / 2f + .5f, !true, !false);
+            drawer.drawItemStack(new ItemStack(Items.EMERALD), 100 - 10, 2);
+            drawer.drawProgressArrow(2, 120, ((System.currentTimeMillis() / 16) % 100) / 100f,
+                    GuiDrawer.Direction.LEFT);
             drawer.drawStopSign(100, 100);
             drawer.drawFlame(130, 130, .7f);
         }
