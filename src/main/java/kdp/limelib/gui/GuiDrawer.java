@@ -9,9 +9,12 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 import org.lwjgl.opengl.GL11;
@@ -212,12 +215,11 @@ public class GuiDrawer {
         GlStateManager.enableTexture();
     }
 
-    //TODO enable
-    /*public void drawFluidRect(int x, int y, int width, int height, FluidStack fluid) {
+    public void drawFluidRect(int x, int y, int width, int height, FluidStack fluid) {
         if (fluid == null || fluid.getFluid() == null) {
             return;
         }
-        TextureAtlasSprite icon = mc.getTextureMapBlocks().getTextureExtry(fluid.getFluid().getStill().toString());
+        TextureAtlasSprite icon = mc.getTextureMap().getSprite(fluid.getFluid().getAttributes().getStillTexture());
         if (icon == null) {
             return;
         }
@@ -227,7 +229,7 @@ public class GuiDrawer {
         int posY = y + height - renderAmount;
 
         mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-        int color = fluid.getFluid().getColor(fluid);
+        int color = fluid.getFluid().getAttributes().getColor(fluid);
         GL11.glColor3ub((byte) (color >> 16 & 0xFF), (byte) (color >> 8 & 0xFF), (byte) (color & 0xFF));
 
         GlStateManager.enableBlend();
@@ -257,7 +259,7 @@ public class GuiDrawer {
             }
         }
         GlStateManager.disableBlend();
-    }*/
+    }
 
     public void drawItemStack(ItemStack stack, int x, int y) {
         GlStateManager.pushMatrix();

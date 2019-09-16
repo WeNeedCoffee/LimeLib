@@ -41,7 +41,12 @@ public class RecipeHelper {
         if (!LimeLib.DEV)
             return;
         try {
+            File folder = new File("").toPath().resolve("../src/main/java/kdp/").toFile();
+            final String modIDCurrentFolder = folder.list()[0];
             for (Entry<String, List<Pair<String, String>>> e : recipes.entrySet()) {
+                if (!modIDCurrentFolder.equals(e.getKey())) {
+                    continue;
+                }
                 boolean notAJar = ModList.get().getModContainerById(e.getKey()).get().getMod().getClass()
                         .getProtectionDomain().getCodeSource().getLocation() == null;
                 if (notAJar) {

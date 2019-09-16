@@ -20,6 +20,7 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -42,15 +43,20 @@ public class GenericBlock extends Block {
     protected BlockItem blockItem;
     protected TileEntityType<? extends GenericTile> tileEntityType;
 
-    public GenericBlock(Properties properties, String name) {
+    public GenericBlock(Properties properties, String name, ItemGroup itemGroup) {
         super(properties);
         setRegistryName(name);
-        blockItem = new BlockItem(this, new Item.Properties());
+        blockItem = new BlockItem(this, new Item.Properties().group(itemGroup));
         blockItem.setRegistryName(name);
     }
 
     public BlockItem getBlockItem() {
         return blockItem;
+    }
+
+    @Override
+    public Item asItem() {
+        return LimeUtils.orElse(blockItem, super.asItem());
     }
 
     public GenericBlock register() {
@@ -60,24 +66,27 @@ public class GenericBlock extends Block {
             RegistryHelper.register(tileEntityType);
         }
         if (LimeLib.DEV) {
-            List<LinkedHashMap<String, Object>> pools = getPools();
-            if (pools != null) {
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                LinkedHashMap<String, Object> json = new LinkedHashMap<>();
-                json.put("type", "minecraft:block");
-                json.put("pools", pools);
-                File dir = new File("").toPath().resolve(
-                        "../src/main/resources/data/" + getRegistryName().getNamespace() + "/loot_tables/blocks/")
-                        .toFile();
-                if (!dir.exists())
-                    dir.mkdirs();
-                try {
-                    Files.write(new File(dir, getRegistryName().getPath() + ".json").toPath(),
-                            gson.toJson(json).getBytes());
-                } catch (IOException e) {
-                    e.printStackTrace();
+            File folder = new File("").toPath().resolve("../src/main/java/kdp/").toFile();
+            final String modIDCurrentFolder = folder.list()[0];
+            if (modIDCurrentFolder.equals(getRegistryName().getNamespace())) {
+                List<LinkedHashMap<String, Object>> pools = getPools();
+                if (pools != null) {
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    LinkedHashMap<String, Object> json = new LinkedHashMap<>();
+                    json.put("type", "minecraft:block");
+                    json.put("pools", pools);
+                    File dir = new File("").toPath().resolve(
+                            "../src/main/resources/data/" + getRegistryName().getNamespace() + "/loot_tables/blocks/")
+                            .toFile();
+                    if (!dir.exists())
+                        dir.mkdirs();
+                    try {
+                        Files.write(new File(dir, getRegistryName().getPath() + ".json").toPath(),
+                                gson.toJson(json).getBytes());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-                //}
             }
         }
         /*if (tileClass != null && !Stream.of(tileClass.getConstructors()).anyMatch((c) -> c.getParameterCount() == 0))
