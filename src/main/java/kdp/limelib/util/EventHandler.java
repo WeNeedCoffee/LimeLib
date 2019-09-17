@@ -1,6 +1,7 @@
 package kdp.limelib.util;
 
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.WorldTickEvent;
@@ -8,6 +9,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+
+import kdp.limelib.tile.GenericTile;
 
 public class EventHandler {
 
@@ -17,8 +20,10 @@ public class EventHandler {
 
             try {
                 if (event.world.getWorldInfo().getGameTime() % 4 == 0) {
-                    if (event.world.rand.nextBoolean() && false)
-                        System.out.println("benz");
+                    Iterator<GenericTile> it = GenericTile.toSync.iterator();
+                    while (it.hasNext()) {
+                        GenericTile next = it.next();
+                    }
                 }
             } catch (ConcurrentModificationException e) {
             }

@@ -1,7 +1,10 @@
 package kdp.limelib.tile;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +17,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.storage.loot.LootContext;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import kdp.limelib.network.GenericTileMessage;
@@ -23,6 +25,7 @@ import kdp.limelib.network.PacketHandler;
 public abstract class GenericTile extends TileEntity {
 
     public static final String POS_KEY = "#²»đ";
+    public static Set<GenericTile> toSync = Collections.newSetFromMap(new WeakHashMap<>());
 
     private boolean needsSync;
     private Object2BooleanOpenHashMap<UUID> syncMap = new Object2BooleanOpenHashMap<>();
@@ -39,7 +42,11 @@ public abstract class GenericTile extends TileEntity {
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1337, writeToSyncNBT(new CompoundNBT()));
+        CompoundNBT n = writeToSyncNBT(new CompoundNBT());
+        if (n == null) {
+            return null;
+        }
+        return new SUpdateTileEntityPacket(pos, 1337, n);
     }
 
     @Override
@@ -79,10 +86,6 @@ public abstract class GenericTile extends TileEntity {
     @Nullable
     public List<ItemStack> getDroppingItems() {
         return null;
-    }
-
-    public List<ItemStack> editDrops(List<ItemStack> drops, LootContext.Builder builder) {
-        return drops;
     }
 
     public void writeToStack(ItemStack stack) {

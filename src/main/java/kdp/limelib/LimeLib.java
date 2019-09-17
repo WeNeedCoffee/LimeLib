@@ -71,7 +71,7 @@ public class LimeLib {
                 }
             }
         });
-        GenericBlock raiser = new GenericBlock(Block.Properties.create(Material.BAMBOO), "raiser");
+        GenericBlock raiser = new GenericBlock(Block.Properties.create(Material.BAMBOO), "raiser",null);
         raiser.register();
         RecipeHelper.addCraftingRecipe(new ItemStack(raiser.getBlockItem()), null, true, "grg", "g g", "ggg", 'g',
                 Items.GOLD_INGOT, 'r', "wool");

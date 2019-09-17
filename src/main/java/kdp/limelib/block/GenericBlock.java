@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import com.google.gson.Gson;
@@ -59,6 +60,16 @@ public class GenericBlock extends Block {
         return LimeUtils.orElse(blockItem, super.asItem());
     }
 
+    public GenericBlock setTileType(Supplier<? extends GenericTile> factory) {
+        tileEntityType = TileEntityType.Builder.create(factory, this).build(null);
+        tileEntityType.setRegistryName(getRegistryName());
+        return this;
+    }
+
+    public TileEntityType<? extends GenericTile> getTileEntityType() {
+        return tileEntityType;
+    }
+
     public GenericBlock register() {
         RegistryHelper.register(this);
         RegistryHelper.register(getBlockItem());
@@ -89,9 +100,6 @@ public class GenericBlock extends Block {
                 }
             }
         }
-        /*if (tileClass != null && !Stream.of(tileClass.getConstructors()).anyMatch((c) -> c.getParameterCount() == 0))
-            throw new IllegalStateException(tileClass + " needs a public default constructor.");
-        //TODO RegistryHelper.register(tileClass);*/
         return this;
     }
 
@@ -121,17 +129,9 @@ public class GenericBlock extends Block {
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return tileEntityType != null ? tileEntityType.create() : null;
-        /*if (tileClass != null) {
-            try {
-                return tileClass.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-        return null;*/
     }
 
+    @Override
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             getTile(worldIn, pos).ifPresent(t -> {
@@ -149,6 +149,7 @@ public class GenericBlock extends Block {
         getTile(worldIn, pos).ifPresent(t -> t.readFromStack(stack));
     }
 
+    @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn,
             BlockRayTraceResult hit) {
         Optional<GenericTile> tile = getTile(worldIn, pos);
@@ -167,10 +168,13 @@ public class GenericBlock extends Block {
             if (drops.size() == 1 && drops.get(0).getItem() == ((GenericBlock) state.getBlock()).getBlockItem()) {
                 tile.writeToStack(drops.get(0));
             }
-            return tile.editDrops(drops, builder);
         }
-        return drops;
+        return editDrops(drops, builder);
 
+    }
+
+    protected List<ItemStack> editDrops(List<ItemStack> drops, LootContext.Builder builder) {
+        return drops;
     }
 
     @Override
@@ -181,6 +185,7 @@ public class GenericBlock extends Block {
 
     }
 
+    @Override
     public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int id, int param) {
         TileEntity tileentity = worldIn.getTileEntity(pos);
         return tileentity == null ? false : tileentity.receiveClientEvent(id, param);
