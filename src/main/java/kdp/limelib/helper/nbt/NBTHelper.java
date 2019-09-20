@@ -191,8 +191,6 @@ public class NBTHelper {
             @Override
             public INBT toNBT(Object value) {
                 switch (class2id.getByte(value.getClass())) {
-                case 0:
-                    throw new RuntimeException("primitives1");
                 case 1:
                 case 2:
                     return new ByteNBT((byte) (((boolean) value) ? 1 : 0));
@@ -225,8 +223,6 @@ public class NBTHelper {
             @Override
             public Object toValue(INBT nbt, Class<?> clazz) {
                 switch (class2id.getByte(clazz)) {
-                case 0:
-                    throw new RuntimeException("primitives1");
                 case 1:
                 case 2:
                     return ((ByteNBT) nbt).getByte() != 0;
@@ -259,8 +255,6 @@ public class NBTHelper {
             @Override
             public Supplier<Object> defaultValue(Class<?> clazz) {
                 switch (class2id.getByte(clazz)) {
-                case 0:
-                    throw new RuntimeException("primitives1");
                 case 1:
                 case 2:
                     return () -> false;
@@ -315,8 +309,6 @@ public class NBTHelper {
             @Override
             public INBT toNBT(Object value) {
                 switch (class2id.getByte(value.getClass())) {
-                case 0:
-                    throw new RuntimeException("arrays1");
                 case 1:
                     boolean[] arrB = (boolean[]) value;
                     BitSet bs = new BitSet(arrB.length);
@@ -377,8 +369,6 @@ public class NBTHelper {
             @Override
             public Object toValue(INBT nbt, Class<?> clazz) {
                 switch (class2id.getByte(clazz)) {
-                case 0:
-                    throw new RuntimeException("arrays1");
                 case 1:
                     CompoundNBT tag = (CompoundNBT) nbt;
                     byte[] arr = tag.getByteArray("v");
@@ -427,8 +417,6 @@ public class NBTHelper {
             @Override
             public Supplier<Object> defaultValue(Class<?> clazz) {
                 switch (class2id.getByte(clazz)) {
-                case 0:
-                    throw new RuntimeException("arrays1");
                 case 1:
                     return () -> new boolean[0];
                 case 2:

@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import javax.annotation.Nullable;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -83,6 +84,10 @@ public abstract class GenericTile extends TileEntity {
         }*/
     }
 
+    public void setBlockState(BlockState blockState, int flags) {
+        world.setBlockState(pos, blockState, flags);
+    }
+
     @Nullable
     public List<ItemStack> getDroppingItems() {
         return null;
@@ -103,7 +108,13 @@ public abstract class GenericTile extends TileEntity {
 
     public final void sendMessage(CompoundNBT nbt) {
         nbt.putLong(POS_KEY, pos.toLong());
-        PacketHandler.sendToServer(new GenericTileMessage(nbt));
+        if (world.isRemote) {
+            PacketHandler.sendToServer(new GenericTileMessage(nbt));
+        } else {
+            PacketHandler.sendToPlayers(new GenericTileMessage(nbt),
+                    p -> p.getPositionVec().squareDistanceTo(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5) < 120);
+        }
+
     }
 
     public void neighborChanged(BlockPos fromPos, boolean isMoving) {

@@ -59,7 +59,7 @@ public class ItemFilter implements Predicate<ItemStack>, IItemHandlerModifiable,
     public boolean test(ItemStack t) {
         return items.stream().filter(s -> !s.isEmpty()).anyMatch(s -> {
             if (tag) {
-                return t.getItem().getTags().stream().anyMatch(r->s.getItem().getTags().contains(r));
+                return t.getItem().getTags().stream().anyMatch(r -> s.getItem().getTags().contains(r));
             }
             if (mod) {
                 return s.getItem().getRegistryName().getNamespace()
