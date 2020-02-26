@@ -9,7 +9,7 @@ public class CommonItem extends Item {
 	public CommonItem(String name) {
 		super();
 		setRegistryName(name);
-		setUnlocalizedName(getRegistryName().toString());
+		setTranslationKey(getRegistryName().toString());
 	}
 
 	public void registerItem() {

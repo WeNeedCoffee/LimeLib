@@ -56,20 +56,16 @@ public class LimeLib {
 		LimeCapabilities.register();
 		wailaLoaded = Loader.isModLoaded("waila");
 		jeiLoaded = Loader.isModLoaded("jei");
-		teslaLoaded = Loader.isModLoaded("tesla");
 		topLoaded = Loader.isModLoaded("theoneprobe");
-		fluxLoaded = Loader.isModLoaded("redstoneflux");
 		NBTHelper.hasTag(null, null); //init
 		if (RecipeHelper.dev) {
 			if (FMLCommonHandler.instance().getSide().isClient()) {
-				Dev.preInit();
-				MinecraftForge.EVENT_BUS.register(Dev.class);
 			}
 			System.out.println("zip");
 		}
 	}
 
-	public static boolean wailaLoaded, jeiLoaded, teslaLoaded, topLoaded, fluxLoaded;
+	public static boolean wailaLoaded, jeiLoaded, topLoaded;
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {

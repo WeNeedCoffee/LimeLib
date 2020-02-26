@@ -57,16 +57,16 @@ public class DataPartRegistry implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public DataPart getDataPart(BlockPos pos) {
-		world.getChunkFromBlockCoords(pos);
+		world.getChunk(pos);
 		return partMap.get(pos);
 	}
 
 	public BlockPos nextPos(BlockPos pos) {
 		if (getDataPart(pos) == null)
 			return pos;
-		Chunk chunk = world.getChunkFromBlockCoords(pos);
+		Chunk chunk = world.getChunk(pos);
 		List<BlockPos> posses = StreamSupport.stream(BlockPos.getAllInBox(pos.add(7, 7, 7), pos.add(-7, -7, -7)).spliterator(), false).//
-				filter(p -> world.getChunkFromBlockCoords(p) == chunk).sorted((p1, p2) -> {
+				filter(p -> world.getChunk(p) == chunk).sorted((p1, p2) -> {
 					int res = Double.compare(p1.distanceSq(pos), p2.distanceSq(pos));
 					if (res != 0)
 						return res;

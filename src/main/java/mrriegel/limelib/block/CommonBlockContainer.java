@@ -54,7 +54,7 @@ public abstract class CommonBlockContainer<T extends CommonTile> extends CommonB
 		if (!Stream.of(getTile().getConstructors()).anyMatch((c) -> c.getParameterCount() == 0))
 			throw new IllegalStateException(getTile() + " needs a public default constructor.");
 		//TODO change to registryname
-		GameRegistry.registerTileEntity(getTile(), getUnlocalizedName());
+		GameRegistry.registerTileEntity(getTile(), getRegistryName());
 		//		if (clearRecipe && isDataKeeper(getTile(), null) && !getItemBlock().getHasSubtypes()) {
 		//			final ItemStack result = new ItemStack(this);
 		//			ShapelessRecipes r = new ShapelessRecipes("", NBTStackHelper.set(new ItemStack(getItemBlock()), "ClEaR", true), NonNullList.from(Ingredient.EMPTY, RecipeHelper.getIngredient(new ItemStack(this.getItemBlock())))) {

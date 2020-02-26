@@ -69,7 +69,7 @@ public class Utils {
 	}
 
 	public static String getCurrentModID() {
-		return GameData.checkPrefix("").getResourceDomain();
+		return GameData.checkPrefix("", false).getNamespace();
 	}
 
 	public static List<Integer> split(int ii, int splits) {
@@ -130,7 +130,7 @@ public class Utils {
 	}
 
 	public static String getModID(IForgeRegistryEntry<?> registerable) {
-		final String modID = registerable.getRegistryName().getResourceDomain();
+		final String modID = registerable.getRegistryName().getNamespace();
 		ModContainer mod = Loader.instance().getIndexedModList().get(modID);
 		if (mod == null) {
 			for (String s : Loader.instance().getIndexedModList().keySet()) {

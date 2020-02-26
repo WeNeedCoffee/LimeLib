@@ -65,7 +65,7 @@ public class RegistryHelper {
 	}
 
 	public static void setRegistryName(Impl<?> entry, ResourceLocation rl) {
-		if (Utils.getCurrentModID().equals(rl.getResourceDomain()))
+		if (Utils.getCurrentModID().equals(rl.getNamespace()))
 			entry.setRegistryName(rl);
 		else
 			ReflectionHelper.setPrivateValue(Impl.class, entry, rl, "registryName");

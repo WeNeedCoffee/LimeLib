@@ -203,7 +203,7 @@ public class ClientEventHandler {
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void itemToolTip(ItemTooltipEvent event) {
 		Minecraft mc = getMC();
-		if (LimeConfig.commandBlockCreativeTab && mc.currentScreen instanceof GuiContainerCreative && ((GuiContainerCreative) mc.currentScreen).getSelectedTabIndex() == CreativeTabs.REDSTONE.getTabIndex() && Block.getBlockFromItem(event.getItemStack().getItem()) instanceof BlockCommandBlock) {
+		if (LimeConfig.commandBlockCreativeTab && mc.currentScreen instanceof GuiContainerCreative && ((GuiContainerCreative) mc.currentScreen).getSelectedTabIndex() == CreativeTabs.REDSTONE.getIndex() && Block.getBlockFromItem(event.getItemStack().getItem()) instanceof BlockCommandBlock) {
 			event.getToolTip().add(TextFormatting.YELLOW + LimeConfig.CONFIGHINT);
 		}
 

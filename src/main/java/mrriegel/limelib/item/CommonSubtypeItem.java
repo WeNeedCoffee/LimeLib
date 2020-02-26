@@ -30,8 +30,8 @@ public abstract class CommonSubtypeItem extends CommonItem {
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack stack) {
-		return super.getUnlocalizedName() + "_" + stack.getItemDamage();
+	public String getTranslationKey(ItemStack stack) {
+		return super.getTranslationKey() + "_" + stack.getItemDamage();
 	}
 
 }

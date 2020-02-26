@@ -198,7 +198,7 @@ public class RecipeHelper {
 		//		String suffix = stack.getItem().getHasSubtypes() ? "_" + stack.getItemDamage() : "";
 		//		File f = new File(DIR, stack.getItem().getRegistryName().getResourcePath() + suffix + ".json");
 		if (!stack.isEmpty()) {
-			File f = new File(DIR, rl.getResourcePath().replace('/', '_') + ".json");
+			File f = new File(DIR, rl.getPath().replace('/', '_') + ".json");
 			writeToFile(f, json);
 		} else
 			LimeLib.log.warn("ItemStack is empty. Can't create a recipe. " + Arrays.toString(input));
@@ -210,16 +210,16 @@ public class RecipeHelper {
 			if (o instanceof String)
 				return o.toString();
 			if (o instanceof Item)
-				return ((Item) o).getRegistryName().getResourcePath();
+				return ((Item) o).getRegistryName().getPath();
 			if (o instanceof Block)
-				return ((Block) o).getRegistryName().getResourcePath();
+				return ((Block) o).getRegistryName().getPath();
 			if (o instanceof ItemStack)
-				return ((ItemStack) o).getItem().getRegistryName().getResourcePath();
+				return ((ItemStack) o).getItem().getRegistryName().getPath();
 			if (o instanceof Ingredient)
-				return Joiner.on(" ").join(Arrays.stream(((Ingredient) o).getMatchingStacks()).map(s -> s.getItem().getRegistryName().getResourcePath()).sorted().collect(Collectors.toList()));
+				return Joiner.on(" ").join(Arrays.stream(((Ingredient) o).getMatchingStacks()).map(s -> s.getItem().getRegistryName().getPath()).sorted().collect(Collectors.toList()));
 			return "";
 		}).collect(Collectors.toList());
-		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getResourcePath() + "/" + stack.getItemDamage() + "_" + stack.getCount() + "_" + (Math.abs(lis.hashCode()) % 9999));
+		return new ResourceLocation(Utils.getCurrentModID(), stack.getItem().getRegistryName().getPath() + "/" + stack.getItemDamage() + "_" + stack.getCount() + "_" + (Math.abs(lis.hashCode()) % 9999));
 	}
 
 	public static Ingredient getIngredient(Object obj) {
@@ -443,7 +443,7 @@ public class RecipeHelper {
 			json.put("ingredients", Arrays.stream(input).map(o -> serializeItem2(o, false)).collect(Collectors.toList()));
 		}
 		json.put("result", serializeItem2(result, true));
-		addRecipe(result.getItem().getRegistryName().getResourcePath(), json);
+		addRecipe(result.getItem().getRegistryName().getPath(), json);
 	}
 
 	public static void addSmeltingRecipe(ItemStack result, Object input, double exp, int time) {
@@ -456,7 +456,7 @@ public class RecipeHelper {
 		json.put("result", result.getItem().getRegistryName().toString());
 		json.put("experience", exp);
 		json.put("cookingtime", time);
-		addRecipe(result.getItem().getRegistryName().getResourcePath(), json);
+		addRecipe(result.getItem().getRegistryName().getPath(), json);
 	}
 
 	public static void addRecipe(String name, Map<String, Object> json) {

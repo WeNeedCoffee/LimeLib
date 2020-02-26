@@ -11,7 +11,7 @@ public class CommonArmorItem extends ItemArmor {
 	public CommonArmorItem(ArmorMaterial materialIn, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn, String name) {
 		super(materialIn, renderIndexIn, equipmentSlotIn);
 		setRegistryName(name);
-		setUnlocalizedName(getRegistryName().toString());
+		setTranslationKey(getRegistryName().toString());
 	}
 
 	public void registerItem() {

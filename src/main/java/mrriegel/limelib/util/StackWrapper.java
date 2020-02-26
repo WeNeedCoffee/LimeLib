@@ -46,7 +46,7 @@ public final class StackWrapper {
 
 	@Override
 	public String toString() {
-		return "[" + size + "x" + stack.getItem().getUnlocalizedName() + "@" + stack.getItemDamage() + "]";
+		return "[" + size + "x" + stack.getItem().getRegistryName().getPath() + "@" + stack.getItemDamage() + "]";
 	}
 
 	@Override

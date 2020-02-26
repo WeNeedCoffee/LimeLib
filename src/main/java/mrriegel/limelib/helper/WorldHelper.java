@@ -119,7 +119,7 @@ public class WorldHelper {
 	}
 
 	public static List<BlockPos> getChunk(World world, BlockPos pos) {
-		Chunk chunk = world.getChunkFromBlockCoords(pos);
+		Chunk chunk = world.getChunk(pos);
 		List<BlockPos> lis = Lists.newLinkedList();
 		for (int y = world.getActualHeight() - 1; y > 0; y--)
 			for (int x = chunk.x * 16; x < chunk.x * 16 + 16; x++)

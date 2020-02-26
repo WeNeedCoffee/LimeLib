@@ -21,7 +21,7 @@ public class ParticleHelper {
 	public static List<Vec3d> getVecsForLine(double x1, double y1, double z1, double x2, double y2, double z2, double frequence) {
 		List<Vec3d> lis = Lists.newArrayList();
 		final Vec3d ovec = new Vec3d(x2 - x1, y2 - y1, z2 - z1);
-		int amount = (int) (ovec.lengthVector() * frequence);
+		int amount = (int) (ovec.length() * frequence);
 		Vec3d toAdd = new Vec3d(ovec.x / amount, ovec.y / amount, ovec.z / amount);
 		Vec3d foo = Vec3d.ZERO;
 		for (int i = 0; i < amount + 1; i++) {

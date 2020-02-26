@@ -113,15 +113,6 @@ public class StackHelper {
 		return stacks;
 	}
 
-	public static boolean isWrench(ItemStack stack) {
-		if (stack.isEmpty() || stack.getItem() instanceof ItemBlock)
-			return false;
-		return Stream.of("wrench", "scrench", "screwdriver").//
-				anyMatch(s -> stack.getItem().getClass().getSimpleName().toLowerCase().contains(s)//
-						|| stack.getUnlocalizedName().toLowerCase().contains(s)//
-						|| Arrays.stream(stack.getItem().getClass().getInterfaces()).anyMatch(c -> c.getSimpleName().toLowerCase().contains(s)));
-	}
-
 	public static void addStack(NonNullList<ItemStack> lis, ItemStack stack) {
 		if (stack.isEmpty())
 			return;

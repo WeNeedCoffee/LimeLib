@@ -101,7 +101,7 @@ public class DataPart {
 		DataPartRegistry reg = DataPartRegistry.get(player.world);
 		if (reg == null)
 			return null;
-		Vec3d eye = player.getPositionVector().addVector(0, player.eyeHeight, 0);
+		Vec3d eye = player.getPositionVector().add(0, player.eyeHeight, 0);
 		Vec3d look = player.getLookVec().scale(.5);
 		Vec3d vec = eye.add(look);
 		DataPart part = null;
